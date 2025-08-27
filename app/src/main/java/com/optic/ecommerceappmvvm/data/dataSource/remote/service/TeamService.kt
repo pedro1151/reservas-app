@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.data.dataSource.remote.service
 
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -72,7 +73,7 @@ interface TeamService {
     @GET("football/leagues/{league_id}")
     suspend fun getLeagueById(
         @Path("league_id") leagueId: Int
-    ): Response<League>
+    ): Response<LeagueCompleteResponse>
 
 
 
@@ -149,6 +150,15 @@ interface TeamService {
     suspend fun getTopFiveFixtureTeam(
         @Path("team_id") teamId: Int
     ): Response<List<FixtureResponse>>
+
+    //Fixture de una Liga
+    @GET("football/fixtures/league/{league_id}")
+    suspend fun getLeagueFixture(
+        @Path("league_id") leagueId: Int
+    ): Response<List<FixtureResponse>>
+
+
+
 
 
     // PARA SEGUIR LIGAS

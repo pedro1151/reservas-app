@@ -12,11 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 
 @Composable
-fun LeagueHeader(league: League, paddingValues: PaddingValues) {
+fun LeagueHeader(league: LeagueCompleteResponse, paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)

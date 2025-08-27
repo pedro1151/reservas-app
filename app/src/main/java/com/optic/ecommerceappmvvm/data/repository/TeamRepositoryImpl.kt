@@ -4,6 +4,7 @@ package com.optic.ecommerceappmvvm.data.repository
 
 import com.optic.ecommerceappmvvm.data.dataSource.remote.TeamRemoteDataSource
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -90,7 +91,7 @@ class TeamRepositoryImpl(
         )
     }
 
-    override suspend fun getLeagueById(leagueId: Int): Flow<Resource<League>>  = flow{
+    override suspend fun getLeagueById(leagueId: Int): Flow<Resource<LeagueCompleteResponse>>  = flow{
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getLeagueById(leagueId)
@@ -229,6 +230,14 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getTopFiveFixtureTeam(teamId)
+            )
+        )
+    }
+
+    override suspend fun getLeagueFixture(leagueId: Int): Flow<Resource<List<FixtureResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getLeagueFixture(leagueId)
             )
         )
     }

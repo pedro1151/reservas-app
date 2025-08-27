@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.data.dataSource.remote
 
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -46,7 +47,7 @@ interface TeamRemoteDataSource {
   suspend fun getFollowedLeagues(): Response<List<League>>
   suspend fun deleteFollowedLeague(leagueId: Int): Response<DefaultResponse>
   suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
-  suspend fun getLeagueById(leagueId: Int): Response<League>
+  suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse>
 
     // FIXTURES
   //Recuperar Fixture por Id
@@ -57,6 +58,9 @@ interface TeamRemoteDataSource {
     suspend fun getFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
     suspend fun getNextFixtureTeam(teamId: Int): Response<FixtureResponse>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
+
+    // Leagues
+    suspend fun getLeagueFixture(leagueId: Int): Response<List<FixtureResponse>>
     // versus
     suspend fun getFixtureVersus(
         teamOneId: Int,

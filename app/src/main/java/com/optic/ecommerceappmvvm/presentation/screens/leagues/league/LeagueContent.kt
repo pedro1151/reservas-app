@@ -13,9 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.util.Resource
 
 import com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.components.PlaceholderTab
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.header.LeagueHeader
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.leaguematches.LeagueFixture
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.standings.LeagueStandingsList
+import com.optic.ecommerceappmvvm.presentation.screens.team.components.teamFixture.TeamFixture
 
 import kotlinx.coroutines.launch
 
@@ -24,8 +30,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun LeagueContent(
     paddingValues: PaddingValues,
-    league: League,
-    navController: NavHostController
+    league: LeagueCompleteResponse,
+    navController: NavHostController,
+    viewModel: LeagueViewModel,
+    leagueFixtureState: Resource<List<FixtureResponse>>
 ) {
     val tabTitles = listOf("Clasificacion", "Partidos", "Noticias", "Estad. Jugador", "Temporadas")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
@@ -68,8 +76,18 @@ fun LeagueContent(
             modifier = Modifier.fillMaxSize()
         ) { page ->
             when (page) {
-                0 -> PlaceholderTab("Clasificacion")
-                1 -> PlaceholderTab("Partidos")
+                0 -> LeagueStandingsList(
+                    paddingValues = paddingValues,
+                    league = league,
+                    viewModel = viewModel
+
+                )
+                1 -> LeagueFixture(
+                    modifier = Modifier.padding(paddingValues),
+                    navController = navController,
+                    fixtureState  = leagueFixtureState,
+                    paddingValues = paddingValues
+                )
                 2 -> PlaceholderTab("Noticias")
                 3 -> PlaceholderTab("Estad. Jugador")
                 4 -> PlaceholderTab("Temporadas")

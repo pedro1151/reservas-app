@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.data.dataSource.remote
 
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.TeamService
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -41,7 +42,7 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         countryName: String
     ): Response<List<League>> = teamService.getLeagues(name, type, countryName)
 
-    override suspend fun getLeagueById(leagueId: Int): Response<League> = teamService.getLeagueById(leagueId)
+    override suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse> = teamService.getLeagueById(leagueId)
 
 
 
@@ -93,6 +94,8 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
     override suspend fun getTopFiveFixtureTeam(
         teamId: Int
     ): Response<List<FixtureResponse>> = teamService.getTopFiveFixtureTeam(teamId)
+
+    override suspend fun getLeagueFixture(leagueId: Int): Response<List<FixtureResponse>> = teamService.getLeagueFixture(leagueId)
 
     // Versus Fixture
     override suspend fun getFixtureVersus(

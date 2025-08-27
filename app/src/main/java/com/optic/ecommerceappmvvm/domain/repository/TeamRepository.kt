@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.domain.repository
 
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -45,7 +46,7 @@ interface TeamRepository {
     suspend fun createFollowedLeague(leagueId: Int):Flow<Resource<FollowedLeagueResponse>>
     suspend fun deleteFollowedLeague(leagueId: Int):Flow<Resource<DefaultResponse>>
     suspend fun getLeagues(name: String, type: String, countryName: String): Flow<Resource<List<League>>>
-    suspend fun getLeagueById(leagueId:Int): Flow<Resource<League>>
+    suspend fun getLeagueById(leagueId:Int): Flow<Resource<LeagueCompleteResponse>>
 
 
     //FIXTURE
@@ -54,6 +55,7 @@ interface TeamRepository {
     suspend fun getFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getNextFixtureTeam(teamId: Int): Flow<Resource<FixtureResponse>>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getLeagueFixture(leagueId: Int): Flow<Resource<List<FixtureResponse>>>
     //Versus
     suspend fun getFixtureVersus(
         teamOneId: Int,
