@@ -17,10 +17,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.domain.model.Team
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.util.Resource
 
 @Composable
-fun PlayerHeader(player: PlayerWithStats, paddingValues: PaddingValues) {
+fun PlayerHeader(
+    player: PlayerWithStats,
+    paddingValues: PaddingValues,
+    playerLastTeamState : Resource<PlayerLastTeamResponse>
+) {
+
+
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
@@ -48,17 +58,22 @@ fun PlayerHeader(player: PlayerWithStats, paddingValues: PaddingValues) {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(
-                        model = "https://media.api-sports.io/football/teams/548.png",
-                        contentDescription = "Equipo",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Real Sociedad",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium // equivalente body2
-                    )
+                    // Recupero el equipo solo si es sucess
+                    if (playerLastTeamState is Resource.Success) {
+                        val lastTeamData = (playerLastTeamState as Resource.Success).data
+                        AsyncImage(
+                            model = lastTeamData.lastTeam.logo,
+                            contentDescription = "Equipo",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = lastTeamData.lastTeam.name,
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium // equivalente body2
+                        )
+                    }
+
                 }
             }
         }

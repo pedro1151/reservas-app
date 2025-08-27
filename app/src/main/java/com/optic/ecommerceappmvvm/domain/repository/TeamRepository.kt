@@ -7,6 +7,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
@@ -25,7 +26,7 @@ interface TeamRepository {
     suspend fun getPlayers(): Flow<Resource<List<Player>>>
     suspend fun getPlayerStats(playerId: Int): Flow<Resource<PlayerWithStats>>
     suspend fun getPlayerTeams(playerId: Int): Flow<Resource<PlayerTeamsResponse>>
-    suspend fun getLeagues(name: String, type: String, countryName: String): Flow<Resource<List<League>>>
+    suspend fun getPlayerLastTeam(playerId: Int): Flow<Resource<PlayerLastTeamResponse>>
 
     //PLAYERS SEGUIDOS
     suspend fun getFollowedPlayers(): Flow<Resource<List<Player>>>
@@ -39,10 +40,12 @@ interface TeamRepository {
     suspend fun deleteFollowedTeam(teamId: Int):Flow<Resource<DefaultResponse>>
 
 
-    //ligas SEGUIDOS
+    //ligas
     suspend fun getFollowedLeagues(): Flow<Resource<List<League>>>
     suspend fun createFollowedLeague(leagueId: Int):Flow<Resource<FollowedLeagueResponse>>
     suspend fun deleteFollowedLeague(leagueId: Int):Flow<Resource<DefaultResponse>>
+    suspend fun getLeagues(name: String, type: String, countryName: String): Flow<Resource<List<League>>>
+    suspend fun getLeagueById(leagueId:Int): Flow<Resource<League>>
 
 
     //FIXTURE

@@ -1,5 +1,6 @@
-package com.optic.ecommerceappmvvm.presentation.screens.leagues.components
+package com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,10 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
-
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 
 
 // CARD PARA MOSTRAR LAS LIGAS
@@ -21,13 +23,19 @@ import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
 fun LeagueCard(
     league: League,
     isFollowed: Boolean,
-    onFollowClick: () -> Unit
+    onFollowClick: () -> Unit,
+    navController: NavHostController
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp)
+            .clickable {
+        league.id?.let {
+            navController.navigate("${Graph.LEAGUE}/$it")
+        }
+    },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer

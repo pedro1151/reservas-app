@@ -10,6 +10,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
@@ -66,8 +67,17 @@ class TeamRepositoryImpl(
         )
     }
 
+    override suspend fun getPlayerLastTeam(playerId: Int): Flow<Resource<PlayerLastTeamResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getPlayerLastTeam(playerId)
+            )
+        )
+    }
 
 
+
+    //LIGAS
     override suspend fun getLeagues(
         name: String,
         type: String,
@@ -76,6 +86,14 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getLeagues(name, type, countryName)
+            )
+        )
+    }
+
+    override suspend fun getLeagueById(leagueId: Int): Flow<Resource<League>>  = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getLeagueById(leagueId)
             )
         )
     }

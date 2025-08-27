@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.leagues
+package com.optic.ecommerceappmvvm.presentation.screens.leagues.principal
 
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,8 +14,8 @@ import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
-fun LeagueScreen(navController: NavHostController) {
-    val viewModel: LeagueViewModel = hiltViewModel()
+fun LeaguePrincipalScreen(navController: NavHostController) {
+    val viewModel: LeaguePrincipalViewModel = hiltViewModel()
     val leagueResource by viewModel.leaguesState.collectAsState()
     val followedLeaguesResource by viewModel.followedLeaguesListState.collectAsState()
 
@@ -41,12 +41,13 @@ fun LeagueScreen(navController: NavHostController) {
                 ProgressBar()
             }
             is Resource.Success -> {
-                LeagueContent(
+                LeaguePrincipalContent(
                     modifier = Modifier,
                     leagues = result.data,
                     followedLeagues = followed,
                     paddingValues = paddingValues,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    navController = navController
                 )
             }
             is Resource.Failure -> {

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.Team
@@ -20,7 +19,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsRes
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
 @Composable
-fun PlayerTeamsContent(
+fun PlayerTrayectoryTab(
     paddingValues: PaddingValues,
     state: Resource<PlayerTeamsResponse>
 ) = when (state) {
@@ -104,7 +103,7 @@ fun TeamTrajectoryCard(team: Team, season: Int) {
                 model = team.logo,
                 contentDescription = team.name,
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(25.dp)
                     .clip(CircleShape)
             )
 

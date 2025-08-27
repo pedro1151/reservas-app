@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.leagues
+package com.optic.ecommerceappmvvm.presentation.screens.leagues.principal
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class LeagueViewModel @Inject constructor(
+class LeaguePrincipalViewModel @Inject constructor(
     private val teamUseCase: TeamUseCase
 ) : ViewModel() {
 

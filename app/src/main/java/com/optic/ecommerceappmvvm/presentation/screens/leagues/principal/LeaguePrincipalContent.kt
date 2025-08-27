@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.leagues
+package com.optic.ecommerceappmvvm.presentation.screens.leagues.principal
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,21 +10,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.League
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.components.LeagueCard
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.components.LeagueSearchBar
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components.LeagueCard
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components.LeagueSearchBar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 // CONTENIDO PRINCIPAL
-fun LeagueContent(
+fun LeaguePrincipalContent(
     modifier: Modifier = Modifier,
     leagues: List<League>,
     followedLeagues: List<League>,
     paddingValues: PaddingValues,
-    viewModel: LeagueViewModel
+    viewModel: LeaguePrincipalViewModel,
+    navController: NavHostController
 ) {
     var query by remember { mutableStateOf("") }
 
@@ -91,10 +95,11 @@ fun LeagueContent(
                             onFollowClick = {
                             visible = false
                             coroutineScope.launch {
-                                kotlinx.coroutines.delay(200)
+                                delay(200)
                                 viewModel.deleteFollowedLeague(league.id)
                             }
-                        }
+                        },
+                            navController = navController
                         )
                     }
                 }
@@ -132,10 +137,11 @@ fun LeagueContent(
                         onFollowClick = {
                             visible = false
                             coroutineScope.launch {
-                                kotlinx.coroutines.delay(200)
+                                delay(200)
                                 viewModel.createFollowedLeague(league.id)
                             }
-                        }
+                        },
+                        navController = navController
                     )
                 }
             }

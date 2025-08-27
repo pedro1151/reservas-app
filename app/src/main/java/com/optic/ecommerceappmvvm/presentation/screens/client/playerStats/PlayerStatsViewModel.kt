@@ -6,9 +6,12 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +29,13 @@ class PlayerStatsViewModel @Inject constructor(
     private val _playerTeamsState =  MutableStateFlow<Resource<PlayerTeamsResponse>>(Resource.Loading)
     val playerTeamsState: StateFlow<Resource<PlayerTeamsResponse>> = _playerTeamsState
 
+    //last team
+    private val _playerLastTeamState =  MutableStateFlow<Resource<PlayerLastTeamResponse>>(Resource.Loading)
+    val playerLastTeamState : StateFlow<Resource<PlayerLastTeamResponse>> = _playerLastTeamState
+
+    // fixture para el team del jugador
+    private val _fixtureTeamsState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
+    val fixtureTeamsState : StateFlow<Resource<List<FixtureResponse>>> = _fixtureTeamsState
 
 
 
@@ -38,6 +48,7 @@ class PlayerStatsViewModel @Inject constructor(
         }
     }
 
+    //trayectoria
     fun getPlayerTeams(playerId: Int) {
         viewModelScope.launch {
             try {
@@ -46,9 +57,35 @@ class PlayerStatsViewModel @Inject constructor(
                     _playerTeamsState.value = result
                 }
             } catch (e: Exception) {
-                Log.e("PlayerScreen", "Error fetching standings", e)
+                Log.e("PlayerScreen", "Error fetching trayectoria", e)
                 _playerTeamsState.value = Resource.Failure(e.message ?: "Unknown error")
             }
         }
     }
+
+
+    //Last Team
+    fun getPlayerLastTeam(playerId: Int) {
+        viewModelScope.launch {
+            try {
+                teamUseCase.getPlayerLastTeamUC(playerId).collectLatest { result ->
+                    Log.d("PlayerScreen", "Result received last team: $result")
+                    _playerLastTeamState.value = result
+                }
+            } catch (e: Exception) {
+                Log.e("PlayerScreen", "Error fetching last team", e)
+                _playerLastTeamState.value = Resource.Failure(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    // fixture para un team
+    fun getFixtureTeam(teamId: Int) {
+        viewModelScope.launch {
+            teamUseCase.getFixtureTeamUC(teamId).collectLatest { result ->
+                _fixtureTeamsState.value = result
+            }
+        }
+    }
+
 }

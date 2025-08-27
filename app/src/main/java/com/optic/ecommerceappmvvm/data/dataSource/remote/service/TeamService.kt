@@ -10,6 +10,7 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
@@ -47,19 +48,31 @@ interface TeamService {
         @Path("player_id") playerId: Int
     ): Response<PlayerWithStats>
 
-     // Trayectoria
+     // Trayectoria de un jugador last team
+    @GET("football/players/team/{player_id}")
+    suspend fun getPlayerLastTeam(
+        @Path("player_id") playerId: Int
+    ): Response<PlayerLastTeamResponse>
+
+    // Trayectoria de un jugador,
     @GET("football/players/teams/{player_id}")
     suspend fun getPlayerTeams(
         @Path("player_id") playerId: Int
     ): Response<PlayerTeamsResponse>
 
+
    // get ligas
-   @GET("football/getLeagues")
+   @GET("football/leagues")
    suspend fun getLeagues(
        @Query("name") name: String,
        @Query("type_") type: String,
        @Query("country_name") countryName: String
    ): Response<List<League>>
+
+    @GET("football/leagues/{league_id}")
+    suspend fun getLeagueById(
+        @Path("league_id") leagueId: Int
+    ): Response<League>
 
 
 

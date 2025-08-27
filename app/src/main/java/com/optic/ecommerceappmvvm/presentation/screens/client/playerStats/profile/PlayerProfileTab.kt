@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.components
+package com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

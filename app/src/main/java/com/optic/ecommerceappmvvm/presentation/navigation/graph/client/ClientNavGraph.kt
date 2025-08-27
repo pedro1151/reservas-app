@@ -12,7 +12,8 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 import com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.PlayerStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.LeagueScreen
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen
+import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasScreen
 import com.optic.ecommerceappmvvm.presentation.screens.matches.MatchesScreen
 import com.optic.ecommerceappmvvm.presentation.screens.team.TeamScreen
@@ -35,7 +36,7 @@ fun ClientNavGraph(navController: NavHostController) {
         }
 
         composable(route = ClientScreen.Leagues.route) {
-            LeagueScreen(navController)
+            LeaguePrincipalScreen(navController)
         }
 
         composable(route = ClientScreen.Profile.route) {
@@ -62,6 +63,13 @@ fun ClientNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val fixtureId= backStackEntry.arguments?.getString("fixtureId")?.toInt() ?: 0
             FixtureDetailScreen(navController = navController, fixtureId = fixtureId)
+        }
+
+        // DETALLE DE UNA LIGA
+        composable(route = Graph.LEAGUE + "/{leagueId}"
+        ) { backStackEntry ->
+            val leagueId= backStackEntry.arguments?.getString("leagueId")?.toInt() ?: 0
+            LeagueScreen(leagueId = leagueId, navController = navController)
         }
 
 

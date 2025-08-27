@@ -11,4 +11,5 @@ object Graph {
     const val PLAYER = "player_graph"
     const val TEAM   = "team_graph"
     const val FIXTURE   = "fixture_graph"
+    const val LEAGUE   = "league_graph"
 }

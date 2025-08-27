@@ -7,6 +7,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
@@ -26,7 +27,7 @@ interface TeamRemoteDataSource {
     suspend fun getPlayers(): Response<List<Player>>
     suspend fun getPlayerStats(playerId: Int): Response<PlayerWithStats>
     suspend fun getPlayerTeams(playerId: Int): Response<PlayerTeamsResponse>
-    suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
+    suspend fun getPlayerLastTeam(playerId: Int): Response<PlayerLastTeamResponse>
 
     //PLAYER SEGUIDOS
     suspend fun createFollowedPlayer(playerId: Int): Response<FollowedPlayerResponse>
@@ -40,11 +41,12 @@ interface TeamRemoteDataSource {
     suspend fun deleteFollowedTeam(teamId: Int): Response<DefaultResponse>
 
 
-  //PARA SEGUIR LIGAS
+  //LIGAS
   suspend fun createFollowedLeague(leagueId: Int): Response<FollowedLeagueResponse>
   suspend fun getFollowedLeagues(): Response<List<League>>
   suspend fun deleteFollowedLeague(leagueId: Int): Response<DefaultResponse>
-
+  suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
+  suspend fun getLeagueById(leagueId: Int): Response<League>
 
     // FIXTURES
   //Recuperar Fixture por Id
