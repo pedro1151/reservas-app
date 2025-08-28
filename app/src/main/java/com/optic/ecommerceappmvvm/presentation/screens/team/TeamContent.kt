@@ -87,7 +87,7 @@ fun TeamContent(
                 }
                 1 -> PlaceholderTab("Formacion")
                 2 -> TeamFixture(
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier,
                     navController = navController,
                     fixtureState = fixtureState,
                     title = "Partidos",

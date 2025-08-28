@@ -21,7 +21,7 @@ fun LeagueFixture(
 ) {
 
     FixtureList(
-        modifier = Modifier.padding(paddingValues),
+        modifier = Modifier,
         navController = navController,
         fixtureState = fixtureState,
         title = "Partidos"

@@ -13,8 +13,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 
 import androidx.compose.runtime.*
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.list.FixtureList
+import com.optic.ecommerceappmvvm.presentation.screens.matches.folllowfixtures.FollowFixtureList
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 
@@ -26,10 +28,10 @@ fun MatchesScreen(navController: NavHostController) {
     val fixtureState by viewModel.fixtureTeamsState.collectAsState()
 
     // Llamamos la función cuando entra la pantalla
-    LaunchedEffect(Unit) {
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    LaunchedEffect(backStackEntry?.destination?.route) {
         viewModel.getFixtureFollowedTeams(season = 2023, date = "2023-09-17")
     }
-
 
     Scaffold(
         topBar = {
@@ -40,7 +42,7 @@ fun MatchesScreen(navController: NavHostController) {
         },
         containerColor = GreyLight
     ) { paddingValues ->
-        FixtureList(
+        FollowFixtureList(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
             fixtureState = fixtureState

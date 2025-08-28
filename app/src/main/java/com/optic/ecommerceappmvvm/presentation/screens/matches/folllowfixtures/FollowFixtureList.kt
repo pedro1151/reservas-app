@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.matches
+package com.optic.ecommerceappmvvm.presentation.screens.matches.folllowfixtures
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -11,30 +11,36 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
+import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlayerMatchesTab(
+fun FollowFixtureList(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
     fixtureState: Resource<List<FixtureResponse>>,
-    navController: NavHostController
+    title: String = "Siguiendo"
 ) {
     var expanded by remember { mutableStateOf(true) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-        //verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -51,7 +57,22 @@ fun PlayerMatchesTab(
             // .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
+            if (title == "Siguiendo") {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.IconSecondaryColor
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.primary
+                ),
+            )
         }
 
         AnimatedVisibility(
@@ -67,9 +88,9 @@ fun PlayerMatchesTab(
                 is Resource.Success -> {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                         items(fixtureState.data ?: emptyList()) { fixture ->
-                            MatchItem(
+                            FixtureItem(
                                 fixture = fixture,
-                                navController = navController
+                                navController =  navController
                             )
                         }
                     }

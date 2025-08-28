@@ -52,8 +52,8 @@ fun LeagueStandingsList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    shape = RoundedCornerShape(12.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                   // shape = RoundedCornerShape(12.dp)
                 ) {
                     LazyColumn(
                         modifier = Modifier

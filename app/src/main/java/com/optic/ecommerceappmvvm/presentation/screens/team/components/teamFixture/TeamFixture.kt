@@ -22,7 +22,7 @@ fun TeamFixture(
 ) {
 
     FixtureList(
-        modifier = Modifier.padding(paddingValues),
+        modifier = modifier,
         navController = navController,
         fixtureState = fixtureState,
         title = "Partidos"

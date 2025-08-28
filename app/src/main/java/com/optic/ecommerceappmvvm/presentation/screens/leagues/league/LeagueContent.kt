@@ -83,7 +83,7 @@ fun LeagueContent(
 
                 )
                 1 -> LeagueFixture(
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier,
                     navController = navController,
                     fixtureState  = leagueFixtureState,
                     paddingValues = paddingValues

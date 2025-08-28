@@ -39,13 +39,11 @@ fun FixtureList(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = !expanded },
+                .fillMaxWidth(),
                 /*
                 .border(
 
@@ -57,22 +55,6 @@ fun FixtureList(
                // .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (title == "Siguiendo") {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.IconSecondaryColor
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-            )
         }
 
         AnimatedVisibility(

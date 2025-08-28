@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
@@ -27,6 +28,12 @@ sealed class ClientScreen(
         route = "client/matches",
         title = "Matches",
         icon = Icons.Default.Share
+    )
+
+    object Games: ClientScreen(
+        route = "client/games",
+        title = "Games",
+        icon = Icons.Default.PlayArrow
     )
 
     object Profile: ClientScreen(
