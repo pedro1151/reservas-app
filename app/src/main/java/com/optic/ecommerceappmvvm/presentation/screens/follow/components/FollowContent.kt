@@ -11,14 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.player.Player
-import com.optic.ecommerceappmvvm.presentation.screens.client.Teams.list.components.TeamListContent
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.optic.ecommerceappmvvm.presentation.screens.client.players.list.components.PlayerListContent
-import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.followedPlayer.FollowedPlayerContent
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.followedTeam.FollowedTeamContent
 

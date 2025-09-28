@@ -5,6 +5,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.datastore.AuthDatastore
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.AuthService
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.ExternalService
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.TeamService
+import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,6 +70,24 @@ object NetworkModule {
             .build()
 
 
+    // --- Retrofit para Trivias
+    @Provides
+    @Singleton
+    @Named("trivias")
+    fun provideTriviasRetrofit(okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(Config.BASE_URL_TRIVIAS)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+
+
+
+
+
+
+
     // -- Services para Auth
     @Provides
     @Singleton
@@ -88,4 +107,10 @@ object NetworkModule {
     fun provideExternalService(@Named("external") retrofit: Retrofit): ExternalService =
         retrofit.create(ExternalService::class.java)
 
+
+    // -- Services para Trivias
+    @Provides
+    @Singleton
+    fun provideTriviasService(@Named("trivias") retrofit: Retrofit): TriviasService =
+        retrofit.create(TriviasService::class.java)
 }

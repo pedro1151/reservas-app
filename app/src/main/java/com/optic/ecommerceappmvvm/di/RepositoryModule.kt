@@ -5,11 +5,14 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.AuthLocalDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.AuthRemoteDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.TeamRemoteDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.external.ExternalRemoteDataSource
+import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasRemoteDataSource
 import com.optic.ecommerceappmvvm.data.repository.ExternalRepositoryImpl
 import com.optic.ecommerceappmvvm.data.repository.TeamRepositoryImpl
+import com.optic.ecommerceappmvvm.data.repository.TriviasRepositoryImpl
 import com.optic.ecommerceappmvvm.domain.repository.AuthRepository
 import com.optic.ecommerceappmvvm.domain.repository.ExternalRepository
 import com.optic.ecommerceappmvvm.domain.repository.TeamRepository
+import com.optic.ecommerceappmvvm.domain.repository.TriviasRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,6 +40,12 @@ object RepositoryModule {
     fun provideExternalRepository(
         externalRemoteDataSource: ExternalRemoteDataSource,
     ): ExternalRepository = ExternalRepositoryImpl(externalRemoteDataSource)
+
+
+    @Provides
+    fun provideTriviasRepository(
+        triviasRemoteDataSource: TriviasRemoteDataSource
+    ): TriviasRepository = TriviasRepositoryImpl(triviasRemoteDataSource)
 
 
 

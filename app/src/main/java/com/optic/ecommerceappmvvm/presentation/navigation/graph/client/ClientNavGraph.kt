@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.profile.ProfileNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
-import com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.PlayerStatsScreen
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.PlayerStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen

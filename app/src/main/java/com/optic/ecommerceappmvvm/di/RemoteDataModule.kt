@@ -9,6 +9,9 @@ import com.optic.ecommerceappmvvm.data.dataSource.remote.service.ExternalService
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.TeamService
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.external.ExternalRemoteDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.external.ExternalRemoteDataSourceImpl
+import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasRemoteDataSource
+import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasRemoteDataSourceImpl
+import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +29,11 @@ object RemoteDataModule {
 
     @Provides
     fun provideExternalRemoteDataSource(externalService: ExternalService): ExternalRemoteDataSource = ExternalRemoteDataSourceImpl(externalService)
+
+    @Provides
+    fun provideTriviasRemoteDataSource(triviasService: TriviasService): TriviasRemoteDataSource = TriviasRemoteDataSourceImpl(triviasService)
+
+
 
 
 

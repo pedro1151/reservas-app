@@ -32,6 +32,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        // 🔹 Necesario para LocalDate en minSdk < 26
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -54,8 +56,7 @@ android {
 }
 
 dependencies {
-
-    // BOM para Jetpack Compose (incluye todas las libs androidx.compose)
+    // BOM para Jetpack Compose (alinea todas las versiones)
     implementation platform("androidx.compose:compose-bom:2024.05.00")
 
     // Core
@@ -63,11 +64,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
     implementation 'androidx.activity:activity-compose:1.9.0'
 
-    // Compose UI + Material 3 (sin versiones, usa BOM)
+    // Compose UI + Material 3
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-tooling-preview"
-   // implementation "androidx.compose.material3:material3"
-    implementation "androidx.compose.material3:material3:1.2.1"
+    implementation "androidx.compose.material3:material3"
+
+    // 🔹 Iconos (necesarios para Outlined.*)
+    implementation "androidx.compose.material:material-icons-core"
+    implementation "androidx.compose.material:material-icons-extended"
 
     // Navigation Compose
     implementation "androidx.navigation:navigation-compose:2.7.7"
@@ -107,11 +111,15 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    // Compose Testing (usando BOM para versión)
+    // Compose Testing
     androidTestImplementation platform("androidx.compose:compose-bom:2024.05.00")
     androidTestImplementation "androidx.compose.ui:ui-test-junit4"
     debugImplementation "androidx.compose.ui:ui-tooling"
     debugImplementation "androidx.compose.ui:ui-test-manifest"
+
+// 🔹 Desugaring: permite usar APIs modernas de Java (ej. java.time.LocalDate)
+//    en dispositivos con Android < 26 (minSdk 23 en este proyecto).
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
 }
 
 kapt {

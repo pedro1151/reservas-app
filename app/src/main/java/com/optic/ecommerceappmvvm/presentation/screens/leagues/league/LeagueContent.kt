@@ -12,16 +12,14 @@ import androidx.compose.ui.unit.dp
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
-import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
-import com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.components.PlaceholderTab
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.header.LeagueHeader
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.leaguematches.LeagueFixture
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.standings.LeagueStandingsList
-import com.optic.ecommerceappmvvm.presentation.screens.team.components.teamFixture.TeamFixture
 
 import kotlinx.coroutines.launch
 

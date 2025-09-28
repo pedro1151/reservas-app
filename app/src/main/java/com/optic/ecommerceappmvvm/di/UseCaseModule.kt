@@ -3,6 +3,7 @@ package com.optic.ecommerceappmvvm.di
 import com.optic.ecommerceappmvvm.domain.repository.AuthRepository
 import com.optic.ecommerceappmvvm.domain.repository.ExternalRepository
 import com.optic.ecommerceappmvvm.domain.repository.TeamRepository
+import com.optic.ecommerceappmvvm.domain.repository.TriviasRepository
 import com.optic.ecommerceappmvvm.domain.useCase.auth.*
 import com.optic.ecommerceappmvvm.domain.useCase.external.ExternalUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.external.LoginGoogleUseCase
@@ -32,6 +33,8 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetLeagueByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.standings.GetLeagueStandingsUC
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetSimilarPlayers
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -90,6 +93,13 @@ object UseCaseModule {
     fun provideExternalUseCase(externalRepository: ExternalRepository) = ExternalUseCase(
         login = LoginGoogleUseCase(externalRepository)
     )
+
+
+    @Provides
+    fun provideTriviaslUseCase(triviasRepository: TriviasRepository) = TriviasUseCase(
+        getSimilarPlayers =  GetSimilarPlayers(triviasRepository)
+    )
+
 
 
 

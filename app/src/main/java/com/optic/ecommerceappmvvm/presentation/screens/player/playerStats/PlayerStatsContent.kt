@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail
+package com.optic.ecommerceappmvvm.presentation.screens.player.playerStats
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,26 +9,34 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
-import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
-import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.FixtureDetailHeader
-import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.facetoface.VersusFixtureContent
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
+import com.optic.ecommerceappmvvm.domain.util.Resource
 
-import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.standings.LeagueStandingsList
-
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlayerHeader
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.profile.PlayerProfileTab
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.statistics.PlayerStatsContentTab
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.matches.PlayerMatchesTab
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.trayectoria.PlayerTrayectoryTab
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalFoundationApi
 @Composable
-fun FixtureDetailContent(
+fun PlayerStatsContent(
     paddingValues: PaddingValues,
-    fixture: FixtureResponse,
-    navController: NavHostController
+    playerStats: PlayerWithStats,
+    navController: NavHostController,
+    playerTeamsState: Resource<PlayerTeamsResponse>,
+    fixtureTeamState: Resource<List<FixtureResponse>>,
+    lastTeam : Resource<PlayerLastTeamResponse>
 ) {
-    val tabTitles = listOf("Resumen", "Alineacion", "Clasificacion",  "Cara a Cara")
+    val tabTitles = listOf("Perfil", "Estadísticas", "Partidos", "Trayectoria")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -38,19 +46,19 @@ fun FixtureDetailContent(
             .padding(paddingValues)
 
     ) {
-        FixtureDetailHeader(fixture, paddingValues)
+        PlayerHeader(playerStats, paddingValues, lastTeam)
 
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.primary,
             edgePadding = 16.dp
-        ) {
+        ){
             tabTitles.forEachIndexed { index, title ->
                 Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
-                        coroutineScope.launch {
+                        coroutineScope.launch{
                             pagerState.animateScrollToPage(index)
                         }
                     },
@@ -69,30 +77,29 @@ fun FixtureDetailContent(
             modifier = Modifier.fillMaxSize()
         ) { page ->
             when (page) {
-                0 -> PlaceholderTab("Formacion")
-                1 -> PlaceholderTab("Formacion")
+                0 -> {
+                    PlayerProfileTab(playerStats)
+                }
+                1 -> {
+                    PlayerStatsContentTab(paddingValues = PaddingValues(8.dp), playerStats = playerStats)
+                }
                 2 -> {
-                    fixture.league?.let { league ->
-                        fixture.leagueSeason?.let {
-                            LeagueStandingsList(
-                                paddingValues = paddingValues,
-                                league = league,
-                                season = it,
-                                teamHome = fixture.teamHome,
-                                teamAway = fixture.teamAway
-                            )
-                        }
-                    } ?: PlaceholderTab("Liga no disponible")
+                    PlayerMatchesTab(
+                        fixtureState = fixtureTeamState,
+                        navController = navController
+                    )
                 }
                 3 -> {
-                    VersusFixtureContent(
-                        modifier = Modifier,
-                        navController = navController,
-                        fixture =  fixture,
-                        paddingValues = paddingValues
-                    )
+                        PlayerTrayectoryTab(
+                            paddingValues = paddingValues,
+                            state = playerTeamsState
+                        )
                 }
             }
         }
     }
 }
+
+
+
+

@@ -17,7 +17,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
-import com.optic.ecommerceappmvvm.presentation.screens.client.playerStats.components.PlaceholderTab
+import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.TeamHeader
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.resume.ResumeContent
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.teamFixture.TeamFixture

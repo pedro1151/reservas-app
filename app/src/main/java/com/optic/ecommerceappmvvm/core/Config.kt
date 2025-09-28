@@ -9,6 +9,9 @@ object Config {
     const val BASE_URL_TEAMS = "http://10.0.2.2:8004/"
 
     const val BASE_URL_EXTERNAL_SERVICES = "http://10.0.2.2:8002/"
+
+    const val BASE_URL_TRIVIAS = "http://10.0.2.2:8003/"
+
     const val AUTH_PREFERENCE = "AUTH_PREF"
     const val AUTH_KEY = "AUTH_KEY"
 
