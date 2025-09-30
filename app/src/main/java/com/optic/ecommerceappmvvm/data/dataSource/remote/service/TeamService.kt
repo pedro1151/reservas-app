@@ -119,6 +119,11 @@ interface TeamService {
         @Query("season") season: Int
     ): Response<List<FixtureResponse>>
 
+    // FIXTURE POR PAIS ( MEDIANTE LA IP DE DONDE SE CONECTAN)
+    @GET("football/fixtures/country")
+    suspend fun getContryFixtures(
+    ): Response<List<FixtureResponse>>
+
     // FIXTURE , RECUPERAR POR ID
     @GET("football/fixtures/{id}")
     suspend fun getFixtureById(

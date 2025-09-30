@@ -99,6 +99,7 @@ class TeamRepositoryImpl(
         )
     }
 
+
     override suspend fun getFollowedPlayers(): Flow<Resource<List<Player>>>  = flow{
         emit(
             ResponseToRequest.send(
@@ -174,6 +175,14 @@ class TeamRepositoryImpl(
     }
 
     //FIXTURES
+
+    override suspend fun getCountryFixtures(): Flow<Resource<List<FixtureResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getCountryFixtures()
+            )
+        )
+    }
     override suspend fun getFixtureById(id: Int): Flow<Resource<FixtureResponse>> = flow{
         emit(
             ResponseToRequest.send(

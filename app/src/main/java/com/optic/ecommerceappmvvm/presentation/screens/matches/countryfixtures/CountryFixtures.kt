@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.matches.folllowfixtures
+package com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,11 +28,11 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FollowFixtureList(
+fun CountryFixtures(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     fixtureState: Resource<List<FixtureResponse>>,
-    title: String = "Siguiendo"
+    title: String = "Locales"
 ) {
     var expanded by remember { mutableStateOf(true) }
 
@@ -48,14 +49,13 @@ fun FollowFixtureList(
                 .clickable { expanded = !expanded },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (title == "Siguiendo") {
-                Icon(
-                    imageVector = Icons.Default.Star,
+
+            Icon(
+                    imageVector = Icons.Default.AccountBalance,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.IconSecondaryColor
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+            )
+
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = title,

@@ -1,6 +1,5 @@
 package com.optic.ecommerceappmvvm.presentation.screens.matches.datetopbar
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,22 +9,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
-import java.time.format.TextStyle
 import java.util.Locale
-import android.os.Build
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import java.time.format.DateTimeFormatter
-
-
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.launch
 
 @Composable
 fun MatchesDateTopBar(
@@ -37,10 +33,18 @@ fun MatchesDateTopBar(
 
     var selectedDate by remember { mutableStateOf(today) }
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
-    // Scroll animado hasta "hoy"
+    // 📏 Medidas de pantalla
+    val screenWidthPx = with(LocalDensity.current) {
+        LocalConfiguration.current.screenWidthDp.dp.toPx()
+    }
+    val itemWidthPx = 120f // estimación del ancho de cada item
+    val centerOffset = (screenWidthPx / 2 - itemWidthPx / 2).toInt()
+
+    // Scroll inicial centrando "hoy"
     LaunchedEffect(Unit) {
-        listState.animateScrollToItem(10)
+        listState.scrollToItem(index = 10, scrollOffset = -centerOffset)
     }
 
     Column(
@@ -56,7 +60,7 @@ fun MatchesDateTopBar(
             contentPadding = PaddingValues(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            itemsIndexed(daysRange) { _, date ->
+            itemsIndexed(daysRange) { index, date ->
                 val isSelected = date == selectedDate
                 val label = getDateLabel(date, today)
 
@@ -65,6 +69,13 @@ fun MatchesDateTopBar(
                         .clickable {
                             selectedDate = date
                             onDateSelected(date)
+                            // animar para centrar fecha seleccionada
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(
+                                    index = index,
+                                    scrollOffset = -centerOffset
+                                )
+                            }
                         }
                         .padding(vertical = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -94,7 +105,6 @@ fun MatchesDateTopBar(
     }
 }
 
-
 fun getDateLabel(date: LocalDate, today: LocalDate): String {
     val formatterDay = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
     val formatterMonth = DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
@@ -104,40 +114,5 @@ fun getDateLabel(date: LocalDate, today: LocalDate): String {
         date == today -> "hoy"
         date == today.plusDays(1) -> "mañana"
         else -> "${date.format(formatterDay)} ${date.format(formatterMonth)}"
-    }.replaceFirstChar { it.uppercaseChar() } // primera letra en mayúscula
-}
-
-
-@Composable
-fun DateChip(
-    label: String,
-    subLabel: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .width(60.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-        tonalElevation = if (selected) 4.dp else 0.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = subLabel,
-                style = MaterialTheme.typography.labelSmall,
-                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+    }.replaceFirstChar { it.uppercaseChar() }
 }
