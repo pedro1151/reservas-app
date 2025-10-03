@@ -14,7 +14,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.screens.games.list.GameList
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueViewModel
 
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
@@ -24,28 +26,23 @@ import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.standings.
 
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
-@ExperimentalFoundationApi
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GamesPrincipalContent(
     paddingValues: PaddingValues,
-    league: LeagueCompleteResponse,
     navController: NavHostController,
-    viewModel: LeagueViewModel,
-    leagueFixtureState: Resource<List<FixtureResponse>>
+    gameState: Resource<List<GameResponse>>
 ) {
-    val tabTitles = listOf("Categoria 1", "Categoria 2","Categoria 3")
+    val tabTitles = listOf("Categoria 1", "Categoria 2", "Categoria 3")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-
     ) {
-        LeagueHeader(league, paddingValues)
-
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -75,7 +72,10 @@ fun GamesPrincipalContent(
             modifier = Modifier.fillMaxSize()
         ) { page ->
             when (page) {
-                0 -> PlaceholderTab("Categoria 1")
+                0 -> GameList(
+                    games = gameState,
+                    navController = navController
+                )
                 1 -> PlaceholderTab("Categoria 2")
                 2 -> PlaceholderTab("Categoria 3")
             }

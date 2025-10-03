@@ -3,83 +3,103 @@ package com.optic.ecommerceappmvvm.presentation.screens.games
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
-import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
-import com.optic.ecommerceappmvvm.presentation.components.DefaultTopBar
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
-
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueContent
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueViewModel
-import com.optic.ecommerceappmvvm.presentation.screens.team.TeamContent
-import com.optic.ecommerceappmvvm.presentation.screens.team.TeamViewModel
-
-// 👉 Helper fuera del composable
-fun LeagueCompleteResponse.getLatestSeasonYear(): Int? {
-    return this.seasons
-        .maxByOrNull { it.year }  // Busca la season con el año más alto
-        ?.year
-}
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GamesPrincipalScreen(
     navController: NavHostController
+) {
+    val viewModel: GameViewModel = hiltViewModel()
+    val gameState by viewModel.gameState.collectAsState()
 
-)
-{
-    val viewModel: LeagueViewModel = hiltViewModel()
-
-    val leagueState by viewModel.leagueState.collectAsState()
-    val leagueFixtureState by viewModel.fixtureLeagueState.collectAsState()
-
-    // Llamar a la función solo una vez al inicio
-    /*
-    LaunchedEffect(leagueId) {
-        viewModel.getLeagueFixture(leagueId)
-
+    // Dispara la carga de juegos al entrar
+    LaunchedEffect(Unit) {
+        viewModel.getGames()
     }
-
-     */
-
 
     Scaffold(
         topBar = {
             PrimaryTopBar(
                 title = "Games",
-                navController=navController
+                navController = navController
             )
         }
     ) { paddingValues ->
-        when (leagueState) {
-            is Resource.Loading -> {
-                ProgressBar()
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            when (gameState) {
+                is Resource.Loading -> {
+                    ProgressBar()
+                }
 
-            is Resource.Success -> {
-                val data = (leagueState as Resource.Success).data
-                GamesPrincipalContent(
-                    paddingValues = paddingValues,
-                    league = data,
-                    navController,
-                    viewModel,
-                    leagueFixtureState = leagueFixtureState
-                )
-            }
+                is Resource.Success -> {
+                    val data = (gameState as Resource.Success).data
+                    if (data.isNullOrEmpty()) {
+                        // Estado vacío
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "No hay juegos disponibles",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(onClick = { viewModel.getGames() }) {
+                                Text("Reintentar")
+                            }
+                        }
+                    } else {
+                        // Renderiza el contenido
+                        GamesPrincipalContent(
+                            paddingValues = paddingValues,
+                            navController = navController,
+                            gameState = gameState
+                        )
+                    }
+                }
 
-            is Resource.Failure -> {
-                // mostrar error: result.message
+                is Resource.Failure -> {
+                    val message = (gameState as Resource.Failure).message
+                        ?: "Error desconocido al cargar los juegos"
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(onClick = { viewModel.getGames() }) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
             }
         }
-
     }
 }

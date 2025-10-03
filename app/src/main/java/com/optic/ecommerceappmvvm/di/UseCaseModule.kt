@@ -35,6 +35,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetLeagueByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.standings.GetLeagueStandingsUC
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetGamesUC
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetSimilarPlayers
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
 import dagger.Module
@@ -101,7 +102,8 @@ object UseCaseModule {
 
     @Provides
     fun provideTriviaslUseCase(triviasRepository: TriviasRepository) = TriviasUseCase(
-        getSimilarPlayers =  GetSimilarPlayers(triviasRepository)
+        getSimilarPlayers =  GetSimilarPlayers(triviasRepository),
+        getGamesUC = GetGamesUC(triviasRepository)
     )
 
 
