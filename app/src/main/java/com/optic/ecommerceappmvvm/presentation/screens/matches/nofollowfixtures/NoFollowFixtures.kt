@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures
+package com.optic.ecommerceappmvvm.presentation.screens.matches.nofollowfixtures
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -29,11 +29,11 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CountryFixtures(
+fun NoFollowFixtures(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     fixtureState: Resource<List<FixtureResponse>>,
-    title: String = "Locales"
+    title: String = "No seguidos"
 ) {
     var expanded by remember { mutableStateOf(true) }
 
@@ -53,9 +53,9 @@ fun CountryFixtures(
         ) {
 
             Icon(
-                    imageVector = Icons.Default.AccountBalance,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.IconSecondaryColor
+                imageVector = Icons.Default.AccountBalance,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.IconSecondaryColor
             )
 
             Spacer(modifier = Modifier.width(8.dp))

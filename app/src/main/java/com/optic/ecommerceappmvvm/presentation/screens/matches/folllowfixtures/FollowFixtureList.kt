@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -46,7 +47,8 @@ fun FollowFixtureList(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expanded = !expanded },
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center  // 👈 centra los elementos en la fila
         ) {
             if (title == "Siguiendo") {
                 Icon(
@@ -61,7 +63,8 @@ fun FollowFixtureList(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,   // 👈 centrado
                 ),
             )
         }
@@ -77,15 +80,28 @@ fun FollowFixtureList(
                 }
 
                 is Resource.Success -> {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(1.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        (fixtureState.data ?: emptyList()).forEach { fixture ->
-                            FixtureItem(
-                                fixture = fixture,
-                                navController = navController
-                            )
+                    val fixtures = fixtureState.data ?: emptyList()
+                    if (fixtures.isEmpty()) {
+                        Text(
+                            text = "No hay partidos para la fecha.",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center
+                            ),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                        )
+                    } else {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(1.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            fixtures.forEach { fixture ->
+                                FixtureItem(
+                                    fixture = fixture,
+                                    navController = navController
+                                )
+                            }
                         }
                     }
                 }

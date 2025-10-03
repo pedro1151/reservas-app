@@ -12,6 +12,7 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.PlayerStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.GamesPrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasScreen
@@ -45,6 +46,9 @@ fun ClientNavGraph(navController: NavHostController) {
 
         composable(route = ClientScreen.Mas.route) {
             MasScreen(navController)
+        }
+        composable(route = ClientScreen.Games.route) {
+            GamesPrincipalScreen(navController)
         }
 
         composable(route = Graph.PLAYER + "/{playerId}"

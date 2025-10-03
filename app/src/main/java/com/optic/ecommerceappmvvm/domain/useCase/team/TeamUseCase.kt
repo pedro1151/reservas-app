@@ -7,6 +7,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureFollowed
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNextFixtureTeamUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNoFollowFixturesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetTopFiveFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetVersusFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.CreateFollowedLeagueUC
@@ -44,6 +45,7 @@ data class TeamUseCase(
     // matches ( FIxture)
     val getCountryFixturesUC: GetCountryFixturesUC,
     val getFixtureFollowedTeamsUC : GetFixtureFollowedTeamsUC,
+    val getNoFollowFixturesUC: GetNoFollowFixturesUC,
     val getFixtureTeamUC : GetFixtureTeamUC,
     val getNextFixtureTeamUC : GetNextFixtureTeamUC,
     val getTopFiveFixtureTeamUC : GetTopFiveFixtureTeamUC,

@@ -122,6 +122,8 @@ interface TeamService {
     // FIXTURE POR PAIS ( MEDIANTE LA IP DE DONDE SE CONECTAN)
     @GET("football/fixtures/country")
     suspend fun getContryFixtures(
+        @Query("season") season: Int,
+        @Query("date") date: String
     ): Response<List<FixtureResponse>>
 
     // FIXTURE , RECUPERAR POR ID
@@ -134,6 +136,15 @@ interface TeamService {
 
     @GET("football/getFixtureFollowedTeams")
     suspend fun getFixtureFollowedTeams(
+        @Query("season") season: Int,
+        @Query("date") date: String
+    ): Response<List<FixtureResponse>>
+
+
+    // MATCHES ( FIXTURES ) de equipos no seguidos
+
+    @GET("football/fixtures/nofollow")
+    suspend fun getNoFollowFixtures(
         @Query("season") season: Int,
         @Query("date") date: String
     ): Response<List<FixtureResponse>>

@@ -176,10 +176,10 @@ class TeamRepositoryImpl(
 
     //FIXTURES
 
-    override suspend fun getCountryFixtures(): Flow<Resource<List<FixtureResponse>>> = flow{
+    override suspend fun getCountryFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>> = flow{
         emit(
             ResponseToRequest.send(
-                teamRemoteDataSource.getCountryFixtures()
+                teamRemoteDataSource.getCountryFixtures(season, date)
             )
         )
     }
@@ -200,6 +200,17 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getFixtureFollowedTeams(season, date)
+            )
+        )
+    }
+
+    override suspend fun getNoFollowFixtures(
+        season: Int,
+        date: String
+    ): Flow<Resource<List<FixtureResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getNoFollowFixtures(season, date)
             )
         )
     }

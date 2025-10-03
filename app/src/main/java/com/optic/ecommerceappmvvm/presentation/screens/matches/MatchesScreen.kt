@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures.CountryFixtures
+import com.optic.ecommerceappmvvm.presentation.screens.matches.nofollowfixtures.NoFollowFixtures
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
@@ -33,6 +34,8 @@ import com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures.C
 fun MatchesScreen(navController: NavHostController) {
     val viewModel: MatchesViewModel = hiltViewModel()
     val fixtureState by viewModel.fixtureTeamsState.collectAsState()
+    val fixtureStateCountry by viewModel.fixtureCountryState.collectAsState()
+    val fixtureStateNoFollow by viewModel.fixturesNoFollow.collectAsState()
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val fakeToday = LocalDate.of(2023, 9, 17)
@@ -49,6 +52,22 @@ fun MatchesScreen(navController: NavHostController) {
         )
     }
 
+    // cargar datos iniciales no follow
+    LaunchedEffect(backStackEntry?.destination?.route) {
+        viewModel.getNoFixtureFollowedTeams(
+            season = 2023,
+            date = fakeToday.toString()
+        )
+    }
+
+    // cargar datos iniciales
+    LaunchedEffect(backStackEntry?.destination?.route) {
+        viewModel.getFixturesByCountry(
+            season = 2023,
+            date = fakeToday.toString()
+        )
+    }
+
     Scaffold(
         topBar = {
             Column {
@@ -60,6 +79,16 @@ fun MatchesScreen(navController: NavHostController) {
                     previousDate = selectedDate
                     selectedDate = newDate
                     viewModel.getFixtureFollowedTeams(
+                        season = 2023,
+                        date = newDate.toString()
+                    )
+
+                    viewModel.getNoFixtureFollowedTeams(
+                        season = 2023,
+                        date = newDate.toString()
+                    )
+
+                    viewModel.getFixturesByCountry(
                         season = 2023,
                         date = newDate.toString()
                     )
@@ -108,9 +137,16 @@ fun MatchesScreen(navController: NavHostController) {
                 }
 
                 item {
+                    NoFollowFixtures(
+                        navController = navController,
+                        fixtureState = fixtureStateNoFollow
+                    )
+                }
+
+                item {
                     CountryFixtures(
                         navController = navController,
-                        fixtureState = fixtureState,
+                        fixtureState = fixtureStateCountry,
                         modifier = Modifier.fillParentMaxHeight() // 👈 ocupa todo el resto
                     )
                 }

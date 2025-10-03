@@ -29,7 +29,7 @@ fun MatchesDateTopBar(
     onDateSelected: (LocalDate) -> Unit
 ) {
     val today = remember { LocalDate.of(2023, 9, 17) } // HARDCODE: hoy
-    val daysRange = remember { (-10..10).map { today.plusDays(it.toLong()) } }
+    val daysRange = remember { (-30..30).map { today.plusDays(it.toLong()) } }
 
     var selectedDate by remember { mutableStateOf(today) }
     val listState = rememberLazyListState()
@@ -44,7 +44,7 @@ fun MatchesDateTopBar(
 
     // Scroll inicial centrando "hoy"
     LaunchedEffect(Unit) {
-        listState.scrollToItem(index = 10, scrollOffset = -centerOffset)
+        listState.scrollToItem(index = 30, scrollOffset = -centerOffset)
     }
 
     Column(
