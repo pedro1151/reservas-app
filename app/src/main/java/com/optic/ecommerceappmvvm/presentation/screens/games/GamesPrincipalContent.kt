@@ -1,29 +1,18 @@
 package com.optic.ecommerceappmvvm.presentation.screens.games
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
-import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
-import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.screens.games.list.GameList
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueViewModel
-
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.header.LeagueHeader
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.leaguematches.LeagueFixture
-import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.standings.LeagueStandingsList
-
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,13 +30,13 @@ fun GamesPrincipalContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
+          //  .padding(paddingValues)
     ) {
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.primary,
-            edgePadding = 16.dp
+           // edgePadding = 16.dp
         ) {
             tabTitles.forEachIndexed { index, title ->
                 Tab(

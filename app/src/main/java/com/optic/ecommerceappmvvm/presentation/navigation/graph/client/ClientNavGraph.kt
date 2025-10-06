@@ -13,6 +13,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.Player
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.GamesPrincipalScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.choicedificulty.ChoiceDificultyScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasScreen
@@ -74,6 +75,14 @@ fun ClientNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val leagueId= backStackEntry.arguments?.getString("leagueId")?.toInt() ?: 0
             LeagueScreen(leagueId = leagueId, navController = navController)
+        }
+
+        //games
+
+        composable(route = Graph.GAME + "/{gameCode}"
+        ) { backStackEntry ->
+            val gameCode = backStackEntry.arguments?.getString("gameCode")?.toString() ?: "ADIVJUG"
+            ChoiceDificultyScreen(navController = navController, gameCode = gameCode)
         }
 
 

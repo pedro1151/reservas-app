@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.util.Log
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
+import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
 
 @HiltViewModel
@@ -22,6 +23,9 @@ class GameViewModel @Inject constructor(
 
     private val _gameState = MutableStateFlow<Resource<List<GameResponse>>>(Resource.Loading)
     val gameState: StateFlow<Resource<List<GameResponse>>> = _gameState
+
+    private val _dificultyState = MutableStateFlow<Resource<List<GameDificulty>>>(Resource.Loading)
+    val dificultyState : StateFlow<Resource<List<GameDificulty>>> = _dificultyState
 
     companion object {
         private const val TAG = "GameViewModel"
@@ -35,4 +39,13 @@ class GameViewModel @Inject constructor(
             }
         }
     }
+    fun getDificultys() {
+        viewModelScope.launch {
+            triviasUseCase.getDificultysUC().collect { result ->
+                Log.d(TAG, "getDificultys() -> result = $result")
+                _dificultyState.value = result
+            }
+        }
+    }
+
 }

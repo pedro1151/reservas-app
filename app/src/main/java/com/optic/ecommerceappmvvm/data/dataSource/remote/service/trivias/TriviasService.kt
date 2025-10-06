@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias
 
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
+import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
 import retrofit2.Response
 import retrofit2.http.GET
 
@@ -17,6 +18,13 @@ interface TriviasService {
         @GET("trivias/game/list")
         suspend fun getGames(
         ): Response<List<GameResponse>>
+
+        // dificultades
+        @GET("trivias/game/dificulty")
+        suspend fun getDificultys(
+        ): Response<List<GameDificulty>>
+
+
 
 
 }

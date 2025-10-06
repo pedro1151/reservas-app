@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.presentation.components
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -15,8 +16,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DefaultButton(
-    modifier: Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(), // ahora por defecto ocupa todo el ancho
     text: String,
+    enabled : Boolean = true,
     onClick: () -> Unit,
     color: Color = Color(0xFF2196F3), // Puedes usar Blue500 o definir aquí
     //icon: ImageVector = Icons.Default.ArrowForward
@@ -24,6 +26,7 @@ fun DefaultButton(
     Button(
         modifier = modifier,
         onClick = onClick,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = color
         ) ,

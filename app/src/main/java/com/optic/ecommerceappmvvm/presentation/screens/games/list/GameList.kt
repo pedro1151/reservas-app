@@ -98,7 +98,7 @@ fun GameList(
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(16.dp))
                                     .clickable {
-                                        navController.navigate("${Graph.TEAM}/${game.id}")
+                                        navController.navigate("${Graph.GAME}/${game.code}")
                                     },
                                 shape = RoundedCornerShape(16.dp)
                             ) {
@@ -109,44 +109,29 @@ fun GameList(
                                         .padding(12.dp)
                                 ) {
                                     Column(
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Top,
+                                        horizontalAlignment = Alignment.CenterHorizontally // 🔹 eje X
                                     ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.Top
-                                        ) {
-                                            // 🔹 Por ahora no tienes logo en Game, así que solo placeholder
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .clip(CircleShape)
-                                                    .background(Color.White.copy(alpha = 0.2f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = game.code.take(2).uppercase(),
-                                                    color = Color.White
-                                                )
-                                            }
+                                        // 🔹 Logo en la parte superior izquierda
+                                        AsyncImage(
+                                            model = game.logo, // url del logo
+                                            contentDescription = "Logo del juego",
+                                            modifier = Modifier
+                                                .size(70.dp)
+                                                .clip(CircleShape)
+                                                .background(Color.White.copy(alpha = 0.2f))
+                                        )
 
-                                            UnFollowButton(
-                                                onClick = { onUnFollowClick(game.id) }
-                                            )
-                                        }
+                                        Spacer(modifier = Modifier.height(12.dp))
 
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        // 🔹 Nombre del juego
+                                        Text(
+                                            text = game.name,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color.White
+                                        )
 
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = game.name,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = Color.White
-                                            )
-                                        }
                                     }
                                 }
                             }

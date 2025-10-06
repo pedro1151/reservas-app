@@ -27,7 +27,8 @@ fun ClientHomeScreen(navController: NavHostController = rememberNavController())
         ClientScreen.Leagues.route,
         ClientScreen.Mas.route,
         ClientScreen.Profile.route,
-        ClientScreen.Follow.route
+        ClientScreen.Follow.route,
+        ClientScreen.Games.route
     )
 
     val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes

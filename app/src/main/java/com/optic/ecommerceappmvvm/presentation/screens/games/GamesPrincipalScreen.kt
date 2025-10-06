@@ -41,8 +41,8 @@ fun GamesPrincipalScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .padding(paddingValues)
+           // contentAlignment = Alignment.Center
         ) {
             when (gameState) {
                 is Resource.Loading -> {

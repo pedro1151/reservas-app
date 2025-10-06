@@ -7,5 +7,7 @@ data class GameResponse(
     @SerializedName("name") val name: String,
     @SerializedName("code") val code: String,
     @SerializedName("category") val category: String?,
+    @SerializedName("dificulty") val dificulty: String,
+    @SerializedName("logo") val logo: String?,
     @SerializedName("description") val description: String?
 )
