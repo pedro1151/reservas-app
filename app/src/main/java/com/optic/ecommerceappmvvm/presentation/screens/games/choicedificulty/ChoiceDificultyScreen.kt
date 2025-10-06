@@ -38,7 +38,7 @@ fun ChoiceDificultyScreen(
         topBar = {
             BackTopBar(
                 navController = navController,
-                title = "Seleccionar dificultad"
+                title = "Seleccionar Dificultad"
             )
         }
     ) { paddingValues ->

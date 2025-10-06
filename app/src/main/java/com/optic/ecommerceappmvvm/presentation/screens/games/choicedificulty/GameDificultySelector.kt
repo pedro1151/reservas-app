@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -78,7 +80,8 @@ fun GameDificultySelector(
                             Text(
                                 text = difficulty.code,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White
+                                color = if (isSelected ) buttonColor
+                                        else Color.White
                             )
                             Text(
                                 text = "${difficulty.points} pts",
@@ -110,10 +113,11 @@ fun GameDificultySelector(
         Spacer(modifier = Modifier.height(24.dp))
 
         DefaultButton(
-            text = "Continuar",
+            text = "CONTINUAR",
             enabled = selected != null,
             onClick = { /* acción */ },
-            color = buttonColor
+            color = buttonColor,
+            icon = Icons.Filled.ArrowForward
         )
     }
 }

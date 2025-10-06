@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenLima
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,7 @@ fun BackTopBar(
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = "Volver",
-                    tint = MaterialTheme.colorScheme.onPrimary // Ícono blanco si fondo es primario
+                    tint = MaterialTheme.colorScheme.getGreenLima // MaterialTheme.colorScheme.onPrimary // Ícono blanco si fondo es primario
                 )
             }
         },
