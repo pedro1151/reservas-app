@@ -13,4 +13,6 @@ object Graph {
     const val FIXTURE   = "fixture_graph"
     const val LEAGUE   = "league_graph"
     const val GAME   = "game_graph"
+    const val GAME_DIFICULTY   = "gamediff_graph"
+    const val GUESSPLAYER_WIN   = "guessplayer_win_graph"
 }

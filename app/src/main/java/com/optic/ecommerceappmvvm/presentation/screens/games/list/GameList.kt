@@ -38,15 +38,15 @@ fun GameList(
     val colors = listOf(
         Color(0xFFBB86FC),
         Color(0xFF03DAC5),
-        Color(0xFFFFB74D),
-        Color(0xFF4CAF50),
-        Color(0xFFE91E63),
-        Color(0xFF2196F3),
-        Color(0xFFFF5722),
-        Color(0xFF9C27B0),
-        Color(0xFF00BCD4),
-        Color(0xFFFFC107),
-        Color(0xFF8BC34A),
+        //Color(0xFFFFB74D),
+        //Color(0xFF4CAF50),
+        //Color(0xFFE91E63),
+        //Color(0xFF2196F3),
+        //Color(0xFFFF5722),
+        // Color(0xFF9C27B0),
+        // Color(0xFF00BCD4),
+        // Color(0xFFFFC107),
+        //Color(0xFF8BC34A),
         Color(0xFFE040FB)
     )
 
@@ -66,8 +66,8 @@ fun GameList(
 
         is Resource.Failure -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize()
+               // contentAlignment = Alignment.Center
             ) {
                 Text("Error: ${games.message}", color = Color.Red)
             }
@@ -98,7 +98,7 @@ fun GameList(
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(16.dp))
                                     .clickable {
-                                        navController.navigate("${Graph.GAME}/${game.code}")
+                                        navController.navigate("${Graph.GAME_DIFICULTY}/${game.code}")
                                     },
                                 shape = RoundedCornerShape(16.dp)
                             ) {

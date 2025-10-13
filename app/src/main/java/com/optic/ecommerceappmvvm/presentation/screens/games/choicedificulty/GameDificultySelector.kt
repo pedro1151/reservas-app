@@ -19,10 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
 import com.optic.ecommerceappmvvm.presentation.components.DefaultButton
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 
 @Composable
 fun GameDificultySelector(
     difficulties: List<GameDificulty>,
+    gameCode: String,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -115,7 +117,7 @@ fun GameDificultySelector(
         DefaultButton(
             text = "CONTINUAR",
             enabled = selected != null,
-            onClick = { /* acción */ },
+            onClick = { navController.navigate("${Graph.GAME}/${gameCode}")},
             color = buttonColor,
             icon = Icons.Filled.ArrowForward
         )

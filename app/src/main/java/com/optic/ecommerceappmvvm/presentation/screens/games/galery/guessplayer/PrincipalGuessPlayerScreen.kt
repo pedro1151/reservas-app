@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.games.choicedificulty
+package com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,36 +9,32 @@ import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.util.Resource
-import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
-import com.optic.ecommerceappmvvm.presentation.screens.games.GameViewModel
-import com.optic.ecommerceappmvvm.presentation.screens.games.GamesPrincipalContent
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ChoiceDificultyScreen(
-    gameCode: String,
+fun PrincipalGuessPlayerScreen(
     navController: NavHostController
 ) {
-    val viewModel: GameViewModel = hiltViewModel()
-    val dificultyState by viewModel.dificultyState.collectAsState()
+    val viewModel: PrincipalGuessPlayerVM = hiltViewModel()
+    val guessPlayerState by viewModel.guessPlayerState.collectAsState()
 
     // Dispara la carga de dificultades al entrar
     LaunchedEffect(Unit) {
-        viewModel.getDificultys()
+        viewModel.getGuessPlayer(19)
     }
 
     Scaffold(
         topBar = {
             BackTopBar(
                 navController = navController,
-                title = "Seleccionar Dificultad"
+                title = "Adivina el Jugador"
             )
         }
     ) { paddingValues ->
@@ -47,7 +43,7 @@ fun ChoiceDificultyScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (dificultyState) {
+            when (guessPlayerState) {
                 is Resource.Loading -> {
                     // Mostrar ProgressBar centrado
                     ProgressBar()
@@ -56,7 +52,7 @@ fun ChoiceDificultyScreen(
                 is Resource.Failure -> {
                     // Mostrar mensaje de error
                     Text(
-                        text = (dificultyState as Resource.Failure).message ?: "Error desconocido",
+                        text = (guessPlayerState as Resource.Failure).message ?: "Error desconocido",
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
@@ -64,25 +60,44 @@ fun ChoiceDificultyScreen(
                 }
 
                 is Resource.Success -> {
-                    val difficulties = (dificultyState as Resource.Success).data ?: emptyList()
+                    val guessResponse = (guessPlayerState as Resource.Success).data
 
-                    if (difficulties.isEmpty()) {
+                    if (guessResponse == null || guessResponse.similars.isEmpty()) {
                         Text(
-                            text = "No hay dificultades disponibles",
+                            text = "No hay jugadores similares disponibles",
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.align(Alignment.Center),
                             textAlign = TextAlign.Center
                         )
                     } else {
-                        // Mostrar selector de dificultades
-                        GameDificultySelector(
-                            difficulties = difficulties,
-                            gameCode=gameCode,
-                            navController = navController,
+                        val similarPlayers = guessResponse.similars
+                        val targetPlayer = guessResponse.target
+
+                        // Ejemplo: Mostrar el nombre del jugador objetivo arriba
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp)
-                        )
+                                .padding(2.dp)
+                        ) {
+                            /*
+                            Text(
+                                text = "Jugador objetivo: ${targetPlayer.firstname}",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+
+                             */
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Llamar a tu componente con los similares
+                            PrincipalGuessPlayerContent(
+                                similarPlayers = similarPlayers,
+                                targetPlayer = targetPlayer,
+                                navController = navController,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.Trivias
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
+import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayerResponse
 import com.optic.ecommerceappmvvm.domain.repository.TriviasRepository
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.domain.util.ResponseToRequest
@@ -33,6 +34,14 @@ class TriviasRepositoryImpl (
         emit(
             ResponseToRequest.send(
                 triviasRemoteDataSource.genDificultys()
+            )
+        )
+    }
+
+    override suspend fun getGuessPlayer(topK: Int): Flow<Resource<GuessPlayerResponse>> = flow {
+        emit(
+            ResponseToRequest.send(
+                triviasRemoteDataSource.genGuessPlayer(topK)
             )
         )
     }

@@ -39,6 +39,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetDificultysUC
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetGamesUC
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetSimilarPlayers
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.guessplayer.GetGuessPlayerUC
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -105,7 +106,9 @@ object UseCaseModule {
     fun provideTriviaslUseCase(triviasRepository: TriviasRepository) = TriviasUseCase(
         getSimilarPlayers =  GetSimilarPlayers(triviasRepository),
         getGamesUC = GetGamesUC(triviasRepository),
-        getDificultysUC = GetDificultysUC(triviasRepository)
+        getDificultysUC = GetDificultysUC(triviasRepository),
+        // GUESS PLAYER
+        getGuessPlayerUC = GetGuessPlayerUC(triviasRepository)
 
     )
 

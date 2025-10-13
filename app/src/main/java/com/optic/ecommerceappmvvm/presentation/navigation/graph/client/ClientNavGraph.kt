@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.gson.Gson
+import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayer
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.profile.ProfileNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
@@ -14,6 +16,8 @@ import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDe
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.GamesPrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.choicedificulty.ChoiceDificultyScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.PrincipalGuessPlayerScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.components.GuessPlayerWinScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasScreen
@@ -82,7 +86,31 @@ fun ClientNavGraph(navController: NavHostController) {
         composable(route = Graph.GAME + "/{gameCode}"
         ) { backStackEntry ->
             val gameCode = backStackEntry.arguments?.getString("gameCode")?.toString() ?: "ADIVJUG"
+            if ( gameCode == "ADIVJUG" ){
+                PrincipalGuessPlayerScreen(navController)
+            }
+
+
+        }
+        composable(route = Graph.GAME_DIFICULTY + "/{gameCode}"
+        ) { backStackEntry ->
+            val gameCode = backStackEntry.arguments?.getString("gameCode")?.toString() ?: "ADIVJUG"
             ChoiceDificultyScreen(navController = navController, gameCode = gameCode)
+
+
+
+        }
+
+        composable(
+            route =   Graph.GUESSPLAYER_WIN+"/{playerJson}"
+        ) { backStackEntry ->
+            val playerJson = backStackEntry.arguments?.getString("playerJson")
+            val player = Gson().fromJson(playerJson, GuessPlayer::class.java)
+
+            GuessPlayerWinScreen(
+                player = player,
+                navController = navController
+            )
         }
 
 
