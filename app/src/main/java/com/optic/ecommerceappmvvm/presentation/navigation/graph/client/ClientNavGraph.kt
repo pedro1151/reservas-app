@@ -3,6 +3,8 @@ package com.optic.ecommerceappmvvm.presentation.navigation.graph.client
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +19,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.GamesPrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.choicedificulty.ChoiceDificultyScreen
 import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.PrincipalGuessPlayerScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.PrincipalGuessPlayerVM
 import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.components.GuessPlayerWinScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
@@ -87,7 +90,9 @@ fun ClientNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val gameCode = backStackEntry.arguments?.getString("gameCode")?.toString() ?: "ADIVJUG"
             if ( gameCode == "ADIVJUG" ){
-                PrincipalGuessPlayerScreen(navController)
+                // El ViewModel se asocia a esta ruta base
+                val viewModel: PrincipalGuessPlayerVM = hiltViewModel(backStackEntry)
+                PrincipalGuessPlayerScreen(navController, viewModel)
             }
 
 
@@ -107,9 +112,16 @@ fun ClientNavGraph(navController: NavHostController) {
             val playerJson = backStackEntry.arguments?.getString("playerJson")
             val player = Gson().fromJson(playerJson, GuessPlayer::class.java)
 
+            // 🔗 Obtenemos el mismo ViewModel asociado al juego
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graph.GAME + "/{gameCode}")
+            }
+            val viewModel: PrincipalGuessPlayerVM = hiltViewModel(parentEntry)
+
             GuessPlayerWinScreen(
                 player = player,
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
 

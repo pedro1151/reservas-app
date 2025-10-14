@@ -20,14 +20,16 @@ import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PrincipalGuessPlayerScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: PrincipalGuessPlayerVM
 ) {
-    val viewModel: PrincipalGuessPlayerVM = hiltViewModel()
     val guessPlayerState by viewModel.guessPlayerState.collectAsState()
+    // 🧠 Observa el estado del puntaje
 
-    // Dispara la carga de dificultades al entrar
+    // Dispara la carga de dificultades al entrar y resetea al score
     LaunchedEffect(Unit) {
         viewModel.getGuessPlayer(19)
+        viewModel.resetScore()
     }
 
     Scaffold(
@@ -95,7 +97,8 @@ fun PrincipalGuessPlayerScreen(
                                 similarPlayers = similarPlayers,
                                 targetPlayer = targetPlayer,
                                 navController = navController,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = viewModel
                             )
                         }
                     }

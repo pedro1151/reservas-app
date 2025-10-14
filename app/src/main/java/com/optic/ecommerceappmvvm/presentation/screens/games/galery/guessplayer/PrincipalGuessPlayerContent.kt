@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
@@ -42,7 +43,8 @@ fun PrincipalGuessPlayerContent(
     similarPlayers: List<SimilarPlayer>,
     targetPlayer: GuessPlayer,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PrincipalGuessPlayerVM
 ) {
     Box(
         modifier = modifier
@@ -50,16 +52,27 @@ fun PrincipalGuessPlayerContent(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        OvalLayout(similarPlayers = similarPlayers, targetPlayer = targetPlayer, navController=navController)
+
+
+        OvalLayout(similarPlayers = similarPlayers, targetPlayer = targetPlayer, navController=navController, viewModel = viewModel)
     }
 }
 
 @Composable
-fun OvalLayout(similarPlayers: List<SimilarPlayer>, targetPlayer: GuessPlayer, navController: NavHostController) {
+fun OvalLayout(similarPlayers: List<SimilarPlayer>,
+               targetPlayer: GuessPlayer,
+               navController: NavHostController,
+               viewModel: PrincipalGuessPlayerVM
+) {
     Layout(
         content = {
             similarPlayers.forEach { player ->
-                PlayerMiniCard(targetPlayer = targetPlayer, player = player, isTarget = player.id == targetPlayer.id, navController=navController)
+                PlayerMiniCard(targetPlayer = targetPlayer,
+                    player = player,
+                    isTarget = player.id == targetPlayer.id,
+                    navController=navController,
+                    viewModel = viewModel
+                )
             }
         }
     ) { measurables, constraints ->
@@ -85,7 +98,12 @@ fun OvalLayout(similarPlayers: List<SimilarPlayer>, targetPlayer: GuessPlayer, n
 }
 
 @Composable
-fun PlayerMiniCard(targetPlayer: GuessPlayer, player: SimilarPlayer, isTarget: Boolean,     navController: NavHostController) {
+fun PlayerMiniCard(targetPlayer: GuessPlayer,
+                   player: SimilarPlayer,
+                   isTarget: Boolean,
+                   navController: NavHostController,
+                   viewModel: PrincipalGuessPlayerVM
+) {
     val context = LocalContext.current
     var isClicked by remember { mutableStateOf(false) }
     var isCorrect by remember { mutableStateOf<Boolean?>(null) }
@@ -107,10 +125,12 @@ fun PlayerMiniCard(targetPlayer: GuessPlayer, player: SimilarPlayer, isTarget: B
         },
         animationSpec = tween(400)
     )
+
+
     // 🔥 Efecto: cuando acierta, redirige después de 2 segundos
     LaunchedEffect(isCorrect) {
         if (isCorrect == true) {
-            delay(5000) // esperar 2 segundos
+            delay(3000) // esperar 2 segundos
             val json = Uri.encode(Gson().toJson(targetPlayer))
             navController.navigate(Graph.GUESSPLAYER_WIN + "/$json")
         }
@@ -129,6 +149,8 @@ fun PlayerMiniCard(targetPlayer: GuessPlayer, player: SimilarPlayer, isTarget: B
                 } else {
                     isCorrect = false
                     MediaPlayer.create(context, R.raw.error_sound)?.start()
+                    // resto puntos
+                    viewModel.onWrongGuess()
                 }
             },
         contentAlignment = Alignment.Center

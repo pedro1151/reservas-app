@@ -16,29 +16,36 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayer
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.PrincipalGuessPlayerVM
 import kotlinx.coroutines.delay
-
 import kotlin.random.Random
 
 @Composable
 fun GuessPlayerWinScreen(
     player: GuessPlayer,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PrincipalGuessPlayerVM
 ) {
     var showContent by remember { mutableStateOf(false) }
+    val score by viewModel.score
 
     // ⏳ Mostrar pantalla después de 2 segundos
     LaunchedEffect(Unit) {
@@ -49,143 +56,234 @@ fun GuessPlayerWinScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(Color(0xFF0F0F10)),
         contentAlignment = Alignment.Center
     ) {
-
         // 🎉 Confetti animado
         if (showContent) {
-            ConfettiEffect()
+            SmallConfetti(count = 60)
         }
+
         AnimatedVisibility(
             visible = showContent,
-            enter = fadeIn(animationSpec = tween(800)) +
-                    scaleIn(
-                        initialScale = 0.5f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy
-                        )
-                    ),
-            exit = fadeOut(animationSpec = tween(400)) + scaleOut()
+            enter = fadeIn(animationSpec = tween(700)) +
+                    scaleIn(initialScale = 0.85f, animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)),
+            exit = fadeOut() + scaleOut()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp)
+                    .padding(horizontal = 28.dp)
             ) {
-                // 🏆 Card redonda del jugador ganador
+                // 🏆 Título principal
+                Text(
+                    text = "¡Excelente!",
+                    color = Color(0xFFFFD600),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "Has adivinado correctamente",
+                    color = Color(0xFFB5B5B8),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                // 📸 Imagen circular del jugador
                 Box(
-                    modifier = Modifier
-                        .size(220.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.size(260.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(player.photo),
-                        contentDescription = player.firstname,
-                        modifier = Modifier
-                            .size(200.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    // Cinta inferior con nombre del jugador
                     Box(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color(0xFF2E2E2E), // grafito oscuro
-                                        Color(0xFF1B1B1B)
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
+                            .matchParentSize()
+                            .shadow(30.dp, shape = CircleShape)
+                            .background(Color.Transparent)
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .size(220.dp)
+                            .clip(CircleShape),
+                        shape = CircleShape,
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF141414))
                     ) {
-                        Text(
-                            text = player.firstname,
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Box {
+                            Image(
+                                painter = rememberAsyncImagePainter(player.photo),
+                                contentDescription = player.firstname,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .height(46.dp)
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(Color(0xFF2E2E2E), Color(0xFF1B1B1B))
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = player.firstname,
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    // 🔸 Badge del puntaje
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 8.dp, y = 16.dp)
+                    ) {
+                        ScoreBadge(score = score)
                     }
                 }
 
+                Text(
+                    text = "¡Buen trabajo! Guarda tu récord o juega otra vez para mejorar tu puntaje.",
+                    color = Color(0xFF9A9A9D),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                )
 
-                // 🎮 Botones de acción
+                // 🎮 Botones
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Jugar otra vez
                     Button(
                         onClick = {
-                            navController.popBackStack() // Quita pantalla Win
-                            navController.navigate(Graph.GAME + "/ADIVJUG") // Reinicia juego
+                            navController.popBackStack()
+                            navController.navigate(Graph.GAME + "/ADIVJUG")
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C853)),
-                        shape = RoundedCornerShape(50.dp),
+                        shape = RoundedCornerShape(50),
                         modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .height(48.dp)
+                            .fillMaxWidth(0.75f)
+                            .height(52.dp)
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Jugar otra vez")
+                        Text("Jugar otra vez", color = Color.White)
                     }
 
-                    // Salir del juego
                     OutlinedButton(
                         onClick = {
                             navController.popBackStack(ClientScreen.Games.route, false)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        shape = RoundedCornerShape(50.dp),
-                        border = BorderStroke(1.dp, Color.Gray),
+                        shape = RoundedCornerShape(50),
+                        border = BorderStroke(1.dp, Color(0xFF3A3A3A)),
                         modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .height(48.dp)
+                            .fillMaxWidth(0.75f)
+                            .height(52.dp)
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color(0xFFBDBDBD))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Salir del juego")
+                        Text("Salir del juego", color = Color(0xFFBDBDBD))
                     }
                 }
             }
         }
     }
-
 }
 
 @Composable
-fun ConfettiEffect() {
-    val confettiCount = 50
-    val confettiColors = listOf(Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Magenta)
+private fun ScoreBadge(score: Int) {
+    val pulse = rememberInfiniteTransition()
+    val scale by pulse.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.04f,
+        animationSpec = infiniteRepeatable(tween(900), repeatMode = RepeatMode.Reverse)
+    )
+
+    Box(
+        modifier = Modifier
+            .size(88.dp)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clip(CircleShape)
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(Color(0xFFFFD600), Color(0xFFFFA000))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "$score",
+                color = Color(0xFF0F0F10),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                fontSize = 22.sp
+            )
+            Text(
+                text = "pts",
+                color = Color(0xFF0F0F10),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+private fun SmallConfetti(count: Int = 40) {
     val random = remember { Random(System.currentTimeMillis()) }
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+
+    // 📏 convertir dp a px
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        repeat(confettiCount) {
-            val xOffset = remember { Animatable(random.nextFloat() * 1000f) }
-            val yOffset = remember { Animatable(0f) }
-            val color = confettiColors[random.nextInt(confettiColors.size)]
+        repeat(count) { i ->
+            val startX = random.nextFloat() * screenWidthPx
+            val color = listOf(
+                Color(0xFFFFD600),
+                Color(0xFF00C853),
+                Color(0xFF00BCD4),
+                Color(0xFFFF6D00)
+            )[random.nextInt(4)]
 
-            LaunchedEffect(Unit) {
+            val size = listOf(6.dp, 8.dp, 10.dp)[random.nextInt(3)]
+            val yOffset = remember { Animatable(0f) }
+            val delayMs = random.nextInt(0, 1000)
+            val duration = random.nextInt(2500, 4000)
+
+            LaunchedEffect(i) {
+                delay(delayMs.toLong())
                 yOffset.animateTo(
-                    targetValue = 2000f,
-                    animationSpec = tween(durationMillis = random.nextInt(1500, 2500))
+                    targetValue = screenHeightPx,
+                    animationSpec = tween(durationMillis = duration, easing = LinearEasing)
                 )
             }
 
             Box(
                 modifier = Modifier
-                    .size(8.dp)
-                    .offset(x = xOffset.value.dp, y = yOffset.value.dp)
-                    .background(color = color, shape = CircleShape)
+                    .size(size)
+                    .offset {
+                        IntOffset(startX.toInt(), yOffset.value.toInt())
+                    }
+                    .background(color = color, shape = RoundedCornerShape(2.dp))
             )
         }
     }
