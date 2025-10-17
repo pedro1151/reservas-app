@@ -92,7 +92,7 @@ fun ClientNavGraph(navController: NavHostController) {
             if ( gameCode == "ADIVJUG" ){
                 // El ViewModel se asocia a esta ruta base
                 val viewModel: PrincipalGuessPlayerVM = hiltViewModel(backStackEntry)
-                PrincipalGuessPlayerScreen(navController, viewModel)
+                PrincipalGuessPlayerScreen(navController, viewModel, gameCode)
             }
 
 
@@ -107,12 +107,13 @@ fun ClientNavGraph(navController: NavHostController) {
         }
 
         composable(
-            route =   Graph.GUESSPLAYER_WIN+"/{playerJson}"
+            route = Graph.GUESSPLAYER_WIN + "/{gameCode}/{playerJson}"
         ) { backStackEntry ->
+
+            val gameCode = backStackEntry.arguments?.getString("gameCode") ?: ""
             val playerJson = backStackEntry.arguments?.getString("playerJson")
             val player = Gson().fromJson(playerJson, GuessPlayer::class.java)
 
-            // 🔗 Obtenemos el mismo ViewModel asociado al juego
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Graph.GAME + "/{gameCode}")
             }
@@ -121,7 +122,8 @@ fun ClientNavGraph(navController: NavHostController) {
             GuessPlayerWinScreen(
                 player = player,
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                gameCode = gameCode,
             )
         }
 

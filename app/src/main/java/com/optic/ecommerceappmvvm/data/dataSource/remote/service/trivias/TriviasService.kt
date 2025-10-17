@@ -1,12 +1,18 @@
 package com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias
 
+import com.optic.ecommerceappmvvm.domain.model.AuthResponse
+import com.optic.ecommerceappmvvm.domain.model.User
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
 import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayerResponse
+import com.optic.ecommerceappmvvm.domain.model.trivias.score.GameScoreCreate
+import com.optic.ecommerceappmvvm.domain.model.trivias.score.GameScoreResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface TriviasService {
@@ -32,6 +38,12 @@ interface TriviasService {
                 @Path("top_k") topK: Int
         ): Response<GuessPlayerResponse>
 
+
+        // Guardar Score
+        @POST("trivias/score/create")
+        suspend fun createGameScore(
+                @Body() gameScore: GameScoreCreate,
+        ): Response<GameScoreResponse>
 
 
 

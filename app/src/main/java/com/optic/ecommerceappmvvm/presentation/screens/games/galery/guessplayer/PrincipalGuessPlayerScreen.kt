@@ -21,7 +21,8 @@ import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
 @Composable
 fun PrincipalGuessPlayerScreen(
     navController: NavHostController,
-    viewModel: PrincipalGuessPlayerVM
+    viewModel: PrincipalGuessPlayerVM,
+    gameCode : String
 ) {
     val guessPlayerState by viewModel.guessPlayerState.collectAsState()
     // 🧠 Observa el estado del puntaje
@@ -98,7 +99,8 @@ fun PrincipalGuessPlayerScreen(
                                 targetPlayer = targetPlayer,
                                 navController = navController,
                                 modifier = Modifier.fillMaxSize(),
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                gameCode = gameCode
                             )
                         }
                     }

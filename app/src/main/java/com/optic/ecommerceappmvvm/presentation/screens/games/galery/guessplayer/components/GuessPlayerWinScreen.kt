@@ -28,11 +28,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayer
+import com.optic.ecommerceappmvvm.domain.model.trivias.score.GameScoreCreate
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
+import com.optic.ecommerceappmvvm.presentation.screens.games.GameViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.games.galery.guessplayer.PrincipalGuessPlayerVM
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -42,10 +45,28 @@ fun GuessPlayerWinScreen(
     player: GuessPlayer,
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: PrincipalGuessPlayerVM
+    viewModel: PrincipalGuessPlayerVM,
+    gameCode : String
 ) {
     var showContent by remember { mutableStateOf(false) }
     val score by viewModel.score
+
+    //score
+    val viewModel: GameViewModel = hiltViewModel()
+
+    // 🧩 Armar el modelo para guardar
+    val gameScore = remember(score) {
+        GameScoreCreate(
+            gameCode = gameCode,
+            dificulty = "HARD",
+            score = score,
+            createdBy = "app"
+        )
+    }
+    // GUARDO EL PUNTAJE
+    LaunchedEffect(Unit) {
+        viewModel.saveScore(gameScore)
+    }
 
     // ⏳ Mostrar pantalla después de 2 segundos
     LaunchedEffect(Unit) {

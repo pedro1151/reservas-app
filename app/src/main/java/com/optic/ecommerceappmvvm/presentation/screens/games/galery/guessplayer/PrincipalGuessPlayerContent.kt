@@ -44,7 +44,8 @@ fun PrincipalGuessPlayerContent(
     targetPlayer: GuessPlayer,
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: PrincipalGuessPlayerVM
+    viewModel: PrincipalGuessPlayerVM,
+    gameCode : String
 ) {
     Box(
         modifier = modifier
@@ -54,7 +55,12 @@ fun PrincipalGuessPlayerContent(
     ) {
 
 
-        OvalLayout(similarPlayers = similarPlayers, targetPlayer = targetPlayer, navController=navController, viewModel = viewModel)
+        OvalLayout(similarPlayers = similarPlayers,
+            targetPlayer = targetPlayer,
+            navController=navController,
+            viewModel = viewModel,
+            gameCode = gameCode
+        )
     }
 }
 
@@ -62,7 +68,8 @@ fun PrincipalGuessPlayerContent(
 fun OvalLayout(similarPlayers: List<SimilarPlayer>,
                targetPlayer: GuessPlayer,
                navController: NavHostController,
-               viewModel: PrincipalGuessPlayerVM
+               viewModel: PrincipalGuessPlayerVM,
+               gameCode: String
 ) {
     Layout(
         content = {
@@ -71,7 +78,8 @@ fun OvalLayout(similarPlayers: List<SimilarPlayer>,
                     player = player,
                     isTarget = player.id == targetPlayer.id,
                     navController=navController,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    gameCode = gameCode
                 )
             }
         }
@@ -102,7 +110,8 @@ fun PlayerMiniCard(targetPlayer: GuessPlayer,
                    player: SimilarPlayer,
                    isTarget: Boolean,
                    navController: NavHostController,
-                   viewModel: PrincipalGuessPlayerVM
+                   viewModel: PrincipalGuessPlayerVM,
+                   gameCode: String
 ) {
     val context = LocalContext.current
     var isClicked by remember { mutableStateOf(false) }
@@ -132,7 +141,7 @@ fun PlayerMiniCard(targetPlayer: GuessPlayer,
         if (isCorrect == true) {
             delay(3000) // esperar 2 segundos
             val json = Uri.encode(Gson().toJson(targetPlayer))
-            navController.navigate(Graph.GUESSPLAYER_WIN + "/$json")
+            navController.navigate("${Graph.GUESSPLAYER_WIN}/${gameCode}/$json")
         }
     }
     Box(
