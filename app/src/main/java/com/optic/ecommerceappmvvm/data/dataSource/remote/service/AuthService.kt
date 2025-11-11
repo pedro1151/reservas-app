@@ -3,6 +3,9 @@ package com.optic.ecommerceappmvvm.data.dataSource.remote.service
 import com.optic.ecommerceappmvvm.domain.model.AuthResponse
 import com.optic.ecommerceappmvvm.domain.model.LoginRequest
 import com.optic.ecommerceappmvvm.domain.model.User
+import com.optic.ecommerceappmvvm.domain.model.auth.LoginPlessRequest
+import com.optic.ecommerceappmvvm.domain.model.auth.LoginSendCodeRequest
+import com.optic.ecommerceappmvvm.domain.model.auth.LoginSendCodeResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
@@ -29,6 +32,18 @@ interface AuthService {
     @POST("auth/register")
     suspend fun register(
         @Body() user: User,
+    ): Response<AuthResponse>
+
+    //Login sin password
+
+    @POST("auth/code/request")
+    suspend fun loginSendCode(
+        @Body loginSendCode: LoginSendCodeRequest
+    ): Response<LoginSendCodeResponse>
+
+    @POST("auth/code/verify")
+    suspend fun loginPless(
+        @Body loginPlessRequest: LoginPlessRequest
     ): Response<AuthResponse>
 
 }

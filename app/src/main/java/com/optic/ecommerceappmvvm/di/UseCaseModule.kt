@@ -5,6 +5,8 @@ import com.optic.ecommerceappmvvm.domain.repository.ExternalRepository
 import com.optic.ecommerceappmvvm.domain.repository.TeamRepository
 import com.optic.ecommerceappmvvm.domain.repository.TriviasRepository
 import com.optic.ecommerceappmvvm.domain.useCase.auth.*
+import com.optic.ecommerceappmvvm.domain.useCase.auth.loginpless.LoginPlessUC
+import com.optic.ecommerceappmvvm.domain.useCase.auth.loginpless.LoginSendCodeUC
 import com.optic.ecommerceappmvvm.domain.useCase.external.ExternalUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.external.LoginGoogleUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.CreateFollowedPlayerUC
@@ -56,7 +58,10 @@ object UseCaseModule {
         register = RegisterUseCase(authRepository),
         saveSession = SaveSessionUseCase(authRepository),
         getSessionData = GetSessionDataUseCase(authRepository),
-        logout = LogoutUseCase(authRepository)
+        logout = LogoutUseCase(authRepository),
+        loginPlessUC = LoginPlessUC(authRepository),
+        loginSendCodeUC = LoginSendCodeUC(authRepository)
+
     )
 
     @Provides

@@ -13,6 +13,9 @@ import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayer
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.profile.ProfileNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
+import com.optic.ecommerceappmvvm.presentation.screens.auth.login.LoginScreen
+import com.optic.ecommerceappmvvm.presentation.screens.auth.login.LoginViewModel
+import com.optic.ecommerceappmvvm.presentation.screens.auth.login.components.LoginContentPless
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.PlayerStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowScreen
@@ -29,7 +32,10 @@ import com.optic.ecommerceappmvvm.presentation.screens.team.TeamScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ClientNavGraph(navController: NavHostController) {
+fun ClientNavGraph(
+    navController: NavHostController,
+    isAuthenticated: Boolean
+) {
     NavHost(
         navController = navController,
         route = Graph.CLIENT,
@@ -41,8 +47,23 @@ fun ClientNavGraph(navController: NavHostController) {
         }
 
         composable(route = ClientScreen.Follow.route) {
-            FollowScreen(navController)
+            FollowScreen(navController, isAuthenticated)
         }
+
+        composable(route = ClientScreen.Login.route) {
+            LoginScreen(navController)
+        }
+
+        composable(Graph.CLIENT + "/{email}") { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(ClientScreen.Login.route)
+            }
+            val viewModel: LoginViewModel = hiltViewModel(parentEntry)
+
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            LoginContentPless(navController, viewModel, email)
+        }
+
 
         composable(route = ClientScreen.Leagues.route) {
             LeaguePrincipalScreen(navController)

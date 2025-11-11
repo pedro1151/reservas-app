@@ -11,4 +11,6 @@ interface AuthLocalDataSource {
     suspend fun logout()
     fun getSessionData(): Flow<AuthResponse>
 
+    fun isUserLoggedIn(): Flow<Boolean>
+
 }

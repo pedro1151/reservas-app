@@ -14,6 +14,9 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,9 +24,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.optic.ecommerceappmvvm.core.Config
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 
 @Composable
-fun LoginScreen(navController: NavHostController, vm: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(navController: NavHostController
+                ,vm: LoginViewModel = hiltViewModel()) {
 
     // 1. Configurar GoogleSignInClient -- GoogleAUth
     val context = LocalContext.current
@@ -61,11 +66,33 @@ fun LoginScreen(navController: NavHostController, vm: LoginViewModel = hiltViewM
             , onGoogleSignInClick = {
                 val signInIntent = googleSignInClient.signInIntent
                 launcher.launch(signInIntent)
-            }
+            },
+            vm = vm
 
         )
     }
-    Login(navController = navController)
+/*
+    // ✅ Si el usuario se loguea correctamente:
+    val isLoggedIn by vm.isLoggedIn.collectAsState()
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            // Si vino con redirect, volver ahí
+            if (!redirect.isNullOrBlank()) {
+                navController.navigate(redirect) {
+                    popUpTo(Graph.AUTH) { inclusive = true }
+                }
+            } else {
+                navController.navigate(Graph.CLIENT) {
+                    popUpTo(Graph.AUTH) { inclusive = true }
+                }
+            }
+        }
+    }
+
+ */
+
+
+   // Login(navController = navController)
 }
 
 @Preview(showBackground = true, showSystemUi = true)

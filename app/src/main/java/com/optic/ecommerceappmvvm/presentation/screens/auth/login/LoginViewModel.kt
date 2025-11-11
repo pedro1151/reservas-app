@@ -7,10 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.ecommerceappmvvm.domain.model.AuthResponse
 import com.optic.ecommerceappmvvm.domain.model.User
+import com.optic.ecommerceappmvvm.domain.model.auth.LoginSendCodeResponse
 import com.optic.ecommerceappmvvm.domain.useCase.auth.AuthUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.external.ExternalUseCase
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +31,17 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
     var loginResponse by mutableStateOf<Resource<AuthResponse>?>(null)
         private set
 
+    var loginSendCodeResponse by mutableStateOf<Resource<LoginSendCodeResponse>?>(null)
+        private set
+
+    private val _sendCodeSuccess = mutableStateOf(false)
+    val sendCodeSuccess: State<Boolean> = _sendCodeSuccess
+
+    // ✅ Variable observable del estado de sesión
+    private var _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+
     init {
         getSessionData()
     }
@@ -36,12 +51,16 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
             Log.d("LoginViewModel", "Data: ${data.toJson()}")
             if (!data.token.isNullOrBlank()) {
                 loginResponse = Resource.Success(data)
+                _isLoggedIn.value = true // ✅ Usuario logueado
+            } else {
+                _isLoggedIn.value = false
             }
         }
     }
 
     fun saveSession(authResponse: AuthResponse) = viewModelScope.launch {
         authUseCase.saveSession(authResponse)
+        _isLoggedIn.value = true // ✅ Actualiza el estado
     }
 
     fun login() = viewModelScope.launch {
@@ -51,6 +70,8 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
             loginResponse = Resource.Loading // ESPERANDO
             val result = authUseCase.login(state.email, state.password) // RETORNA UNA RESPUESTA
             loginResponse = result // EXITOSA / ERROR
+        } else {
+            _isLoggedIn.value = false
         }
 
     }
@@ -63,8 +84,14 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
             try {
                 val result = externalUseCase.login(idToken)
                 loginResponse = result
+                if (result is Resource.Success) {
+                    saveSession(result.data)
+                } else {
+                    _isLoggedIn.value = false
+                }
             } catch (e: Exception) {
                 loginResponse = Resource.Failure(e.message ?: "Error desconocido al iniciar con Google")
+                _isLoggedIn.value = false
             }
         }
     }
@@ -77,6 +104,10 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
         state = state.copy(password = password)
     }
 
+    fun onCodeInput(code: String) {
+        state = state.copy(code = code)
+    }
+
 
     fun isValidForm(): Boolean  {
 
@@ -84,10 +115,60 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
             errorMessage = "El email no es valido"
             return false
         }
+        /*
         else if (state.password.length < 6) {
             errorMessage = "La contraseña debe tener al menos 6 caracteres"
             return false
         }
+
+         */
         return true
     }
+
+
+    // ✅ NUEVA FUNCIÓN: permite comprobar login de forma imperativa
+    fun isLoggedInNow(): Boolean = _isLoggedIn.value
+
+    //Password Less
+    //LOogin enviando codigo de acceso al email ingresado
+
+    fun loginSendCode() = viewModelScope.launch {
+        try {
+            val result = authUseCase.loginSendCodeUC(state.email) // tu función real
+            Log.d("LoginViewModel", "result: ${result }")
+            if (result is Resource.Success) {
+                _sendCodeSuccess.value = true
+            } else {
+                errorMessage = "Error al enviar el código. Intenta nuevamente."
+            }
+        } catch (e: Exception) {
+            errorMessage = "Error al enviar el código: ${e.message}"
+        }
+    }
+
+    fun loginPless(email:String) = viewModelScope.launch {
+            Log.d("LoginViewModel", "Email: ${email}, Code: ${state.code}")
+            loginResponse = Resource.Loading // ESPERANDO
+            val result = authUseCase.loginPlessUC(email, state.code) // RETORNA UNA RESPUESTA
+            Log.d("LoginViewModel", "result: ${result }")
+            loginResponse = result // EXITOSA / ERROR
+            if (result is Resource.Success) {
+                _isLoggedIn.value = true
+                _navigateToHome.value = true
+                saveSession(result.data)
+
+            } else {
+                _isLoggedIn.value = false
+                errorMessage = "Error al validar el codigo. Intenta nuevamente mas tarde.${result}"
+            }
+
+    }
+
+    fun resetSendCodeSuccess() {
+        _sendCodeSuccess.value = false
+    }
+
+    private val _navigateToHome = MutableStateFlow(false)
+    val navigateToHome: StateFlow<Boolean> = _navigateToHome
+
 }

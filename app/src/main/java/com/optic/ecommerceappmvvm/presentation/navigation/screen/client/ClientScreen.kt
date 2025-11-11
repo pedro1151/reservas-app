@@ -72,6 +72,18 @@ sealed class ClientScreen(
         icon = Icons.Default.Menu
     )
 
+    object Login: ClientScreen(
+        route = "client/login",
+        title = "Login",
+        icon = Icons.Default.Menu
+    )
+
+    object LoginPless: ClientScreen(
+        route = "client/loginpless",
+        title = "Loginpless",
+        icon = Icons.Default.Menu
+    )
+
 
 }
 

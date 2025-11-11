@@ -10,6 +10,7 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
+import com.optic.ecommerceappmvvm.domain.repository.AuthRepository
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,7 +66,6 @@ class FollowViewModel @Inject constructor(
         getTeams()
         getPlayers()
         getFollowedPlayers()
-
         getFollowedTeams()
     }
     private fun getPlayers() {

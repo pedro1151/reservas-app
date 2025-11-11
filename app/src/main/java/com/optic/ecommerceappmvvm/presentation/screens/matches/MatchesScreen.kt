@@ -25,6 +25,9 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.navigation.compose.rememberNavController
+import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
+import com.optic.ecommerceappmvvm.presentation.screens.home.components.ClientBottomBar
 import com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures.CountryFixtures
 import com.optic.ecommerceappmvvm.presentation.screens.matches.nofollowfixtures.NoFollowFixtures
 
@@ -36,6 +39,7 @@ fun MatchesScreen(navController: NavHostController) {
     val fixtureState by viewModel.fixtureTeamsState.collectAsState()
     val fixtureStateCountry by viewModel.fixtureCountryState.collectAsState()
     val fixtureStateNoFollow by viewModel.fixturesNoFollow.collectAsState()
+
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val fakeToday = LocalDate.of(2023, 9, 17)
@@ -67,6 +71,7 @@ fun MatchesScreen(navController: NavHostController) {
             date = fakeToday.toString()
         )
     }
+
 
     Scaffold(
         topBar = {

@@ -42,7 +42,7 @@ fun ClientHomeScreen(navController: NavHostController = rememberNavController())
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            ClientNavGraph(navController = navController)
+          //  ClientNavGraph(navController = navController,)
         }
     }
 }

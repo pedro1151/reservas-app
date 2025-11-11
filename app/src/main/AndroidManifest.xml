@@ -36,6 +36,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- 👇 ESTE es el intent-filter nuevo para el deep link -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Cambia "myapp" por tu esquema deseado -->
+                <data
+                    android:scheme="myapp"
+                    android:host="auth"
+                    android:pathPrefix="/magic" />
+            </intent-filter>
         </activity>
 
         <provider
