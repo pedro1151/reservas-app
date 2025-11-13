@@ -6,6 +6,7 @@ import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
@@ -74,6 +75,9 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         id: Int
     ): Response<FixtureResponse> = teamService.getFixtureById(id)
 
+    override suspend fun getFixtureLineups(
+        id: Int
+    ): Response<FixtureLineupsResponse> = teamService.getFixtureLineups(id)
 
 
     //FIXTURES (MATCHES)

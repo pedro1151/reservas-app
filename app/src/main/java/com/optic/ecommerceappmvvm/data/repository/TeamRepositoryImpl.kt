@@ -8,6 +8,7 @@ import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -187,6 +188,14 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getFixtureById(id)
+            )
+        )
+    }
+
+    override suspend fun getFixtureLineups(id: Int): Flow<Resource<FixtureLineupsResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getFixtureLineups(id)
             )
         )
     }

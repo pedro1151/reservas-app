@@ -15,6 +15,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.FixtureDetailHeader
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.facetoface.VersusFixtureContent
+import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.lineups.FixtureLineupsScreen
 
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.standings.LeagueStandingsList
 
@@ -28,7 +29,7 @@ fun FixtureDetailContent(
     fixture: FixtureResponse,
     navController: NavHostController
 ) {
-    val tabTitles = listOf("Resumen", "Alineacion", "Clasificacion",  "Cara a Cara")
+    val tabTitles = listOf("Alineacion", "Clasificacion",  "Cara a Cara", "Estadisticas")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -69,9 +70,14 @@ fun FixtureDetailContent(
             modifier = Modifier.fillMaxSize()
         ) { page ->
             when (page) {
-                0 -> PlaceholderTab("Formacion")
-                1 -> PlaceholderTab("Formacion")
-                2 -> {
+
+                0 -> {
+                    FixtureLineupsScreen(
+                        paddingValues = paddingValues,
+                        fixtureId = fixture.id
+                    )
+                }
+                1-> {
                     fixture.league?.let { league ->
                         fixture.leagueSeason?.let {
                             LeagueStandingsList(
@@ -84,7 +90,7 @@ fun FixtureDetailContent(
                         }
                     } ?: PlaceholderTab("Liga no disponible")
                 }
-                3 -> {
+                2 -> {
                     VersusFixtureContent(
                         modifier = Modifier,
                         navController = navController,
@@ -92,6 +98,9 @@ fun FixtureDetailContent(
                         paddingValues = paddingValues
                     )
                 }
+
+                3 -> PlaceholderTab("Estadisticas")
+
             }
         }
     }

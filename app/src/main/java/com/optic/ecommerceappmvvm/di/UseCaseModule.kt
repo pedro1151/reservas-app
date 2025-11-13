@@ -25,6 +25,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixtures
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureFollowedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLeagueUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLineupsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNextFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNoFollowFixturesUC
@@ -97,7 +98,10 @@ object UseCaseModule {
         getPlayerTeamsUC = GetPlayerTeamsUC(teamRepository),
         getPlayerLastTeamUC = GetPlayerLastTeamUC(teamRepository),
         getLeagueByIdUC = GetLeagueByIdUC(teamRepository),
-        getNoFollowFixturesUC = GetNoFollowFixturesUC(teamRepository)
+        getNoFollowFixturesUC = GetNoFollowFixturesUC(teamRepository),
+
+        //lineups
+        getFixtureLineupsUC = GetFixtureLineupsUC(teamRepository)
 
 
     )

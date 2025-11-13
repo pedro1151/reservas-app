@@ -5,6 +5,7 @@ import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -53,6 +54,7 @@ interface TeamRemoteDataSource {
   //Recuperar Fixture por Id
     suspend fun getCountryFixtures(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getFixtureById(id: Int): Response<FixtureResponse>
+    suspend fun getFixtureLineups(id: Int): Response<FixtureLineupsResponse>
    //fixtures de teans seguidos
     suspend fun getFixtureFollowedTeams(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getNoFollowFixtures(season: Int, date: String): Response<List<FixtureResponse>>

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.util.Log
+import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
 
 
 @HiltViewModel
@@ -34,11 +35,24 @@ class FixtureDetailViewModel @Inject constructor(
     private val _versusFixtureState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
     val versusFixtureState : StateFlow<Resource<List<FixtureResponse>>> = _versusFixtureState
 
+    //Lineups
+    private val _lineupsFixtureState = MutableStateFlow<Resource<FixtureLineupsResponse>>(Resource.Loading)
+    val lineupsFixtureState : StateFlow<Resource<FixtureLineupsResponse>> = _lineupsFixtureState
+
+
 
     fun getFixtureById(id: Int) {
         viewModelScope.launch {
             teamUseCase.getFixtureByIdUC(id).collectLatest { result ->
                 _fixtureState.value = result
+            }
+        }
+    }
+
+    fun getFixtureLineups(id: Int) {
+        viewModelScope.launch {
+            teamUseCase.getFixtureLineupsUC(id).collectLatest { result ->
+                _lineupsFixtureState.value = result
             }
         }
     }

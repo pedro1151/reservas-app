@@ -5,6 +5,7 @@ import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -52,6 +53,7 @@ interface TeamRepository {
     //FIXTURE
     suspend fun getCountryFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixtureById(id: Int): Flow<Resource<FixtureResponse>>
+    suspend fun getFixtureLineups(id: Int): Flow<Resource<FixtureLineupsResponse>>
     suspend fun getFixtureFollowedTeams(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getNoFollowFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
