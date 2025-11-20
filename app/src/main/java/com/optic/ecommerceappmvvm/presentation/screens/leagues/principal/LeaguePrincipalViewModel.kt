@@ -39,6 +39,7 @@ class LeaguePrincipalViewModel @Inject constructor(
     val deleteFollowedLeagueState : StateFlow<Resource<DefaultResponse>> = _deleteFollowedLeagueState
 
 
+
     init {
         getLeagues()
         getFollowedLeagues()

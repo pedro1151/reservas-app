@@ -6,6 +6,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -15,6 +16,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
+import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import retrofit2.Response
 
 interface TeamRemoteDataSource {
@@ -55,6 +57,9 @@ interface TeamRemoteDataSource {
     suspend fun getCountryFixtures(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getFixtureById(id: Int): Response<FixtureResponse>
     suspend fun getFixtureLineups(id: Int): Response<FixtureLineupsResponse>
+    // Stats
+    suspend fun getFixtureStats(id: Int): Response<FixtureStatsResponse>
+    suspend fun getTeamStats(season: Int, teamId: Int, date: String?=null): Response<TeamStatsResponse>
    //fixtures de teans seguidos
     suspend fun getFixtureFollowedTeams(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getNoFollowFixtures(season: Int, date: String): Response<List<FixtureResponse>>
@@ -62,9 +67,11 @@ interface TeamRemoteDataSource {
     suspend fun getFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
     suspend fun getNextFixtureTeam(teamId: Int): Response<FixtureResponse>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
+    // por date
+    suspend fun getFixturesByDate(date: String, limit: Int): Response<List<FixtureResponse>>
 
     // Leagues
-    suspend fun getLeagueFixture(leagueId: Int): Response<List<FixtureResponse>>
+    suspend fun getLeagueFixture(leagueId: Int, season: Int): Response<List<FixtureResponse>>
     // versus
     suspend fun getFixtureVersus(
         teamOneId: Int,

@@ -2,6 +2,8 @@ package com.optic.ecommerceappmvvm.presentation.screens.follow.components.follow
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.optic.ecommerceappmvvm.domain.model.player.Player
@@ -19,27 +21,35 @@ fun FollowedPlayerContent(
     onUnFollowClick: (Int) -> Unit = {},
     paddingValues: PaddingValues
 ) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        verticalArrangement = Arrangement.spacedBy(1.dp)
+        //contentPadding = PaddingValues(bottom = 32.dp)
+    ) {
+        // --- Sección de jugadores seguidos (usa Column interna) ---
+        item {
+            FollowedPlayerListContent(
+                modifier = Modifier.fillMaxWidth(),
+                followedPlayers = followedPlayers,
+                onUnFollowClick = onUnFollowClick,
+                navController = navController
+            )
+        }
 
-        // Parte superior: jugadores seguidos
-        FollowedPlayerListContent(
-            modifier = Modifier,
-            followedPlayers = followedPlayers,
-            onUnFollowClick = onUnFollowClick,
-            navController = navController
-        )
+        // Spacer entre secciones
+        item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Parte inferior: lista completa de jugadores
-        PlayerListContent(
-            modifier = Modifier.fillMaxSize(),
-            players = players,
-            navController = navController,
-            paddingValues = PaddingValues(8.dp),
-            onFollowClick = onFollowClick
-        )
+        // --- Sección de lista completa de jugadores (usa Column interna) ---
+        item {
+            PlayerListContent(
+                modifier = Modifier.fillMaxWidth(),
+                players = players,
+                navController = navController,
+                paddingValues = PaddingValues(1.dp),
+                onFollowClick = onFollowClick
+            )
+        }
     }
 }

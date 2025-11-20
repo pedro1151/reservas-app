@@ -28,7 +28,8 @@ fun MatchesDateTopBar(
     modifier: Modifier = Modifier,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val today = remember { LocalDate.of(2023, 9, 17) } // HARDCODE: hoy
+    //val today = remember { LocalDate.of(2023, 9, 17) } // HARDCODE: hoy para pruebas
+    val today = remember { LocalDate.now() }
     val daysRange = remember { (-30..30).map { today.plusDays(it.toLong()) } }
 
     var selectedDate by remember { mutableStateOf(today) }

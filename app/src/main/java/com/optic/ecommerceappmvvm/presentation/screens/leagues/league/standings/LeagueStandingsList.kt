@@ -61,6 +61,7 @@ fun LeagueStandingsList(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        /*
                         item {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 AsyncImage(
@@ -78,6 +79,8 @@ fun LeagueStandingsList(
                                 )
                             }
                         }
+
+                         */
 
                         item {
                             Row(

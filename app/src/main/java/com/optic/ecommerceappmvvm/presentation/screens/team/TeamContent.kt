@@ -20,6 +20,7 @@ import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.components.PlaceholderTab
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.TeamHeader
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.resume.ResumeContent
+import com.optic.ecommerceappmvvm.presentation.screens.team.components.stats.TeamStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.teamFixture.TeamFixture
 import kotlinx.coroutines.launch
 
@@ -34,7 +35,7 @@ fun TeamContent(
     topFiveFixtureState: Resource<List<FixtureResponse>>,
     navController: NavHostController
 ) {
-    val tabTitles = listOf("Resumen", "Formacion", "Partidos", "Estadisticas", "Trofeos", "Novedades")
+    val tabTitles = listOf("Resumen", "Formacion", "Partidos", "Estadisticas", "Trofeos")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -93,9 +94,15 @@ fun TeamContent(
                     title = "Partidos",
                     paddingValues = paddingValues
                 )
-                3 -> PlaceholderTab("Estadisticas")
+                3 -> team?.id?.let {
+                    TeamStatsScreen(
+                        paddingValues = paddingValues,
+                        season = 2023,
+                        teamId = it,
+                        date = ""
+                    )
+                }
                 4 -> PlaceholderTab("Trofeos")
-                5 -> PlaceholderTab("Novedades")
             }
         }
     }

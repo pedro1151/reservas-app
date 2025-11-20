@@ -128,7 +128,7 @@ fun LoginContentPless(
             Spacer(modifier = Modifier.height(60.dp))
 
             Text(
-                text = "ALLFOOT",
+                text = "UNIFOOT",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 34.sp

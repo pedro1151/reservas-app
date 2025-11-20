@@ -6,6 +6,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
@@ -18,6 +19,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
+import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -139,6 +141,12 @@ interface TeamService {
         @Path("id") id: Int
     ): Response<FixtureLineupsResponse>
 
+    // FIXTURE stats POR ID
+    @GET("football/fixtures/{id}/stats")
+    suspend fun getFixtureStats(
+        @Path("id") id: Int
+    ): Response<FixtureStatsResponse>
+
     // MATCHES ( FIXTURES ) POR TEAMS SEGUUIDOS
 
     @GET("football/getFixtureFollowedTeams")
@@ -150,12 +158,12 @@ interface TeamService {
 
     // MATCHES ( FIXTURES ) de equipos no seguidos
 
+
     @GET("football/fixtures/nofollow")
     suspend fun getNoFollowFixtures(
         @Query("season") season: Int,
         @Query("date") date: String
     ): Response<List<FixtureResponse>>
-
     //Fixture de un equipo en general
     @GET("football/fixtures/team/{team_id}")
     suspend fun getFixtureTeam(
@@ -175,9 +183,17 @@ interface TeamService {
     ): Response<List<FixtureResponse>>
 
     //Fixture de una Liga
-    @GET("football/fixtures/league/{league_id}")
+    @GET("football/fixtures/league/{league_id}/season/{season}")
     suspend fun getLeagueFixture(
-        @Path("league_id") leagueId: Int
+        @Path("league_id") leagueId: Int,
+        @Path("season") season: Int
+    ): Response<List<FixtureResponse>>
+
+    // fixture por fecha
+    @GET("football/fixtures/date/{date}/limit/{limit}")
+    suspend fun getFixturesByDate(
+        @Path("date") date: String,
+        @Path("limit") limit: Int
     ): Response<List<FixtureResponse>>
 
 
@@ -208,5 +224,14 @@ interface TeamService {
         @Path("season") season: Int
     ): Response<List<StandingResponse>>
 
+
+    //teams stats
+
+    @GET("football/team/stats")
+    suspend fun getTeamStats(
+        @Query("season") season: Int,
+        @Query("team_id") teamId: Int,
+        @Query("date") date: String? =null
+    ): Response<TeamStatsResponse>
 
 }

@@ -77,7 +77,7 @@ fun FollowContent(
                     navController = navController,
                     onFollowClick = onFollowTeamClick,
                     onUnFollowClick =  onUnFollowTeamClick,
-                    paddingValues = PaddingValues(8.dp)
+                    paddingValues = PaddingValues(1.dp)
                 )
                 1 -> FollowedPlayerContent(
                     players = players,
@@ -85,7 +85,7 @@ fun FollowContent(
                     navController = navController,
                     onFollowClick = onFollowClick,
                     onUnFollowClick = onUnFollowClick,
-                    paddingValues = PaddingValues(8.dp)
+                    paddingValues = PaddingValues(1.dp)
                 )
             }
         }

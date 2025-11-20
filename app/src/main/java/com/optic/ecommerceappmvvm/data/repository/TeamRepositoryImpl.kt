@@ -9,6 +9,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -18,6 +19,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
+import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import com.optic.ecommerceappmvvm.domain.repository.TeamRepository
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.domain.util.ResponseToRequest
@@ -151,6 +153,18 @@ class TeamRepositoryImpl(
         )
     }
 
+    override suspend fun getTeamStats(
+        season: Int,
+        teamId: Int,
+        date: String?
+    ): Flow<Resource<TeamStatsResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getTeamStats(season, teamId, date)
+            )
+        )
+    }
+
     // ligas seguidas
     override suspend fun getFollowedLeagues(): Flow<Resource<List<League>>> = flow{
         emit(
@@ -196,6 +210,14 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getFixtureLineups(id)
+            )
+        )
+    }
+
+    override suspend fun getFixtureStats(id: Int): Flow<Resource<FixtureStatsResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getFixtureStats(id)
             )
         )
     }
@@ -263,10 +285,24 @@ class TeamRepositoryImpl(
         )
     }
 
-    override suspend fun getLeagueFixture(leagueId: Int): Flow<Resource<List<FixtureResponse>>> = flow{
+    override suspend fun getLeagueFixture(
+        leagueId: Int,
+        season:Int
+    ): Flow<Resource<List<FixtureResponse>>> = flow{
         emit(
             ResponseToRequest.send(
-                teamRemoteDataSource.getLeagueFixture(leagueId)
+                teamRemoteDataSource.getLeagueFixture(leagueId, season)
+            )
+        )
+    }
+
+    override suspend fun getFixturesByDate(
+        date: String,
+        limit: Int
+    ): Flow<Resource<List<FixtureResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getFixturesByDate(date, limit)
             )
         )
     }

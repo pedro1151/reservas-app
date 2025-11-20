@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.util.Log
 import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 
 
 @HiltViewModel
@@ -39,6 +40,9 @@ class FixtureDetailViewModel @Inject constructor(
     private val _lineupsFixtureState = MutableStateFlow<Resource<FixtureLineupsResponse>>(Resource.Loading)
     val lineupsFixtureState : StateFlow<Resource<FixtureLineupsResponse>> = _lineupsFixtureState
 
+    //stats
+    private val _fixtureStatsState = MutableStateFlow<Resource<FixtureStatsResponse>>(Resource.Loading)
+    val fixtureStatsState  : StateFlow<Resource<FixtureStatsResponse>> = _fixtureStatsState
 
 
     fun getFixtureById(id: Int) {
@@ -48,11 +52,27 @@ class FixtureDetailViewModel @Inject constructor(
             }
         }
     }
-
+    // lineups
     fun getFixtureLineups(id: Int) {
         viewModelScope.launch {
             teamUseCase.getFixtureLineupsUC(id).collectLatest { result ->
                 _lineupsFixtureState.value = result
+            }
+        }
+    }
+
+    // stats
+    fun getFixtureStats(id: Int) {
+
+        viewModelScope.launch {
+            try {
+                teamUseCase.getFixtureStatsUC(id).collectLatest { result ->
+                    Log.d("getFixtureStats", "Result received: $result")
+                    _fixtureStatsState.value = result
+                }
+            } catch (e: Exception) {
+                Log.e("getFixtureStats", "Error fetching fixture stasts", e)
+                _fixtureStatsState.value = Resource.Failure(e.message ?: "Unknown error")
             }
         }
     }

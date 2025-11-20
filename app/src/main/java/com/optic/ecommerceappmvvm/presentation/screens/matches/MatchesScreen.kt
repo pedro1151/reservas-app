@@ -29,17 +29,24 @@ import androidx.navigation.compose.rememberNavController
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.home.components.ClientBottomBar
 import com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures.CountryFixtures
+import com.optic.ecommerceappmvvm.presentation.screens.matches.fixturesbydate.FixturesByDate
 import com.optic.ecommerceappmvvm.presentation.screens.matches.nofollowfixtures.NoFollowFixtures
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MatchesScreen(navController: NavHostController) {
+fun MatchesScreen(
+    navController: NavHostController,
+    isAuthenticated : Boolean
+) {
     val viewModel: MatchesViewModel = hiltViewModel()
     val fixtureState by viewModel.fixtureTeamsState.collectAsState()
     val fixtureStateCountry by viewModel.fixtureCountryState.collectAsState()
     val fixtureStateNoFollow by viewModel.fixturesNoFollow.collectAsState()
+    val fixtureStateDate by viewModel.fixtureDateState.collectAsState()
 
+    // fecha real de hoy
+    val today = LocalDate.now()
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val fakeToday = LocalDate.of(2023, 9, 17)
@@ -51,24 +58,32 @@ fun MatchesScreen(navController: NavHostController) {
     // cargar datos iniciales
     LaunchedEffect(backStackEntry?.destination?.route) {
         viewModel.getFixtureFollowedTeams(
-            season = 2023,
-            date = fakeToday.toString()
+            season = 2025,
+            date = today.toString()
         )
     }
 
     // cargar datos iniciales no follow
     LaunchedEffect(backStackEntry?.destination?.route) {
         viewModel.getNoFixtureFollowedTeams(
-            season = 2023,
-            date = fakeToday.toString()
+            season = 2025,
+            date = today.toString()
         )
     }
 
     // cargar datos iniciales
     LaunchedEffect(backStackEntry?.destination?.route) {
         viewModel.getFixturesByCountry(
-            season = 2023,
-            date = fakeToday.toString()
+            season = 2025,
+            date = today.toString()
+        )
+    }
+
+    // cargar datos iniciales
+    LaunchedEffect(backStackEntry?.destination?.route) {
+        viewModel.getFixturesByDate(
+            date = today.toString(),
+            limit = 100
         )
     }
 
@@ -78,25 +93,32 @@ fun MatchesScreen(navController: NavHostController) {
             Column {
                 PrimaryTopBar(
                     navController = navController,
-                    title = "SMARTFOOT"
+                    title = "UNIFOOT"
                 )
                 MatchesDateTopBar { newDate ->
                     previousDate = selectedDate
                     selectedDate = newDate
                     viewModel.getFixtureFollowedTeams(
-                        season = 2023,
+                        season = 2025,
                         date = newDate.toString()
                     )
 
                     viewModel.getNoFixtureFollowedTeams(
-                        season = 2023,
+                        season = 2025,
                         date = newDate.toString()
                     )
 
                     viewModel.getFixturesByCountry(
-                        season = 2023,
+                        season = 2025,
                         date = newDate.toString()
                     )
+
+                    viewModel.getFixturesByDate(
+                        date = newDate.toString(),
+                        limit = 100
+                    )
+
+
                 }
             }
         },
@@ -134,26 +156,49 @@ fun MatchesScreen(navController: NavHostController) {
                     .padding(paddingValues),
                 verticalArrangement = Arrangement.Top // los ítems empiezan arriba
             ) {
-                item {
-                    FollowFixtureList(
-                        navController = navController,
-                        fixtureState = fixtureState
-                    )
-                }
 
-                item {
-                    NoFollowFixtures(
-                        navController = navController,
-                        fixtureState = fixtureStateNoFollow
-                    )
-                }
+                if ( isAuthenticated) {
+                    item {
+                        FollowFixtureList(
+                            navController = navController,
+                            fixtureState = fixtureState
+                        )
+                    }
 
-                item {
-                    CountryFixtures(
-                        navController = navController,
-                        fixtureState = fixtureStateCountry,
-                        modifier = Modifier.fillParentMaxHeight() // 👈 ocupa todo el resto
-                    )
+                    item {
+                        FixturesByDate(
+                            navController = navController,
+                            fixtureState = fixtureStateDate
+                        )
+                    }
+
+                    item {
+                        NoFollowFixtures(
+                            navController = navController,
+                            fixtureState = fixtureStateNoFollow
+                        )
+                    }
+
+                    item {
+                        CountryFixtures(
+                            navController = navController,
+                            fixtureState = fixtureStateCountry,
+                            modifier = Modifier.fillParentMaxHeight() // 👈 ocupa todo el resto
+                        )
+                    }
+                }
+                else {
+
+                    item {
+                        FixturesByDate(
+                            navController = navController,
+                            fixtureState = fixtureStateDate,
+                            modifier = if (!isAuthenticated)
+                                Modifier.fillParentMaxHeight()
+                            else
+                                Modifier
+                        )
+                    }
                 }
             }
         }

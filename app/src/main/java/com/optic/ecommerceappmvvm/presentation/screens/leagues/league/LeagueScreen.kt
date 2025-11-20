@@ -42,7 +42,7 @@ fun LeagueScreen(
     // Llamar a la función solo una vez al inicio
     LaunchedEffect(leagueId) {
         viewModel.getLeagueById(leagueId)
-        viewModel.getLeagueFixture(leagueId)
+        viewModel.getLeagueFixture(leagueId, 2025)
 
     }
 

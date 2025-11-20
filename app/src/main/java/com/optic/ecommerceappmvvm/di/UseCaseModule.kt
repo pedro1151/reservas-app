@@ -21,11 +21,14 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.GetPlayersUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.GetallTeamUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamByIdUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixturesUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByDateUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureFollowedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLineupsUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNextFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNoFollowFixturesUC
@@ -92,6 +95,7 @@ object UseCaseModule {
         getTopFiveFixtureTeamUC = GetTopFiveFixtureTeamUC(teamRepository),
         getFixtureByIdUC = GetFixtureByIdUC(teamRepository),
         getFixtureLeagueUC =  GetFixtureLeagueUC(teamRepository),
+        getFixtureByDateUC = GetFixtureByDateUC(teamRepository),
         //leagues
         getLeagueStandingsUC = GetLeagueStandingsUC(teamRepository),
         getVersusFixtureTeamUC = GetVersusFixtureTeamUC(teamRepository),
@@ -101,7 +105,11 @@ object UseCaseModule {
         getNoFollowFixturesUC = GetNoFollowFixturesUC(teamRepository),
 
         //lineups
-        getFixtureLineupsUC = GetFixtureLineupsUC(teamRepository)
+        getFixtureLineupsUC = GetFixtureLineupsUC(teamRepository),
+        getFixtureStatsUC = GetFixtureStatsUC(teamRepository),
+
+        //teams stats
+        getTeamStatsUC = GetTeamStatsUC(teamRepository)
 
 
     )

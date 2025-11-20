@@ -6,6 +6,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
@@ -15,6 +16,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
+import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -40,6 +42,7 @@ interface TeamRepository {
     suspend fun getFollowedTeams(): Flow<Resource<List<Team>>>
     suspend fun createFollowedTeam(teamId: Int):Flow<Resource<FollowedTeamResponse>>
     suspend fun deleteFollowedTeam(teamId: Int):Flow<Resource<DefaultResponse>>
+    suspend fun getTeamStats(season: Int, teamId: Int, date: String? =  null):Flow<Resource<TeamStatsResponse>>
 
 
     //ligas
@@ -54,12 +57,16 @@ interface TeamRepository {
     suspend fun getCountryFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixtureById(id: Int): Flow<Resource<FixtureResponse>>
     suspend fun getFixtureLineups(id: Int): Flow<Resource<FixtureLineupsResponse>>
+    suspend fun getFixtureStats(id: Int): Flow<Resource<FixtureStatsResponse>>
     suspend fun getFixtureFollowedTeams(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getNoFollowFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getNextFixtureTeam(teamId: Int): Flow<Resource<FixtureResponse>>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
-    suspend fun getLeagueFixture(leagueId: Int): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getLeagueFixture(leagueId: Int, season: Int): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getFixturesByDate(date: String, limit: Int): Flow<Resource<List<FixtureResponse>>>
+
+
     //Versus
     suspend fun getFixtureVersus(
         teamOneId: Int,

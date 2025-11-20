@@ -3,8 +3,6 @@ package com.optic.ecommerceappmvvm.presentation.screens.player.players.list.comp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,21 +30,20 @@ fun PlayerListContent(
     navController: NavHostController,
     onFollowClick: (Int) -> Unit = {}
 ) {
-
-    LazyColumn(
+    Column(
         modifier = modifier
-            .padding(paddingValues)
+            .padding(PaddingValues(1.dp))
             .fillMaxSize()
+
             .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
-        items(players) { player ->
+        players.forEach { player ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 1.dp)
                     .clickable {
                         player.id?.let {
                             navController.navigate("${Graph.PLAYER}/$it")
@@ -83,7 +80,7 @@ fun PlayerListContent(
                                     .background(MaterialTheme.colorScheme.primary)
                             ) {
                                 AsyncImage(
-                                    model = "", // ← Logo del club (si lo tenés)
+                                    model = "", // Logo del club si se tiene
                                     contentDescription = "Logo del club",
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -106,7 +103,7 @@ fun PlayerListContent(
                         onClick = {
                             player.id?.let { onFollowClick(it) }
                         }
-                    ) // ← Botón de seguir a la derecha
+                    )
                 }
             }
         }

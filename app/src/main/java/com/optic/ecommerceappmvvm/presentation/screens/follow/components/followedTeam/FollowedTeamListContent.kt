@@ -51,6 +51,119 @@ fun FollowedTeamListContent(
 
     fun colorForIndex(index: Int) = colors[index % colors.size]
 
+    Column(
+        modifier = modifier
+            .padding(1.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+
+        val rows = followedTeams.chunked(2)
+
+        rows.forEachIndexed { rowIndex, rowItems ->
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                rowItems.forEachIndexed { index, player ->
+                    val globalIndex = rowIndex * 2 + index
+
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable {
+                                player.id?.let {
+                                    navController.navigate("${Graph.TEAM}/$it")
+                                }
+                            },
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(colorForIndex(globalIndex))
+                                .fillMaxSize()
+                                .padding(2.dp)
+                        ) {
+
+                            Column(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    AsyncImage(
+                                        model = player.logo ?: "",
+                                        contentDescription = "Logo de ${player.name}",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                    )
+
+                                    UnFollowButton(
+                                        onClick = {
+                                            player.id?.let { onUnFollowClick(it) }
+                                        }
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = player.name ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Si la fila tiene solo 1 ítem, completamos el espacio.
+                if (rowItems.size < 2) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+/*
+@Composable
+fun FollowedTeamListContent(
+    modifier: Modifier = Modifier,
+    followedTeams: List<Team>,
+    onUnFollowClick: (Int) -> Unit = {},
+    navController: NavHostController
+) {
+    val colors = listOf(
+        Color(0xFFBB86FC), // Purple 200
+        Color(0xFF03DAC5), // Teal 200
+        Color(0xFFFFB74D), // Orange 300
+        Color(0xFF4CAF50), // Green 500
+        Color(0xFFE91E63), // Pink 500
+        Color(0xFF2196F3), // Blue 500
+        Color(0xFFFF5722), // Deep Orange 500
+        Color(0xFF9C27B0), // Purple 500
+        Color(0xFF00BCD4), // Cyan 500
+        Color(0xFFFFC107), // Amber 500
+        Color(0xFF8BC34A), // Light Green 500
+        Color(0xFFE040FB)  // Purple Accent
+    )
+
+    fun colorForIndex(index: Int) = colors[index % colors.size]
+
     val listState = rememberLazyListState()
 
     LazyColumn(
@@ -141,3 +254,5 @@ fun FollowedTeamListContent(
         }
     }
 }
+
+ */

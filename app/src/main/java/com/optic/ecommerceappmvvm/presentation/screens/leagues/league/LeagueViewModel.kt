@@ -39,7 +39,7 @@ class LeagueViewModel @Inject constructor(
 
 
     // 👉 Guardamos la última season aquí
-    private var latestSeason: Int? = null
+    var latestSeason: Int? = null
 
     fun getLeagueById(leagueId:Int) {
         viewModelScope.launch {
@@ -51,9 +51,11 @@ class LeagueViewModel @Inject constructor(
                     latestSeason = result.data?.seasons
                         ?.maxByOrNull { it.year }  // Último año
                         ?.year
-                    if (latestSeason!! > 2023) {
+                    /*if (latestSeason!! > 2023) {
                         latestSeason = 2023
                     }
+
+                     */
                 }
             }
         }
@@ -84,9 +86,9 @@ class LeagueViewModel @Inject constructor(
     }
 
 
-    fun getLeagueFixture(leagueId: Int) {
+    fun getLeagueFixture(leagueId: Int, season:Int) {
         viewModelScope.launch {
-            teamUseCase.getFixtureLeagueUC(leagueId) .collectLatest { result ->
+            teamUseCase.getFixtureLeagueUC(leagueId, season) .collectLatest { result ->
                 _fixtureLeagueState.value = result
             }
         }

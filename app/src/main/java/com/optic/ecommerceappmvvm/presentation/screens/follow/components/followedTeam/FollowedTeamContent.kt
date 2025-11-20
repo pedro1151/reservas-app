@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.presentation.screens.follow.components.follow
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
@@ -19,27 +20,32 @@ fun FollowedTeamContent(
     onUnFollowClick: (Int) -> Unit = {},
     paddingValues: PaddingValues
 ) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues)) {
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxSize(),
+          //  .padding(paddingValues),
+        verticalArrangement = Arrangement.Top
+    ) {
 
-        // Parte superior: jugadores seguidos
-        FollowedTeamListContent(
-            modifier = Modifier,
-            followedTeams = followedTeams,
-            onUnFollowClick = onUnFollowClick,
-            navController = navController
-        )
+        item {
+            FollowedTeamListContent(
+                modifier = Modifier.fillMaxWidth(),
+                followedTeams = followedTeams,
+                onUnFollowClick = onUnFollowClick,
+                navController = navController
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // Parte inferior: lista completa de jugadores
-        TeamListContent(
-            modifier = Modifier.fillMaxSize(),
-            teams = teams,
-            navController = navController,
-            paddingValues = PaddingValues(8.dp),
-             onFollowClick = onFollowClick
-        )
+        item {
+            TeamListContent(
+                modifier = Modifier.fillMaxWidth(),
+                teams = teams,
+                navController = navController,
+                paddingValues = PaddingValues(1.dp),
+                onFollowClick = onFollowClick
+            )
+        }
     }
 }

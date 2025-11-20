@@ -28,6 +28,15 @@ val grayColorFixture = Color(0xFF4CAF50)
 
 val greenLimaColor = Color(0xFF00C853)
 
+val borderColorCardFixtureLight = Color(0xFF00C845)
+val borderColorCardFixtureDark = Color(0xFF000000)
+
+val ColorScheme.getYellowCardColor: Color
+    @Composable get() = Color(0xFFF7D716)
+
+val ColorScheme.getRedCardColor: Color
+    @Composable get() = Color(0xFFE53935)
+
 val ColorScheme.followButtonBackground: Color
     @Composable get() = when (LocalAppTheme.current.value) {
         AppThemeMode.DARK -> FollowButtonBackgroundDark
@@ -76,3 +85,11 @@ val ColorScheme.getGreenLima  : Color
         AppThemeMode.DARK -> greenLimaColor
         AppThemeMode.LIGHT -> greenLimaColor
     }
+
+val ColorScheme.getColorBorderFixture  : Color
+    @Composable get() = when (LocalAppTheme.current.value) {
+        AppThemeMode.DARK -> borderColorCardFixtureDark
+        AppThemeMode.LIGHT -> borderColorCardFixtureLight
+    }
+
+

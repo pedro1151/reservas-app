@@ -18,6 +18,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.component
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.lineups.FixtureLineupsScreen
 
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.components.standings.LeagueStandingsList
+import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.stats.FixtureStatsScreen
 
 import kotlinx.coroutines.launch
 
@@ -99,8 +100,12 @@ fun FixtureDetailContent(
                     )
                 }
 
-                3 -> PlaceholderTab("Estadisticas")
-
+                3 -> {
+                    FixtureStatsScreen(
+                        paddingValues = paddingValues,
+                        fixtureId = fixture.id
+                    )
+                }
             }
         }
     }

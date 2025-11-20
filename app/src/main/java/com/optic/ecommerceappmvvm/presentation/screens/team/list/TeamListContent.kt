@@ -33,19 +33,20 @@ fun TeamListContent(
     navController: NavHostController,
     onFollowClick: (Int) -> Unit = {}
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .padding(paddingValues)
-            .fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .fillMaxWidth()
     ) {
-        items(teams) { team ->
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        teams.forEach { team ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 1.dp, vertical = 1.dp)
                     .clickable {
                         team.id?.let {
                             navController.navigate("${Graph.TEAM}/$it")
@@ -83,7 +84,7 @@ fun TeamListContent(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Spacer(modifier = Modifier.weight(1f)) // ⬅️ Empuja el botón a la derecha
+                    Spacer(modifier = Modifier.weight(1f))
 
                     FollowButton(
                         onClick = {
@@ -95,3 +96,4 @@ fun TeamListContent(
         }
     }
 }
+

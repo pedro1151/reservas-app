@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
+import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButton
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 
 
@@ -68,10 +69,18 @@ fun LeagueCard(
             }
 
             // ✅ Acá es correcto usar un Composable
-            FollowButton(
-                isFollowed = isFollowed,
-                onClick = onFollowClick
-            )
+            if (isFollowed){
+                UnFollowButton(
+                    onClick = onFollowClick
+                )
+
+            }
+            else{
+                FollowButton(
+                    onClick = onFollowClick
+                )
+            }
+
         }
     }
 }

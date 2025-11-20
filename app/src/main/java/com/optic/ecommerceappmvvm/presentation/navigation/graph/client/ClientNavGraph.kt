@@ -43,7 +43,7 @@ fun ClientNavGraph(
     ) {
 
         composable(route = ClientScreen.Matches.route) {
-            MatchesScreen(navController)
+            MatchesScreen(navController, isAuthenticated)
         }
 
         composable(route = ClientScreen.Follow.route) {

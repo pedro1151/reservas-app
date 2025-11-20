@@ -22,6 +22,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.ui.theme.getColorBorderFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
 import java.time.LocalDateTime
@@ -129,7 +130,9 @@ fun FixtureItem(
                 // Marcador centrado
                 ScoreBoxAnimated(
                     homeScore = fixture.goalsHome,
-                    awayScore = fixture.goalsAway
+                    awayScore = fixture.goalsAway,
+                    statusShort = fixture.statusShort,
+                    fixtureDate = fixture.date
                 )
 
                 // Equipo visitante
@@ -155,6 +158,103 @@ fun FixtureItem(
     }
 }
 
+@Composable
+fun ScoreBoxAnimated(
+    homeScore: Int?,
+    awayScore: Int?,
+    statusShort: String?,
+    fixtureDate: String?
+) {
+
+    val context = LocalContext.current
+
+    // Si el partido NO ha empezado → mostrar hora HH:mm
+    if (statusShort == "NS" && fixtureDate != null) {
+
+        val localTime = try {
+            OffsetDateTime.parse(fixtureDate)
+                .toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault()))
+        } catch (e: Exception) {
+            "--:--"
+        }
+
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f))
+                .padding(vertical = 6.dp, horizontal = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = localTime,
+                /*fontWeight = FontWeight.Bold, */
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+
+        return
+    }
+
+    // Si SÍ hay goles → marcador animado
+    val green = MaterialTheme.colorScheme.getGreenColorFixture
+    val red = MaterialTheme.colorScheme.getRedColorFixture
+    val gray = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+
+    val homeBg by animateColorAsState(
+        targetValue = when {
+            homeScore != null && awayScore != null && homeScore > awayScore -> green
+            homeScore != null && awayScore != null && homeScore < awayScore -> red
+            else -> gray
+        },
+        label = "HomeScoreColor"
+    )
+
+    val awayBg by animateColorAsState(
+        targetValue = when {
+            homeScore != null && awayScore != null && awayScore > homeScore -> green
+            homeScore != null && awayScore != null && awayScore < homeScore -> red
+            else -> gray
+        },
+        label = "AwayScoreColor"
+    )
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f))
+    ) {
+        Box(
+            modifier = Modifier
+                .background(homeBg)
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+        ) {
+            Text(
+                text = (homeScore ?: "-").toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+        Box(
+            modifier = Modifier
+                .background(awayBg)
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+        ) {
+            Text(
+                text = (awayScore ?: "-").toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
+}
+
+/*
 @Composable
 fun ScoreBoxAnimated(homeScore: Int?, awayScore: Int?) {
     val green = MaterialTheme.colorScheme.getGreenColorFixture
@@ -211,3 +311,5 @@ fun ScoreBoxAnimated(homeScore: Int?, awayScore: Int?) {
         }
     }
 }
+
+ */
