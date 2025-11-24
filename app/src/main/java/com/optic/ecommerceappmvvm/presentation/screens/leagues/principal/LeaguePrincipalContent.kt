@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-// CONTENIDO PRINCIPAL
 fun LeaguePrincipalContent(
     modifier: Modifier = Modifier,
     leagues: List<League>,
@@ -30,23 +29,21 @@ fun LeaguePrincipalContent(
     viewModel: LeaguePrincipalViewModel,
     navController: NavHostController
 ) {
-    var query by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { query }
-            .debounce(400)
-            .distinctUntilChanged()
-            .collectLatest { value ->
-                if (value.isBlank()) {
-                    viewModel.getLeagues()
-                } else {
-                    viewModel.getLeagues(
-                        name = value,
-                        type = value,
-                        countryName = value
-                    )
-                }
-            }
+    val query by viewModel.searchQuery.collectAsState()
+
+    val hasQuery = query.isNotBlank()
+
+    val filteredLeagues = remember(query, leagues) {
+        leagues.filter { league ->
+            league.name.contains(query, ignoreCase = true) ||
+                    league.type.contains(query, ignoreCase = true) ||
+                    (league.country?.name?.contains(query, ignoreCase = true) ?: false)
+        }
+    }
+
+    val remainingLeagues = filteredLeagues.filterNot { fl ->
+        followedLeagues.any { it.id == fl.id }
     }
 
     Column(
@@ -55,96 +52,120 @@ fun LeaguePrincipalContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+
+        // 🔍 Barra de búsqueda
         LeagueSearchBar(
             query = query,
-            onQueryChange = { query = it }
+            onQueryChange = { viewModel.onSearchQueryChanged(it) }
         )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            contentPadding = PaddingValues(vertical = 1.dp),
+            verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
-            if (followedLeagues.isNotEmpty()) {
-                item {
-                    Text(
-                        text = "Ligas que sigues",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-                }
 
+            // ---------------------------------------------------------
+            // 🔥 1. SECCIÓN: LIGAS SEGUIDAS — se ocultan cuando se escribe
+            // ---------------------------------------------------------
+            item {
+                AnimatedVisibility(
+                    visible = !hasQuery && followedLeagues.isNotEmpty()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Ligas que sigues",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+
+            if (!hasQuery) {
                 items(
                     items = followedLeagues,
                     key = { it.id }
                 ) { league ->
-                    var visible by remember { mutableStateOf(true) }
-
-                    LaunchedEffect(league) {
-                        visible = true
-                    }
-
                     AnimatedVisibility(
-                        visible = visible,
+                        visible = true,
                         modifier = Modifier.animateItemPlacement()
                     ) {
-                        val coroutineScope = rememberCoroutineScope()
+                        val scope = rememberCoroutineScope()
                         LeagueCard(
                             league = league,
                             isFollowed = true,
                             onFollowClick = {
-                            visible = false
-                            coroutineScope.launch {
-                                delay(200)
-                                viewModel.deleteFollowedLeague(league.id)
-                            }
-                        },
+                                scope.launch {
+                                    viewModel.deleteFollowedLeague(league.id)
+                                }
+                            },
                             navController = navController
                         )
                     }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Explorar más ligas",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
+                    AnimatedVisibility(visible = true) {
+                        Column {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Explorar más ligas",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(horizontal = 12.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
                 }
             }
 
-            val remainingLeagues = leagues.filterNot { l -> followedLeagues.any { it.id == l.id } }
+            // ---------------------------------------------------------
+            // 🔥 2. RESULTADOS DE BÚSQUEDA
+            // ---------------------------------------------------------
 
-            items(
-                items = remainingLeagues,
-                key = { it.id }
-            ) { league ->
-                var visible by remember { mutableStateOf(true) }
-
-                LaunchedEffect(league) {
-                    visible = true
+            if (hasQuery && filteredLeagues.isEmpty()) {
+                item {
+                    AnimatedVisibility(visible = true) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 60.dp),
+                            contentAlignment = androidx.compose.ui.Alignment.Center
+                        ) {
+                            Text(
+                                text = "No se encontraron coincidencias",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
                 }
-
-                AnimatedVisibility(
-                    visible = visible,
-                    modifier = Modifier.animateItemPlacement()
-                ) {
-                    val coroutineScope = rememberCoroutineScope()
-                    LeagueCard(
-                        league = league,
-                        isFollowed = false,
-                        onFollowClick = {
-                            visible = false
-                            coroutineScope.launch {
-                                delay(200)
-                                viewModel.createFollowedLeague(league.id)
-                            }
-                        },
-                        navController = navController
-                    )
+            } else {
+                items(
+                    items = remainingLeagues,
+                    key = { it.id }
+                ) { league ->
+                    AnimatedVisibility(
+                        visible = true,
+                        modifier = Modifier.animateItemPlacement()
+                    ) {
+                        val scope = rememberCoroutineScope()
+                        LeagueCard(
+                            league = league,
+                            isFollowed = false,
+                            onFollowClick = {
+                                scope.launch {
+                                    viewModel.createFollowedLeague(league.id)
+                                }
+                            },
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
     }
 }
+

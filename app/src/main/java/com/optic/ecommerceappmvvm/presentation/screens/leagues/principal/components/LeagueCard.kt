@@ -30,14 +30,15 @@ fun LeagueCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(horizontal = 8.dp)
+            .height(75.dp)
+            .padding(horizontal = 1.dp, vertical = 0.dp)
             .clickable {
-        league.id?.let {
-            navController.navigate("${Graph.LEAGUE}/$it")
-        }
-    },
-        shape = RoundedCornerShape(16.dp),
+                league.id?.let {
+                    navController.navigate("${Graph.LEAGUE}/$it")
+                }
+
+            },
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
