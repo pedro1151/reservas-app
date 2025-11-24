@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.data.repository
 
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias.TriviasRemoteDataSource
+import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
@@ -52,6 +53,14 @@ class TriviasRepositoryImpl (
         emit(
             ResponseToRequest.send(
                 triviasRemoteDataSource.createGameScore(gameScoreCreate)
+            )
+        )
+    }
+
+    override suspend fun getSuggestedPlayers(limit: Int): Flow<Resource<List<Player>>> = flow {
+        emit(
+            ResponseToRequest.send(
+                triviasRemoteDataSource.getSuggestedPlayers(limit)
             )
         )
     }

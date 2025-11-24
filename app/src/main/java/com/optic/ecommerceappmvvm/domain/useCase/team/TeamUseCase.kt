@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.domain.useCase.team
 
+import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetSuggestedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixturesUC
@@ -27,6 +28,7 @@ data class TeamUseCase(
     // teams
     val getallTeamUseCase: GetallTeamUseCase,
     val getTeamByIdUC : GetTeamByIdUC,
+    val getSuggestedTeamsUC: GetSuggestedTeamsUC,
 
     //players
     val getPlayersUseCase: GetPlayersUseCase,

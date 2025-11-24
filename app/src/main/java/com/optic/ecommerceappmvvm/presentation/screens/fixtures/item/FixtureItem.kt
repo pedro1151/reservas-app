@@ -62,7 +62,7 @@ fun FixtureItem(
                 }
             },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer) ,
-        shape = RoundedCornerShape(16.dp),   // 👈 bordes redondeados
+        shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
         elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
 
     ) {

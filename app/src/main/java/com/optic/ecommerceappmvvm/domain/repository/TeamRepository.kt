@@ -24,6 +24,7 @@ interface TeamRepository {
 
     // teams
     suspend fun getAll(): Flow<Resource<List<Team>>>
+    suspend fun getSuggestedTeams(limit: Int): Flow<Resource<List<Team>>>
     suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>>
 
     //PLayers
@@ -63,7 +64,7 @@ interface TeamRepository {
     suspend fun getFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getNextFixtureTeam(teamId: Int): Flow<Resource<FixtureResponse>>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
-    suspend fun getLeagueFixture(leagueId: Int, season: Int): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getLeagueFixture(leagueId: Int, season: Int, teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixturesByDate(date: String, limit: Int): Flow<Resource<List<FixtureResponse>>>
 
 

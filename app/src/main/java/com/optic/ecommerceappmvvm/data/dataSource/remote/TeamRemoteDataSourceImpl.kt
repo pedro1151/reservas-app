@@ -25,6 +25,7 @@ import retrofit2.Response
 
 class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemoteDataSource {
     override suspend fun getAll(): Response<List<Team>> = teamService.getTeams()
+    override suspend fun getSuggestedTeams(limit: Int): Response<List<Team>> = teamService.getSuggestedTeams(limit)
     override suspend fun getTeamById(teamId: Int): Response<TeamResponse> = teamService.getTeamById(teamId)
 
 
@@ -127,8 +128,9 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
 
     override suspend fun getLeagueFixture(
         leagueId: Int,
-        season:Int
-    ): Response<List<FixtureResponse>> = teamService.getLeagueFixture(leagueId, season)
+        season:Int,
+        teamId: Int
+    ): Response<List<FixtureResponse>> = teamService.getLeagueFixture(leagueId, season, teamId)
 
     // Versus Fixture
     override suspend fun getFixtureVersus(

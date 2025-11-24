@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.Team
-import com.optic.ecommerceappmvvm.presentation.screens.team.list.TeamListContent
 
 
 @Composable

@@ -25,6 +25,7 @@ interface TeamRemoteDataSource {
    */
     // Teams
     suspend fun getAll(): Response<List<Team>>
+    suspend fun getSuggestedTeams(limit: Int): Response<List<Team>>
     suspend fun getTeamById(teamId: Int): Response<TeamResponse>
 
     //Players
@@ -46,32 +47,44 @@ interface TeamRemoteDataSource {
 
 
   //LIGAS
-  suspend fun createFollowedLeague(leagueId: Int): Response<FollowedLeagueResponse>
-  suspend fun getFollowedLeagues(): Response<List<League>>
-  suspend fun deleteFollowedLeague(leagueId: Int): Response<DefaultResponse>
-  suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
-  suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse>
+    suspend fun createFollowedLeague(leagueId: Int): Response<FollowedLeagueResponse>
+    suspend fun getFollowedLeagues(): Response<List<League>>
+    suspend fun deleteFollowedLeague(leagueId: Int): Response<DefaultResponse>
+    suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
+    suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse>
 
     // FIXTURES
   //Recuperar Fixture por Id
     suspend fun getCountryFixtures(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getFixtureById(id: Int): Response<FixtureResponse>
     suspend fun getFixtureLineups(id: Int): Response<FixtureLineupsResponse>
+
+
     // Stats
     suspend fun getFixtureStats(id: Int): Response<FixtureStatsResponse>
     suspend fun getTeamStats(season: Int, teamId: Int, date: String?=null): Response<TeamStatsResponse>
+
+
    //fixtures de teans seguidos
     suspend fun getFixtureFollowedTeams(season: Int, date: String): Response<List<FixtureResponse>>
     suspend fun getNoFollowFixtures(season: Int, date: String): Response<List<FixtureResponse>>
+
     //Teams
     suspend fun getFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
     suspend fun getNextFixtureTeam(teamId: Int): Response<FixtureResponse>
     suspend fun getTopFiveFixtureTeam(teamId: Int): Response<List<FixtureResponse>>
+
+
     // por date
     suspend fun getFixturesByDate(date: String, limit: Int): Response<List<FixtureResponse>>
 
     // Leagues
-    suspend fun getLeagueFixture(leagueId: Int, season: Int): Response<List<FixtureResponse>>
+    suspend fun getLeagueFixture(
+        leagueId: Int,
+        season: Int,
+        teamId: Int
+    ): Response<List<FixtureResponse>>
+
     // versus
     suspend fun getFixtureVersus(
         teamOneId: Int,

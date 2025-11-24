@@ -20,6 +20,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.GetPlayerStatsUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.GetPlayersUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.GetallTeamUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
+import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetSuggestedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixturesUC
@@ -47,6 +48,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetSimilarPlayers
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.games.score.CreateGameScoreUC
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.guessplayer.GetGuessPlayerUC
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.players.GetSuggestedPlayersUC
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -109,7 +111,10 @@ object UseCaseModule {
         getFixtureStatsUC = GetFixtureStatsUC(teamRepository),
 
         //teams stats
-        getTeamStatsUC = GetTeamStatsUC(teamRepository)
+        getTeamStatsUC = GetTeamStatsUC(teamRepository),
+
+        //suggested teams
+        getSuggestedTeamsUC = GetSuggestedTeamsUC(teamRepository)
 
 
     )
@@ -128,7 +133,9 @@ object UseCaseModule {
         // GUESS PLAYER
         getGuessPlayerUC = GetGuessPlayerUC(triviasRepository),
         //score
-        createGameScoreUC = CreateGameScoreUC(triviasRepository)
+        createGameScoreUC = CreateGameScoreUC(triviasRepository),
+        //suggested players
+        getSuggestedPlayersUC = GetSuggestedPlayersUC(triviasRepository)
 
     )
 

@@ -12,6 +12,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.repository.AuthRepository
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
+import com.optic.ecommerceappmvvm.domain.useCase.trivias.TriviasUseCase
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowViewModel @Inject constructor(
-    private val teamUseCase: TeamUseCase
+    private val teamUseCase: TeamUseCase,
+    private val triviasUseCase: TriviasUseCase
 ) : ViewModel() {
 
     private val _teamsState = MutableStateFlow<Resource<List<Team>>>(Resource.Loading)
@@ -63,11 +65,12 @@ class FollowViewModel @Inject constructor(
 
 
     init {
-        getTeams()
-        getPlayers()
+        getSuggestedTeams(50)
+        getSuggestedPlayers(50)
         getFollowedPlayers()
         getFollowedTeams()
     }
+    /*
     private fun getPlayers() {
         viewModelScope.launch {
             teamUseCase.getPlayersUseCase().collectLatest { result ->
@@ -75,9 +78,29 @@ class FollowViewModel @Inject constructor(
             }
         }
     }
+
+     */
+    private fun getSuggestedPlayers(limit: Int) {
+        viewModelScope.launch {
+            triviasUseCase.getSuggestedPlayersUC(limit).collectLatest { result ->
+                _playersState.value = result
+            }
+        }
+    }
+    /*
     private fun getTeams() {
         viewModelScope.launch {
             teamUseCase.getallTeamUseCase().collectLatest { result ->
+                _teamsState.value = result
+            }
+        }
+    }
+
+     */
+
+    private fun getSuggestedTeams(limit: Int) {
+        viewModelScope.launch {
+            teamUseCase.getSuggestedTeamsUC(limit) .collectLatest { result ->
                 _teamsState.value = result
             }
         }
@@ -102,7 +125,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all players")
                     getFollowedPlayers() // 👈 refresca la lista de jugadores seguidos
-                    getPlayers()
+                    getSuggestedPlayers(50)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _playersState.value = _playersState.value
@@ -127,7 +150,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all players")
                     getFollowedPlayers() // 👈 refresca la lista de jugadores seguidos
-                    getPlayers()
+                    getSuggestedPlayers(50)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _playersState.value = _playersState.value
@@ -183,7 +206,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all teams")
                     getFollowedTeams() // 👈 refresca la lista de teams seguidos
-                    getTeams()
+                    getSuggestedTeams(50)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _teamsState.value = _teamsState.value
@@ -207,7 +230,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all teams")
                     getFollowedTeams() // 👈 refresca la lista de teams seguidos
-                    getTeams()
+                    getSuggestedTeams(50)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _teamsState.value = _teamsState.value

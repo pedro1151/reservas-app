@@ -41,9 +41,10 @@ fun FixturesByDate(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+            .padding(horizontal = 1.dp, vertical = 1.dp),
+        verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()

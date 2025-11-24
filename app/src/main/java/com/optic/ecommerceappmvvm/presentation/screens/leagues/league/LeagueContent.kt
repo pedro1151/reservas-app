@@ -83,8 +83,7 @@ fun LeagueContent(
                 1 -> LeagueFixture(
                     modifier = Modifier,
                     navController = navController,
-                    fixtureState  = leagueFixtureState,
-                    paddingValues = paddingValues
+                    fixtureState  = leagueFixtureState
                 )
                 2 -> PlaceholderTab("Noticias")
                 3 -> PlaceholderTab("Estad. Jugador")

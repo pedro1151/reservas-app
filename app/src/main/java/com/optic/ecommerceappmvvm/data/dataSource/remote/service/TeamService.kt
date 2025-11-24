@@ -39,6 +39,13 @@ interface TeamService {
         @Path("team_id") teamId: Int
     ): Response<TeamResponse>
 
+    // equipos sugeridos
+
+    @GET("football/teams/suggested/{limit}")
+    suspend fun getSuggestedTeams(
+        @Path("limit") limit: Int
+    ): Response<List<Team>>
+
     // players
 
     @GET("football/getPlayers")
@@ -183,10 +190,11 @@ interface TeamService {
     ): Response<List<FixtureResponse>>
 
     //Fixture de una Liga
-    @GET("football/fixtures/league/{league_id}/season/{season}")
+    @GET("football/fixtures/league/{league_id}/season/{season}/team/{team_id}")
     suspend fun getLeagueFixture(
         @Path("league_id") leagueId: Int,
-        @Path("season") season: Int
+        @Path("season") season: Int,
+        @Path("team_id") teamId: Int
     ): Response<List<FixtureResponse>>
 
     // fixture por fecha

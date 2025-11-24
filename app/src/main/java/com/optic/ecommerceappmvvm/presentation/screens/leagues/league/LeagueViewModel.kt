@@ -86,9 +86,9 @@ class LeagueViewModel @Inject constructor(
     }
 
 
-    fun getLeagueFixture(leagueId: Int, season:Int) {
+    fun getLeagueFixture(leagueId: Int, season:Int, teamId:Int) {
         viewModelScope.launch {
-            teamUseCase.getFixtureLeagueUC(leagueId, season) .collectLatest { result ->
+            teamUseCase.getFixtureLeagueUC(leagueId, season, teamId) .collectLatest { result ->
                 _fixtureLeagueState.value = result
             }
         }

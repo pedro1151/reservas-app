@@ -1,11 +1,18 @@
 package com.optic.ecommerceappmvvm.presentation.screens.follow
 
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
@@ -20,6 +27,8 @@ fun FollowScreen(
     navController: NavHostController,
     isAuthenticated: Boolean
 ) {
+
+    val backStackEntry = navController.currentBackStackEntryAsState().value
     val viewModel: FollowViewModel = hiltViewModel()
 
     val teamsState by viewModel.teamsState.collectAsState()
@@ -41,9 +50,18 @@ fun FollowScreen(
         containerColor = GreyLight
     ) { paddingValues ->
 
+
+
         when {
             teamsState is Resource.Loading || playersState is Resource.Loading -> {
-                ProgressBar()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
             teamsState is Resource.Success && playersState is Resource.Success -> {

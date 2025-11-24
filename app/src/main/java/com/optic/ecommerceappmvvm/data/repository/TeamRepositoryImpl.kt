@@ -37,6 +37,16 @@ class TeamRepositoryImpl(
         )
     }
 
+    override suspend fun getSuggestedTeams(
+        limit: Int
+    ): Flow<Resource<List<Team>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getSuggestedTeams(limit)
+            )
+        )
+    }
+
     override suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>> = flow{
         emit(
             ResponseToRequest.send(
@@ -287,11 +297,12 @@ class TeamRepositoryImpl(
 
     override suspend fun getLeagueFixture(
         leagueId: Int,
-        season:Int
+        season:Int,
+        teamId: Int
     ): Flow<Resource<List<FixtureResponse>>> = flow{
         emit(
             ResponseToRequest.send(
-                teamRemoteDataSource.getLeagueFixture(leagueId, season)
+                teamRemoteDataSource.getLeagueFixture(leagueId, season, teamId)
             )
         )
     }

@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias
 
 
+import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
@@ -15,5 +16,7 @@ class TriviasRemoteDataSourceImpl (private val triviasService: TriviasService) :
     override suspend fun genDificultys(): Response<List<GameDificulty>> = triviasService.getDificultys()
     override suspend fun genGuessPlayer(topK: Int): Response<GuessPlayerResponse> = triviasService.getGuessPlayer(topK)
     override suspend fun createGameScore(gameScore: GameScoreCreate): Response<GameScoreResponse> = triviasService.createGameScore(gameScore)
+
+    override suspend fun getSuggestedPlayers(limit: Int): Response<List<Player>> = triviasService.getSuggestedPlayers(limit)
 
 }

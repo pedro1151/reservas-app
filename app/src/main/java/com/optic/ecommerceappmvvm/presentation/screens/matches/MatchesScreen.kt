@@ -22,15 +22,31 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.home.components.ClientBottomBar
 import com.optic.ecommerceappmvvm.presentation.screens.matches.countryfixtures.CountryFixtures
 import com.optic.ecommerceappmvvm.presentation.screens.matches.fixturesbydate.FixturesByDate
 import com.optic.ecommerceappmvvm.presentation.screens.matches.nofollowfixtures.NoFollowFixtures
+import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
@@ -150,54 +166,88 @@ fun MatchesScreen(
             },
             label = "FixturesAnimation"
         ) { _ ->
-            LazyColumn (
-                modifier = Modifier
-                    .fillMaxSize()   // ocupa todo el alto y ancho disponible
-                    .padding(paddingValues),
-                verticalArrangement = Arrangement.Top // los ítems empiezan arriba
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()   // ocupa todo el alto y ancho disponible
+                        .padding(paddingValues),
+                    verticalArrangement = Arrangement.Top // los ítems empiezan arriba
+                ) {
 
-                if ( isAuthenticated) {
-                    item {
-                        FollowFixtureList(
-                            navController = navController,
-                            fixtureState = fixtureState
-                        )
-                    }
+                    if (isAuthenticated) {
+                        item {
+                            FollowFixtureList(
+                                navController = navController,
+                                fixtureState = fixtureState
+                            )
+                        }
 
-                    item {
-                        FixturesByDate(
-                            navController = navController,
-                            fixtureState = fixtureStateDate
-                        )
-                    }
+                        item {
+                            FixturesByDate(
+                                navController = navController,
+                                fixtureState = fixtureStateDate
+                            )
+                        }
 
-                    item {
-                        NoFollowFixtures(
-                            navController = navController,
-                            fixtureState = fixtureStateNoFollow
-                        )
-                    }
+                        item {
+                            NoFollowFixtures(
+                                navController = navController,
+                                fixtureState = fixtureStateNoFollow
+                            )
+                        }
 
-                    item {
-                        CountryFixtures(
-                            navController = navController,
-                            fixtureState = fixtureStateCountry,
-                            modifier = Modifier.fillParentMaxHeight() // 👈 ocupa todo el resto
-                        )
-                    }
-                }
-                else {
+                        item {
+                            CountryFixtures(
+                                navController = navController,
+                                fixtureState = fixtureStateCountry,
+                                modifier = Modifier.fillParentMaxHeight() // 👈 ocupa todo el resto
+                            )
+                        }
+                    } else {
 
-                    item {
-                        FixturesByDate(
-                            navController = navController,
-                            fixtureState = fixtureStateDate,
-                            modifier = if (!isAuthenticated)
-                                Modifier.fillParentMaxHeight()
-                            else
-                                Modifier
-                        )
+                        item {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(horizontal = 1.dp, vertical = 10.dp),
+                                verticalArrangement = Arrangement.spacedBy(1.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center  // 👈 centra los elementos en la fila
+                                ) {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.IconSecondaryColor
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Logueate para empezar a seguir equipos",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 15.sp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            textAlign = TextAlign.Center,   // 👈 centrado
+                                        ),
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                            }
+                        }
+
+                        item {
+                            FixturesByDate(
+                                navController = navController,
+                                fixtureState = fixtureStateDate,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }

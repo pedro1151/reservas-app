@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.domain.repository
 
 
+import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.dificulty.GameDificulty
@@ -16,5 +17,7 @@ interface TriviasRepository {
     suspend fun getDificultys(): Flow<Resource<List<GameDificulty>>>
     suspend fun getGuessPlayer(topK: Int): Flow<Resource<GuessPlayerResponse>>
     suspend fun createGameScore(gameScoreCreate: GameScoreCreate): Flow<Resource<GameScoreResponse>>
+
+    suspend fun getSuggestedPlayers(limit: Int): Flow<Resource<List<Player>>>
 
 }

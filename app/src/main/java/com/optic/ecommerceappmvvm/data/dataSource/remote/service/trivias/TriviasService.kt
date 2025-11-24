@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.data.dataSource.remote.service.trivias
 
 import com.optic.ecommerceappmvvm.domain.model.AuthResponse
 import com.optic.ecommerceappmvvm.domain.model.User
+import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.SimilarPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.trivias.game.GameResponse
@@ -45,7 +46,11 @@ interface TriviasService {
                 @Body() gameScore: GameScoreCreate,
         ): Response<GameScoreResponse>
 
-
+        // jugadores sugeridos
+        @GET("trivias/suggested/players/{limit}")
+        suspend fun getSuggestedPlayers(
+                @Path("limit") limit: Int
+        ): Response<List<Player>>
 
 
 
