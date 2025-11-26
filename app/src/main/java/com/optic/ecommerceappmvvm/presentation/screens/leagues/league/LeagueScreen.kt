@@ -73,6 +73,8 @@ fun LeagueScreen(
             is Resource.Failure -> {
                 // mostrar error: result.message
             }
+
+            else -> {}
         }
 
     }

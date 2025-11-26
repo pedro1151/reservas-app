@@ -80,6 +80,8 @@ fun TopTeamFixture(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

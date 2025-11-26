@@ -57,5 +57,7 @@ fun NextFixture(
                 color = MaterialTheme.colorScheme.error
             )
         }
+
+        else -> {}
     }
 }

@@ -112,6 +112,8 @@ fun FollowFixtureList(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
+import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.auth.AuthScreen
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
@@ -54,7 +55,9 @@ fun FollowScreen(
 
         when {
             teamsState is Resource.Loading || playersState is Resource.Loading -> {
+               /*
                 Box(
+
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
@@ -62,6 +65,8 @@ fun FollowScreen(
                 ) {
                     CircularProgressIndicator()
                 }
+                */
+
             }
 
             teamsState is Resource.Success && playersState is Resource.Success -> {
@@ -117,5 +122,6 @@ fun FollowScreen(
                 Text("No estás siguiendo a ningún jugador o equipo.")
             }
         }
+        CustomProgressBar(isLoading = teamsState is Resource.Loading && playersState is Resource.Loading)
     }
 }

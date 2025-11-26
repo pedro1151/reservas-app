@@ -105,6 +105,8 @@ fun PrincipalGuessPlayerScreen(
                         }
                     }
                 }
+
+                else -> {}
             }
         }
     }

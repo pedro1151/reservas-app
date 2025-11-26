@@ -91,6 +91,8 @@ fun FixtureStatsScreen(
                 }
             }
         }
+
+        else -> {}
     }
 }
 

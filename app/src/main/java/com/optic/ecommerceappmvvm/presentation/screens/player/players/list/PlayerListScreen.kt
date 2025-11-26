@@ -38,6 +38,8 @@ fun PlayerListScreen(
             is Resource.Failure -> {
                 // TODO: mostrar error
             }
+
+            else -> {}
         }
     }
 }

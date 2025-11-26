@@ -60,9 +60,12 @@ fun LeaguePrincipalContent(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(vertical = 1.dp),
-            verticalArrangement = Arrangement.spacedBy(1.dp)
+            verticalArrangement = Arrangement.spacedBy(1.dp),
+
         ) {
 
             // ---------------------------------------------------------

@@ -151,5 +151,7 @@ fun GameList(
                 }
             }
         }
+
+        else -> {}
     }
 }

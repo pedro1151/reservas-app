@@ -30,6 +30,7 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.components.ThemeSelectio
 @Composable
 fun MasContent(modifier: Modifier
                ,navController: NavHostController
+               ,isAuthenticated: Boolean
 
 ) {
     val activity = LocalContext.current as? Activity
@@ -55,8 +56,8 @@ fun MasContent(modifier: Modifier
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 1.dp, vertical = 1.dp),
+        verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         MasCardItem(
             title = "Tema",
@@ -64,29 +65,21 @@ fun MasContent(modifier: Modifier
             onClick = { showSheet.value = true }  // <-- disparador para mostrar el bottom sheet
         )
         MasCardItem(title = "Seleccionar Idioma", icon = Icons.Default.List)
-
-        Text(
-            text = "Otros",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.padding(top = 8.dp)
-        )
-
-        MasCardItem(title = "Compartir AllFoot", icon = Icons.Default.Share)
+        MasCardItem(title = "Compartir UNIFOT", icon = Icons.Default.Share)
         MasCardItem(title = "Síguenos", icon = Icons.Default.Person)
         MasCardItem(title = "Política de Privacidad", icon = Icons.Default.Info)
         MasCardItem(title = "Versión de la app", icon = Icons.Default.Info)
 
         // 🔴 NUEVO: Cerrar sesión
-        MasCardItem(
-            title = "Cerrar sesión",
-            icon = Icons.Default.ExitToApp,
-        ) {
-            vm.logout()
-            activity?.finish()
-            activity?.startActivity(Intent(activity, MainActivity::class.java))
+        if (isAuthenticated) {
+            MasCardItem(
+                title = "Cerrar sesión",
+                icon = Icons.Default.Logout,
+            ) {
+                vm.logout()
+                activity?.finish()
+                activity?.startActivity(Intent(activity, MainActivity::class.java))
+            }
         }
     }
 }
@@ -103,10 +96,10 @@ fun MasCardItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(horizontal = 8.dp)
+            .height(75.dp)
+            .padding(horizontal = 1.dp, vertical = 1.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

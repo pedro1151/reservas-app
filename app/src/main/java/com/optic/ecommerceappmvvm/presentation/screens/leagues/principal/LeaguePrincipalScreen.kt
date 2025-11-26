@@ -12,6 +12,7 @@ import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import androidx.compose.runtime.*
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
+import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
@@ -32,14 +33,14 @@ fun LeaguePrincipalScreen(navController: NavHostController) {
                 title = "Ligas"
             )
         },
-        containerColor = GreyLight
+        //containerColor = GreyLight
     ) { paddingValues ->
 
         val followed = (followedLeaguesResource as? Resource.Success)?.data ?: emptyList()
 
         when (val result = leagueResource) {
             is Resource.Loading -> {
-                CircularProgressIndicator()
+               // CircularProgressIndicator()
             }
             is Resource.Success -> {
                 LeaguePrincipalContent(
@@ -54,6 +55,10 @@ fun LeaguePrincipalScreen(navController: NavHostController) {
             is Resource.Failure -> {
                 // mostrar error si querés
             }
+
+            else -> {}
         }
+
+        CustomProgressBar(isLoading = leagueResource is Resource.Loading)
     }
 }

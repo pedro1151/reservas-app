@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.presentation.components.DefaultButton
+import com.optic.ecommerceappmvvm.presentation.components.DefaultButtonLink
 import com.optic.ecommerceappmvvm.presentation.components.DefaultTextField
+import com.optic.ecommerceappmvvm.presentation.components.inputs.CodeBox
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.auth.login.LoginViewModel
@@ -63,7 +67,7 @@ fun LoginContentPless(
 
     // 🔄 Control de contador y botón de reenviar
     var showResendButton by remember { mutableStateOf(false) }
-    var remainingTime by remember { mutableStateOf(30) }
+    var remainingTime by remember { mutableStateOf(60) }
 
     LaunchedEffect(Unit) {
         while (remainingTime > 0) {
@@ -84,12 +88,8 @@ fun LoginContentPless(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         MaterialTheme.colorScheme.background
-                    )
-                )
+
             )
             .padding(horizontal = 24.dp)
             .alpha(alpha)
@@ -107,8 +107,7 @@ fun LoginContentPless(
                     .align(Alignment.Start)
                     .size(40.dp)
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                        shape = CircleShape
+                        MaterialTheme.colorScheme.background
                     )
                     .clickable {
                         navController.navigate(ClientScreen.Login.route) {
@@ -127,14 +126,26 @@ fun LoginContentPless(
 
             Spacer(modifier = Modifier.height(60.dp))
 
-            Text(
-                text = "UNIFOOT",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 34.sp
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = com.optic.ecommerceappmvvm.R.drawable.logo_app),
+                    contentDescription = "Logo UNIFOT",
+                    modifier = Modifier
+                        .size(80.dp)
+                        //.padding(bottom = 24.dp)
+                )
+                Text(
+                    text = "UNIFOT",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 34.sp
+                    ),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             Text(
                 text = "Verifica tu código de acceso",
                 style = MaterialTheme.typography.bodyLarge,
@@ -149,14 +160,14 @@ fun LoginContentPless(
                     .fillMaxWidth()
                     .wrapContentHeight(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.background
                 ),
                 shape = RoundedCornerShape(18.dp),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 26.dp, vertical = 30.dp),
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -165,13 +176,19 @@ fun LoginContentPless(
                         color = MaterialTheme.colorScheme.primary
                     )
 
+                    Text(
+                        text = vm.state.email,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    DefaultTextField(
+                    CodeBox(
                         modifier = Modifier.fillMaxWidth(),
                         value = state.code,
                         onValueChange = { text -> vm.onCodeInput(text) },
-                        label = "Código de verificación",
+                        label = "Ejemplo: 555999",
                         icon = Icons.Default.EmojiFoodBeverage,
                         keyboardType = KeyboardType.Number
                     )
@@ -209,14 +226,14 @@ fun LoginContentPless(
                         enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
                         exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 })
                     ) {
-                        DefaultButton(
+                        DefaultButtonLink(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(52.dp),
                             text = "Reenviar código",
                             onClick = {
                                 vm.loginSendCode()
-                                remainingTime = 30
+                                remainingTime = 60
                                 showResendButton = false
                             },
                         )

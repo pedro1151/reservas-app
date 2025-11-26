@@ -13,12 +13,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChangeHistory
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +33,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
 import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
@@ -45,31 +53,9 @@ fun FixturesByDate(
         verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
 
-        // Encabezado simple, sin expand/collapse
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.AccountBalance,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.IconSecondaryColor
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-
         when (fixtureState) {
             is Resource.Loading -> {
-                CircularProgressIndicator()
+               // CircularProgressIndicator()
             }
 
             is Resource.Success -> {
@@ -86,49 +72,81 @@ fun FixturesByDate(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
                     )
                 } else {
-                    // --- Agrupar por liga ---
+
+                    // AGRUPAR POR LIGA
                     val groupedByLeague = fixtures
-                        .filter { it.league != null && it.league.id != null }
-                        .groupBy { it.league.id!! }
+                        .filter { it.league?.id != null }
+                        .groupBy { it.league!!.id!! }
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
+
                         groupedByLeague.forEach { (_, leagueFixtures) ->
                             val league = leagueFixtures.first().league
+
+                            var expanded by remember { mutableStateOf(true) }
 
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp),
-                                shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
+                                shape = RoundedCornerShape(10.dp),
                                 elevation = CardDefaults.cardElevation(2.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer) ,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                                )
                             ) {
-                                Column(modifier = Modifier.padding(10.dp)) {
 
-                                    // Encabezado de Liga
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(bottom = 8.dp)
-                                    ) {
-                                        AsyncImage(
-                                            model = league.logo ?: "",
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = league.name ?: "Liga desconocida",
-                                            style = MaterialTheme.typography.titleSmall.copy(
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                        )
-                                    }
+                                // HEADER (CLICKABLE)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { expanded = !expanded }
+                                        .padding(12.dp)
+                                ) {
+                                    AsyncImage(
+                                        model = league?.logo ?: "",
+                                        contentDescription = null,
+                                        modifier = Modifier.size(22.dp)
+                                    )
 
+                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                    Text(
+                                        text = league?.name ?: "Liga desconocida",
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    Icon(
+                                        imageVector = if (expanded)
+                                            Icons.Default.KeyboardArrowDown       // ⬇ expandido
+                                        else
+                                            Icons.AutoMirrored.Filled.KeyboardArrowRight,      // ➡ colapsado
+                                        contentDescription = "Expand/Collapse",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+
+                                // CONTENIDO EXPANDIBLE
+                                AnimatedVisibility(
+                                    visible = expanded,
+                                    enter = expandVertically(
+                                        animationSpec = tween(500)
+                                    ),
+                                    exit = shrinkVertically(
+                                        animationSpec = tween(500)
+                                    )
+                                ) {
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        modifier = Modifier.padding(12.dp)
                                     ) {
                                         leagueFixtures.forEach { fixture ->
                                             FixtureItem(
@@ -150,15 +168,10 @@ fun FixturesByDate(
                     color = MaterialTheme.colorScheme.error
                 )
             }
-        }
-    }
-}
 
-@Composable
-fun LeagueLogo(url: String?, size: Int = 28) {
-    AsyncImage(
-        model = url,
-        contentDescription = null,
-        modifier = Modifier.size(size.dp)
-    )
+
+            else -> {}
+        }
+        CustomProgressBar(isLoading = fixtureState is Resource.Loading)
+    }
 }

@@ -61,6 +61,8 @@ fun FixtureDetailScreen(
             is Resource.Failure -> {
                 // mostrar error: result.message
             }
+
+            else -> {}
         }
 
     }

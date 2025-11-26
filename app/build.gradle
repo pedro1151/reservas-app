@@ -48,6 +48,9 @@ android {
         kotlinCompilerExtensionVersion '1.5.14'
     }
 
+
+
+
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -58,6 +61,7 @@ android {
 dependencies {
     // BOM para Jetpack Compose (alinea todas las versiones)
     implementation platform("androidx.compose:compose-bom:2024.05.00")
+
 
     // Core
     implementation 'androidx.core:core-ktx:1.13.1'

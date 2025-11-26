@@ -80,6 +80,8 @@ fun PlayerMatchesTab(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

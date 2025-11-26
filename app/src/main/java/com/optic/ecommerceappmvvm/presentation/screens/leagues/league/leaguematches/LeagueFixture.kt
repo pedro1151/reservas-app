@@ -137,6 +137,8 @@ fun LeagueFixture(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

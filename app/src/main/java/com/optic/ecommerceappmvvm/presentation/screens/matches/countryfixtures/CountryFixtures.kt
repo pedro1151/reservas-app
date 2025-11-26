@@ -111,6 +111,8 @@ fun CountryFixtures(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

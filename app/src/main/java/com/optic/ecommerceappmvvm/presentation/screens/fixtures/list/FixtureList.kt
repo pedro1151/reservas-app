@@ -84,6 +84,8 @@ fun FixtureList(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

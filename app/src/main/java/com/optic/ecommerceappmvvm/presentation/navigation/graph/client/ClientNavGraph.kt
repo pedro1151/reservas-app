@@ -70,11 +70,11 @@ fun ClientNavGraph(
         }
 
         composable(route = ClientScreen.Profile.route) {
-            MasScreen(navController)
+            MasScreen(navController, isAuthenticated)
         }
 
         composable(route = ClientScreen.Mas.route) {
-            MasScreen(navController)
+            MasScreen(navController, isAuthenticated)
         }
         composable(route = ClientScreen.Games.route) {
             GamesPrincipalScreen(navController)

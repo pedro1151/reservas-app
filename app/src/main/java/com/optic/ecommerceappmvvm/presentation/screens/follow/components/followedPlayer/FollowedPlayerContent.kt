@@ -43,7 +43,7 @@ fun FollowedPlayerContent(
 
         // --- Sección de lista completa de jugadores (usa Column interna) ---
         item {
-            PlayerListContent(
+            SuggestedPlayersList(
                 modifier = Modifier.fillMaxWidth(),
                 players = players,
                 navController = navController,

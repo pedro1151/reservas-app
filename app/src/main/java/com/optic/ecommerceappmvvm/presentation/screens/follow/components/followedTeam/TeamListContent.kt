@@ -45,14 +45,14 @@ fun TeamListContent(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
+                    .height(75.dp)
                     .padding(horizontal = 1.dp, vertical = 1.dp)
                     .clickable {
                         team.id?.let {
                             navController.navigate("${Graph.TEAM}/$it")
                         }
                     },
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(10.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),

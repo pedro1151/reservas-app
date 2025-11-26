@@ -19,7 +19,10 @@ import com.optic.ecommerceappmvvm.presentation.screens.mas.components.MasContent
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
-fun MasScreen(navController: NavHostController) {
+fun MasScreen(
+    navController: NavHostController,
+    isAuthenticated: Boolean
+    ) {
     Scaffold (
         topBar = {
             PrimaryTopBar(
@@ -31,7 +34,8 @@ fun MasScreen(navController: NavHostController) {
     ){ paddingValues ->
         MasContent(
             modifier = Modifier.padding(paddingValues),
-            navController = navController
+            navController = navController,
+            isAuthenticated = isAuthenticated
 
         )
     }

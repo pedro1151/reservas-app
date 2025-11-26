@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.optic.ecommerceappmvvm.domain.model.AuthResponse
 import com.optic.ecommerceappmvvm.domain.model.User
 import com.optic.ecommerceappmvvm.domain.model.auth.LoginSendCodeResponse
+import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.useCase.auth.AuthUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.external.ExternalUseCase
 import com.optic.ecommerceappmvvm.domain.util.Resource
@@ -40,6 +41,10 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
     // ✅ Variable observable del estado de sesión
     private var _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    // el estado del send code
+    private val _sendCodeState = MutableStateFlow<Resource<LoginSendCodeResponse>>(Resource.Idle)
+    var sendCodeState: StateFlow<Resource<LoginSendCodeResponse>> = _sendCodeState
 
 
     init {
@@ -111,10 +116,20 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
 
     fun isValidForm(): Boolean  {
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            errorMessage = "El email no es valido"
+        if (state.email == null || state.email == "") {
+            errorMessage = "Debe ingresar en email"
             return false
         }
+        if (state.email.length > 100) {
+            errorMessage = "El email no es valido (1)"
+            return false
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
+            errorMessage = "El email no es valido (2)"
+            return false
+        }
+
         /*
         else if (state.password.length < 6) {
             errorMessage = "La contraseña debe tener al menos 6 caracteres"
@@ -122,6 +137,20 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
         }
 
          */
+        return true
+    }
+
+    fun isValidSendCode(): Boolean  {
+
+        if (state.code == null || state.code == "") {
+            errorMessage = "Debe ingresar el codigo"
+            return false
+        }
+        if (state.code.length > 6 || state.code.length < 6) {
+            errorMessage = "El codigo debe ser de 6 digitos"
+            return false
+        }
+
         return true
     }
 
@@ -133,13 +162,19 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
     //LOogin enviando codigo de acceso al email ingresado
 
     fun loginSendCode() = viewModelScope.launch {
+
         try {
-            val result = authUseCase.loginSendCodeUC(state.email) // tu función real
-            Log.d("LoginViewModel", "result: ${result }")
-            if (result is Resource.Success) {
-                _sendCodeSuccess.value = true
+            if (isValidForm()) {
+                val result = authUseCase.loginSendCodeUC(state.email) // tu función real
+                _sendCodeState.value = result
+                Log.d("LoginViewModel", "result: ${result}")
+                if (result is Resource.Success) {
+                    _sendCodeSuccess.value = true
+                } else {
+                    errorMessage = "Error al enviar el código. Intenta nuevamente."
+                }
             } else {
-                errorMessage = "Error al enviar el código. Intenta nuevamente."
+                _isLoggedIn.value = false
             }
         } catch (e: Exception) {
             errorMessage = "Error al enviar el código: ${e.message}"
@@ -147,10 +182,12 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
     }
 
     fun loginPless(email:String) = viewModelScope.launch {
+        if ( isValidSendCode() ) {
+
             Log.d("LoginViewModel", "Email: ${email}, Code: ${state.code}")
             loginResponse = Resource.Loading // ESPERANDO
             val result = authUseCase.loginPlessUC(email, state.code) // RETORNA UNA RESPUESTA
-            Log.d("LoginViewModel", "result: ${result }")
+            Log.d("LoginViewModel", "result: ${result}")
             loginResponse = result // EXITOSA / ERROR
             if (result is Resource.Success) {
                 _isLoggedIn.value = true
@@ -161,6 +198,8 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
                 _isLoggedIn.value = false
                 errorMessage = "Error al validar el codigo. Intenta nuevamente mas tarde.${result}"
             }
+
+        }
 
     }
 

@@ -111,6 +111,8 @@ fun NoFollowFixtures(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+
+                else -> {}
             }
         }
     }

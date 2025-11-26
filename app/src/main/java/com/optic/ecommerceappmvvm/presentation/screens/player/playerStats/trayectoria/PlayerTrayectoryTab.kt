@@ -85,6 +85,8 @@ fun PlayerTrayectoryTab(
             }
         }
     }
+
+    else -> {}
 }
 
 

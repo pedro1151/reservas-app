@@ -99,6 +99,8 @@ fun GamesPrincipalScreen(
                         }
                     }
                 }
+
+                else -> {}
             }
         }
     }

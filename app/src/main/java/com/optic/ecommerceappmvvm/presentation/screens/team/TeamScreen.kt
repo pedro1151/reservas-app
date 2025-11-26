@@ -68,6 +68,8 @@ fun TeamScreen(
             is Resource.Failure -> {
                 // mostrar error: result.message
             }
+
+            else -> {}
         }
 
     }

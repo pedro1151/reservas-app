@@ -77,6 +77,8 @@ fun FixtureLineupsScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
+
+        else -> {}
     }
 }
 

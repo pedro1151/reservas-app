@@ -2,7 +2,6 @@ package com.optic.ecommerceappmvvm.presentation.screens.auth.login.components
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,38 +9,31 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.presentation.components.DefaultButton
-import com.optic.ecommerceappmvvm.presentation.components.DefaultTextField
 import com.optic.ecommerceappmvvm.presentation.components.GoogleSignInButton
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
-import com.optic.ecommerceappmvvm.presentation.navigation.screen.auth.AuthScreen
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.auth.login.LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.components.inputs.EmailBox
+import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 
 
 @Composable
@@ -54,6 +46,7 @@ fun LoginContent(
     val state = vm.state
     val context = LocalContext.current
     val sendCodeSuccess by vm.sendCodeSuccess
+    val sendCodeState by vm.sendCodeState.collectAsState()   // 👈 AQUÍ
 
     // ✅ Navegación
     LaunchedEffect(sendCodeSuccess) {
@@ -77,18 +70,19 @@ fun LoginContent(
             .padding(paddingValues)
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         MaterialTheme.colorScheme.background
-                    )
-                )
+
             )
     ) {
 
         // 🔙 Botón de volver
         IconButton(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                navController.navigate(ClientScreen.Matches.route) {
+                    popUpTo(0) // elimina TODA la pila
+                    launchSingleTop = true
+                }
+            },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -109,10 +103,10 @@ fun LoginContent(
         ) {
             // 🖼 Logo centrado
             Image(
-                painter = painterResource(id = com.optic.ecommerceappmvvm.R.drawable.logo_main),
+                painter = painterResource(id = com.optic.ecommerceappmvvm.R.drawable.logo_app),
                 contentDescription = "Logo ALLFOODT",
                 modifier = Modifier
-                    .size(400.dp)
+                    .size(300.dp)
                     .padding(bottom = 24.dp)
             )
 
@@ -124,12 +118,12 @@ fun LoginContent(
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f)
+                    containerColor = Color.Black
                 )
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 24.dp, vertical = 28.dp),
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -139,14 +133,19 @@ fun LoginContent(
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        thickness = 1.dp
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // ✉️ Email
-                    DefaultTextField(
+                    EmailBox(
                         modifier = Modifier.fillMaxWidth(),
                         value = state.email,
-                        onValueChange = { vm.onEmailInput(it) },
+                        onValueChange = { vm.onEmailInput(it.take(100)) },
                         label = "Correo electrónico",
                         icon = Icons.Default.Email,
                         keyboardType = KeyboardType.Email
@@ -170,7 +169,7 @@ fun LoginContent(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Divider(
+                    HorizontalDivider(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                         thickness = 1.dp
                     )
@@ -178,30 +177,58 @@ fun LoginContent(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // 🔗 Registro
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
+
                         Text(
-                            text = "¿No tienes cuenta?",
+                            text = "Términos y Condiciones",
                             color = Color.Gray,
                             fontSize = 13.sp
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Regístrate",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            modifier = Modifier.clickable {
-                                navController.navigate(AuthScreen.Register.route)
-                            }
-                        )
-                    }
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "UNIFOT",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Text(
+                                text = "2025",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        }
+
+
                 }
             }
         }
     }
+    //  PROGRESS BAR MOSTRADO SOLO CUANDO SE ENVÍA EL CÓDIGO
+    CustomProgressBar(
+        isLoading = sendCodeState is Resource.Loading   // 👈 AQUÍ
+    )
+
 }
 
 

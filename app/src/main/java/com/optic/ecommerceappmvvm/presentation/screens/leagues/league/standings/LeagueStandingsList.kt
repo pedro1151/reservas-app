@@ -117,6 +117,8 @@ fun LeagueStandingsList(
                     color = MaterialTheme.colorScheme.error
                 )
             }
+
+            else -> {}
         }
     }
 }

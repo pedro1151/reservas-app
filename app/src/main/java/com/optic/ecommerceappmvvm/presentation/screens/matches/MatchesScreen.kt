@@ -58,7 +58,7 @@ fun MatchesScreen(
     val viewModel: MatchesViewModel = hiltViewModel()
     val fixtureState by viewModel.fixtureTeamsState.collectAsState()
     val fixtureStateCountry by viewModel.fixtureCountryState.collectAsState()
-    val fixtureStateNoFollow by viewModel.fixturesNoFollow.collectAsState()
+    //val fixtureStateNoFollow by viewModel.fixturesNoFollow.collectAsState()
     val fixtureStateDate by viewModel.fixtureDateState.collectAsState()
 
     // fecha real de hoy
@@ -80,12 +80,15 @@ fun MatchesScreen(
     }
 
     // cargar datos iniciales no follow
+    /*
     LaunchedEffect(backStackEntry?.destination?.route) {
         viewModel.getNoFixtureFollowedTeams(
             season = 2025,
             date = today.toString()
         )
     }
+
+     */
 
     // cargar datos iniciales
     LaunchedEffect(backStackEntry?.destination?.route) {
@@ -109,7 +112,7 @@ fun MatchesScreen(
             Column {
                 PrimaryTopBar(
                     navController = navController,
-                    title = "UNIFOOT"
+                    title = "UNIFOT"
                 )
                 MatchesDateTopBar { newDate ->
                     previousDate = selectedDate
@@ -118,11 +121,13 @@ fun MatchesScreen(
                         season = 2025,
                         date = newDate.toString()
                     )
-
+                   /*
                     viewModel.getNoFixtureFollowedTeams(
                         season = 2025,
                         date = newDate.toString()
                     )
+
+                    */
 
                     viewModel.getFixturesByCountry(
                         season = 2025,
@@ -166,12 +171,16 @@ fun MatchesScreen(
             },
             label = "FixturesAnimation"
         ) { _ ->
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize())
+            {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()   // ocupa todo el alto y ancho disponible
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .background(MaterialTheme.colorScheme.background),
                     verticalArrangement = Arrangement.Top // los ítems empiezan arriba
+
                 ) {
 
                     if (isAuthenticated) {
@@ -188,13 +197,15 @@ fun MatchesScreen(
                                 fixtureState = fixtureStateDate
                             )
                         }
-
+                        /*
                         item {
                             NoFollowFixtures(
                                 navController = navController,
                                 fixtureState = fixtureStateNoFollow
                             )
                         }
+
+                         */
 
                         item {
                             CountryFixtures(

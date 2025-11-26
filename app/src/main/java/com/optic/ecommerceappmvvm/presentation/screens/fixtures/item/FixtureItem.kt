@@ -61,7 +61,7 @@ fun FixtureItem(
                     navController.navigate("${Graph.FIXTURE}/$it")
                 }
             },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer) ,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) ,
         shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
         elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
 

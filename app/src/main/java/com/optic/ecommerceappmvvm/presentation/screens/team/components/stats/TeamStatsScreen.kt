@@ -66,6 +66,8 @@ fun TeamStatsScreen(
                 item { CardsCard(cards = data.cards) }
             }
         }
+
+        else -> {}
     }
 }
 
