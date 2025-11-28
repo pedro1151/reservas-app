@@ -22,22 +22,18 @@ class MatchesViewModel @Inject constructor(
     private val _fixtureTeamsState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
     val fixtureTeamsState : StateFlow<Resource<List<FixtureResponse>>> = _fixtureTeamsState
 
-    private val _fixturesNoFollow = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
-    val fixturesNoFollow : StateFlow<Resource<List<FixtureResponse>>> = _fixturesNoFollow
-
-    private val _fixtureCountryState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
-    val fixtureCountryState  : StateFlow<Resource<List<FixtureResponse>>> = _fixtureCountryState
-
     // todos los fixrures para una fecha dada
     private val _fixtureDateState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
     val fixtureDateState : StateFlow<Resource<List<FixtureResponse>>>  = _fixtureDateState
 
+    // limite de registros
+    val limit = 50
 
     companion object {
         private const val TAG = "MatchesViewModel"
     }
     // FIXTURES de los equipos que sigue el usuario
-    fun getFixtureFollowedTeams(season: Int = 2025, date: String = "2025-09-17") {
+    fun getFixtureFollowedTeams(season: Int , date: String ) {
         viewModelScope.launch {
             teamUseCase.getFixtureFollowedTeamsUC(season, date).collectLatest { result ->
                 _fixtureTeamsState.value = result
@@ -45,17 +41,8 @@ class MatchesViewModel @Inject constructor(
         }
     }
 
-    // FIXTURES de los equipos no seguidos
-    fun getNoFixtureFollowedTeams(season: Int = 2025, date: String = "2025-09-17") {
-        viewModelScope.launch {
-            teamUseCase.getNoFollowFixturesUC(season, date).collectLatest { result ->
-                Log.d(TAG, "getFixtureFollowedTeams() -> result = $result")
-                _fixturesNoFollow.value = result
-            }
-        }
-    }
-
     fun getFixturesByDate(date: String, limit:Int) {
+        resetStatesForNewDate()
         viewModelScope.launch {
             teamUseCase.getFixtureByDateUC(date, limit).collectLatest { result ->
                 _fixtureDateState.value = result
@@ -63,14 +50,9 @@ class MatchesViewModel @Inject constructor(
         }
     }
 
-    // recupera los fixtures acorde al pais del usuario conectado, mediante su IP,
-    // ESTO lo hace internamente el backend
-    fun getFixturesByCountry(season: Int = 2025, date: String = "2025-09-17") {
-        viewModelScope.launch {
-            teamUseCase.getCountryFixturesUC(season, date).collectLatest { result ->
-                Log.d(TAG, "getFixturesByCountry(() -> result = $result")
-                _fixtureCountryState.value = result
-            }
-        }
+
+    fun resetStatesForNewDate() {
+        _fixtureTeamsState.value = Resource.Loading
+        _fixtureDateState.value = Resource.Loading
     }
 }

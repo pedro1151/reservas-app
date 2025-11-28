@@ -138,10 +138,10 @@ fun FixturesByDate(
                                 AnimatedVisibility(
                                     visible = expanded,
                                     enter = expandVertically(
-                                        animationSpec = tween(500)
+                                        animationSpec = tween(300)
                                     ),
                                     exit = shrinkVertically(
-                                        animationSpec = tween(500)
+                                        animationSpec = tween(300)
                                     )
                                 ) {
                                     Column(
@@ -172,6 +172,6 @@ fun FixturesByDate(
 
             else -> {}
         }
-        CustomProgressBar(isLoading = fixtureState is Resource.Loading)
+        //CustomProgressBar(isLoading = fixtureState is Resource.Loading)
     }
 }

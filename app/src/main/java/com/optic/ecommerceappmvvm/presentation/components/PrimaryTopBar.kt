@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,6 +27,7 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 fun PrimaryTopBar(
     title: String = "",
     navController: NavController,
+    onCalendarClick: (() -> Unit)? = null,   // 👈 Agregamos callback opcional
     showTitle: Boolean = true ,
     vm: AuthStateVM = hiltViewModel()
 ) {
@@ -50,6 +53,21 @@ fun PrimaryTopBar(
             }
         },
         actions = {
+
+
+            // 👉 ICONO DE CALENDARIO (si el callback existe)
+            if (onCalendarClick != null) {
+                IconButton(
+                    onClick = { onCalendarClick() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Elegir fecha",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            /*
             if (isAuthenticated) {
                 Text(
                     text = userEmail,
@@ -71,6 +89,8 @@ fun PrimaryTopBar(
                         }
                 )
             }
+
+             */
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,

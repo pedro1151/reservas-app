@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.presentation.navigation.graph.client
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,15 +29,21 @@ import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueScre
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.LeaguePrincipalScreen
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasScreen
 import com.optic.ecommerceappmvvm.presentation.screens.matches.MatchesScreen
+import com.optic.ecommerceappmvvm.presentation.screens.matches.calendar.CalendarScreen
 import com.optic.ecommerceappmvvm.presentation.screens.team.TeamScreen
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 
+@OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ClientNavGraph(
     navController: NavHostController,
     isAuthenticated: Boolean
 ) {
-    NavHost(
+    AnimatedNavHost(
         navController = navController,
         route = Graph.CLIENT,
         startDestination = ClientScreen.Matches.route
@@ -50,7 +57,33 @@ fun ClientNavGraph(
             FollowScreen(navController, isAuthenticated)
         }
 
-        composable(route = ClientScreen.Login.route) {
+        composable(
+            route = ClientScreen.Login.route,
+            enterTransition = {
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // entra desde derecha → izquierda
+            },
+            exitTransition = {
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // sale hacia derecha ← izquierda
+            },
+            popEnterTransition = {
+                slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // cuando regresa, entra desde izq → der
+            },
+            popExitTransition = {
+                slideOutVertically(
+                    targetOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // cuando retrocede, sale hacia izq ← der
+            }
+        ) {
             LoginScreen(navController)
         }
 
@@ -148,7 +181,46 @@ fun ClientNavGraph(
             )
         }
 
+        composable(
+            route = ClientScreen.Calendar.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // entra desde derecha → izquierda
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // sale hacia derecha ← izquierda
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // cuando regresa, entra desde izq → der
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(durationMillis = 350)
+                ) // cuando retrocede, sale hacia izq ← der
+            }
+        ) {
+            CalendarScreen(
+                onDateSelected = { date ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_date", date)
 
+                    navController.popBackStack()
+                },
+                onCancel = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
 
         ProfileNavGraph(navController)

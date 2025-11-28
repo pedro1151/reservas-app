@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.presentation.MainActivity
+import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
 import com.optic.ecommerceappmvvm.presentation.screens.mas.MasViewModel
 import com.optic.ecommerceappmvvm.presentation.ui.theme.LocalAppTheme
 import com.optic.ecommerceappmvvm.presentation.ui.theme.components.ThemeSelectionBottomSheet
@@ -59,6 +60,10 @@ fun MasContent(modifier: Modifier
             .padding(horizontal = 1.dp, vertical = 1.dp),
         verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
+        // 🔴 NUEVO: Cerrar sesión
+        if (!isAuthenticated) {
+            LoginLinkCard(navController = navController)
+        }
         MasCardItem(
             title = "Tema",
             icon = Icons.Default.FavoriteBorder,

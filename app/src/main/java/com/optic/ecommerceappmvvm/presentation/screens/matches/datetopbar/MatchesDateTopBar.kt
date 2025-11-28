@@ -1,5 +1,11 @@
 package com.optic.ecommerceappmvvm.presentation.screens.matches.datetopbar
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,7 +13,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,34 +36,38 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MatchesDateTopBar(
-    modifier: Modifier = Modifier,
+    selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    //val today = remember { LocalDate.of(2023, 9, 17) } // HARDCODE: hoy para pruebas
     val today = remember { LocalDate.now() }
-    val daysRange = remember { (-30..30).map { today.plusDays(it.toLong()) } }
+    val daysRange = remember { (-60..60).map { today.plusDays(it.toLong()) } }
 
-    var selectedDate by remember { mutableStateOf(today) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // 📏 Medidas de pantalla
     val screenWidthPx = with(LocalDensity.current) {
         LocalConfiguration.current.screenWidthDp.dp.toPx()
     }
-    val itemWidthPx = 120f // estimación del ancho de cada item
+    val itemWidthPx = 120f
     val centerOffset = (screenWidthPx / 2 - itemWidthPx / 2).toInt()
 
-    // Scroll inicial centrando "hoy"
-    LaunchedEffect(Unit) {
-        listState.scrollToItem(index = 30, scrollOffset = -centerOffset)
+    // 🔥 Cada vez que selectedDate cambie → centrar esa fecha
+    LaunchedEffect(selectedDate) {
+        val index = daysRange.indexOf(selectedDate)
+        if (index >= 0) {
+            listState.animateScrollToItem(
+                index = index,
+                scrollOffset = -centerOffset
+            )
+        }
     }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
+
         LazyRow(
             state = listState,
             modifier = Modifier
@@ -61,6 +76,7 @@ fun MatchesDateTopBar(
             contentPadding = PaddingValues(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+
             itemsIndexed(daysRange) { index, date ->
                 val isSelected = date == selectedDate
                 val label = getDateLabel(date, today)
@@ -68,15 +84,7 @@ fun MatchesDateTopBar(
                 Column(
                     modifier = Modifier
                         .clickable {
-                            selectedDate = date
                             onDateSelected(date)
-                            // animar para centrar fecha seleccionada
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(
-                                    index = index,
-                                    scrollOffset = -centerOffset
-                                )
-                            }
                         }
                         .padding(vertical = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -88,7 +96,9 @@ fun MatchesDateTopBar(
                             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     )
+
                     Spacer(modifier = Modifier.height(4.dp))
+
                     Box(
                         modifier = Modifier
                             .height(3.dp)
@@ -102,9 +112,13 @@ fun MatchesDateTopBar(
                 }
             }
         }
-        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+        )
     }
 }
+
 
 fun getDateLabel(date: LocalDate, today: LocalDate): String {
     val formatterDay = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
