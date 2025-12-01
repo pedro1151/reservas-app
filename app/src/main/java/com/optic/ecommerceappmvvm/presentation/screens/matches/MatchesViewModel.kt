@@ -27,7 +27,7 @@ class MatchesViewModel @Inject constructor(
     val fixtureDateState : StateFlow<Resource<List<FixtureResponse>>>  = _fixtureDateState
 
     // limite de registros
-    val limit = 50
+    val limit =200
 
     companion object {
         private const val TAG = "MatchesViewModel"
@@ -45,6 +45,7 @@ class MatchesViewModel @Inject constructor(
         resetStatesForNewDate()
         viewModelScope.launch {
             teamUseCase.getFixtureByDateUC(date, limit).collectLatest { result ->
+                Log.d(TAG, "getFixtureByDate result: $result")
                 _fixtureDateState.value = result
             }
         }

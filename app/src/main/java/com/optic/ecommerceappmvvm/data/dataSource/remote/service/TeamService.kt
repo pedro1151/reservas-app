@@ -205,6 +205,15 @@ interface TeamService {
     ): Response<List<FixtureResponse>>
 
 
+    // fixture por rango de fechas
+    @GET("football/fixtures/start/{date_start}/end/{date_end}")
+    suspend fun getFixturesByRange(
+        @Path("date_start") dateStart: String,
+        @Path("date_end") dateEnd: String,
+    ): Response<List<FixtureResponse>>
+
+
+
 
 
 

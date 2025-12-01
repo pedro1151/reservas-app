@@ -125,6 +125,11 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         limit: Int
     ): Response<List<FixtureResponse>> = teamService.getFixturesByDate(date, limit)
 
+    override suspend fun getFixturesByRange(
+        dateStart: String,
+        dateEnd: String
+    ): Response<List<FixtureResponse>> = teamService.getFixturesByRange(dateStart, dateEnd)
+
 
     override suspend fun getLeagueFixture(
         leagueId: Int,

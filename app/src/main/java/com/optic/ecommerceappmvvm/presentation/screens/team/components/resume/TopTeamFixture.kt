@@ -28,7 +28,9 @@ fun TopTeamFixture(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(
+            modifier = Modifier.padding(10.dp)
+        ) {
             // Título
             Text(
                 text = "Últimos 5 partidos",

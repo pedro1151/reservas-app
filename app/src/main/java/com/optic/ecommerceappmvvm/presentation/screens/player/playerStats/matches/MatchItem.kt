@@ -55,11 +55,13 @@ fun MatchItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+
             .clickable {
                 fixture.id?.let {
                     navController.navigate("${Graph.FIXTURE}/$it")
                 }
             },
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
 
     ) {

@@ -16,6 +16,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
+import com.optic.ecommerceappmvvm.ads.RewardedAdManager
 import com.optic.ecommerceappmvvm.presentation.authstate.AuthStateVM
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.client.ClientNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.root.RootNavGraph
@@ -29,21 +31,32 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // precargar fixtures en cache
+
+
+        // ✅ Inicializa Google AdMob
+        MobileAds.initialize(this)
+
+        // ✅ Carga el anuncio recompensado una vez
+        val rewardedManager = RewardedAdManager(this)
+        rewardedManager.loadAd()
+
         setContent {
             EcommerceAppMVVMTheme {
+
                 val navController = rememberNavController()
 
-                // Observamos la ruta actual
                 val currentBackStack by navController.currentBackStackEntryAsState()
                 val currentDestination = currentBackStack?.destination
 
-                // ✅ Obtenemos el estado global de autenticación
+                val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
                 val authStateVM: AuthStateVM = hiltViewModel()
                 val isAuthenticated by authStateVM.isAuthenticated.collectAsState()
 
-                // Define qué pantallas muestran el BottomBar
                 val bottomBarRoutes = listOf(
                     ClientScreen.Matches.route,
                     ClientScreen.Leagues.route,
@@ -62,9 +75,17 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { paddingValues ->
+
+                    // 🚀 PASO CLAVE
+                    // Pasas una función a tu NavGraph para mostrar Rewarded Ads desde cualquier pantalla
                     ClientNavGraph(
                         navController = navController,
-                        isAuthenticated = isAuthenticated
+                        isAuthenticated = isAuthenticated,
+                        onShowRewardAd = {
+                            rewardedManager.showAd(this) { reward ->
+                                println("Usuario ganó $reward puntos")
+                            }
+                        }
                     )
                 }
             }

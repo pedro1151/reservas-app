@@ -6,6 +6,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixturesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByDateUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByIdUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByRangeUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureFollowedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLineupsUC
@@ -15,6 +16,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNextFixtureTeam
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNoFollowFixturesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetTopFiveFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetVersusFixtureTeamUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.cache.SaveFixturesCacheUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.CreateFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.DeleteFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.GetFollowedLeaguesUC
@@ -58,6 +60,10 @@ data class TeamUseCase(
     val getTopFiveFixtureTeamUC : GetTopFiveFixtureTeamUC,
     val getFixtureLeagueUC: GetFixtureLeagueUC,
     val getFixtureByDateUC: GetFixtureByDateUC,
+    val getFixtureByRangeUC: GetFixtureByRangeUC,
+
+    // cache fixtures
+    val saveFixturesCacheUC: SaveFixturesCacheUC,
 
     //FISTURE X ID
     val getFixtureByIdUC : GetFixtureByIdUC,

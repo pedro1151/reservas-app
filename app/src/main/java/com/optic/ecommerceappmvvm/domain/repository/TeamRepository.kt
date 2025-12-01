@@ -66,7 +66,10 @@ interface TeamRepository {
     suspend fun getTopFiveFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getLeagueFixture(leagueId: Int, season: Int, teamId: Int): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixturesByDate(date: String, limit: Int): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getFixturesByRange(dateStart: String, dateEnd:String): Flow<Resource<List<FixtureResponse>>>
 
+    // cargar fixtures en cache
+    suspend fun precacheFixturesAroundToday()
 
     //Versus
     suspend fun getFixtureVersus(

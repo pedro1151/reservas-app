@@ -28,10 +28,10 @@ fun ResumeContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 1.dp, vertical = 3.dp)
             .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+       // contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         item {
             NextFixture(

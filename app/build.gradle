@@ -127,6 +127,9 @@ dependencies {
 // 🔹 Desugaring: permite usar APIs modernas de Java (ej. java.time.LocalDate)
 //    en dispositivos con Android < 26 (minSdk 23 en este proyecto).
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
+
+    // AdMob / Google Mobile Ads
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
 }
 
 kapt {

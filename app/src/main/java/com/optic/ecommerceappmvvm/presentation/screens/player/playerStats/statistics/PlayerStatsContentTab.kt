@@ -29,7 +29,7 @@ fun PlayerStatsContentTab(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(paddingValues)
+            .padding(horizontal = 1.dp, vertical = 3.dp)
             .fillMaxSize()
        // .padding(horizontal = 8.dp, vertical = 8.dp),
     ) {
@@ -47,7 +47,7 @@ fun PlayerStatisticCard(stat: PlayerStats) {
         modifier = Modifier
             .fillMaxSize()
             .clickable { expanded = !expanded }
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 1.dp, vertical = 3.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

@@ -26,6 +26,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetCountryFixturesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByDateUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByIdUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureByRangeUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureFollowedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetFixtureLineupsUC
@@ -35,6 +36,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNextFixtureTeam
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetNoFollowFixturesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetTopFiveFixtureTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.GetVersusFixtureTeamUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.fixture.cache.SaveFixturesCacheUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.CreateFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.DeleteFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.GetFollowedLeaguesUC
@@ -98,6 +100,9 @@ object UseCaseModule {
         getFixtureByIdUC = GetFixtureByIdUC(teamRepository),
         getFixtureLeagueUC =  GetFixtureLeagueUC(teamRepository),
         getFixtureByDateUC = GetFixtureByDateUC(teamRepository),
+        saveFixturesCacheUC = SaveFixturesCacheUC(teamRepository),
+        getFixtureByRangeUC = GetFixtureByRangeUC(teamRepository),
+
         //leagues
         getLeagueStandingsUC = GetLeagueStandingsUC(teamRepository),
         getVersusFixtureTeamUC = GetVersusFixtureTeamUC(teamRepository),

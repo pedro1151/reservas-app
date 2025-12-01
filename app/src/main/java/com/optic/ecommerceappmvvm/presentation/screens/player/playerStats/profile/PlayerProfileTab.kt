@@ -27,8 +27,8 @@ fun PlayerProfileTab(player: PlayerWithStats) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(16.dp),
+            .padding(horizontal = 1.dp, vertical = 3.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

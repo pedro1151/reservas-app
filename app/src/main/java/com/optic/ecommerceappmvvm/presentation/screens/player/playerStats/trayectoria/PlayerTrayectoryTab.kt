@@ -68,10 +68,10 @@ fun PlayerTrayectoryTab(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 2.dp)
+                    .padding(horizontal = 1.dp, vertical = 3.dp)
                     .background(MaterialTheme.colorScheme.background),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(1.dp)
+              //  contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp)
             ) {
 
                 // Equipos por season
@@ -93,9 +93,11 @@ fun PlayerTrayectoryTab(
 @Composable
 fun TeamTrajectoryCard(team: Team, season: Int) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(75.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(10.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -118,7 +120,7 @@ fun TeamTrajectoryCard(team: Team, season: Int) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "$season",
+                    text = "${season} / ${season+1}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -2,8 +2,11 @@ package com.optic.ecommerceappmvvm.presentation.navigation.screen.client
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AddModerator
+import androidx.compose.material.icons.filled.Airplay
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
@@ -23,7 +26,7 @@ sealed class ClientScreen(
     object Leagues: ClientScreen(
         route = "client/leagues",
         title = "Ligas",
-        icon = Icons.Default.AccountCircle
+        icon = Icons.Default.AddModerator
     )
 
     object Calendar: ClientScreen(
@@ -34,7 +37,7 @@ sealed class ClientScreen(
     object Matches: ClientScreen(
         route = "client/matches",
         title = "Matches",
-        icon = Icons.Default.Share
+        icon = Icons.Default.Airplay
     )
 
     object Games: ClientScreen(
@@ -70,7 +73,7 @@ sealed class ClientScreen(
     object Follow: ClientScreen(
         route = "client/follow",
         title = "Siguiendo",
-        icon = Icons.Default.Star
+        icon = Icons.Default.FavoriteBorder
     )
 
     object Mas: ClientScreen(

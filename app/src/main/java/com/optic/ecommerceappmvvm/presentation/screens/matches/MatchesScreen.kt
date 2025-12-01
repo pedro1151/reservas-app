@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.presentation.screens.matches
 
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,35 +18,21 @@ import com.optic.ecommerceappmvvm.presentation.screens.matches.folllowfixtures.F
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 import java.time.LocalDate
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.matches.fixturesbydate.FixturesByDate
-import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
+
 
 
 
@@ -53,7 +40,8 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 @Composable
 fun MatchesScreen(
     navController: NavHostController,
-    isAuthenticated : Boolean
+    isAuthenticated : Boolean,
+    onShowRewardAd: () -> Unit
 ) {
     val viewModel: MatchesViewModel = hiltViewModel()
     val limit = viewModel.limit
@@ -77,25 +65,34 @@ fun MatchesScreen(
             ?.savedStateHandle
             ?.getStateFlow<LocalDate?>("selected_date", null)
             ?.collectAsState()
-    if (selectedDateFromCalendar?.value != null ) {
-        LaunchedEffect(selectedDateFromCalendar?.value) {
-            val newDate = selectedDateFromCalendar?.value ?: return@LaunchedEffect
-            selectedDate = newDate
-            previousDate = newDate
 
-            viewModel.getFixtureFollowedTeams(2025, newDate.toString())
-            viewModel.getFixturesByDate(newDate.toString(), limit)
-            // Limpia después de usarlo
-            backStackEntry
-                ?.savedStateHandle
-                ?.set("selected_date", null)
-        }
-    }else {
-        // cargar datos iniciales
 
-        LaunchedEffect(backStackEntry?.destination?.route) {
-            viewModel.getFixtureFollowedTeams(season = 2025, date = today.toString())
-            viewModel.getFixturesByDate(date = today.toString(), limit = limit)
+    LaunchedEffect(selectedDateFromCalendar?.value) {
+
+        val calendarDate = selectedDateFromCalendar?.value
+
+        if (calendarDate != null) {
+            // Cambio por calendario
+            selectedDate = calendarDate
+            previousDate = calendarDate
+
+            if (isAuthenticated ) {
+                viewModel.getFixtureFollowedTeams(2025, calendarDate.toString())
+            }
+            viewModel.getFixturesByDate(calendarDate.toString(), limit)
+
+            backStackEntry?.savedStateHandle?.set("selected_date", null)
+
+            Log.d("getFixturesByDate", "CARGA: Fecha del calendario → $calendarDate")
+
+        } else if (selectedDate == today) {
+            // Cargar solo una vez al inicio
+            if (isAuthenticated ) {
+                viewModel.getFixtureFollowedTeams(2025, today.toString())
+            }
+            viewModel.getFixturesByDate(today.toString(), limit)
+
+            Log.d("getFixturesByDate", "CARGA: Fecha hoy por defecto → $today")
         }
     }
 
@@ -115,8 +112,9 @@ fun MatchesScreen(
                     onDateSelected = { newDate ->
                         previousDate = selectedDate
                         selectedDate = newDate
-
-                        viewModel.getFixtureFollowedTeams(2025, newDate.toString())
+                        if (isAuthenticated) {
+                            viewModel.getFixtureFollowedTeams(2025, newDate.toString())
+                        }
                        // viewModel.getFixturesByCountry(2025, newDate.toString())
                         viewModel.getFixturesByDate(newDate.toString(), limit)
                     }
@@ -181,6 +179,11 @@ fun MatchesScreen(
                         }
 
                     } else {
+                        item{
+                            Button (onClick = { onShowRewardAd() }) {
+                                Text("Ver anuncio")
+                            }
+                        }
 
                         item {
                             LoginLinkCard(

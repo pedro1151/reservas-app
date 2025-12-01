@@ -41,7 +41,8 @@ import androidx.compose.animation.core.tween
 @Composable
 fun ClientNavGraph(
     navController: NavHostController,
-    isAuthenticated: Boolean
+    isAuthenticated: Boolean,
+    onShowRewardAd: () -> Unit
 ) {
     AnimatedNavHost(
         navController = navController,
@@ -50,7 +51,7 @@ fun ClientNavGraph(
     ) {
 
         composable(route = ClientScreen.Matches.route) {
-            MatchesScreen(navController, isAuthenticated)
+            MatchesScreen(navController, isAuthenticated, onShowRewardAd)
         }
 
         composable(route = ClientScreen.Follow.route) {

@@ -32,7 +32,7 @@ fun PlayerMatchesTab(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(horizontal = 1.dp, vertical = 3.dp)
         //verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(

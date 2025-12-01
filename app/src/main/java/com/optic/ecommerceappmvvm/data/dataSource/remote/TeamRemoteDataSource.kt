@@ -77,6 +77,7 @@ interface TeamRemoteDataSource {
 
     // por date
     suspend fun getFixturesByDate(date: String, limit: Int): Response<List<FixtureResponse>>
+    suspend fun getFixturesByRange(dateStart: String, dateEnd: String): Response<List<FixtureResponse>>
 
     // Leagues
     suspend fun getLeagueFixture(
