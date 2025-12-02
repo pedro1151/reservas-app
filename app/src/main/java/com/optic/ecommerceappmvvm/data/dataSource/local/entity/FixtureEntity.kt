@@ -1,9 +1,18 @@
 package com.optic.ecommerceappmvvm.data.dataSource.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "fixtures")
+@Entity(
+    tableName = "fixtures",
+    indices = [
+        Index(value = ["timestamp"]),
+        Index(value = ["id"]),
+        Index(value = ["leagueId", "leagueSeason"]),
+        Index(value = ["timestamp", "leagueId", "leagueSeason"])
+    ]
+)
 data class FixtureEntity(
     @PrimaryKey val id: Int,
     val apiId: Int,

@@ -152,10 +152,7 @@ fun MatchesScreen(
             label = "FixturesAnimation"
         ) { _ ->
             Column(
-                modifier = Modifier.fillMaxSize())
-            {
-                LazyColumn(
-                    modifier = Modifier
+                modifier = Modifier.fillMaxSize()
                         .fillMaxSize()   // ocupa todo el alto y ancho disponible
                         .padding(paddingValues)
                         .background(MaterialTheme.colorScheme.background),
@@ -164,21 +161,22 @@ fun MatchesScreen(
                 ) {
 
                     if (isAuthenticated) {
-                        item {
+
                             FollowFixtureList(
                                 navController = navController,
                                 fixtureState = fixtureState
                             )
-                        }
 
-                        item {
+
+
                             FixturesByDate(
                                 navController = navController,
                                 fixtureState = fixtureStateDate
                             )
-                        }
+
 
                     } else {
+                        /*
                         item{
                             Button (onClick = { onShowRewardAd() }) {
                                 Text("Ver anuncio")
@@ -191,16 +189,18 @@ fun MatchesScreen(
                             )
                         }
 
-                        item {
+                         */
+
+
                             FixturesByDate(
                                 navController = navController,
                                 fixtureState = fixtureStateDate,
                                 modifier = Modifier.fillMaxSize()
                             )
-                        }
+
                     }
                 }
-            }
+
         }
     }
 }

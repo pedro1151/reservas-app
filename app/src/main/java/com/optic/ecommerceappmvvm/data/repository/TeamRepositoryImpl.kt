@@ -281,13 +281,78 @@ class TeamRepositoryImpl(
         )
     }
 
-    override suspend fun getFixtureTeam(teamId: Int): Flow<Resource<List<FixtureResponse>>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getFixtureTeam(teamId)
-            )
+
+
+    override suspend fun getFixtureTeam(
+        teamId: Int
+    ): Flow<Resource<List<FixtureResponse>>> = flow {
+
+        emit(Resource.Loading)
+        Log.d("getFixtureTeam", "1️⃣ Loading emitido")
+
+        // 📅 Rango: 60 días atrás → 60 días adelante
+        val zone = ZoneId.systemDefault()
+        val now = LocalDate.now()
+
+        val startTs = now.minusDays(60).atStartOfDay(zone).toEpochSecond()
+        val endTs = now.plusDays(60).atStartOfDay(zone).toEpochSecond()
+
+        Log.d(
+            "getFixtureTeam",
+            "2️⃣ Consultando Room con range: $startTs - $endTs | teamId=$teamId "
         )
-    }
+
+        // 1️⃣ Consultar CACHE local
+        val cached = runCatching {
+            fixtureDao.getFixturesByTeam(startTs, endTs, teamId)
+        }
+            .onFailure { Log.e("getFixtureTeam", "❌ Error leyendo Room", it) }
+            .getOrDefault(emptyList())
+
+        Log.d("getFixtureTeam", "3️⃣ Cache size = ${cached.size}")
+
+        if (cached.isNotEmpty()) {
+
+            Log.d("getFixtureTeam", "4️⃣ Emitiendo cache inmediatamente (${cached.size})")
+            emit(Resource.Success(cached.map { it.toDomain() }))
+
+            Log.d("ggetFixtureTeam", "🟩 DESPUÉS DE emit() cache")
+            return@flow // ⛔ evitar la llamada a la API
+        }
+
+        // No existe cache → mostramos loading
+        Log.d("getFixtureTeam ","4️⃣ No hay cache → mostrando Loading")
+        emit(Resource.Loading)
+
+        // 🟦 2️⃣ Llamada al backend solo si no hay cache
+        try {
+            Log.d("getFixtureTeam", "5️⃣ Llamando backend…")
+
+            val result = teamRemoteDataSource.getFixtureTeam(teamId)
+            val response = ResponseToRequest.send(result)
+
+            if (response is Resource.Success) {
+
+                val fixtures = response.data!!
+                Log.d(
+                    "getFixtureTeam",
+                    "6️⃣ API devolvió ${fixtures.size} fixtures. (No se guardan en Room)"
+                )
+
+                // ⛔ NO guardamos en Room → responsabilidad de la función maestra
+                emit(Resource.Success(fixtures))
+
+            } else {
+                Log.d("getFixtureTeam", "6️⃣ API devolvió error → $response")
+                emit(response)
+            }
+
+        } catch (e: Exception) {
+            Log.e("getFixtureTeam", "❌ Excepción backend", e)
+            emit(Resource.Failure("Error al obtener fixtures: ${e.localizedMessage ?: e.message}"))
+        }
+
+    }.flowOn(kotlinx.coroutines.Dispatchers.IO)
 
     override suspend fun getNextFixtureTeam(teamId: Int): Flow<Resource<FixtureResponse>> = flow{
         emit(
@@ -308,15 +373,77 @@ class TeamRepositoryImpl(
 
     override suspend fun getLeagueFixture(
         leagueId: Int,
-        season:Int,
+        season: Int,
         teamId: Int
-    ): Flow<Resource<List<FixtureResponse>>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getLeagueFixture(leagueId, season, teamId)
-            )
+    ): Flow<Resource<List<FixtureResponse>>> = flow {
+
+        emit(Resource.Loading)
+        Log.d("getLeagueFixture", "1️⃣ Loading emitido")
+
+        // 📅 Rango: 60 días atrás → 60 días adelante
+        val zone = ZoneId.systemDefault()
+        val now = LocalDate.now()
+
+        val startTs = now.minusDays(60).atStartOfDay(zone).toEpochSecond()
+        val endTs = now.plusDays(60).atStartOfDay(zone).toEpochSecond()
+
+        Log.d(
+            "getLeagueFixture",
+            "2️⃣ Consultando Room con range: $startTs - $endTs | leagueId=$leagueId | season=$season"
         )
-    }
+
+        // 1️⃣ Consultar CACHE local
+        val cached = runCatching {
+            fixtureDao.getFixturesByLeague(startTs, endTs, leagueId, season)
+        }
+            .onFailure { Log.e("getLeagueFixture", "Error leyendo Room", it) }
+            .getOrDefault(emptyList())
+
+        Log.d("getLeagueFixture", "3️⃣ Cache size = ${cached.size}")
+
+        if (cached.isNotEmpty()) {
+
+            Log.d("getLeagueFixture", "4️⃣ Emitiendo cache inmediatamente (${cached.size})")
+            emit(Resource.Success(cached.map { it.toDomain() }))
+
+            Log.d("getLeagueFixture", "🟩 DESPUÉS DE emit() cache")
+            return@flow // ⛔ evitar la llamada a la API
+        }
+
+        // No existe cache → mostramos loading
+        Log.d("getLeagueFixture", "4️⃣ No hay cache → mostrando Loading")
+        emit(Resource.Loading)
+
+        // 🟦 2️⃣ Llamada al backend solo si no hay cache
+        try {
+            Log.d("getLeagueFixture", "5️⃣ Llamando backend…")
+
+            val result = teamRemoteDataSource.getLeagueFixture(leagueId, season, teamId)
+            val response = ResponseToRequest.send(result)
+
+            if (response is Resource.Success) {
+
+                val fixtures = response.data!!
+                Log.d(
+                    "getLeagueFixture",
+                    "6️⃣ API devolvió ${fixtures.size} fixtures. (No se guardan en Room)"
+                )
+
+                // ⛔ NO guardamos en Room → responsabilidad de la función maestra
+                emit(Resource.Success(fixtures))
+
+            } else {
+                Log.d("getLeagueFixture", "6️⃣ API devolvió error → $response")
+                emit(response)
+            }
+
+        } catch (e: Exception) {
+            Log.e("getLeagueFixture", "❌ Excepción backend", e)
+            emit(Resource.Failure("Error al obtener fixtures: ${e.localizedMessage ?: e.message}"))
+        }
+
+    }.flowOn(kotlinx.coroutines.Dispatchers.IO)
+
 
     override suspend fun getFixturesByDate(
         date: String,
@@ -399,8 +526,8 @@ class TeamRepositoryImpl(
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now()
 
-        val start = today.minusDays(30).toString() // yyyy-MM-dd
-        val end = today.plusDays(30).toString()
+        val start = today.minusDays(65).toString() // yyyy-MM-dd
+        val end = today.plusDays(65).toString()
 
         try {
             Log.d("getFixturesByDate", "⏳ Consultando fixtures desde $start hasta $end...")

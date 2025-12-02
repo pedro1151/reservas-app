@@ -7,7 +7,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
 
 @Database(
     entities = [FixtureEntity::class],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()

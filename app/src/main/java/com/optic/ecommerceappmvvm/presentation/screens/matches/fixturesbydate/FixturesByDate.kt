@@ -33,9 +33,11 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
 import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,133 +47,156 @@ fun FixturesByDate(
     fixtureState: Resource<List<FixtureResponse>>,
     title: String = "Partidos"
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 1.dp, vertical = 1.dp),
-        verticalArrangement = Arrangement.spacedBy(1.dp)
-    ) {
 
-        when (fixtureState) {
-            is Resource.Loading -> {
-               // CircularProgressIndicator()
+    when (fixtureState) {
+
+        is Resource.Loading -> {
+            // Loading opcional
+        }
+
+        is Resource.Success -> {
+
+            val fixtures = fixtureState.data ?: emptyList()
+
+            if (fixtures.isEmpty()) {
+                Text(
+                    text = "No hay partidos para la fecha.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+                return
             }
 
-            is Resource.Success -> {
-                val fixtures = fixtureState.data ?: emptyList()
+            /**
+             * ⛳ Optimización: recordar agrupamiento por liga
+             * Se recalcula SOLO cuando cambia "fixtures".
+             */
+            val groupedByLeague = remember(fixtures) {
+                fixtures
+                    .filter { it.league?.id != null }
+                    .groupBy { it.league!!.id!! }
+            }
 
-                if (fixtures.isEmpty()) {
-                    Text(
-                        text = "No hay partidos para la fecha.",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 15.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center
-                        ),
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+            /**
+             * Un único LazyColumn 👉 virtualización real, sin LAG.
+             */
+            val expansionState = remember {
+                mutableStateMapOf<Int, Boolean>()   // estado por liga
+            }
+
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(vertical = 2.dp, horizontal = 1.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item{
+                    LoginLinkCard(
+                        navController = navController
                     )
-                } else {
+                }
 
-                    // AGRUPAR POR LIGA
-                    val groupedByLeague = fixtures
-                        .filter { it.league?.id != null }
-                        .groupBy { it.league!!.id!! }
+                groupedByLeague.forEach { (leagueId, leagueFixtures) ->
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    val league = leagueFixtures.first().league
 
-                        groupedByLeague.forEach { (_, leagueFixtures) ->
-                            val league = leagueFixtures.first().league
+                    item(key = "league-card-$leagueId") {
 
-                            var expanded by remember { mutableStateOf(true) }
+                        // Estado estable por liga
+                        val expanded = expansionState.getOrPut(leagueId) { true }
 
-                            Card(
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                                //.padding(horizontal = 1.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            elevation = CardDefaults.cardElevation(2.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+
+                            // 🔹 Header clickable
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                elevation = CardDefaults.cardElevation(2.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                                )
+                                    .clickable { expansionState[leagueId] = !expanded }
+                                    .padding(12.dp)
                             ) {
 
-                                // HEADER (CLICKABLE)
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
+                                AsyncImage(
+                                    model = league?.logo ?: "",
+                                    contentDescription = null,
+                                    modifier = Modifier.size(22.dp)
+                                )
+
+                                Spacer(Modifier.width(10.dp))
+
+                                Text(
+                                    text = league?.name ?: "Liga desconocida",
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        color = MaterialTheme.colorScheme.primary
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                Icon(
+                                    imageVector =
+                                    if (expanded) Icons.Default.KeyboardArrowDown
+                                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    contentDescription = "Expand/Collapse",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            // 🔹 Contenido expandible
+                            AnimatedVisibility(
+                                visible = expanded,
+                                enter = expandVertically(tween(200)),
+                                exit = shrinkVertically(tween(200))
+                            ) {
+
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(6.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { expanded = !expanded }
-                                        .padding(12.dp)
+                                        .padding(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
-                                    AsyncImage(
-                                        model = league?.logo ?: "",
-                                        contentDescription = null,
-                                        modifier = Modifier.size(22.dp)
-                                    )
 
-                                    Spacer(modifier = Modifier.width(10.dp))
-
-                                    Text(
-                                        text = league?.name ?: "Liga desconocida",
-                                        style = MaterialTheme.typography.titleSmall.copy(
-                                            color = MaterialTheme.colorScheme.primary
-                                        ),
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                    Icon(
-                                        imageVector = if (expanded)
-                                            Icons.Default.KeyboardArrowDown       // ⬇ expandido
-                                        else
-                                            Icons.AutoMirrored.Filled.KeyboardArrowRight,      // ➡ colapsado
-                                        contentDescription = "Expand/Collapse",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-
-                                // CONTENIDO EXPANDIBLE
-                                AnimatedVisibility(
-                                    visible = expanded,
-                                    enter = expandVertically(
-                                        animationSpec = tween(300)
-                                    ),
-                                    exit = shrinkVertically(
-                                        animationSpec = tween(300)
-                                    )
-                                ) {
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                                        modifier = Modifier.padding(12.dp)
-                                    ) {
-                                        leagueFixtures.forEach { fixture ->
-                                            FixtureItem(
-                                                fixture = fixture,
-                                                navController = navController
-                                            )
-                                        }
+                                    leagueFixtures.forEach { fixture ->
+                                        FixtureItem(
+                                            fixture = fixture,
+                                            navController = navController
+                                        )
                                     }
                                 }
                             }
                         }
+
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
+
             }
 
-            is Resource.Failure -> {
-                Text(
-                    text = "Error al cargar los Partidos",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-
-
-            else -> {}
         }
-        //CustomProgressBar(isLoading = fixtureState is Resource.Loading)
+
+        is Resource.Failure -> {
+            Text(
+                text = "Error al cargar los Partidos",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        else -> Unit
     }
+   // CustomProgressBar(isLoading = fixtureState is Resource.Loading)
 }
