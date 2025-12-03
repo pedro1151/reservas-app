@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components.LeagueCard
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components.LeagueSearchBar
 import kotlinx.coroutines.delay
@@ -27,7 +28,8 @@ fun LeaguePrincipalContent(
     followedLeagues: List<League>,
     paddingValues: PaddingValues,
     viewModel: LeaguePrincipalViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    isAuthenticated: Boolean
 ) {
 
     val query by viewModel.searchQuery.collectAsState()
@@ -101,8 +103,13 @@ fun LeaguePrincipalContent(
                             league = league,
                             isFollowed = true,
                             onFollowClick = {
-                                scope.launch {
-                                    viewModel.deleteFollowedLeague(league.id)
+                                if(isAuthenticated) {
+                                    scope.launch {
+                                        viewModel.deleteFollowedLeague(league.id)
+                                    }
+                                }
+                                else{
+                                    navController.navigate(ClientScreen.Login.route)
                                 }
                             },
                             navController = navController
@@ -159,8 +166,13 @@ fun LeaguePrincipalContent(
                             league = league,
                             isFollowed = false,
                             onFollowClick = {
-                                scope.launch {
-                                    viewModel.createFollowedLeague(league.id)
+                                if(isAuthenticated) {
+                                    scope.launch {
+                                        viewModel.createFollowedLeague(league.id)
+                                    }
+                                }
+                                else{
+                                    navController.navigate(ClientScreen.Login.route)
                                 }
                             },
                             navController = navController

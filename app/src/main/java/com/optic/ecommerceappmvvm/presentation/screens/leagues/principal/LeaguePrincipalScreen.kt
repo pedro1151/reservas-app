@@ -16,14 +16,19 @@ import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProg
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
-fun LeaguePrincipalScreen(navController: NavHostController) {
+fun LeaguePrincipalScreen(
+    navController: NavHostController,
+    isAuthenticated: Boolean
+) {
     val viewModel: LeaguePrincipalViewModel = hiltViewModel()
     val leagueResource by viewModel.leaguesState.collectAsState()
     val followedLeaguesResource by viewModel.followedLeaguesListState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getLeagues()
-        viewModel.getFollowedLeagues()
+        if (isAuthenticated) {
+            viewModel.getFollowedLeagues()
+        }
     }
 
     Scaffold(
@@ -49,7 +54,8 @@ fun LeaguePrincipalScreen(navController: NavHostController) {
                     followedLeagues = followed,
                     paddingValues = paddingValues,
                     viewModel = viewModel,
-                    navController = navController
+                    navController = navController,
+                    isAuthenticated = isAuthenticated
                 )
             }
             is Resource.Failure -> {

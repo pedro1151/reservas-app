@@ -100,7 +100,7 @@ fun ClientNavGraph(
 
 
         composable(route = ClientScreen.Leagues.route) {
-            LeaguePrincipalScreen(navController)
+            LeaguePrincipalScreen(navController, isAuthenticated)
         }
 
         composable(route = ClientScreen.Profile.route) {

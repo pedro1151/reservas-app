@@ -1,0 +1,14 @@
+package com.optic.ecommerceappmvvm.data.dataSource.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "leagues")
+data class LeagueEntity(
+    @PrimaryKey val id: Int,
+    val apiId: Int,
+    val name: String,
+    val type: String,
+    val logo: String?,
+    val countryJson: String? // Country serializado
+)

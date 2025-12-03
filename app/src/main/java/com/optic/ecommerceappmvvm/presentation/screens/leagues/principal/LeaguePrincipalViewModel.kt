@@ -56,8 +56,6 @@ class LeaguePrincipalViewModel @Inject constructor(
 
     init {
         observeSearch()
-        getFollowedLeagues()
-        getLeagues() // carga inicial
     }
 
     // ---------------------------------------------

@@ -3,14 +3,20 @@ package com.optic.ecommerceappmvvm.data.dataSource.local.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
 
 @Database(
-    entities = [FixtureEntity::class],
-    version = 4,
+    entities = [
+        FixtureEntity::class,
+        LeagueEntity::class
+    ],
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()
 {
     abstract fun fixtureDao(): FixtureDao
+    abstract fun leagueDao(): LeagueDao
 }

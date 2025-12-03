@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toDomain
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toEntity
 import com.optic.ecommerceappmvvm.data.dataSource.remote.TeamRemoteDataSource
@@ -29,6 +30,7 @@ import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import com.optic.ecommerceappmvvm.domain.repository.TeamRepository
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.domain.util.ResponseToRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -37,7 +39,8 @@ import java.time.ZoneId
 
 class TeamRepositoryImpl(
     private val teamRemoteDataSource: TeamRemoteDataSource,
-    private val fixtureDao: FixtureDao
+    private val fixtureDao: FixtureDao,
+    private val leagueDao: LeagueDao
 ): TeamRepository
 {
     override suspend fun getAll(): Flow<Resource<List<Team>>> = flow{
@@ -107,13 +110,29 @@ class TeamRepositoryImpl(
         name: String,
         type: String,
         countryName: String
-    ): Flow<Resource<List<League>>>  = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getLeagues(name, type, countryName)
-            )
-        )
-    }
+    ): Flow<Resource<List<League>>> = flow {
+
+        //emit(Resource.Loading)
+
+        // 1️⃣ Leer cache local
+        val cached = runCatching {
+            leagueDao.getLeagues(name, type, countryName)
+        }.getOrDefault(emptyList())
+        Log.d("getLeagues", "3️⃣ Cache size = ${cached.size}")
+
+        if (cached.isNotEmpty()) {
+            emit(Resource.Success(cached.map { it.toDomain() }))
+            return@flow //  ⛔ No llamar API
+        }
+
+        // 2️⃣ No hay cache → llamar backend
+        val result = teamRemoteDataSource.getLeagues(name, type, countryName)
+        val response = ResponseToRequest.send(result)
+        emit(response)
+
+
+    }.flowOn(Dispatchers.IO)
+
 
     override suspend fun getLeagueById(leagueId: Int): Flow<Resource<LeagueCompleteResponse>>  = flow{
         emit(
@@ -450,7 +469,7 @@ class TeamRepositoryImpl(
         limit: Int
     ): Flow<Resource<List<FixtureResponse>>> = flow {
 
-        emit(Resource.Loading)
+        //emit(Resource.Loading)
         Log.d("getFixturesByDate", "1️⃣ Loading emitido")
 
         val localDate = LocalDate.parse(date)
@@ -576,5 +595,47 @@ class TeamRepositoryImpl(
                 teamRemoteDataSource.getLeagueStandings(leagueId, season)
             )
         )
+    }
+
+    // funciones de carga de precache
+
+    override suspend fun precacheAllLeagues() {
+
+        try {
+            Log.d("precacheLeagues", "⏳ Consultando TODAS las ligas desde API…")
+
+            // Llamada al endpoint con parámetros vacíos
+            val response = ResponseToRequest.send(
+                teamRemoteDataSource.getLeagues(
+                    name = "",
+                    type = "",
+                    countryName = ""
+                )
+            )
+
+            if (response is Resource.Success) {
+
+                val leagues = response.data!!
+                Log.d("precacheLeagues", "📥 API devolvió: ${leagues.size} ligas")
+
+                // Guardar TODO en Room
+                leagueDao.insertLeagues(
+                    leagues.map { it.toEntity() }
+                )
+
+                val cachedCount = leagueDao.getTotalCount()
+
+                Log.d(
+                    "precacheLeagues",
+                    "✔ Precarga completada. Guardadas en cache: $cachedCount ligas"
+                )
+
+            } else {
+                Log.d("precacheLeagues", "❌ Error al obtener ligas: $response")
+            }
+
+        } catch (e: Exception) {
+            Log.e("precacheLeagues", "❌ Excepción precache ligas", e)
+        }
     }
 }
