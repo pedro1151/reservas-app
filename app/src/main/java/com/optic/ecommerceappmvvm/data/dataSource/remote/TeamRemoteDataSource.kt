@@ -30,6 +30,7 @@ interface TeamRemoteDataSource {
 
     //Players
     suspend fun getPlayers(): Response<List<Player>>
+    suspend fun getallPlayers(): Response<List<Player>>
     suspend fun getPlayerStats(playerId: Int): Response<PlayerWithStats>
     suspend fun getPlayerTeams(playerId: Int): Response<PlayerTeamsResponse>
     suspend fun getPlayerLastTeam(playerId: Int): Response<PlayerLastTeamResponse>

@@ -48,8 +48,12 @@ interface TeamService {
 
     // players
 
-    @GET("football/getPlayers")
+    @GET("football/players/sugeridos")
     suspend fun getPlayers(
+    ): Response<List<Player>>
+
+    @GET("football/players/all")
+    suspend fun getallPlayers(
     ): Response<List<Player>>
 
     /*  Recupera la informacion de un Player junto con todas sus estatisticas

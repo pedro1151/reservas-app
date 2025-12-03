@@ -3,6 +3,7 @@ package com.optic.ecommerceappmvvm.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*  // Importa Material3
 import androidx.compose.runtime.Composable
@@ -32,7 +33,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val mainVM: MainViewModel by viewModels() // ✅ CORRECTO
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
 
         // precargar fixtures en cache
@@ -49,11 +54,13 @@ class MainActivity : ComponentActivity() {
             EcommerceAppMVVMTheme {
 
                 val navController = rememberNavController()
+                // ACTIVA EL MAIN VM
+                val mainVM = this@MainActivity.mainVM
 
                 val currentBackStack by navController.currentBackStackEntryAsState()
                 val currentDestination = currentBackStack?.destination
 
-                val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
+                //val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
                 val authStateVM: AuthStateVM = hiltViewModel()
                 val isAuthenticated by authStateVM.isAuthenticated.collectAsState()
 

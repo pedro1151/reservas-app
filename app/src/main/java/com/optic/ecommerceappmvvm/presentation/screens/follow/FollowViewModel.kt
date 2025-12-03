@@ -66,11 +66,11 @@ class FollowViewModel @Inject constructor(
 
     init {
         getSuggestedTeams(50)
-        getSuggestedPlayers(50)
+        getPlayers()
         getFollowedPlayers()
         getFollowedTeams()
     }
-    /*
+
     private fun getPlayers() {
         viewModelScope.launch {
             teamUseCase.getPlayersUseCase().collectLatest { result ->
@@ -79,7 +79,7 @@ class FollowViewModel @Inject constructor(
         }
     }
 
-     */
+
     private fun getSuggestedPlayers(limit: Int) {
         viewModelScope.launch {
             triviasUseCase.getSuggestedPlayersUC(limit).collectLatest { result ->

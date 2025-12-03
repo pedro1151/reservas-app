@@ -80,7 +80,7 @@ fun SuggestedPlayersList(
                                     .background(MaterialTheme.colorScheme.primary)
                             ) {
                                 AsyncImage(
-                                    model = "", // Logo del club si se tiene
+                                    model = player.lastTeam?.logo ?:"",
                                     contentDescription = "Logo del club",
                                     modifier = Modifier.fillMaxSize()
                                 )

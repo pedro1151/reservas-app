@@ -29,6 +29,7 @@ interface TeamRepository {
 
     //PLayers
     suspend fun getPlayers(): Flow<Resource<List<Player>>>
+    suspend fun getallPlayers(): Flow<Resource<List<Player>>>
     suspend fun getPlayerStats(playerId: Int): Flow<Resource<PlayerWithStats>>
     suspend fun getPlayerTeams(playerId: Int): Flow<Resource<PlayerTeamsResponse>>
     suspend fun getPlayerLastTeam(playerId: Int): Flow<Resource<PlayerLastTeamResponse>>
@@ -71,6 +72,7 @@ interface TeamRepository {
     // funciones de carga de cache
     suspend fun precacheFixturesAroundToday()
     suspend fun precacheAllLeagues()
+    suspend fun precacheAllPlayers()
     //
 
     //Versus

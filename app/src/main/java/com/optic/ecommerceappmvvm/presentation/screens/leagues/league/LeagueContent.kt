@@ -33,7 +33,7 @@ fun LeagueContent(
     viewModel: LeagueViewModel,
     leagueFixtureState: Resource<List<FixtureResponse>>
 ) {
-    val tabTitles = listOf("Clasificacion", "Partidos", "Noticias", "Estad. Jugador", "Temporadas")
+    val tabTitles = listOf("Clasificacion", "Partidos", "Temporadas")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -85,9 +85,7 @@ fun LeagueContent(
                     navController = navController,
                     fixtureState  = leagueFixtureState
                 )
-                2 -> PlaceholderTab("Noticias")
-                3 -> PlaceholderTab("Estad. Jugador")
-                4 -> PlaceholderTab("Temporadas")
+                2 -> PlaceholderTab("Temporadas")
             }
         }
     }

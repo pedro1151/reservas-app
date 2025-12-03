@@ -80,9 +80,11 @@ fun PlayerListContent(
                                     .background(MaterialTheme.colorScheme.primary)
                             ) {
                                 AsyncImage(
-                                    model = "", // Logo del club si se tiene
-                                    contentDescription = "Logo del club",
-                                    modifier = Modifier.fillMaxSize()
+                                    model =  player.lastTeam?.logo?: "",
+                                    contentDescription = "Logo del equipo",
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clip(CircleShape)
                                 )
                             }
                         }

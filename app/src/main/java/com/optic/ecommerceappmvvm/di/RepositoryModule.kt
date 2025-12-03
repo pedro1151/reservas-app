@@ -4,6 +4,7 @@ import com.optic.ecommerceappmvvm.data.repository.AuthRepositoryImpl
 import com.optic.ecommerceappmvvm.data.dataSource.local.AuthLocalDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.remote.AuthRemoteDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.TeamRemoteDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.remote.service.external.ExternalRemoteDataSource
@@ -36,8 +37,9 @@ object RepositoryModule {
     fun provideTeamRepository(
         teamRemoteDataSource: TeamRemoteDataSource,
         daoFixtureDao: FixtureDao,
-        leagueDao: LeagueDao
-    ): TeamRepository = TeamRepositoryImpl(teamRemoteDataSource, daoFixtureDao, leagueDao)
+        leagueDao: LeagueDao,
+        playerDao: PlayerDao
+    ): TeamRepository = TeamRepositoryImpl(teamRemoteDataSource, daoFixtureDao, leagueDao, playerDao)
 
 
     @Provides

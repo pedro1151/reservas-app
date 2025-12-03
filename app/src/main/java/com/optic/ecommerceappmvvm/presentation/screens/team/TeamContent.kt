@@ -35,7 +35,7 @@ fun TeamContent(
     topFiveFixtureState: Resource<List<FixtureResponse>>,
     navController: NavHostController
 ) {
-    val tabTitles = listOf("Resumen", "Formacion", "Partidos", "Estadisticas", "Trofeos")
+    val tabTitles = listOf("Resumen", "Partidos", "Estadisticas")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,15 +86,14 @@ fun TeamContent(
                         team = team
                     )
                 }
-                1 -> PlaceholderTab("Formacion")
-                2 -> TeamFixture(
+                1 -> TeamFixture(
                     modifier = Modifier,
                     navController = navController,
                     fixtureState = fixtureState,
                     title = "Partidos",
                     paddingValues = paddingValues
                 )
-                3 -> team?.id?.let {
+                2 -> team?.id?.let {
                     TeamStatsScreen(
                         paddingValues = paddingValues,
                         season = 2023,
@@ -102,7 +101,6 @@ fun TeamContent(
                         date = ""
                     )
                 }
-                4 -> PlaceholderTab("Trofeos")
             }
         }
     }

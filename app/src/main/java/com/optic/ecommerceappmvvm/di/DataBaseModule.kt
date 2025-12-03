@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.db.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -34,4 +35,7 @@ object DatabaseModule {
 
     @Provides
     fun provideLeagueDao(db: AppDatabase): LeagueDao = db.leagueDao()
+
+    @Provides
+    fun providePlayerDao(db: AppDatabase): PlayerDao = db.playerDao()
 }

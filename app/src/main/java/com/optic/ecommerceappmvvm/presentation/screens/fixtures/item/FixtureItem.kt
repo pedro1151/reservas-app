@@ -113,17 +113,19 @@ fun FixtureItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+
+                    Text(
+                        text = fixture.teamHome?.name ?: "",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     AsyncImage(
                         model = fixture.teamHome?.logo,
                         contentDescription = fixture.teamHome?.name,
                         modifier = Modifier
                             .size(20.dp)
                             .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = fixture.teamHome?.name ?: "",
-                        style = MaterialTheme.typography.labelSmall
                     )
                 }
 
@@ -140,17 +142,18 @@ fun FixtureItem(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = fixture.teamAway?.name ?: "",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+
                     AsyncImage(
                         model = fixture.teamAway?.logo,
                         contentDescription = fixture.teamAway?.name,
                         modifier = Modifier
                             .size(20.dp)
                             .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = fixture.teamAway?.name ?: "",
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
