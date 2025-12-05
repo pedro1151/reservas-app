@@ -48,8 +48,11 @@ interface TeamService {
 
     // players
 
-    @GET("football/players/sugeridos")
+    @GET("football/players/name/{name}/page/{page}/size/{size}")
     suspend fun getPlayers(
+        @Path("name") name: String?,
+        @Path("page") page: Int,
+        @Path("size") size: Int
     ): Response<List<Player>>
 
     @GET("football/players/all")

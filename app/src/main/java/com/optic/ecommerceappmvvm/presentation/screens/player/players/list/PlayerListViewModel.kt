@@ -22,12 +22,12 @@ class PlayerListViewModel @Inject constructor(
     val playersState: StateFlow<Resource<List<Player>>> = _playersState
 
     init {
-        getPlayers()
+        getPlayers("", 1, 20)
     }
 
-    private fun getPlayers() {
+    private fun getPlayers(name:String, page:Int, size: Int) {
         viewModelScope.launch {
-            teamUseCase.getPlayersUseCase().collectLatest { result ->
+            teamUseCase.getPlayersUseCase(name, page, size).collectLatest { result ->
                 Log.i("PlayerListViewModel", "Resultado: $result")
                 _playersState.value = result
             }

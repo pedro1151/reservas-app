@@ -12,9 +12,8 @@ interface PlayerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlayers(players: List<PlayerEntity>)
 
-    @Query("SELECT * FROM players LIMIT 100")
+    @Query("SELECT * FROM players LIMIT 50")
     suspend fun getPlayers(): List<PlayerEntity>
 
-    //@Query("DELETE FROM players")
-    //suspend fun clearPlayers()
+
 }

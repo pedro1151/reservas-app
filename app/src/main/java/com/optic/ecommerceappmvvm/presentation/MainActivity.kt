@@ -17,6 +17,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.Coil
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.android.gms.ads.MobileAds
 import com.optic.ecommerceappmvvm.ads.RewardedAdManager
 import com.optic.ecommerceappmvvm.presentation.authstate.AuthStateVM
@@ -28,6 +32,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.matches.MatchesScreen
 import com.optic.ecommerceappmvvm.presentation.ui.theme.AppThemeMode
 import com.optic.ecommerceappmvvm.presentation.ui.theme.EcommerceAppMVVMTheme
 import com.optic.ecommerceappmvvm.presentation.ui.theme.LocalAppTheme
+import com.optic.ecommerceappmvvm.presentation.util.logCoilCacheUsage
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,12 +42,26 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         super.onCreate(savedInstanceState)
 
-        // precargar fixtures en cache
+        val loader = ImageLoader.Builder(this)
+            .crossfade(true)
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(cacheDir.resolve("image_cache"))
+                    .maxSizeBytes(200L * 1024 * 1024) // 200 MB
+                    .build()
+            }
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.30) // usa 30% de la RAM
+                    .build()
+            }
+            .build()
 
-
+        Coil.setImageLoader(loader)
+        // LOguear el uso de cache
+        logCoilCacheUsage(loader)
         // ✅ Inicializa Google AdMob
         MobileAds.initialize(this)
 

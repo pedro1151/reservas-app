@@ -27,12 +27,15 @@ fun FollowButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary) // 👈 Contorno blanco
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)) // 👈 Contorno blanco
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-            color = MaterialTheme.colorScheme.followTextColor
+            style = MaterialTheme.typography.labelLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         )
     }
 }

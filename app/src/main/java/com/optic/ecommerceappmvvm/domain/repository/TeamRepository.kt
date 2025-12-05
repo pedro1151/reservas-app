@@ -28,7 +28,7 @@ interface TeamRepository {
     suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>>
 
     //PLayers
-    suspend fun getPlayers(): Flow<Resource<List<Player>>>
+    suspend fun getPlayers(name: String?, page: Int, size:Int): Flow<Resource<List<Player>>>
     suspend fun getallPlayers(): Flow<Resource<List<Player>>>
     suspend fun getPlayerStats(playerId: Int): Flow<Resource<PlayerWithStats>>
     suspend fun getPlayerTeams(playerId: Int): Flow<Resource<PlayerTeamsResponse>>
@@ -73,6 +73,7 @@ interface TeamRepository {
     suspend fun precacheFixturesAroundToday()
     suspend fun precacheAllLeagues()
     suspend fun precacheAllPlayers()
+    suspend fun precacheAllTeams()
     //
 
     //Versus

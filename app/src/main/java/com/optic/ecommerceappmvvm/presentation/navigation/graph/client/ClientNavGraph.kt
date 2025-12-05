@@ -103,7 +103,11 @@ fun ClientNavGraph(
             LeaguePrincipalScreen(navController, isAuthenticated)
         }
 
-        composable(route = ClientScreen.Profile.route) {
+        composable(
+            route = ClientScreen.Profile.route
+
+        ) {
+
             MasScreen(navController, isAuthenticated)
         }
 

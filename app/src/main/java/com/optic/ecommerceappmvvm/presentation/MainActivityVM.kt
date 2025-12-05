@@ -16,7 +16,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             teamRepository.precacheFixturesAroundToday()
             teamRepository.precacheAllLeagues()
-            teamRepository.precacheAllPlayers()
+           // teamRepository.precacheAllPlayers()
+            teamRepository.precacheAllTeams()
         }
     }
 }

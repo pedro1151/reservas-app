@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.jvm.internal.impl.types.TypeCheckerState.SupertypesPolicy.None
 
 @HiltViewModel
 class FollowViewModel @Inject constructor(
@@ -49,7 +50,50 @@ class FollowViewModel @Inject constructor(
     private val _deleteFollowedState = MutableStateFlow<Resource<DefaultResponse>>(Resource.Loading)
     val deleteFollowedState : StateFlow<Resource< DefaultResponse>> = _deleteFollowedState
 
-    // TEAMS SEGUIDOS
+    // PAGINADO de players
+
+    private var currentPage = 1
+    private val pageSize = 20
+    private var isLoadingPage = false
+    private var allPlayersLoaded = false
+    private val loadedPlayers = mutableListOf<Player>()
+
+    fun getPlayers(name: String) {
+        if (isLoadingPage || allPlayersLoaded) return
+        isLoadingPage = true
+        _playersState.value = Resource.Loading // opcional, para indicar loading incremental
+
+        viewModelScope.launch {
+            teamUseCase.getPlayersUseCase(name, currentPage, pageSize).collectLatest { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        val newPlayers = result.data ?: emptyList()
+                        if (newPlayers.isEmpty()) {
+                            allPlayersLoaded = true
+                        } else {
+                            loadedPlayers.addAll(newPlayers)
+                            currentPage++ // preparar siguiente página
+                        }
+                        _playersState.value = Resource.Success(loadedPlayers)
+                    }
+                    is Resource.Failure -> {
+                        _playersState.value = result
+                    }
+                    is Resource.Loading -> {
+                        _playersState.value = result
+                    }
+
+                    Resource.Idle -> TODO()
+                }
+                isLoadingPage = false
+            }
+        }
+
+
+    }
+
+
+
 
     //LISTA DE TEAMS SEGUIDOS
     private val _followedTeamListState = MutableStateFlow<Resource<List<Team>>>(Resource.Loading)
@@ -66,14 +110,14 @@ class FollowViewModel @Inject constructor(
 
     init {
         getSuggestedTeams(50)
-        getPlayers()
+        getPlayers("null", 1, 20) // inicialmente trae solo 20 datos
         getFollowedPlayers()
         getFollowedTeams()
     }
 
-    private fun getPlayers() {
+    private fun getPlayers(name:String, page: Int, size:Int) {
         viewModelScope.launch {
-            teamUseCase.getPlayersUseCase().collectLatest { result ->
+            teamUseCase.getPlayersUseCase(name, page, size).collectLatest { result ->
                 _playersState.value = result
             }
         }
@@ -125,7 +169,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all players")
                     getFollowedPlayers() // 👈 refresca la lista de jugadores seguidos
-                    getSuggestedPlayers(50)
+                    getPlayers("null", 1, 20)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _playersState.value = _playersState.value
@@ -150,7 +194,7 @@ class FollowViewModel @Inject constructor(
                 if (result is Resource.Success) {
                     Log.d("FollowVM", "Refresh followed and all players")
                     getFollowedPlayers() // 👈 refresca la lista de jugadores seguidos
-                    getSuggestedPlayers(50)
+                    getPlayers("null", 1, 20)
 
                     // Forzar emitir valores nuevos aunque sean iguales (para test)
                     _playersState.value = _playersState.value

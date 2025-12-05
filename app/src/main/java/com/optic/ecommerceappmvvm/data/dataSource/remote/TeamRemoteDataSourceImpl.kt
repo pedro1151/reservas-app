@@ -31,7 +31,7 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
 
 
     // PLAYERS
-    override suspend fun getPlayers(): Response<List<Player>> = teamService.getPlayers()
+    override suspend fun getPlayers(name: String?, page: Int, size:Int): Response<List<Player>> = teamService.getPlayers(name, page, size)
     override suspend fun getallPlayers(): Response<List<Player>> = teamService.getallPlayers()
 
     override suspend fun getPlayerStats(playerId: Int): Response<PlayerWithStats> = teamService.getPlayerStats(playerId)

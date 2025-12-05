@@ -113,7 +113,8 @@ fun FollowScreen(
                             navController.navigate(ClientScreen.Login.route)
 
                         }
-                    }
+                    },
+                    viewModel = viewModel
 
 
                 )

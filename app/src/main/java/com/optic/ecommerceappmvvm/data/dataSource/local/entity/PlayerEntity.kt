@@ -8,17 +8,17 @@ data class PlayerEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
 
-    val apiId: Int?,
+    //val apiId: Int?,
     val name: String?,
     val firstname: String?,
     val lastname: String?,
-    val age: String?,
-    val nationality: String?,
-    val birthDate: String?,
-    val birthPlace: String?,
-    val birthCountry: String?,
-    val height: String?,
-    val weight: String?,
+    //val age: String?,
+    //val nationality: String?,
+    //val birthDate: String?,
+    //val birthPlace: String?,
+    //val birthCountry: String?,
+    //val height: String?,
+    //val weight: String?,
     val photo: String?,
 
     // last team
