@@ -19,6 +19,7 @@ data class FixtureResponse(
     @SerializedName("status_extra") val statusExtra: String?,
     @SerializedName("league") val league: League,
     @SerializedName("league_season") val leagueSeason: Int,
+    @SerializedName("league_round") val leagueRound: String?,
     @SerializedName("team_home") val teamHome: Team,
     @SerializedName("team_away") val teamAway: Team,
     @SerializedName("team_winner") val teamWinner: Team?,

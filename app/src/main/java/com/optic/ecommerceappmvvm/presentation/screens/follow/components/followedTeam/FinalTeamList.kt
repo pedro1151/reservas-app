@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +15,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +33,7 @@ import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButtonAlternative
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -39,7 +44,8 @@ fun FinalTeamList(
     navController: NavHostController,
     onFollowClick: (Int) -> Unit = {},
     onUnFollowClick: (Int) -> Unit = {},
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    viewModel: FollowViewModel
 ) {
 
     val colors = listOf(
@@ -50,7 +56,10 @@ fun FinalTeamList(
     )
     fun colorForIndex(index: Int) = colors[index % colors.size]
 
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues),
@@ -138,6 +147,16 @@ fun FinalTeamList(
             }
         }
     }
-}
 
+    // --- Scroll listener para paginación ---
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                val total = listState.layoutInfo.totalItemsCount
+                if (index >= total - 10) {
+                    viewModel.getTeams("", "")
+                }
+            }
+    }
+}
 

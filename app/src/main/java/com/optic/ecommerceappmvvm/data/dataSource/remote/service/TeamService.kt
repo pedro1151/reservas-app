@@ -32,6 +32,10 @@ interface TeamService {
 /* Se utiliza Response de retrofit, en los archivos de servicios */
     @GET("football/teams")
     suspend fun getTeams(
+        @Query("name") name: String,
+        @Query("country") country: String,
+        @Query("page") page: Int,
+        @Query("page_size") size: Int
     ): Response<List<Team>>
 
     @GET("football/teams/{team_id}")
@@ -86,6 +90,10 @@ interface TeamService {
        @Query("type_") type: String,
        @Query("country_name") countryName: String
    ): Response<List<League>>
+
+    @GET("football/leagues/top")
+    suspend fun getTopLeagues(
+    ): Response<List<League>>
 
     @GET("football/leagues/{league_id}")
     suspend fun getLeagueById(

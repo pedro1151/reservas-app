@@ -13,6 +13,7 @@ import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.followedPlayer.FinalPlayerList
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.followedTeam.FinalTeamList
@@ -32,10 +33,10 @@ fun FollowContent(
 
     onFollowTeamClick : (Int) -> Unit = {},
     onUnFollowTeamClick : (Int) -> Unit = {},
-    viewModel: FollowViewModel
+    viewModel: FollowViewModel,
+    pagerState: PagerState,
+    tabTitles: List<String>
 ) {
-    val tabTitles = listOf("Equipos", "Jugadores")
-    val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -70,6 +71,7 @@ fun FollowContent(
 
         HorizontalPager(
             state = pagerState,
+            //userScrollEnabled = false
             //modifier = Modifier.weight(1f) // 👈 LIMITA la altura
         ) { page ->
             when (page) {
@@ -79,7 +81,8 @@ fun FollowContent(
                     navController = navController,
                     onFollowClick = onFollowTeamClick,
                     onUnFollowClick =  onUnFollowTeamClick,
-                    paddingValues = PaddingValues(1.dp)
+                    paddingValues = PaddingValues(1.dp),
+                    viewModel = viewModel
                 )
                 1 -> FinalPlayerList(
                     players = players,

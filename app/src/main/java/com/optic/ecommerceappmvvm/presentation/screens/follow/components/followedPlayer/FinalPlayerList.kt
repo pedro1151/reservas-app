@@ -23,6 +23,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -31,9 +32,12 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.input.pointer.pointerInput
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -59,13 +63,25 @@ fun FinalPlayerList(
 
     fun colorForIndex(index: Int) = colors[index % colors.size]
 
-    val listState = rememberLazyListState()
+   // val listState = rememberLazyListState()
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
     val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 1.dp, horizontal = 1.dp),
+            .padding(vertical = 1.dp, horizontal = 1.dp)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    // Solo bloqueamos horizontal
+                    if (dragAmount.x != 0f) {
+                        change.consume()
+                    }
+                }
+            }
+,
         verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
 
@@ -139,28 +155,29 @@ fun FinalPlayerList(
                     navController = navController,
                     onFollowClick = onFollowClick
                 )
+
+                if (viewModel.isLoadingPage) {
+                    this@LazyColumn.item{
+                        CircularProgressIndicator()
+                    }
+                }
+
             }
         }
+
     }
 
     // --- Scroll listener para paginación ---
-    LaunchedEffect(players) {
-        snapshotFlow { listState.layoutInfo }
-            .collect { layoutInfo ->
-                val totalItems = layoutInfo.totalItemsCount
-                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-                // cuando el usuario scrollea cerca del final
-                if (lastVisibleItem >= totalItems - 5) {
-                    coroutineScope.launch {
-                        coroutineScope.launch {
-                            viewModel.getPlayers("null")
-                        } // carga la siguiente página }
-                    }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                val total = listState.layoutInfo.totalItemsCount
+                if (index >= total - 10) {
+                    viewModel.getPlayers("null")
                 }
             }
     }
-}
 
+}
 
 

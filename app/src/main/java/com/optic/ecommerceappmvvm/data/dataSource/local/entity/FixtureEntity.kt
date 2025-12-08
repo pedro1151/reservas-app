@@ -41,6 +41,7 @@ data class FixtureEntity(
     val leagueCountryId: Int,
     val leagueLogo: String,
     val leagueSeason: Int,
+    val leagueRound: String?,
 
     // Team home simplificado
     val homeTeamId: Int,

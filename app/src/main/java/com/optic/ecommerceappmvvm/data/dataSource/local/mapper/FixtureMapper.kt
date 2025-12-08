@@ -32,6 +32,7 @@ fun FixtureResponse.toEntity(): FixtureEntity {
         leagueCountryId = league.countryId,
         leagueLogo = league.logo,
         leagueSeason = leagueSeason,
+        leagueRound = leagueRound,
 
         homeTeamId = teamHome.id,
         homeTeamName = teamHome.name,
@@ -91,6 +92,7 @@ fun FixtureEntity.toDomain(): FixtureResponse {
             logo = leagueLogo
         ),
         leagueSeason = leagueSeason,
+        leagueRound = leagueRound,
 
         teamHome = Team(
             id = homeTeamId,

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.Flow
 interface TeamRepository {
 
     // teams
-    suspend fun getAll(): Flow<Resource<List<Team>>>
+    suspend fun getAll(name: String, country:String, page: Int, size: Int): Flow<Resource<List<Team>>>
     suspend fun getSuggestedTeams(limit: Int): Flow<Resource<List<Team>>>
     suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>>
 
@@ -53,6 +53,7 @@ interface TeamRepository {
     suspend fun deleteFollowedLeague(leagueId: Int):Flow<Resource<DefaultResponse>>
     suspend fun getLeagues(name: String, type: String, countryName: String): Flow<Resource<List<League>>>
     suspend fun getLeagueById(leagueId:Int): Flow<Resource<LeagueCompleteResponse>>
+    suspend fun getTopLeagues(): Flow<Resource<List<League>>>
 
 
     //FIXTURE
@@ -73,7 +74,12 @@ interface TeamRepository {
     suspend fun precacheFixturesAroundToday()
     suspend fun precacheAllLeagues()
     suspend fun precacheAllPlayers()
-    suspend fun precacheAllTeams()
+    suspend fun precacheAllTeams(
+        name:String,
+        country: String,
+        page: Int,
+        size: Int
+    )
     //
 
     //Versus

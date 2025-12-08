@@ -1,9 +1,11 @@
 package com.optic.ecommerceappmvvm.presentation.screens.follow
 
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,11 +26,14 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.FollowContent
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FollowScreen(
     navController: NavHostController,
     isAuthenticated: Boolean
 ) {
+    val tabTitles = listOf("Equipos", "Jugadores")
+    val pagerState = rememberPagerState(pageCount = { tabTitles.size }) // fuera de FollowContent
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val viewModel: FollowViewModel = hiltViewModel()
@@ -114,7 +119,9 @@ fun FollowScreen(
 
                         }
                     },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    pagerState = pagerState,
+                    tabTitles = tabTitles
 
 
                 )

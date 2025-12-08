@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.presentation.navigation.screen.client
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.AddModerator
 import androidx.compose.material.icons.filled.Airplay
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -34,6 +35,14 @@ sealed class ClientScreen(
         title = "Calendar",
         icon = Icons.Default.CalendarMonth
     )
+
+    object Prode: ClientScreen(
+        route = "client/prode",
+        title = "Prode",
+        icon = Icons.Default.AccountTree
+    )
+
+
     object Matches: ClientScreen(
         route = "client/matches",
         title = "Matches",

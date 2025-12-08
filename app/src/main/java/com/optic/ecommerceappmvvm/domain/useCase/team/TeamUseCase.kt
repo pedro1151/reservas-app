@@ -21,6 +21,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.CreateFoll
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.DeleteFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.GetFollowedLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetLeagueByIdUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetTopLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetAllPlayersUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
@@ -79,6 +80,7 @@ data class TeamUseCase(
     val createFollowedLeagueUC   : CreateFollowedLeagueUC,
     val deleteFollowedLeagueUC  : DeleteFollowedLeagueUC,
     val getLeagueByIdUC: GetLeagueByIdUC,
+    val getTopLeaguesUC: GetTopLeaguesUC,
 
 
     //standings

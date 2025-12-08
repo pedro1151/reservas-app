@@ -35,6 +35,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,6 +57,10 @@ fun ClientNavGraph(
 
         composable(route = ClientScreen.Follow.route) {
             FollowScreen(navController, isAuthenticated)
+        }
+
+        composable(route = ClientScreen.Prode.route) {
+            ProdeScreen(navController, isAuthenticated)
         }
 
         composable(

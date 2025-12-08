@@ -17,7 +17,7 @@ class MainViewModel @Inject constructor(
             teamRepository.precacheFixturesAroundToday()
             teamRepository.precacheAllLeagues()
            // teamRepository.precacheAllPlayers()
-            teamRepository.precacheAllTeams()
+           // teamRepository.precacheAllTeams()
         }
     }
 }

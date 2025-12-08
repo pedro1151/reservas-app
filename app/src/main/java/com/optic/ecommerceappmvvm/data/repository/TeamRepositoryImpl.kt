@@ -56,50 +56,45 @@ class TeamRepositoryImpl(
         )
     }
 */
-    override suspend fun getAll(): Flow<Resource<List<Team>>> = flow{
+    override suspend fun getAll(
+        name: String,
+        country:String,
+        page: Int,
+        size: Int
+    ): Flow<Resource<List<Team>>> = flow {
 
-        // 1️⃣ Leer cache local
-        val cached = runCatching {
-            teamDao.getTeams()
-        }.getOrDefault(emptyList())
-        Log.d("precacheTeams", "Cache size = ${cached.size}")
+    val cached = runCatching { teamDao.getTeams() }.getOrDefault(emptyList())
+    val start = (page - 1) * size
+    val end = start + size
 
-        if (cached.isNotEmpty()) {
-            emit(Resource.Success(cached.map { it.toDomain() }))
-            return@flow // ⛔ NO llamar API
-        }
+// 1️⃣ Emitir lo que tengas en cache (si existe)
+    if (cached.isNotEmpty() && start < cached.size) {
+        val cachedEnd = minOf(end, cached.size)
+        emit(Resource.Success(cached.subList(start, cachedEnd).map { it.toDomain() }))
+        Log.d("precacheTeams", "5️⃣ Llamando desde cache con start $start y end $cachedEnd")
+    }
 
+// 2️⃣ Solo llamar API si cache no cubre toda la página
+    if (cached.size < end) {
         try {
-            Log.d("precachePlayers", "5️⃣ Llamando backend…")
-
-            val result = teamRemoteDataSource.getAll()
+            Log.d("precacheTeams", "5️⃣ Llamando backend…")
+            val result = teamRemoteDataSource.getAll(name, country,page, size)
             val response = ResponseToRequest.send(result)
 
             if (response is Resource.Success) {
-
                 val teams = response.data!!
-                Log.d(
-                    "precacheTeams",
-                    "6️⃣ API devolvió ${teams.size} teams"
-                )
-
-                // guardo en cache
                 teamDao.insertTeams(teams.map { it.toEntity() })
-                Log.d("precacheTeams", "6️⃣ Guardado en Room (API)")
                 emit(Resource.Success(teams))
-
+                Log.d("precacheTeams", "6️⃣ Guardado de teams en Room (API)")
             } else {
-                Log.d("precacheTeams","6️⃣ API devolvió error → $response")
                 emit(response)
             }
-
         } catch (e: Exception) {
-            Log.e("precacheTeams", "❌ Excepción backend", e)
-            emit(Resource.Failure("Error al obtener teams: ${e.localizedMessage ?: e.message}"))
+            emit(Resource.Failure("Error al obtener los teams: ${e.localizedMessage ?: e.message}"))
         }
+    }
 
-
-    }.flowOn(Dispatchers.IO)
+}.flowOn(Dispatchers.IO)
 
 
 
@@ -129,48 +124,35 @@ class TeamRepositoryImpl(
         size: Int
     ): Flow<Resource<List<Player>>> = flow {
 
-        // 1️⃣ Leer cache local
-        val cached = runCatching {
-            playerDao.getPlayers()
-        }.getOrDefault(emptyList())
-        Log.d("precachePlayers", "Cache size = ${cached.size}")
+        val cached = runCatching { playerDao.getPlayers() }.getOrDefault(emptyList())
+        val start = (page - 1) * size
+        val end = start + size
 
-        if (cached.isNotEmpty()) {
-            val start = (page - 1) * size
-            val end = minOf(start + size, cached.size) // ← fix para no crashear
-            emit(Resource.Success(cached.subList(start, end).map { it.toDomain() }))
-            Log.d("precachePlayers", "5️⃣ Llamando desde cache con start $start y end $end")
-            return@flow // ⛔ NO llamar API
+// 1️⃣ Emitir lo que tengas en cache (si existe)
+        if (cached.isNotEmpty() && start < cached.size) {
+            val cachedEnd = minOf(end, cached.size)
+            emit(Resource.Success(cached.subList(start, cachedEnd).map { it.toDomain() }))
+            Log.d("precachePlayers", "5️⃣ Llamando desde cache con start $start y end $cachedEnd")
         }
 
-        try {
-            Log.d("precachePlayers", "5️⃣ Llamando backend…")
+// 2️⃣ Solo llamar API si cache no cubre toda la página
+        if (cached.size < end) {
+            try {
+                Log.d("precachePlayers", "5️⃣ Llamando backend…")
+                val result = teamRemoteDataSource.getPlayers(name, page, size)
+                val response = ResponseToRequest.send(result)
 
-            val result = teamRemoteDataSource.getPlayers(name, page, size)
-            val response = ResponseToRequest.send(result)
-
-            if (response is Resource.Success) {
-
-                val players = response.data!!
-                Log.d(
-                    "precachePlayers",
-                    "6️⃣ API devolvió ${players.size} players"
-                )
-
-                // guardo en cache
-                playerDao.insertPlayers(players.map { it.toEntity() })
-                Log.d("precachePlayers", "6️⃣ Guardado en Room (API)")
-                Log.d("precachePlayers", "5️guardando em cache desde api con page $page y size $size")
-                emit(Resource.Success(players))
-
-            } else {
-                Log.d("precachePlayers","6️⃣ API devolvió error → $response")
-                emit(response)
+                if (response is Resource.Success) {
+                    val players = response.data!!
+                    playerDao.insertPlayers(players.map { it.toEntity() })
+                    emit(Resource.Success(players))
+                    Log.d("precachePlayers", "6️⃣ Guardado en Room (API)")
+                } else {
+                    emit(response)
+                }
+            } catch (e: Exception) {
+                emit(Resource.Failure("Error al obtener players: ${e.localizedMessage ?: e.message}"))
             }
-
-        } catch (e: Exception) {
-            Log.e("precachePlayers", "❌ Excepción backend", e)
-            emit(Resource.Failure("Error al obtener players: ${e.localizedMessage ?: e.message}"))
         }
 
     }.flowOn(Dispatchers.IO)
@@ -270,6 +252,14 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getLeagueById(leagueId)
+            )
+        )
+    }
+
+    override suspend fun getTopLeagues(): Flow<Resource<List<League>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getTopLeagues()
             )
         )
     }
@@ -812,14 +802,19 @@ class TeamRepositoryImpl(
     }
 
 
-    override suspend fun precacheAllTeams() {
+    override suspend fun precacheAllTeams(
+        name:String,
+        country: String,
+        page: Int,
+        size: Int
+    ) {
 
         try {
             Log.d("precache", "⏳ Consultando TODOS los teams desde API…")
 
             // Llamada al endpoint con parámetros vacíos o sin parámetros según tu API
             val response = ResponseToRequest.send(
-                teamRemoteDataSource.getAll()
+                teamRemoteDataSource.getAll(name, country, page, size)
             )
 
             if (response is Resource.Success) {

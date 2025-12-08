@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.optic.ecommerceappmvvm.domain.model.Team
+import com.optic.ecommerceappmvvm.domain.model.administracion.Country
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,12 +22,17 @@ class TeamListViewModel @Inject constructor(
     val teamsState: StateFlow<Resource<List<Team>>> = _teamsState
 
     init {
-        getTeams()
+        getTeams("", "", 1, 20)
     }
 
-    private fun getTeams() {
+    private fun getTeams(
+        name:String,
+        country: String,
+        page:Int,
+        size:Int
+        ) {
         viewModelScope.launch {
-            teamUseCase.getallTeamUseCase().collectLatest { result ->
+            teamUseCase.getallTeamUseCase(name, country, page, size).collectLatest { result ->
                 _teamsState.value = result
             }
         }

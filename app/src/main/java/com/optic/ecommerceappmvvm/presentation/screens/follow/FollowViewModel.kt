@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +31,13 @@ class FollowViewModel @Inject constructor(
     private val teamUseCase: TeamUseCase,
     private val triviasUseCase: TriviasUseCase
 ) : ViewModel() {
+
+    init {
+        getTeams("", "",1 ,20) // inicialmente trae solo 20 datos
+        getPlayers("null", 1, 20) // inicialmente trae solo 20 datos
+        getFollowedPlayers()
+        getFollowedTeams()
+    }
 
     private val _teamsState = MutableStateFlow<Resource<List<Team>>>(Resource.Loading)
     val teamsState: StateFlow<Resource<List<Team>>> = _teamsState
@@ -51,20 +59,22 @@ class FollowViewModel @Inject constructor(
     val deleteFollowedState : StateFlow<Resource< DefaultResponse>> = _deleteFollowedState
 
     // PAGINADO de players
-
     private var currentPage = 1
     private val pageSize = 20
-    private var isLoadingPage = false
+    var isLoadingPage = false
     private var allPlayersLoaded = false
     private val loadedPlayers = mutableListOf<Player>()
+
 
     fun getPlayers(name: String) {
         if (isLoadingPage || allPlayersLoaded) return
         isLoadingPage = true
-        _playersState.value = Resource.Loading // opcional, para indicar loading incremental
+
 
         viewModelScope.launch {
-            teamUseCase.getPlayersUseCase(name, currentPage, pageSize).collectLatest { result ->
+            try {
+                val result = teamUseCase.getPlayersUseCase(name, currentPage, pageSize)
+                    .first() // obtenemos solo un emit, no collect
                 when (result) {
                     is Resource.Success -> {
                         val newPlayers = result.data ?: emptyList()
@@ -72,25 +82,75 @@ class FollowViewModel @Inject constructor(
                             allPlayersLoaded = true
                         } else {
                             loadedPlayers.addAll(newPlayers)
-                            currentPage++ // preparar siguiente página
+                            currentPage++
+                            _playersState.value = Resource.Success(loadedPlayers.toList())
                         }
-                        _playersState.value = Resource.Success(loadedPlayers)
                     }
                     is Resource.Failure -> {
                         _playersState.value = result
                     }
                     is Resource.Loading -> {
-                        _playersState.value = result
+                        if (loadedPlayers.isEmpty()) {
+                            _playersState.value = Resource.Loading
+                        }
                     }
 
-                    Resource.Idle -> TODO()
+                    else -> {}
                 }
+            } finally {
                 isLoadingPage = false
             }
         }
 
+    }
+
+
+    // PAGINADO de players
+    private var currentPageTeam = 1
+    private val pageSizeTeam = 20
+    var isLoadingPageTeam = false
+    private var allLoadedTeam = false
+    private val loadedTeams = mutableListOf<Team>()
+
+
+    fun getTeams(name: String, country:String) {
+        if (isLoadingPageTeam || allLoadedTeam) return
+        isLoadingPageTeam = true
+
+
+        viewModelScope.launch {
+            try {
+                val result = teamUseCase.getallTeamUseCase(name, country,currentPageTeam, pageSizeTeam)
+                    .first() // obtenemos solo un emit, no collect
+                when (result) {
+                    is Resource.Success -> {
+                        val newTeams = result.data ?: emptyList()
+                        if (newTeams.isEmpty()) {
+                            allLoadedTeam = true
+                        } else {
+                            loadedTeams.addAll(newTeams)
+                            currentPageTeam++
+                            _teamsState.value = Resource.Success(loadedTeams.toList())
+                        }
+                    }
+                    is Resource.Failure -> {
+                        _teamsState.value = result
+                    }
+                    is Resource.Loading -> {
+                        if (loadedTeams.isEmpty()) {
+                            _teamsState.value = Resource.Loading
+                        }
+                    }
+
+                    else -> {}
+                }
+            } finally {
+                isLoadingPageTeam = false
+            }
+        }
 
     }
+
 
 
 
@@ -108,12 +168,6 @@ class FollowViewModel @Inject constructor(
     val deleteFollowedTeamState : StateFlow<Resource< DefaultResponse>> = _deleteFollowedTeamState
 
 
-    init {
-        getSuggestedTeams(50)
-        getPlayers("null", 1, 20) // inicialmente trae solo 20 datos
-        getFollowedPlayers()
-        getFollowedTeams()
-    }
 
     private fun getPlayers(name:String, page: Int, size:Int) {
         viewModelScope.launch {
@@ -131,16 +185,14 @@ class FollowViewModel @Inject constructor(
             }
         }
     }
-    /*
-    private fun getTeams() {
+    private fun getTeams(name: String, country: String, page: Int, size: Int) {
         viewModelScope.launch {
-            teamUseCase.getallTeamUseCase().collectLatest { result ->
+            teamUseCase.getallTeamUseCase(name, country, page, size).collectLatest { result ->
                 _teamsState.value = result
             }
         }
     }
 
-     */
 
     private fun getSuggestedTeams(limit: Int) {
         viewModelScope.launch {

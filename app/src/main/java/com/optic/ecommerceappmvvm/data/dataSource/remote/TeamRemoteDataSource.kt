@@ -24,7 +24,7 @@ interface TeamRemoteDataSource {
    esta aclarcion es util, ya que en las implementaciones se utiliza FLow
    */
     // Teams
-    suspend fun getAll(): Response<List<Team>>
+    suspend fun getAll(name: String, country:String, page: Int, size: Int): Response<List<Team>>
     suspend fun getSuggestedTeams(limit: Int): Response<List<Team>>
     suspend fun getTeamById(teamId: Int): Response<TeamResponse>
 
@@ -54,6 +54,7 @@ interface TeamRemoteDataSource {
     suspend fun deleteFollowedLeague(leagueId: Int): Response<DefaultResponse>
     suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
     suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse>
+    suspend fun getTopLeagues(): Response<List<League>>
 
     // FIXTURES
   //Recuperar Fixture por Id

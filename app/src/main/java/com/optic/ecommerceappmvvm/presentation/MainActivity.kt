@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                     ClientScreen.Mas.route,
                     ClientScreen.Profile.route,
                     ClientScreen.Follow.route,
-                    ClientScreen.Games.route
+                    ClientScreen.Prode.route
                 )
 
                 val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes

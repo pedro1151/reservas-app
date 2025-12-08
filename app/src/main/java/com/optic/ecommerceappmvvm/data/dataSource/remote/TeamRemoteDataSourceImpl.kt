@@ -24,7 +24,7 @@ import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import retrofit2.Response
 
 class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemoteDataSource {
-    override suspend fun getAll(): Response<List<Team>> = teamService.getTeams()
+    override suspend fun getAll(name: String, country:String, page: Int, size: Int): Response<List<Team>> = teamService.getTeams(name, country,page,size)
     override suspend fun getSuggestedTeams(limit: Int): Response<List<Team>> = teamService.getSuggestedTeams(limit)
     override suspend fun getTeamById(teamId: Int): Response<TeamResponse> = teamService.getTeamById(teamId)
 
@@ -49,6 +49,8 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
     ): Response<List<League>> = teamService.getLeagues(name, type, countryName)
 
     override suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse> = teamService.getLeagueById(leagueId)
+    override suspend fun getTopLeagues(): Response<List<League>> = teamService.getTopLeagues()
+
     override suspend fun getCountryFixtures(
         season: Int,
         date: String
