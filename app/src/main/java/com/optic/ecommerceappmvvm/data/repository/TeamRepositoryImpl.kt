@@ -360,6 +360,19 @@ class TeamRepositoryImpl(
             )
         )
     }
+
+    override suspend fun getFixturesByRound(
+        leagueId: Int,
+        season: Int,
+        round: String
+    ): Flow<Resource<List<FixtureResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getFixturesByRound(leagueId, season, round)
+            )
+        )
+    }
+
     override suspend fun getFixtureById(id: Int): Flow<Resource<FixtureResponse>> = flow{
         emit(
             ResponseToRequest.send(

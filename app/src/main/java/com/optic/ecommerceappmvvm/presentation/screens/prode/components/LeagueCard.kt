@@ -35,7 +35,7 @@ fun LeagueCard(
             .padding(horizontal = 1.dp, vertical = 0.dp)
             .clickable {
                 league.id?.let {
-                    navController.navigate("${Graph.LEAGUE}/$it")
+                    navController.navigate("${Graph.PRODE}/$it")
                 }
 
             },

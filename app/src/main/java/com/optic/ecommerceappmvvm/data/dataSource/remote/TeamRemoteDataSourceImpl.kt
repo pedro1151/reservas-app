@@ -56,6 +56,12 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         date: String
     ): Response<List<FixtureResponse>> = teamService.getContryFixtures(season, date)
 
+    override suspend fun getFixturesByRound(
+        leagueId: Int,
+        season: Int,
+        round: String
+    ): Response<List<FixtureResponse>> = teamService.getFixturesByRound(leagueId, season, round)
+
     // FOLLOWED TEAMS
     override suspend fun createFollowedTeam(teamId: Int): Response<FollowedTeamResponse>  = teamService.createFollowedTeam(
         FollowedTeamRequest(teamId)

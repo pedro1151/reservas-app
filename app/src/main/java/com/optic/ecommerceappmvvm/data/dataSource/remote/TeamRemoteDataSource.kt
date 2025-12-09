@@ -59,6 +59,7 @@ interface TeamRemoteDataSource {
     // FIXTURES
   //Recuperar Fixture por Id
     suspend fun getCountryFixtures(season: Int, date: String): Response<List<FixtureResponse>>
+    suspend fun getFixturesByRound(leagueId: Int, season: Int, round: String): Response<List<FixtureResponse>>
     suspend fun getFixtureById(id: Int): Response<FixtureResponse>
     suspend fun getFixtureLineups(id: Int): Response<FixtureLineupsResponse>
 

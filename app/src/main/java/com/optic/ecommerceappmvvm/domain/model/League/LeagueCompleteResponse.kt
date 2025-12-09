@@ -2,6 +2,7 @@ package com.optic.ecommerceappmvvm.domain.model.League
 
 import com.google.gson.annotations.SerializedName
 import com.optic.ecommerceappmvvm.domain.model.administracion.Country
+import com.optic.ecommerceappmvvm.domain.model.administracion.LeagueRound
 import com.optic.ecommerceappmvvm.domain.model.administracion.Season
 
 data class LeagueCompleteResponse(
@@ -11,6 +12,7 @@ data class LeagueCompleteResponse(
     @SerializedName("type") val type: String,
     @SerializedName("logo") val logo: String,
     @SerializedName("country") val country: Country,
-    @SerializedName("seasons") val seasons: List<Season>
+    @SerializedName("seasons") val seasons: List<Season>,
+    @SerializedName("rounds") val rounds: List<LeagueRound>
 
 )

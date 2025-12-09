@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.ecommerceappmvvm.domain.model.League.League
+import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
+import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
@@ -23,6 +25,12 @@ class ProdeViewModel @Inject constructor(
     // ---------------------------------------------
     private val _leaguesState = MutableStateFlow<Resource<List<League>>>(Resource.Loading)
     val leaguesState: StateFlow<Resource<List<League>>> = _leaguesState
+
+    private val _fixtureLeagueState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
+    val fixtureLeagueState: StateFlow<Resource<List<FixtureResponse>>> = _fixtureLeagueState
+
+    private val _leagueStateSingle = MutableStateFlow<Resource<LeagueCompleteResponse>>(Resource.Loading)
+    val leagueStateSingle: StateFlow<Resource<LeagueCompleteResponse>> = _leagueStateSingle
 
 
     // ---------------------------------------------
@@ -65,6 +73,31 @@ class ProdeViewModel @Inject constructor(
 
     init {
         observeSearch()
+    }
+
+
+    // 👉 Guardamos la última season aquí
+    var latestSeason: Int? = null
+    var roundCurrent: String? = null
+
+    fun getLeagueById(leagueId:Int) {
+        viewModelScope.launch {
+            teamUseCase.getLeagueByIdUC(leagueId).collectLatest { result ->
+                _leagueStateSingle.value = result
+
+                // 👇 Cuando tenemos la liga, extraemos la última season
+                if (result is Resource.Success) {
+                    latestSeason = result.data?.seasons
+                        ?.maxByOrNull { it.year }  // Último año
+                        ?.year
+
+                    // 👉 Nombre del round actual
+                    roundCurrent = result.data?.rounds
+                        ?.firstOrNull { it.isCurrent == true }
+                        ?.roundName
+                }
+            }
+        }
     }
 
     // ---------------------------------------------
@@ -151,6 +184,14 @@ class ProdeViewModel @Inject constructor(
                     // 🔥 NO LLAMAMOS getLeagues() para no resetear el buscador
                     getFollowedLeagues()
                 }
+            }
+        }
+    }
+
+    fun getFixtureByRound(leagueId: Int, season:Int, round:String) {
+        viewModelScope.launch {
+            teamUseCase.getFixturesByRoundUC(leagueId, season, round) .collectLatest { result ->
+                _fixtureLeagueState.value = result
             }
         }
     }

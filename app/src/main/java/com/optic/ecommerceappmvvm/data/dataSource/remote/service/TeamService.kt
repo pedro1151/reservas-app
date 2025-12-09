@@ -91,6 +91,7 @@ interface TeamService {
        @Query("country_name") countryName: String
    ): Response<List<League>>
 
+
     @GET("football/leagues/top")
     suspend fun getTopLeagues(
     ): Response<List<League>>
@@ -227,7 +228,13 @@ interface TeamService {
         @Path("date_end") dateEnd: String,
     ): Response<List<FixtureResponse>>
 
-
+    // fixrure por round de liga
+    @GET("football/fixtures/round")
+    suspend fun getFixturesByRound(
+        @Query("league_id") leagueId: Int,
+        @Query("season") season: Int,
+        @Query("round") round: String
+    ): Response<List<FixtureResponse>>
 
 
 

@@ -58,6 +58,7 @@ interface TeamRepository {
 
     //FIXTURE
     suspend fun getCountryFixtures(season: Int, date: String): Flow<Resource<List<FixtureResponse>>>
+    suspend fun getFixturesByRound(leagueId: Int, season: Int, round: String): Flow<Resource<List<FixtureResponse>>>
     suspend fun getFixtureById(id: Int): Flow<Resource<FixtureResponse>>
     suspend fun getFixtureLineups(id: Int): Flow<Resource<FixtureLineupsResponse>>
     suspend fun getFixtureStats(id: Int): Flow<Resource<FixtureStatsResponse>>

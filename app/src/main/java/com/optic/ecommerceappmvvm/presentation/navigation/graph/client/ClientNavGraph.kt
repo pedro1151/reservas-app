@@ -36,6 +36,8 @@ import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeScreen
+import com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.LeagueProdeContent
+import com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.LeagueProdeScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -230,6 +232,12 @@ fun ClientNavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(route = Graph.PRODE + "/{leagueId}"
+        ) { backStackEntry ->
+            val leagueId= backStackEntry.arguments?.getString("leagueId")?.toInt() ?: 0
+            LeagueProdeScreen(leagueId = leagueId, navController = navController)
         }
 
 
