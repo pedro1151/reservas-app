@@ -13,6 +13,8 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
+import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -100,4 +102,12 @@ interface TeamRemoteDataSource {
 
   // standings
     suspend fun getLeagueStandings(leagueId: Int, season: Int): Response<List<StandingResponse>>
+
+
+    //prodes
+    suspend fun createFixturePrediction(request: FixturePredictionRequest): Response<FixturePredictionResponse>
+    suspend fun getUserFixturePredictions(leagueId:Int, season:Int): Response<List<FixturePredictionResponse>>
+
+
+
 }

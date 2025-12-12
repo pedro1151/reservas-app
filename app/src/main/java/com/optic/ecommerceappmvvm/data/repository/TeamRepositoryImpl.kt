@@ -25,6 +25,8 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
+import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -731,6 +733,25 @@ class TeamRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getLeagueStandings(leagueId, season)
+            )
+        )
+    }
+
+    override suspend fun createFixturePrediction(request: FixturePredictionRequest): Flow<Resource<FixturePredictionResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.createFixturePrediction(request)
+            )
+        )
+    }
+
+    override suspend fun getUserFixturePredictions(
+        leagueId: Int,
+        season: Int
+    ): Flow<Resource<List<FixturePredictionResponse>>> = flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getUserFixturePredictions(leagueId, season)
             )
         )
     }

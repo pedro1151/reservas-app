@@ -26,6 +26,8 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetTopLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetAllPlayersUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.prode.CreateFixturePredictionUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetUserFixturePredictionsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.standings.GetLeagueStandingsUC
 
 data class TeamUseCase(
@@ -89,6 +91,11 @@ data class TeamUseCase(
     val getLeagueStandingsUC : GetLeagueStandingsUC,
 
     // VERSUS
-    val getVersusFixtureTeamUC: GetVersusFixtureTeamUC
+    val getVersusFixtureTeamUC: GetVersusFixtureTeamUC,
+
+
+    // prodes
+    val createFixturePredictionUC: CreateFixturePredictionUC,
+    val getUserFixturePredictionsUC: GetUserFixturePredictionsUC
 
 )

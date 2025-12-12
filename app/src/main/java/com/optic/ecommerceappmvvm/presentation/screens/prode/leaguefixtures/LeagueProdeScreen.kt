@@ -3,11 +3,15 @@ package com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
@@ -15,7 +19,9 @@ import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
 
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
+import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
+import com.optic.ecommerceappmvvm.presentation.screens.prode.buttons.ProdeTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.team.TeamContent
 import com.optic.ecommerceappmvvm.presentation.screens.team.TeamViewModel
 
@@ -37,21 +43,32 @@ fun LeagueProdeScreen(
 {
     val viewModel: ProdeViewModel = hiltViewModel()
 
+    val context = LocalContext.current
+
     val leagueStateSingle by viewModel.leagueStateSingle.collectAsState()
     val leagueFixtureRoundState by viewModel.fixtureLeagueState.collectAsState()
 
+    val isSaving by viewModel.isSaving.collectAsState()
+
     // Llamar a la función solo una vez al inicio
     LaunchedEffect(leagueId) {
+        viewModel.getUserFixturePredictions(leagueId, 2025)
         viewModel.getLeagueById(leagueId)
         viewModel.getFixtureByRound(leagueId, 2025, "League Stage - 6")
+
 
     }
 
 
     Scaffold(
         topBar = {
-            BackTopBar(
-                navController = navController
+            ProdeTopBar(
+                title = "Prodes",
+                navController = navController,
+                isSaving = isSaving,             // <-- 🔥 LO PASAS AQUÍ
+                isEditing = viewModel.isEditing.value,
+                onEditClick = { viewModel.toggleEditing() },
+                onSavingClick = {viewModel.saveAllPredictions(context)}
             )
         }
     ) { paddingValues ->
@@ -76,6 +93,11 @@ fun LeagueProdeScreen(
             }
 
             else -> {}
+        }
+
+        // 🔥 OVERLAY GLOBAL DE LOADING (solo uno)
+        if (isSaving) {
+            CustomProgressBar(isLoading = isSaving)
         }
 
     }

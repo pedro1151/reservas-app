@@ -13,6 +13,7 @@ import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import androidx.compose.runtime.*
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
+import com.optic.ecommerceappmvvm.presentation.screens.prode.buttons.ProdeTopBar
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
@@ -26,18 +27,15 @@ fun ProdeScreen(
     val followedLeaguesResource by viewModel.followedLeaguesListState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getLeagues()
         viewModel.getTopLeagues()
-        if (isAuthenticated) {
-            viewModel.getFollowedLeagues()
-        }
+
     }
 
     Scaffold(
         topBar = {
             PrimaryTopBar(
-                navController = navController,
-                title = "Prodes"
+                title = "Prodes",
+                navController = navController
             )
         },
         //containerColor = GreyLight

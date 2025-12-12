@@ -45,15 +45,10 @@ fun ParticipateButton(
         modifier = modifier
             .scale(scale)
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.background) // grafito suave
             .border(
                 width = 1.dp,
                 color = Color.White.copy(alpha = 0.12f),
                 shape = RoundedCornerShape(20.dp)
-            )
-            .clickable(
-                onClick = onClick,
-                onClickLabel = "Participar"
             )
             .padding(horizontal = 18.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center
@@ -61,31 +56,29 @@ fun ParticipateButton(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-            // CÍRCULO PREMIUM PARA EL PLAY
-            Box(
-                modifier = Modifier
-                    .size(22.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.getGreenColorFixture) // verde principal
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.Center),
-                    tint = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = "Participar",
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Normal,
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.95f)
+                    color =  Color(0xFFFFC857)
                 )
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            // CÍRCULO PREMIUM PARA EL PLAY
+            Box(
+                modifier = Modifier
+                    .size(22.dp)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = Color(0xFFFFC857)
+                )
+            }
         }
     }
 }

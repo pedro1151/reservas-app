@@ -67,13 +67,14 @@ fun LeagueCard(
                     text = league.name,
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
                     color = MaterialTheme.colorScheme.onSurface
-                )
+                )/*
                 Spacer(modifier = Modifier.width(16.dp))
                Text(
                     text = league.id.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                */
 
 
             }

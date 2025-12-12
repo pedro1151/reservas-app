@@ -104,14 +104,6 @@ fun ProdeSearchContent(
                             league = league,
                             isFollowed = true,
                             onFollowClick = {
-                                if(isAuthenticated) {
-                                    scope.launch {
-                                        viewModel.deleteFollowedLeague(league.id)
-                                    }
-                                }
-                                else{
-                                    navController.navigate(ClientScreen.Login.route)
-                                }
                             },
                             navController = navController
                         )
