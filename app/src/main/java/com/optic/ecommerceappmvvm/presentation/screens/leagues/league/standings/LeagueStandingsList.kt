@@ -38,7 +38,9 @@ fun LeagueStandingsList(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 1.dp, vertical = 8.dp),
     ) {
         when (standingState) {
             is Resource.Loading -> {
@@ -51,9 +53,9 @@ fun LeagueStandingsList(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                   // shape = RoundedCornerShape(12.dp)
+                        .padding(1.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     LazyColumn(
                         modifier = Modifier

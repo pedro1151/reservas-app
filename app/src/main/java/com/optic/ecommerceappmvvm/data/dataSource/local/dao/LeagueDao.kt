@@ -17,6 +17,11 @@ interface LeagueDao {
     """)
     suspend fun getLeagues(name: String, type: String, country: String): List<LeagueEntity>
 
+
+    //Top Ligas
+    @Query("SELECT * FROM leagues WHERE isTop = 1")
+    suspend fun getTopLeagues(): List<LeagueEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLeagues(leagues: List<LeagueEntity>)
 

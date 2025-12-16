@@ -117,7 +117,7 @@ fun FixturesByDate(
                                 .fillMaxWidth(),
                                 //.padding(horizontal = 1.dp),
                             shape = RoundedCornerShape(10.dp),
-                            elevation = CardDefaults.cardElevation(2.dp),
+                            //elevation = CardDefaults.cardElevation(2.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )

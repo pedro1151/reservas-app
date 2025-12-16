@@ -12,11 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
+import com.optic.ecommerceappmvvm.domain.model.administracion.LeagueRound
 
 @Composable
 fun ProdeHeader(
     league: LeagueCompleteResponse,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onRoundSelected: (LeagueRound) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -25,14 +27,13 @@ fun ProdeHeader(
             .padding(16.dp)
     ) {
 
-        // --- PRIMERA FILA: INFO + BOTÓN GUARDAR ---
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            // 📌 IZQUIERDA: Logo + texto
+            // 📌 IZQUIERDA: Logo + texto (NO SE TOCA)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AsyncImage(
                     model = league.logo,
@@ -59,6 +60,16 @@ fun ProdeHeader(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+               Column {
+                   // 👉 DERECHA: alineado con el país
+                   league.rounds?.let { rounds ->
+                       RoundSelector(
+                           rounds = rounds,
+                           onRoundSelected = onRoundSelected
+                       )
+
+                   }
+               }
             }
 
         }

@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProdeSearchContent(
     modifier: Modifier = Modifier,
+    topLeagues: List<League>,
     leagues: List<League>,
     followedLeagues: List<League>,
     paddingValues: PaddingValues,
@@ -32,22 +33,10 @@ fun ProdeSearchContent(
     navController: NavHostController,
     isAuthenticated: Boolean
 ) {
-
+    val sections by viewModel.leagueSections.collectAsState()
     val query by viewModel.searchQuery.collectAsState()
 
     val hasQuery = query.isNotBlank()
-
-    val filteredLeagues = remember(query, leagues) {
-        leagues.filter { league ->
-            league.name.contains(query, ignoreCase = true) ||
-                    league.type.contains(query, ignoreCase = true) ||
-                    (league.country?.name?.contains(query, ignoreCase = true) ?: false)
-        }
-    }
-
-    val remainingLeagues = filteredLeagues.filterNot { fl ->
-        followedLeagues.any { it.id == fl.id }
-    }
 
     Column(
         modifier = modifier
@@ -76,7 +65,7 @@ fun ProdeSearchContent(
             // ---------------------------------------------------------
             item {
                 AnimatedVisibility(
-                    visible = !hasQuery && followedLeagues.isNotEmpty()
+                    visible = !hasQuery && sections.followed.isNotEmpty()
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -92,7 +81,48 @@ fun ProdeSearchContent(
 
             if (!hasQuery) {
                 items(
-                    items = followedLeagues,
+                    items = sections.followed,
+                    key = { it.id }
+                ) { league ->
+                    AnimatedVisibility(
+                        visible = true,
+                        modifier = Modifier.animateItemPlacement()
+                    ) {
+                        val scope = rememberCoroutineScope()
+                        LeagueCard(
+                            league = league,
+                            isFollowed = true,
+                            onFollowClick = {
+                            },
+                            navController = navController
+                        )
+                    }
+                }
+            }
+
+
+            // ---------------------------------------------------------
+            // 🔥 2 seccion -ligas MAs famosas
+            // ---------------------------------------------------------
+            item {
+                AnimatedVisibility(
+                    visible = !hasQuery && topLeagues.isNotEmpty()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Ligas famosas",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+
+            if (!hasQuery) {
+                items(
+                    items = sections.top,
                     key = { it.id }
                 ) { league ->
                     AnimatedVisibility(
@@ -129,7 +159,7 @@ fun ProdeSearchContent(
             // 🔥 2. RESULTADOS DE BÚSQUEDA
             // ---------------------------------------------------------
 
-            if (hasQuery && filteredLeagues.isEmpty()) {
+            if (hasQuery && sections.explore.isEmpty()) {
                 item {
                     AnimatedVisibility(visible = true) {
                         Box(
@@ -147,7 +177,7 @@ fun ProdeSearchContent(
                 }
             } else {
                 items(
-                    items = remainingLeagues,
+                    items = sections.explore,
                     key = { it.id }
                 ) { league ->
                     AnimatedVisibility(

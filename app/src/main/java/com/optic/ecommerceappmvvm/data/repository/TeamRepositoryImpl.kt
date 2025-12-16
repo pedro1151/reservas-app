@@ -259,12 +259,32 @@ class TeamRepositoryImpl(
     }
 
     override suspend fun getTopLeagues(): Flow<Resource<List<League>>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getTopLeagues()
-            )
-        )
-    }
+        //emit(Resource.Loading)
+
+        // 1️⃣ Leer cache local
+        val cached = runCatching {
+            leagueDao.getTopLeagues()
+        }.getOrDefault(emptyList())
+        Log.d("precacheTopLigas", " topligas cache size = ${cached.size}")
+
+        if (cached.isNotEmpty()) {
+            emit(Resource.Success(cached.map { it.toDomain() }))
+            return@flow //  ⛔ No llamar API
+        }
+
+        // 🟦 2️⃣ Llamada al backend solo si no hay cache
+        try {
+            Log.d("precache", "5️⃣ Llamando backend…")
+
+            val result = teamRemoteDataSource.getTopLeagues()
+            val response = ResponseToRequest.send(result)
+
+        } catch (e: Exception) {
+            Log.e("precache", "❌ Excepción backend", e)
+            emit(Resource.Failure("Error al obtener el top ligas desde api: ${e.localizedMessage ?: e.message}"))
+        }
+
+    }.flowOn(Dispatchers.IO)
 
 
     override suspend fun getFollowedPlayers(): Flow<Resource<List<Player>>>  = flow{

@@ -15,6 +15,7 @@ fun LeagueEntity.toDomain(): League =
         name = name,
         type = type,
         logo = logo,
+        isTop = isTop,
         country = countryJson?.let { gson.fromJson(it, Country::class.java) }
     )
 
@@ -25,5 +26,6 @@ fun League.toEntity(): LeagueEntity =
         name = name,
         type = type,
         logo = logo,
+        isTop = isTop,
         countryJson = country?.let { gson.toJson(it) }
     )

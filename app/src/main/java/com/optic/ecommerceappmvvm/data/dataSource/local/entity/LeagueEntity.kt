@@ -10,5 +10,6 @@ data class LeagueEntity(
     val name: String,
     val type: String,
     val logo: String?,
+    val isTop: Boolean,
     val countryJson: String? // Country serializado
 )

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
+import com.optic.ecommerceappmvvm.domain.model.administracion.LeagueRound
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
@@ -27,6 +28,28 @@ fun LeagueProdeContent(
     leagueFixtureState: Resource<List<FixtureResponse>>,
     isSaving:Boolean = false
 ) {
+
+    val currentRound = remember(league.rounds) {
+        league.rounds.firstOrNull { it.isCurrent == true }
+    }
+
+    var selectedRound by remember {
+        mutableStateOf(currentRound)
+    }
+
+    // 🔥 Cuando cambia el round → pedir fixtures
+    LaunchedEffect(selectedRound) {
+        selectedRound?.let { round ->
+            viewModel.getFixtureByRound(
+                leagueId = league.id!!,
+                season = viewModel.latestSeason,
+                round = round.roundName
+            )
+        }
+    }
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,8 +58,12 @@ fun LeagueProdeContent(
     ) {
         ProdeHeader(
             league,
-            paddingValues
+            paddingValues,
+            onRoundSelected = { round ->
+                selectedRound = round
+            }
         )
+
 
         ProdeFixtureList(
             modifier = Modifier,

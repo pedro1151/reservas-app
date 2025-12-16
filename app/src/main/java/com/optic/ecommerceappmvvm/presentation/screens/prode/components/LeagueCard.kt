@@ -80,17 +80,10 @@ fun LeagueCard(
             }
 
             // ✅ Acá es correcto usar un Composable
-            if (isFollowed){
-                UnFollowButton(
-                    onClick = onFollowClick
-                )
-
-            }
-            else{
                 ParticipateButton(
                     onClick = onFollowClick
                 )
-            }
+
 
         }
     }

@@ -10,5 +10,6 @@ data class League(
     @SerializedName("name") val name: String,
     @SerializedName("type") val type: String,
     @SerializedName("logo") val logo: String?,
+    @SerializedName("is_top") val isTop:Boolean,
     @SerializedName("country") val country: Country? // 👈 país opcional
 ) : Serializable

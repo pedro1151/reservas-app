@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
@@ -31,9 +31,10 @@ import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MatchItem(
+fun FixturePlayerItem(
     fixture: FixtureResponse,
-    navController: NavController
+    navController: NavHostController,
+    showInfoExtra: Boolean = false
 ) {
     val fixtureDateTime = remember {
         try {
@@ -55,47 +56,49 @@ fun MatchItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-
             .clickable {
                 fixture.id?.let {
                     navController.navigate("${Graph.FIXTURE}/$it")
                 }
             },
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) ,
+        shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
+        // elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
 
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
 
             // Fecha (izquierda) y liga (derecha)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = formattedDate,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(fixture.league?.logo)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = fixture.league?.name,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+            if (showInfoExtra) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = fixture.league?.name ?: "Unknown League",
+                        text = formattedDate,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary
                     )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(fixture.league?.logo)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = fixture.league?.name,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = fixture.league?.name ?: "Unknown League",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
 
@@ -112,6 +115,13 @@ fun MatchItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+
+                    Text(
+                        text = fixture.teamHome?.name ?: "",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     AsyncImage(
                         model = fixture.teamHome?.logo,
                         contentDescription = fixture.teamHome?.name,
@@ -119,17 +129,14 @@ fun MatchItem(
                             .size(20.dp)
                             .clip(CircleShape)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = fixture.teamHome?.name ?: "",
-                        style = MaterialTheme.typography.labelSmall
-                    )
                 }
 
                 // Marcador centrado
                 ScoreBoxAnimated(
                     homeScore = fixture.goalsHome,
-                    awayScore = fixture.goalsAway
+                    awayScore = fixture.goalsAway,
+                    statusShort = fixture.statusShort,
+                    fixtureDate = fixture.date
                 )
 
                 // Equipo visitante
@@ -137,17 +144,18 @@ fun MatchItem(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = fixture.teamAway?.name ?: "",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+
                     AsyncImage(
                         model = fixture.teamAway?.logo,
                         contentDescription = fixture.teamAway?.name,
                         modifier = Modifier
                             .size(20.dp)
                             .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = fixture.teamAway?.name ?: "",
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
@@ -156,7 +164,46 @@ fun MatchItem(
 }
 
 @Composable
-fun ScoreBoxAnimated(homeScore: Int?, awayScore: Int?) {
+fun ScoreBoxAnimated(
+    homeScore: Int?,
+    awayScore: Int?,
+    statusShort: String?,
+    fixtureDate: String?
+) {
+
+    val context = LocalContext.current
+
+    // Si el partido NO ha empezado → mostrar hora HH:mm
+    if (statusShort == "NS" && fixtureDate != null) {
+
+        val localTime = try {
+            OffsetDateTime.parse(fixtureDate)
+                .toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault()))
+        } catch (e: Exception) {
+            "--:--"
+        }
+
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f))
+                .padding(vertical = 6.dp, horizontal = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = localTime,
+                /*fontWeight = FontWeight.Bold, */
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+
+        return
+    }
+
+    // Si SÍ hay goles → marcador animado
     val green = MaterialTheme.colorScheme.getGreenColorFixture
     val red = MaterialTheme.colorScheme.getRedColorFixture
     val gray = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)

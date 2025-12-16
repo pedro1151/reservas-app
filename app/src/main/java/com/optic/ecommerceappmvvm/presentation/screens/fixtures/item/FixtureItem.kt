@@ -34,7 +34,8 @@ import java.util.*
 @Composable
 fun FixtureItem(
     fixture: FixtureResponse,
-    navController: NavHostController
+    navController: NavHostController,
+    showInfoExtra: Boolean = false
     ) {
     val fixtureDateTime = remember {
         try {
@@ -63,40 +64,42 @@ fun FixtureItem(
             },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) ,
         shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
-        elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
+       // elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
 
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
 
             // Fecha (izquierda) y liga (derecha)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = formattedDate,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(fixture.league?.logo)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = fixture.league?.name,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+            if (showInfoExtra) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = fixture.league?.name ?: "Unknown League",
+                        text = formattedDate,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary
                     )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(fixture.league?.logo)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = fixture.league?.name,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = fixture.league?.name ?: "Unknown League",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
 

@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import android.util.Log
+import kotlinx.coroutines.Job
 
 @HiltViewModel
 class ProdeViewModel @Inject constructor(
@@ -26,6 +27,10 @@ class ProdeViewModel @Inject constructor(
 
     // ---------------------------------------------
     // STATE: Lista completa o filtrada según búsqueda
+    // ---------------------------------------------
+
+    // ---------------------------------------------
+    // STATE: ligas en general, todas
     // ---------------------------------------------
     private val _leaguesState = MutableStateFlow<Resource<List<League>>>(Resource.Loading)
     val leaguesState: StateFlow<Resource<List<League>>> = _leaguesState
@@ -82,6 +87,57 @@ class ProdeViewModel @Inject constructor(
         observeUserPredictions()
         observeFixtures()
     }
+
+    data class LeagueSections(
+        val followed: List<League>,
+        val top: List<League>,
+        val explore: List<League>
+    )
+
+    val leagueSections: StateFlow<LeagueSections> =
+        combine(
+            leaguesState,
+            leaguesTopState,
+            followedLeaguesListState,
+            searchQuery
+        ) { allRes, topRes, followedRes, query ->
+
+            val all = (allRes as? Resource.Success)?.data.orEmpty()
+            val top = (topRes as? Resource.Success)?.data.orEmpty()
+            val followed = (followedRes as? Resource.Success)?.data.orEmpty()
+
+            val q = query.trim().lowercase()
+
+            fun League.matches(): Boolean =
+                q.isBlank() ||
+                        name?.lowercase()?.contains(q) == true ||
+                        country?.name?.lowercase()?.contains(q) == true
+
+            val followedFiltered = followed.filter { it.matches() }
+
+            val followedIds = followed.mapNotNull { it.id }.toSet()
+            val topIds = top.mapNotNull { it.id }.toSet()
+
+            val topFiltered = top
+                .filter { it.id !in followedIds }
+                .filter { it.matches() }
+
+            val exploreFiltered = all
+                .filter { it.id !in followedIds && it.id !in topIds }
+                .filter { it.matches() }
+
+            LeagueSections(
+                followed = followedFiltered,
+                top = topFiltered,
+                explore = exploreFiltered
+            )
+
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LeagueSections(emptyList(), emptyList(), emptyList())
+        )
+
 
 
     private fun observeFixtures() {
@@ -171,7 +227,14 @@ class ProdeViewModel @Inject constructor(
                 }
         }
     }
-
+    fun getFollowedLeagues() {
+        viewModelScope.launch {
+            teamUseCase.getFollowedLeaguesUC()
+                .collectLatest { result ->
+                    _followedLeaguesListState.value = result
+                }
+        }
+    }
 
     fun createFollowedLeague(leagueId: Int) {
         viewModelScope.launch {
@@ -187,33 +250,36 @@ class ProdeViewModel @Inject constructor(
     }
 
 
+    private var fixtureJob: Job? = null
 
-    fun getFixtureByRound(leagueId: Int, season:Int, round:String) {
-        viewModelScope.launch {
+    fun getFixtureByRound(leagueId: Int, season: Int, round: String) {
+        fixtureJob?.cancel() // 🔥 cancelar la anterior
+
+        fixtureJob = viewModelScope.launch {
+
+            // 🔥 limpiar estado ANTES de cargar nuevo round
+            _fixtureLeagueState.value = Resource.Loading
+            _userPredictions.value = emptyMap()
+
             teamUseCase.getFixturesByRoundUC(leagueId, season, round)
                 .collectLatest { result ->
                     _fixtureLeagueState.value = result
 
                     if (result is Resource.Success) {
-
-                        // 🔥 FIX — NO BORRAR userPredictions
-                        val current = _userPredictions.value.toMutableMap()
+                        val freshPredictions = mutableMapOf<Int, UserPrediction>()
 
                         result.data?.forEach { fixture ->
                             val id = fixture.id ?: return@forEach
-                            if (id !in current) {
-                                current[id] = UserPrediction()
-                            }
+                            freshPredictions[id] = UserPrediction()
                         }
 
-                        _userPredictions.value = current
-
-                        // Intentar merge backend + ui
+                        _userPredictions.value = freshPredictions
                         tryMerge()
                     }
                 }
         }
     }
+
 
 
 
@@ -431,7 +497,7 @@ class ProdeViewModel @Inject constructor(
                     if (pred == null) return@forEach
 
                     // Si No eligio el ganador entonces no guardar
-                    if (pred.prediction == "ELEGIR") return@forEach
+                    if (pred.prediction == "SELECCIONAR") return@forEach
 
                     // Crear el request que tu API espera
                     val request = FixturePredictionRequest(

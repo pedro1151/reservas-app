@@ -89,9 +89,10 @@ fun ProdePredictRow(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.55f)
+                    .fillMaxWidth(0.60f)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f))
+                    .background(MaterialTheme.colorScheme.surface)
+                    //.background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f))
                     .animateContentSize()   // <--- animación automática de tamaño
                     .padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -106,7 +107,7 @@ fun ProdePredictRow(
                     Box(
                         modifier = Modifier
                             .scale(scale)
-                            .clip(RoundedCornerShape(50.dp))
+                            .clip(RoundedCornerShape(20.dp))
                             .border(
                                 width = 1.dp,
                                 color = Color.White.copy(alpha = 0.12f),
@@ -197,7 +198,8 @@ fun ProdePredictRow(
                             val textColor = when(displayText) {
                                 "GANA LOCAL" -> Color(0xFF4A90E2)
                                 "GANA VISITA" -> Color(0xFF4CAF50)
-                                else -> Color.White
+                                "SELECCIONAR" -> Color.White
+                                else -> Color.Red
                             }
                             Text(
                                 text = displayText,

@@ -54,10 +54,9 @@ fun LeagueProdeScreen(
     LaunchedEffect(leagueId) {
         viewModel.getUserFixturePredictions(leagueId, 2025)
         viewModel.getLeagueById(leagueId)
-        viewModel.getFixtureByRound(leagueId, 2025, "League Stage - 6")
-
-
+      //  viewModel.getFixtureByRound(leagueId, 2025, "League Stage - 6")
     }
+
 
 
     Scaffold(
