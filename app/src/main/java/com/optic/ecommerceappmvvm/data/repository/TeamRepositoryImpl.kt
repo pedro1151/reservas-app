@@ -6,11 +6,13 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toDomain
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
 import com.optic.ecommerceappmvvm.data.dataSource.remote.TeamRemoteDataSource
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
@@ -46,7 +48,8 @@ class TeamRepositoryImpl(
     private val fixtureDao: FixtureDao,
     private val leagueDao: LeagueDao,
     private val playerDao: PlayerDao,
-    private val teamDao: TeamDao
+    private val teamDao: TeamDao,
+    private val fixturePredictionDao: FixturePredictionDao
 ): TeamRepository
 {
     /*
@@ -757,24 +760,59 @@ class TeamRepositoryImpl(
         )
     }
 
-    override suspend fun createFixturePrediction(request: FixturePredictionRequest): Flow<Resource<FixturePredictionResponse>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.createFixturePrediction(request)
+    override suspend fun createFixturePrediction(
+        request: FixturePredictionRequest,
+        isAuthenticated: Boolean
+    ): Flow<Resource<FixturePredictionResponse>> = flow{
+
+        if (isAuthenticated) {
+            emit(
+                ResponseToRequest.send(
+                    teamRemoteDataSource.createFixturePrediction(request)
+                )
             )
-        )
+        }
+        else{
+            fixturePredictionDao.insertFixturePrediction(request.toEntity())
+        }
     }
+
+
 
     override suspend fun getUserFixturePredictions(
         leagueId: Int,
         season: Int
     ): Flow<Resource<List<FixturePredictionResponse>>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getUserFixturePredictions(leagueId, season)
-            )
-        )
-    }
+        // 1️⃣ Leer cache local
+        val cached = runCatching {
+            fixturePredictionDao.getAll()
+        }.getOrDefault(emptyList())
+        Log.d("precache", " predictions recuperadas de cache = ${cached.size}")
+
+        if (cached.isNotEmpty()) {
+            emit(Resource.Success(cached.map { it.toDomain() }))
+            return@flow //  ⛔ No llamar API
+        }
+
+
+            // 🟦 2️⃣ Llamada al backend solo si no hay cache
+            try {
+                Log.d("precache", "5️⃣ Llamando backend…")
+
+                val result = teamRemoteDataSource.getUserFixturePredictions(leagueId, season)
+                val response = ResponseToRequest.send(result)
+                emit(response)
+
+            } catch (e: Exception) {
+                Log.e("precache", "❌ Excepción backend", e)
+                emit(Resource.Failure("Error al obtener las predicciones de la api: ${e.localizedMessage ?: e.message}"))
+            }
+
+
+    }.flowOn(Dispatchers.IO)
+
+
+
 
     // funciones de carga de precache
 
@@ -894,6 +932,22 @@ class TeamRepositoryImpl(
         } catch (e: Exception) {
             Log.e("precache", "❌ Excepción precache teams", e)
         }
+    }
+
+
+    // cache xcreate
+
+    override suspend fun syncCachedPredictions() {
+        val cached = fixturePredictionDao.getAll()
+        if (cached.isEmpty()) return
+
+        cached.forEach { entity ->
+                ResponseToRequest.send(
+                    teamRemoteDataSource.createFixturePrediction(entity.toRequest())
+                )
+        }
+
+        //fixturePredictionDao.clearAll()
     }
 
 }

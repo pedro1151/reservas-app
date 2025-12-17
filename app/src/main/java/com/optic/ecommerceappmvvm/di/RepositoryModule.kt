@@ -3,6 +3,7 @@ package com.optic.ecommerceappmvvm.di
 import com.optic.ecommerceappmvvm.data.repository.AuthRepositoryImpl
 import com.optic.ecommerceappmvvm.data.dataSource.local.AuthLocalDataSource
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
@@ -40,13 +41,15 @@ object RepositoryModule {
         daoFixtureDao: FixtureDao,
         leagueDao: LeagueDao,
         playerDao: PlayerDao,
-        teamDao: TeamDao
+        teamDao: TeamDao,
+        fixturePredictionDao: FixturePredictionDao
     ): TeamRepository = TeamRepositoryImpl(
         teamRemoteDataSource,
         daoFixtureDao,
         leagueDao,
         playerDao,
-        teamDao
+        teamDao,
+        fixturePredictionDao
     )
 
 

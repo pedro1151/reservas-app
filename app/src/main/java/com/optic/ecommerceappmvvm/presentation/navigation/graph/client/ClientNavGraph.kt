@@ -237,7 +237,7 @@ fun ClientNavGraph(
         composable(route = Graph.PRODE + "/{leagueId}"
         ) { backStackEntry ->
             val leagueId= backStackEntry.arguments?.getString("leagueId")?.toInt() ?: 0
-            LeagueProdeScreen(leagueId = leagueId, navController = navController)
+            LeagueProdeScreen(leagueId = leagueId, navController = navController, isAuthenticated)
         }
 
 

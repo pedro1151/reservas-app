@@ -160,45 +160,15 @@ fun MatchesScreen(
 
                 ) {
 
-                    if (isAuthenticated) {
-
-                            FollowFixtureList(
-                                navController = navController,
-                                fixtureState = fixtureState
-                            )
-
-
-
-                            FixturesByDate(
-                                navController = navController,
-                                fixtureState = fixtureStateDate
-                            )
-
-
-                    } else {
-                        /*
-                        item{
-                            Button (onClick = { onShowRewardAd() }) {
-                                Text("Ver anuncio")
-                            }
-                        }
-
-                        item {
-                            LoginLinkCard(
-                                navController = navController
-                            )
-                        }
-
-                         */
-
-
                             FixturesByDate(
                                 navController = navController,
                                 fixtureState = fixtureStateDate,
-                                modifier = Modifier.fillMaxSize()
+                                followedFixtureState = fixtureState,
+                                modifier = Modifier.fillMaxSize(),
+                                isAuthenticated = isAuthenticated
                             )
 
-                    }
+
                 }
 
         }

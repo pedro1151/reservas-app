@@ -14,9 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ChangeHistory
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
@@ -34,7 +31,6 @@ import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
-import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
 import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
@@ -45,8 +41,11 @@ fun FixturesByDate(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     fixtureState: Resource<List<FixtureResponse>>,
-    title: String = "Partidos"
+    followedFixtureState: Resource<List<FixtureResponse>>,
+    title: String = "Partidos",
+    isAuthenticated: Boolean
 ) {
+
 
     when (fixtureState) {
 
@@ -97,10 +96,115 @@ fun FixturesByDate(
                     .padding(vertical = 2.dp, horizontal = 1.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                item{
-                    LoginLinkCard(
-                        navController = navController
-                    )
+
+                    /* ---------------------------------------------------------
+                     * 🔐 SECCIÓN: FIXTURES SEGUIDOS
+                     * --------------------------------------------------------- */
+                if (isAuthenticated) {
+
+                    item(key = "followed-header") {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                                //.clickable { expanded = !expanded },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center  // 👈 centra los elementos en la fila
+                        ) {
+
+                            Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.IconSecondaryColor
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Siguiendo",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textAlign = TextAlign.Center,   // 👈 centrado
+                                ),
+                            )
+                        }
+                    }
+
+                    when (followedFixtureState) {
+
+                        is Resource.Loading -> {
+                            item {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                        }
+
+                        is Resource.Success -> {
+                            val followedFixtures = followedFixtureState.data ?: emptyList()
+
+                            if (followedFixtures.isEmpty()) {
+                                item {
+                                    Text(
+                                        text = "No hay partidos para la fecha.",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 12.dp),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            } else {
+                                items(
+                                    items = followedFixtures,
+                                    key = { it.id ?: it.hashCode() }
+                                ) { fixture ->
+                                    FixtureItem(
+                                        fixture = fixture,
+                                        navController = navController,
+                                        showInfoExtra = true
+                                    )
+                                }
+                            }
+                        }
+
+                        is Resource.Failure -> {
+                            item {
+                                Text(
+                                    text = "Error al cargar partidos seguidos",
+                                    color = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
+                else{
+                    item{
+                        LoginLinkCard(
+                            navController = navController
+                        )
+                    }
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        //.clickable { expanded = !expanded },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center  // 👈 centra los elementos en la fila
+                    ) {
+
+                        Text(
+                            text = "Otros partidos",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center,   // 👈 centrado
+                            ),
+                        )
+                    }
                 }
 
                 groupedByLeague.forEach { (leagueId, leagueFixtures) ->

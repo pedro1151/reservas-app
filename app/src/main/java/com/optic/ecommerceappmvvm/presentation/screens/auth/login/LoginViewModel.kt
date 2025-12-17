@@ -11,6 +11,7 @@ import com.optic.ecommerceappmvvm.domain.model.auth.LoginSendCodeResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.useCase.auth.AuthUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.external.ExternalUseCase
+import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, private val externalUseCase: ExternalUseCase): ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val authUseCase: AuthUseCase,
+    private val externalUseCase: ExternalUseCase,
+    private val teamUseCase: TeamUseCase
+): ViewModel() {
 
     var state by mutableStateOf(LoginState())
         private set
@@ -75,6 +80,8 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
             loginResponse = Resource.Loading // ESPERANDO
             val result = authUseCase.login(state.email, state.password) // RETORNA UNA RESPUESTA
             loginResponse = result // EXITOSA / ERROR
+
+
         } else {
             _isLoggedIn.value = false
         }
@@ -193,6 +200,10 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase, p
                 _isLoggedIn.value = true
                 _navigateToHome.value = true
                 saveSession(result.data)
+
+                // guarde si tiene prodes en cache
+                teamUseCase.syncCachePredictionsUC()
+
 
             } else {
                 _isLoggedIn.value = false

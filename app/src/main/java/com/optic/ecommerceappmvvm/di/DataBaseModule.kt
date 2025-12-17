@@ -3,6 +3,7 @@ package com.optic.ecommerceappmvvm.di
 import android.content.Context
 import androidx.room.Room
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixtureDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
@@ -42,4 +43,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTeamDao(db: AppDatabase): TeamDao = db.teamDao()
+
+    @Provides
+    fun fixturePredictionDao(db: AppDatabase): FixturePredictionDao = db.fixturePredictionDao()
 }

@@ -18,11 +18,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import android.util.Log
+import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
 import kotlinx.coroutines.Job
 
 @HiltViewModel
 class ProdeViewModel @Inject constructor(
-    private val teamUseCase: TeamUseCase
+    private val teamUseCase: TeamUseCase,
+    private val fixturePredictionDao: FixturePredictionDao
 ) : ViewModel() {
 
     // ---------------------------------------------
@@ -451,9 +454,9 @@ class ProdeViewModel @Inject constructor(
 
 
 
-    fun savePrediction(request: FixturePredictionRequest) {
+    fun savePrediction(request: FixturePredictionRequest, isAuthenticated: Boolean) {
         viewModelScope.launch {
-            teamUseCase.createFixturePredictionUC(request).collectLatest { result ->
+            teamUseCase.createFixturePredictionUC(request, isAuthenticated).collectLatest { result ->
                 _createFixturePredictionState.value = result
             }
         }
@@ -461,7 +464,10 @@ class ProdeViewModel @Inject constructor(
 
 
 
-    fun saveAllPredictions(context: Context) {
+    fun saveAllPredictions(
+        context: Context,
+        isAuthenticated: Boolean
+    ) {
         viewModelScope.launch {
 
             _isSaving.value = true  // <<< INICIA LOADING
@@ -517,7 +523,7 @@ class ProdeViewModel @Inject constructor(
                     )
 
                     // Guardar usando tu función existente
-                    savePrediction(request)
+                    savePrediction(request, isAuthenticated)
                     savedCount++
                 }
 
@@ -535,6 +541,9 @@ class ProdeViewModel @Inject constructor(
         }
 
     }
+
+
+
 
 
 }

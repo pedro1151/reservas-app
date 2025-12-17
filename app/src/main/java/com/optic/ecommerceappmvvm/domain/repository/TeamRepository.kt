@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.domain.repository
 
+import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.player.Player
@@ -83,6 +84,8 @@ interface TeamRepository {
         page: Int,
         size: Int
     )
+
+    suspend fun syncCachedPredictions()
     //
 
     //Versus
@@ -97,6 +100,9 @@ interface TeamRepository {
 
 
     // prodes
-    suspend fun createFixturePrediction(request: FixturePredictionRequest):Flow<Resource<FixturePredictionResponse>>
+    suspend fun createFixturePrediction(
+        request: FixturePredictionRequest,
+        isAuthenticated: Boolean
+    ):Flow<Resource<FixturePredictionResponse>>
     suspend fun getUserFixturePredictions(leagueId: Int, season: Int):Flow<Resource<List<FixturePredictionResponse>>>
 }

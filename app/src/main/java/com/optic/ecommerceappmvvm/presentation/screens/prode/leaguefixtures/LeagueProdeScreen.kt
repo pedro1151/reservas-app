@@ -37,7 +37,8 @@ fun LeagueCompleteResponse.getLatestSeasonYear(): Int? {
 @Composable
 fun LeagueProdeScreen(
     leagueId: Int,
-    navController: NavHostController
+    navController: NavHostController,
+    isAuthenticated: Boolean
 
 )
 {
@@ -67,7 +68,7 @@ fun LeagueProdeScreen(
                 isSaving = isSaving,             // <-- 🔥 LO PASAS AQUÍ
                 isEditing = viewModel.isEditing.value,
                 onEditClick = { viewModel.toggleEditing() },
-                onSavingClick = {viewModel.saveAllPredictions(context)}
+                onSavingClick = {viewModel.saveAllPredictions(context, isAuthenticated)}
             )
         }
     ) { paddingValues ->
