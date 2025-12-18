@@ -230,7 +230,7 @@ class ProdeViewModel @Inject constructor(
                 }
         }
     }
-    fun getFollowedLeagues() {
+    fun getFollowedLeagues(isAuthenticated: Boolean) {
         viewModelScope.launch {
             teamUseCase.getFollowedLeaguesUC()
                 .collectLatest { result ->
@@ -238,7 +238,7 @@ class ProdeViewModel @Inject constructor(
                 }
         }
     }
-
+/*
     fun createFollowedLeague(leagueId: Int) {
         viewModelScope.launch {
             teamUseCase.createFollowedLeagueUC(leagueId).collectLatest { result ->
@@ -251,6 +251,8 @@ class ProdeViewModel @Inject constructor(
             }
         }
     }
+
+ */
 
 
     private var fixtureJob: Job? = null

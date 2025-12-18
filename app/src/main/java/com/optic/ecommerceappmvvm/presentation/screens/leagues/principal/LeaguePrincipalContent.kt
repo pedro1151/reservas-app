@@ -29,7 +29,7 @@ fun LeaguePrincipalContent(
     paddingValues: PaddingValues,
     viewModel: LeaguePrincipalViewModel,
     navController: NavHostController,
-    isAuthenticated: Boolean
+    isAuthenticated: Boolean = false
 ) {
 
     val query by viewModel.searchQuery.collectAsState()
@@ -103,14 +103,10 @@ fun LeaguePrincipalContent(
                             league = league,
                             isFollowed = true,
                             onFollowClick = {
-                                if(isAuthenticated) {
                                     scope.launch {
-                                        viewModel.deleteFollowedLeague(league.id)
+                                        viewModel.deleteFollowedLeague(league.id, isAuthenticated)
                                     }
-                                }
-                                else{
-                                    navController.navigate(ClientScreen.Login.route)
-                                }
+
                             },
                             navController = navController
                         )
@@ -166,14 +162,10 @@ fun LeaguePrincipalContent(
                             league = league,
                             isFollowed = false,
                             onFollowClick = {
-                                if(isAuthenticated) {
                                     scope.launch {
-                                        viewModel.createFollowedLeague(league.id)
+                                        viewModel.createFollowedLeague(league.id, isAuthenticated)
                                     }
-                                }
-                                else{
-                                    navController.navigate(ClientScreen.Login.route)
-                                }
+
                             },
                             navController = navController
                         )

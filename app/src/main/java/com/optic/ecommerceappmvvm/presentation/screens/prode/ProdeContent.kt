@@ -86,6 +86,7 @@ fun ProdeContent(
                     league = league,
                     isFollowed = false,
                     onFollowClick = {
+                        /*
                         if(isAuthenticated) {
                             scope.launch {
                                 viewModel.createFollowedLeague(league.id)
@@ -94,6 +95,8 @@ fun ProdeContent(
                         else{
                             navController.navigate(ClientScreen.Login.route)
                         }
+
+                         */
                     },
                     navController = navController
                 )

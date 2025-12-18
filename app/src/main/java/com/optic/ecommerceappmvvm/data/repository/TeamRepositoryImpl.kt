@@ -10,6 +10,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toDomain
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
@@ -23,6 +24,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.lineups.FixtureLineupsRes
 import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
+
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
@@ -281,6 +283,7 @@ class TeamRepositoryImpl(
 
             val result = teamRemoteDataSource.getTopLeagues()
             val response = ResponseToRequest.send(result)
+            emit(response)
 
         } catch (e: Exception) {
             Log.e("precache", "❌ Excepción backend", e)
@@ -353,28 +356,72 @@ class TeamRepositoryImpl(
     }
 
     // ligas seguidas
-    override suspend fun getFollowedLeagues(): Flow<Resource<List<League>>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.getFollowedLeagues()
+    suspend override fun getFollowedLeagues(): Flow<Resource<List<League>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            // Recolectamos el Flow de Room
+            leagueDao.getFollowedLeaguesFromCache()
+                .collect { cached ->
+                    if (cached.isNotEmpty()) {
+                        // Emitimos el cache
+                        emit(Resource.Success(cached.map { it.toDomain() }))
+                    } else {
+                        // Cache vacío → fallback API
+                        val apiResult = teamRemoteDataSource.getFollowedLeagues()
+                        val response = ResponseToRequest.send(apiResult)
+                        emit(response)
+                    }
+                }
+        } catch (e: Exception) {
+            emit(Resource.Failure(e.localizedMessage ?: "Error al obtener ligas seguidas"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+
+
+    override suspend fun createFollowedLeague(
+        leagueId: Int,
+        isAuthenticated: Boolean
+    ): Flow<Resource<FollowedLeagueResponse>>  = flow{
+
+        if(isAuthenticated) {
+            emit(
+                ResponseToRequest.send(
+                    teamRemoteDataSource.createFollowedLeague(leagueId)
+                )
             )
-        )
-    }
-    override suspend fun createFollowedLeague(leagueId: Int): Flow<Resource<FollowedLeagueResponse>>  = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.createFollowedLeague(leagueId)
-            )
-        )
+        }
+        else{
+            // guardo en cache
+            Log.d("precacheFOllowdLegues", "Se guarda cache de la ligaId seguida = ${leagueId}")
+            leagueDao.insertFollowedLeague(FollowedLeagueEntity(leagueId))
+        }
     }
 
-    override suspend fun deleteFollowedLeague(leagueId: Int): Flow<Resource<DefaultResponse>> = flow{
-        emit(
-            ResponseToRequest.send(
-                teamRemoteDataSource.deleteFollowedLeague(leagueId)
-            )
-        )
-    }
+    suspend override fun deleteFollowedLeague(
+        leagueId: Int,
+        isAuthenticated: Boolean
+    )
+    : Flow<Resource<DefaultResponse>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            if (isAuthenticated) {
+                // 🔹 Borrar desde API
+                val result = teamRemoteDataSource.deleteFollowedLeague(leagueId)
+                val response = ResponseToRequest.send(result)
+                emit(response)
+            } else {
+                // 🔹 Borrar solo en cache
+                leagueDao.deleteFollowedLeagueFromCache(leagueId)
+                // Emitimos éxito local
+                emit(Resource.Success(DefaultResponse(true, "Liga eliminada del cache")))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Failure(e.localizedMessage ?: "Error al eliminar la liga"))
+        }
+    }.flowOn(Dispatchers.IO)
 
     //FIXTURES
 

@@ -18,7 +18,7 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 @Composable
 fun LeaguePrincipalScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean
+    isAuthenticated: Boolean = false
 ) {
     val viewModel: LeaguePrincipalViewModel = hiltViewModel()
     val leagueResource by viewModel.leaguesState.collectAsState()
@@ -26,9 +26,8 @@ fun LeaguePrincipalScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getLeagues()
-        if (isAuthenticated) {
-            viewModel.getFollowedLeagues()
-        }
+
+        viewModel.getFollowedLeagues()
     }
 
     Scaffold(

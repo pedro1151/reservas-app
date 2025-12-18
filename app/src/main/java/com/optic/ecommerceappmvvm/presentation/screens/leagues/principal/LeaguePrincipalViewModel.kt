@@ -110,9 +110,9 @@ class LeaguePrincipalViewModel @Inject constructor(
         }
     }
 
-    fun createFollowedLeague(leagueId: Int) {
+    fun createFollowedLeague(leagueId: Int, isAuthenticated: Boolean) {
         viewModelScope.launch {
-            teamUseCase.createFollowedLeagueUC(leagueId).collectLatest { result ->
+            teamUseCase.createFollowedLeagueUC(leagueId, isAuthenticated).collectLatest { result ->
                 _createFollowedLeagueState.value = result
 
                 if (result is Resource.Success) {
@@ -123,9 +123,9 @@ class LeaguePrincipalViewModel @Inject constructor(
         }
     }
 
-    fun deleteFollowedLeague(leagueId: Int) {
+    fun deleteFollowedLeague(leagueId: Int, isAuthenticated: Boolean) {
         viewModelScope.launch {
-            teamUseCase.deleteFollowedLeagueUC(leagueId).collectLatest { result ->
+            teamUseCase.deleteFollowedLeagueUC(leagueId, isAuthenticated).collectLatest { result ->
                 _deleteFollowedLeagueState.value = result
 
                 if (result is Resource.Success) {

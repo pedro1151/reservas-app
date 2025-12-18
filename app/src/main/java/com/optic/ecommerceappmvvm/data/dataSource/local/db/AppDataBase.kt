@@ -9,6 +9,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixturePredictionEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.PlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
@@ -19,9 +20,10 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
         LeagueEntity::class,
         PlayerEntity::class,
         TeamEntity::class,
-    FixturePredictionEntity::class
+    FixturePredictionEntity::class,
+    FollowedLeagueEntity::class
     ],
-    version = 17,
+    version = 22,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()

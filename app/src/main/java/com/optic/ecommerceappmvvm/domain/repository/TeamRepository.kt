@@ -52,8 +52,12 @@ interface TeamRepository {
 
     //ligas
     suspend fun getFollowedLeagues(): Flow<Resource<List<League>>>
-    suspend fun createFollowedLeague(leagueId: Int):Flow<Resource<FollowedLeagueResponse>>
-    suspend fun deleteFollowedLeague(leagueId: Int):Flow<Resource<DefaultResponse>>
+    suspend fun createFollowedLeague(
+    leagueId: Int,
+    isAuthenticated: Boolean):Flow<Resource<FollowedLeagueResponse>>
+
+
+    suspend fun deleteFollowedLeague(leagueId: Int, isAuthenticated: Boolean):Flow<Resource<DefaultResponse>>
     suspend fun getLeagues(name: String, type: String, countryName: String): Flow<Resource<List<League>>>
     suspend fun getLeagueById(leagueId:Int): Flow<Resource<LeagueCompleteResponse>>
     suspend fun getTopLeagues(): Flow<Resource<List<League>>>

@@ -31,7 +31,7 @@ import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 @Composable
 fun ProdeScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean
+    isAuthenticated: Boolean = false
 ) {
     val viewModel: ProdeViewModel = hiltViewModel()
 
@@ -50,7 +50,7 @@ fun ProdeScreen(
     )
     LaunchedEffect(Unit) {
         viewModel.getTopLeagues()
-        viewModel.getFollowedLeagues()
+        viewModel.getFollowedLeagues(isAuthenticated)
     }
 
     Scaffold(

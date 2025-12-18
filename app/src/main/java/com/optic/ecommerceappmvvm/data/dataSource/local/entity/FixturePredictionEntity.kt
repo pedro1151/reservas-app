@@ -25,3 +25,5 @@ data class FixturePredictionEntity(
     val leagueSeason: Int
 )
 
+
+
