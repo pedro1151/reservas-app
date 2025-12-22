@@ -2,29 +2,19 @@ package com.optic.ecommerceappmvvm.presentation.screens.follow
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
-import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
-import com.optic.ecommerceappmvvm.presentation.navigation.Graph
-import com.optic.ecommerceappmvvm.presentation.navigation.screen.auth.AuthScreen
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.FollowContent
-import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -46,6 +36,11 @@ fun FollowScreen(
 
     val followedTeamListState by viewModel.followedTeamListState.collectAsState()
     val filteredTeams by viewModel.filteredTeamsState.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        viewModel.start()
+    }
 
     Scaffold(
         topBar = {
@@ -85,39 +80,21 @@ fun FollowScreen(
                     paddingValues = paddingValues,
                     teams = filteredTeams,
                     players = filteredPlayers,
-                    followedPlayers = if (isAuthenticated) followedPlayers else emptyList(),
-                    followedTeams = if (isAuthenticated) followedTeams else emptyList(),
+                    followedPlayers = followedPlayers ,
+                    followedTeams = followedTeams ,
                     navController = navController,
 
                     onFollowClick = { playerId ->
-                        if (isAuthenticated) {
-                            viewModel.createFollowedPlayer(playerId)
-                        } else {
-                            navController.navigate(ClientScreen.Login.route)
-                        }
+                            viewModel.createFollowedPlayer(playerId, isAuthenticated)
                     },
                     onUnFollowClick = { playerId ->
-                        if (isAuthenticated) {
-                            viewModel.deleteFollowedPlayer(playerId)
-                        } else {
-                            navController.navigate(ClientScreen.Login.route)
-                        }
+                            viewModel.deleteFollowedPlayer(playerId, isAuthenticated)
                     },
                     onFollowTeamClick = { teamId ->
-                        if (isAuthenticated) {
                             viewModel.createFollowedTeam(teamId)
-                        } else {
-                            navController.navigate(ClientScreen.Login.route)
-
-                        }
                     },
                     onUnFollowTeamClick = { teamId ->
-                        if (isAuthenticated) {
                             viewModel.deleteFollowedTeam(teamId)
-                        } else {
-                            navController.navigate(ClientScreen.Login.route)
-
-                        }
                     },
                     viewModel = viewModel,
                     pagerState = pagerState,

@@ -1,16 +1,27 @@
-package com.optic.ecommerceappmvvm.presentation.components.fixture.nextFixture
+package com.optic.ecommerceappmvvm.presentation.screens.team.components.resume
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.util.Resource
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -18,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
 import java.time.LocalDateTime
@@ -28,9 +39,59 @@ import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
+fun NextFixture(
+    title: String = "Próximo partido",
+    state: Resource<FixtureResponse>,
+    navController: NavHostController
+) {
+
+    when (state) {
+        is Resource.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        is Resource.Success -> {
+            state.data?.let { fixture ->
+                NextFixtureItem(
+                    fixture = fixture,
+                    title = "Próximo partido",
+                    navController
+                )
+            } ?: Text(
+                "No se ha encontrado el próximo partido",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+        }
+
+        is Resource.Failure -> {
+            Text(
+                "No se ha encontrado el próximo partido",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        else -> {}
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
 fun NextFixtureItem(
     fixture: FixtureResponse,
     title: String = "Próximo partido",
+    navController: NavHostController
 ) {
     val fixtureDateTime = remember {
         try {
@@ -50,7 +111,17 @@ fun NextFixtureItem(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .clickable {
+                fixture.id?.let { id ->
+                    navController.navigate("${Graph.FIXTURE}/$id") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = RoundedCornerShape(12.dp)
     ) {

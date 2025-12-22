@@ -38,13 +38,13 @@ interface TeamRepository {
     suspend fun getPlayerLastTeam(playerId: Int): Flow<Resource<PlayerLastTeamResponse>>
 
     //PLAYERS SEGUIDOS
-    suspend fun getFollowedPlayers(): Flow<Resource<List<Player>>>
-    suspend fun createFollowedPlayer(playerId: Int):Flow<Resource<FollowedPlayerResponse>>
-    suspend fun deleteFollowedPlayer(playerId: Int):Flow<Resource<DefaultResponse>>
+    fun getFollowedPlayers(): Flow<Resource<List<Player>>>
+    suspend fun createFollowedPlayer(playerId: Int, isAuthenticated: Boolean):Flow<Resource<FollowedPlayerResponse>>
+    suspend fun deleteFollowedPlayer(playerId: Int, isAuthenticated: Boolean):Flow<Resource<DefaultResponse>>
 
 
     //TEAMS SEGUIDOS
-    suspend fun getFollowedTeams(): Flow<Resource<List<Team>>>
+    fun getFollowedTeams(): Flow<Resource<List<Team>>>
     suspend fun createFollowedTeam(teamId: Int):Flow<Resource<FollowedTeamResponse>>
     suspend fun deleteFollowedTeam(teamId: Int):Flow<Resource<DefaultResponse>>
     suspend fun getTeamStats(season: Int, teamId: Int, date: String? =  null):Flow<Resource<TeamStatsResponse>>
@@ -89,7 +89,12 @@ interface TeamRepository {
         size: Int
     )
 
+    // sincronizar cache
+    suspend fun syncCached() //llama a todos
     suspend fun syncCachedPredictions()
+    suspend fun syncCachedPlayers()
+    suspend fun syncCachedTeams()
+    suspend fun syncCachedLeagues()
     //
 
     //Versus

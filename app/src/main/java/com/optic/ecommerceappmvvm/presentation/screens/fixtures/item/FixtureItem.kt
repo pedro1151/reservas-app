@@ -58,8 +58,13 @@ fun FixtureItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                fixture.id?.let {
-                    navController.navigate("${Graph.FIXTURE}/$it")
+                fixture.id?.let { id ->
+                    navController.navigate("${Graph.FIXTURE}/$id") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) ,

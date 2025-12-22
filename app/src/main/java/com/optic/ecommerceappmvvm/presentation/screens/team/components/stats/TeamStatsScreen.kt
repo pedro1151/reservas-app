@@ -52,10 +52,10 @@ fun TeamStatsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(vertical = 1.dp, horizontal = 1.dp)
                     .background(MaterialTheme.colorScheme.background),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(1.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 item { FixturesCard(fixtures = data.fixtures) }
                 item { GoalsCard(goals = data.goals) }
@@ -143,9 +143,9 @@ fun StatCard(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(16.dp)
+            .padding(15.dp)
     ) {
         Text(
             text = title,
@@ -260,8 +260,8 @@ fun FixturesCard(fixtures: Map<String, Any>?) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .padding(bottom = 8.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -297,7 +297,7 @@ fun FixturesCard(fixtures: Map<String, Any>?) {
             )
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -349,7 +349,9 @@ fun GoalsCard(goals: Map<String, Any>?) {
 
         // Tabla de resumen
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -427,7 +429,8 @@ fun StatRowSingleSofa(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(horizontal = 15.dp, vertical = 15.dp)
+            .padding(bottom = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -457,8 +460,8 @@ fun BiggestCard(biggest: Map<String, Any>?) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .padding(bottom = 8.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -478,7 +481,7 @@ fun BiggestCard(biggest: Map<String, Any>?) {
             )
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -535,8 +538,8 @@ fun CleanSheetFailedCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .padding(bottom = 8.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -572,7 +575,7 @@ fun CleanSheetFailedCard(
             )
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -609,8 +612,8 @@ fun PenaltyCard(penalty: Map<String, Any>?) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .padding(bottom = 8.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -646,7 +649,7 @@ fun PenaltyCard(penalty: Map<String, Any>?) {
             )
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -702,8 +705,8 @@ fun LineupsCard(lineups: List<Map<String, Any>>?) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .padding(bottom = 8.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -723,7 +726,7 @@ fun LineupsCard(lineups: List<Map<String, Any>>?) {
             )
         }
 
-        Divider(
+       HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -758,7 +761,7 @@ fun LineupsCard(lineups: List<Map<String, Any>>?) {
             }
 
             if (index < lineups.lastIndex) {
-                Divider(
+                HorizontalDivider(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                     thickness = 0.6.dp,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -781,7 +784,8 @@ fun CardsCard(cards: Map<String, Any>?) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 6.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .padding(bottom = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -822,7 +826,7 @@ fun CardsCard(cards: Map<String, Any>?) {
             )
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -852,7 +856,8 @@ fun CardsCard(cards: Map<String, Any>?) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(horizontal = 15.dp, vertical = 15.dp)
+                    .padding(bottom = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
@@ -891,7 +896,7 @@ fun CardsCard(cards: Map<String, Any>?) {
                 )
             }
 
-            Divider(
+            HorizontalDivider(
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f),
                 thickness = 0.6.dp
             )

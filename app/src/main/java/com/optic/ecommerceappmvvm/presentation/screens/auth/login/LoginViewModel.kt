@@ -202,7 +202,7 @@ class LoginViewModel @Inject constructor(
                 saveSession(result.data)
 
                 // guarde si tiene prodes en cache
-                teamUseCase.syncCachePredictionsUC()
+                teamUseCase.syncCacheUC()
 
 
             } else {

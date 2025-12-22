@@ -21,4 +21,40 @@ interface FixtureDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFixtures(fixtures: List<FixtureEntity>)
+
+    // proximo partido de un equipo
+
+    @Query("""
+    SELECT *
+    FROM fixtures
+    WHERE
+        (:teamId = homeTeamId OR :teamId = awayTeamId)
+        AND timestamp > :now
+        AND statusShort IN ('NS', 'TBD', 'PST', 'SUSP', 'ABD', 'WO')
+    ORDER BY timestamp ASC
+    LIMIT 1
+""")
+    suspend fun getNextTeamFixture(
+        teamId: Int,
+        now: Long
+    ): FixtureEntity
+
+
+    // ultimos partidos de un equipo
+    @Query(
+        """
+    SELECT *
+    FROM fixtures
+    WHERE 
+        (homeTeamId = :teamId OR awayTeamId = :teamId)
+        AND statusShort IN ('FT', 'AET', 'PEN', 'AWD', 'WO')
+    ORDER BY timestamp DESC
+    LIMIT :limit
+    """
+    )
+    suspend fun getLastTeamFixtures(
+        teamId: Int,
+        limit: Int
+    ): List<FixtureEntity>
+
 }

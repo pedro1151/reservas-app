@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.presentation.screens.team.components.resume
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,16 +13,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
 
 @Composable
 fun TopTeamFixture(
     topFiveFixtureState: Resource<List<FixtureResponse>>,
-    teamId: Int
+    teamId: Int,
+    navController: NavHostController
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -69,7 +73,7 @@ fun TopTeamFixture(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             fixtures.forEach { fixture ->
-                                TopFixtureItem(fixture, teamId, Modifier.weight(1f))
+                                TopFixtureItem(fixture, teamId, Modifier.weight(1f), navController)
                             }
                         }
                     }
@@ -93,7 +97,8 @@ fun TopTeamFixture(
 fun TopFixtureItem(
     fixture: FixtureResponse,
     teamId: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
     val isHome = fixture.teamHome?.id == teamId
     val teamScore = if (isHome) fixture.goalsHome else fixture.goalsAway
@@ -114,6 +119,7 @@ fun TopFixtureItem(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
         // Resultado
         Box(
@@ -121,6 +127,16 @@ fun TopFixtureItem(
                 .clip(RoundedCornerShape(6.dp))
                 .background(bgColor)
                 .padding(vertical = 2.dp, horizontal = 6.dp)
+                .clickable {
+                    fixture.id?.let { id ->
+                        navController.navigate("${Graph.FIXTURE}/$id") {
+                            popUpTo(0) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                },
         ) {
             Text(
                 text = "${teamScore ?: "-"}-${rivalScore ?: "-"}",

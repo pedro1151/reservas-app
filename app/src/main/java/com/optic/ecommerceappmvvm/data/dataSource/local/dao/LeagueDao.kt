@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -51,4 +52,7 @@ interface LeagueDao {
 
     @Query("DELETE FROM followed_leagues WHERE league_id = :leagueId")
     suspend fun deleteFollowedLeagueFromCache(leagueId: Int)
+
+    @Query("SELECT * FROM followed_leagues")
+    suspend fun getAllFollowedLeagues(): List<FollowedLeagueEntity>
 }

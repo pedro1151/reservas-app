@@ -1,6 +1,10 @@
 package com.optic.ecommerceappmvvm.data.dataSource.local.mapper
 
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.PlayerEntity
+import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
+import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.player.TeamMiniResponse
 
@@ -50,3 +54,15 @@ fun PlayerEntity.toDomain(): Player =
             )
         }
     )
+
+fun FollowedPlayerEntity.toRequest(): FollowedPlayerRequest {
+    return FollowedPlayerRequest (
+        player_id = this.player_id
+    )
+}
+
+fun FollowedPlayerRequest.toEntity(): FollowedPlayerEntity {
+    return FollowedPlayerEntity(
+        player_id = this.player_id?:0
+    )
+}

@@ -13,7 +13,7 @@ import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
-import com.optic.ecommerceappmvvm.presentation.components.fixture.nextFixture.NextFixture
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -44,7 +44,8 @@ fun ResumeContent(
         item{
             TopTeamFixture(
                 topFiveFixtureState = topFiveFixtureState,
-                teamId = teamId
+                teamId = teamId,
+                navController
             )
         }
 

@@ -20,6 +20,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.GetPlayerStatsUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.GetPlayersUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.GetallTeamUseCase
 import com.optic.ecommerceappmvvm.domain.useCase.team.TeamUseCase
+import com.optic.ecommerceappmvvm.domain.useCase.team.cache.SyncCacheUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetSuggestedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
@@ -136,7 +137,8 @@ object UseCaseModule {
         createFixturePredictionUC = CreateFixturePredictionUC(teamRepository),
         getUserFixturePredictionsUC = GetUserFixturePredictionsUC(teamRepository),
         //cache prode
-        syncCachePredictionsUC = SyncCachePredictionsUC(teamRepository)
+        syncCachePredictionsUC = SyncCachePredictionsUC(teamRepository),
+        syncCacheUC = SyncCacheUC(teamRepository)
 
 
     )

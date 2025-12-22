@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.domain.useCase.team
 
+import com.optic.ecommerceappmvvm.domain.useCase.team.cache.SyncCacheUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetSuggestedTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.equipos.GetTeamStatsUC
@@ -98,6 +99,10 @@ data class TeamUseCase(
 
     // prodes
     val createFixturePredictionUC: CreateFixturePredictionUC,
-    val getUserFixturePredictionsUC: GetUserFixturePredictionsUC
+    val getUserFixturePredictionsUC: GetUserFixturePredictionsUC,
+
+    // cache
+
+    val syncCacheUC: SyncCacheUC
 
 )
