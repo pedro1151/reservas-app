@@ -5,11 +5,13 @@ import com.google.gson.Gson
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixturePredictionEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.administracion.Country
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
+import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 
 private val gson = Gson()
 
@@ -46,4 +48,99 @@ fun FollowedLeagueRequest.toEntity(): FollowedLeagueEntity {
         league_id = this.league_id?:0
     )
 }
+
+
+//standings
+
+fun StandingResponse.toEntity(): StandingEntity =
+    StandingEntity(
+        id = id,
+        leagueId = leagueId,
+        season = season,
+
+        teamId = team.id,
+        teamName = team.name,
+        teamLogo = team.logo,
+
+        rank = rank,
+        points = points,
+        goalsDiff = goalsDiff,
+
+        groupName = group,
+        form = form,
+        status = status,
+        description = description,
+
+        allPlayed = allPlayed,
+        allWin = allWin,
+        allDraw = allDraw,
+        allLose = allLose,
+        allGoalsFor = allGoalsFor,
+        allGoalsAgainst = allGoalsAgainst,
+
+        homePlayed = homePlayed,
+        homeWin = homeWin,
+        homeDraw = homeDraw,
+        homeLose = homeLose,
+        homeGoalsFor = homeGoalsFor,
+        homeGoalsAgainst = homeGoalsAgainst,
+
+        awayPlayed = awayPlayed,
+        awayWin = awayWin,
+        awayDraw = awayDraw,
+        awayLose = awayLose,
+        awayGoalsFor = awayGoalsFor,
+        awayGoalsAgainst = awayGoalsAgainst,
+
+        updatedAt = update
+    )
+
+fun List<StandingResponse>.toEntities(): List<StandingEntity> =
+    map { it.toEntity() }
+fun StandingEntity.toDomain(): StandingResponse =
+    StandingResponse(
+        id = id,
+        leagueId = leagueId,
+        season = season,
+
+        team = StandingResponse.Team(
+            id = teamId,
+            name = teamName,
+            logo = teamLogo
+        ),
+
+        rank = rank,
+        points = points,
+        goalsDiff = goalsDiff,
+
+        group = groupName,
+        form = form,
+        status = status,
+        description = description,
+
+        allPlayed = allPlayed,
+        allWin = allWin,
+        allDraw = allDraw,
+        allLose = allLose,
+        allGoalsFor = allGoalsFor,
+        allGoalsAgainst = allGoalsAgainst,
+
+        homePlayed = homePlayed,
+        homeWin = homeWin,
+        homeDraw = homeDraw,
+        homeLose = homeLose,
+        homeGoalsFor = homeGoalsFor,
+        homeGoalsAgainst = homeGoalsAgainst,
+
+        awayPlayed = awayPlayed,
+        awayWin = awayWin,
+        awayDraw = awayDraw,
+        awayLose = awayLose,
+        awayGoalsFor = awayGoalsFor,
+        awayGoalsAgainst = awayGoalsAgainst,
+
+        update = updatedAt
+    )
+fun List<StandingEntity>.toDomain(): List<StandingResponse> =
+    map { it.toDomain() }
 

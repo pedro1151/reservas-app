@@ -11,6 +11,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsRespons
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
@@ -33,6 +34,8 @@ interface TeamRepository {
     //PLayers
     suspend fun getPlayers(name: String?, page: Int, size:Int): Flow<Resource<List<Player>>>
     suspend fun getallPlayers(): Flow<Resource<List<Player>>>
+    suspend fun getPlayerPorId(playerId: Int): Flow<Resource<PlayerComplete>>
+
     suspend fun getPlayerStats(playerId: Int): Flow<Resource<PlayerWithStats>>
     suspend fun getPlayerTeams(playerId: Int): Flow<Resource<PlayerTeamsResponse>>
     suspend fun getPlayerLastTeam(playerId: Int): Flow<Resource<PlayerLastTeamResponse>>

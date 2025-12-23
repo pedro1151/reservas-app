@@ -46,6 +46,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetLeagueByIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetTopLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetAllPlayersUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerPorIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.CreateFixturePredictionUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetUserFixturePredictionsUC
@@ -91,6 +92,7 @@ object UseCaseModule {
 
         //players
         getAllPlayersUC = GetAllPlayersUC(teamRepository),
+        getPlayerPorIdUC = GetPlayerPorIdUC(teamRepository),
 
         getFollowedTeamsUC = GetFollowedTeamsUC(teamRepository),
         createFollowedTeamUC = CreateFollowedTeamUC(teamRepository),

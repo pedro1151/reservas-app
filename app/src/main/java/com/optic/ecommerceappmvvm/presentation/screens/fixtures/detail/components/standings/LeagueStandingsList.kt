@@ -39,7 +39,7 @@ fun LeagueStandingsList(
     Column( // 👈 envolvemos todo en un Column
         modifier = Modifier
             .fillMaxSize()
-           // .padding(8.dp)
+            .padding(horizontal = 1.dp, vertical = 8.dp),
          //   .background(MaterialTheme.colorScheme.background)
     ) {
 
@@ -54,7 +54,7 @@ fun LeagueStandingsList(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
+                        .padding(1.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     shape = RoundedCornerShape(12.dp)
                 ) {

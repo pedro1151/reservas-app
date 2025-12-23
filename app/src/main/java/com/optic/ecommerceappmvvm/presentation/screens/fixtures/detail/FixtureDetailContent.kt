@@ -95,8 +95,7 @@ fun FixtureDetailContent(
                     VersusFixtureContent(
                         modifier = Modifier,
                         navController = navController,
-                        fixture =  fixture,
-                        paddingValues = paddingValues
+                        fixture =  fixture
                     )
                 }
 

@@ -68,9 +68,10 @@ fun PlayerTrayectoryTab(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 1.dp, vertical = 3.dp)
+                    .padding(horizontal = 1.dp, vertical = 8.dp)
+                    .fillMaxSize() // ← Esto es CLAVE para que use todo el alto
                     .background(MaterialTheme.colorScheme.background),
-                verticalArrangement = Arrangement.spacedBy(1.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
               //  contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp)
             ) {
 

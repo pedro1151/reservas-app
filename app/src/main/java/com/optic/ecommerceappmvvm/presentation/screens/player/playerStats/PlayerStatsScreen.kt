@@ -38,11 +38,15 @@ fun PlayerStatsScreen(
     // fixture del ultimo equipo, o equpo vigente
     val fixtureTeamState by viewModel.fixtureTeamsState.collectAsState()
 
+    // SIngle Player por Id
+    val singlePlayerState by viewModel.singlePlayerState.collectAsState()
+
     // Llamar a la función solo una vez al inicio
     LaunchedEffect(playerId) {
         viewModel.getPlayerStats(playerId)
         viewModel.getPlayerTeams(playerId)
         viewModel.getPlayerLastTeam(playerId)
+        viewModel.getPlayerPorId(playerId)
     }
     LaunchedEffect(playerLastTeamState) {
         if (playerLastTeamState is Resource.Success) {
@@ -66,7 +70,15 @@ fun PlayerStatsScreen(
 
             is Resource.Success -> {
                 val data = (state as Resource.Success).data
-                PlayerStatsContent(paddingValues, data, navController, playerTeamsState , fixtureTeamState,playerLastTeamState  )
+                PlayerStatsContent(
+                    paddingValues,
+                    data,
+                    navController,
+                    playerTeamsState,
+                    fixtureTeamState,
+                    playerLastTeamState,
+                    singlePlayerState
+                )
             }
 
             is Resource.Failure -> {

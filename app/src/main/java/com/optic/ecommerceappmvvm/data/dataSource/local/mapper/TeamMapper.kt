@@ -1,11 +1,9 @@
 package com.optic.ecommerceappmvvm.data.dataSource.local.mapper
 
 
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
 import com.optic.ecommerceappmvvm.domain.model.Team
-import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamRequest
 
 

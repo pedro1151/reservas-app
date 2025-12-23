@@ -14,6 +14,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
@@ -34,7 +35,8 @@ fun PlayerStatsContent(
     navController: NavHostController,
     playerTeamsState: Resource<PlayerTeamsResponse>,
     fixtureTeamState: Resource<List<FixtureResponse>>,
-    lastTeam : Resource<PlayerLastTeamResponse>
+    lastTeam : Resource<PlayerLastTeamResponse>,
+    playerComplete: Resource<PlayerComplete>
 ) {
     val tabTitles = listOf("Perfil", "Estadísticas", "Partidos", "Trayectoria")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
@@ -46,7 +48,7 @@ fun PlayerStatsContent(
             .padding(paddingValues)
 
     ) {
-        PlayerHeader(playerStats, paddingValues, lastTeam)
+        PlayerHeader(playerComplete)
 
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
@@ -78,7 +80,7 @@ fun PlayerStatsContent(
         ) { page ->
             when (page) {
                 0 -> {
-                    PlayerProfileTab(playerStats)
+                    PlayerProfileTab(playerComplete)
                 }
                 1 -> {
                     PlayerStatsContentTab(paddingValues = PaddingValues(8.dp), playerStats = playerStats)

@@ -1,12 +1,17 @@
 package com.optic.ecommerceappmvvm.data.dataSource.local.mapper
 
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedPlayerEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.PlayerEntity
-import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.FollowedPlayerEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStatsEntity
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.player.Player
 import com.optic.ecommerceappmvvm.domain.model.player.TeamMiniResponse
+import com.optic.ecommerceappmvvm.domain.model.player.stats.League
+import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerStats
+import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.model.player.stats.Team
+
+
 
 fun Player.toEntity(): PlayerEntity =
     PlayerEntity(
@@ -15,13 +20,6 @@ fun Player.toEntity(): PlayerEntity =
         name = this.name,
         firstname = this.firstname,
         lastname = this.lastname,
-        //age = this.age,
-        //nationality = this.nationality,
-        //birthDate = this.birthDate,
-        //birthPlace = this.birthPlace,
-        //birthCountry = this.birthCountry,
-        //height = this.height,
-        //weight = this.weight,
         photo = this.photo,
 
         lastTeamId = this.lastTeam?.id,
@@ -37,13 +35,6 @@ fun PlayerEntity.toDomain(): Player =
         name = this.name,
         firstname = this.firstname,
         lastname = this.lastname,
-        //age = this.age,
-        //nationality = this.nationality,
-        //birthDate = this.birthDate,
-        //birthPlace = this.birthPlace,
-        //birthCountry = this.birthCountry,
-        //eight = this.height,
-        //weight = this.weight,
         photo = this.photo,
         lastTeam = this.lastTeamId?.let {
             TeamMiniResponse(
@@ -64,5 +55,154 @@ fun FollowedPlayerEntity.toRequest(): FollowedPlayerRequest {
 fun FollowedPlayerRequest.toEntity(): FollowedPlayerEntity {
     return FollowedPlayerEntity(
         player_id = this.player_id?:0
+    )
+}
+
+
+// stats
+
+fun PlayerWithStats.toEntities(): List<PlayerStatsEntity> {
+    return statistics.map { stat ->
+        PlayerStatsEntity(
+            id = stat.id,
+            playerId = stat.playerId,
+            season = stat.season,
+
+            teamId = stat.team.id,
+            teamApiId = stat.team.apiId,
+            teamName = stat.team.name,
+            teamLogo = stat.team.logo,
+
+            leagueId = stat.league.id,
+            leagueApiId = stat.league.apiId,
+            leagueName = stat.league.name,
+            leagueLogo = stat.league.logo,
+
+            gamesPosition = stat.gamesPosition,
+            gamesAppearences = stat.gamesAppearences,
+            gamesLineups = stat.gamesLineups,
+            gamesMinutes = stat.gamesMinutes,
+            gamesNumber = stat.gamesNumber,
+            gamesRating = stat.gamesRating,
+            gamesCaptain = stat.gamesCaptain,
+
+            goalsTotal = stat.goalsTotal,
+            goalsAssists = stat.goalsTotalAssists,
+            goalsConceded = stat.goalsConceded,
+            goalsSaves = stat.goalsSaves,
+
+            passesTotal = stat.passesTotal,
+            passesKey = stat.passesKey,
+            passesAccuracy = stat.passesAccuracy,
+
+            tacklesTotal = stat.tacklesTotal,
+            tacklesBlocks = stat.tacklesBlocks,
+            tacklesInterceptions = stat.tacklesInterceptions,
+
+            duelsTotal = stat.duelsTotal,
+            duelsWon = stat.duelsWon,
+
+            dribblesAttempts = stat.dribblesAttempts,
+            dribblesSuccess = stat.dribblesSuccess,
+            dribblesPast = stat.dribblesPast,
+
+            foulsDrawn = stat.foulsDrawn,
+            foulsCommitted = stat.foulsCommitted,
+
+            shotsTotal = stat.shotsTotal,
+            shotsOn = stat.shotsOn,
+
+            substitutesIn = stat.substitutesIn,
+            substitutesOut = stat.substitutesOut,
+            substitutesBench = stat.substitutesBench,
+
+            cardsYellow = stat.cardsYellow,
+            cardsYellowRed = stat.cardsYellowRed,
+            cardsRed = stat.cardsRed,
+
+            penaltyWon = stat.penaltyWon,
+            penaltyCommited = stat.penaltyCommited,
+            penaltyScored = stat.penaltyScored,
+            penaltyMissed = stat.penaltyMissed,
+            penaltySaved = stat.penaltySaved
+        )
+    }
+}
+
+fun List<PlayerStatsEntity>.toDomain(): PlayerWithStats {
+    val first = first()
+
+    return PlayerWithStats(
+        statistics = map { it.toPlayerStatsDomain() }
+    )
+}
+
+fun PlayerStatsEntity.toPlayerStatsDomain(): PlayerStats {
+    return PlayerStats(
+        id = id,
+        playerId = playerId,
+        season = season,
+
+        team = Team(
+            id = teamId,
+            apiId = teamApiId,
+            name = teamName,
+            logo = teamLogo
+        ),
+
+        league = League(
+            id = leagueId,
+            apiId = leagueApiId,
+            name = leagueName,
+            logo = leagueLogo
+        ),
+
+        gamesPosition = gamesPosition,
+        gamesAppearences = gamesAppearences,
+        gamesLineups = gamesLineups,
+        gamesMinutes = gamesMinutes,
+        gamesNumber = gamesNumber,
+        gamesRating = gamesRating,
+        gamesCaptain = gamesCaptain,
+
+        goalsTotal = goalsTotal,
+        goalsTotalAssists = goalsAssists,
+        goalsConceded = goalsConceded,
+        goalsSaves = goalsSaves,
+
+        passesTotal = passesTotal,
+        passesKey = passesKey,
+        passesAccuracy = passesAccuracy,
+
+        tacklesTotal = tacklesTotal,
+        tacklesBlocks = tacklesBlocks,
+        tacklesInterceptions = tacklesInterceptions,
+
+        duelsTotal = duelsTotal,
+        duelsWon = duelsWon,
+
+        dribblesAttempts = dribblesAttempts,
+        dribblesSuccess = dribblesSuccess,
+        dribblesPast = dribblesPast,
+
+        foulsDrawn = foulsDrawn,
+        foulsCommitted = foulsCommitted,
+
+        shotsTotal = shotsTotal,
+        shotsOn = shotsOn,
+
+        substitutesIn = substitutesIn,
+        substitutesOut = substitutesOut,
+        substitutesBench = substitutesBench,
+
+        cardsYellow = cardsYellow,
+        cardsYellowRed = cardsYellowRed,
+        cardsRed = cardsRed,
+
+        penaltyWon = penaltyWon,
+        penaltyCommited = penaltyCommited,
+        penaltyScored = penaltyScored,
+        penaltyMissed = penaltyMissed,
+        penaltySaved = penaltySaved
     )
 }

@@ -14,6 +14,7 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
@@ -35,6 +36,9 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
     // PLAYERS
     override suspend fun getPlayers(name: String?, page: Int, size:Int): Response<List<Player>> = teamService.getPlayers(name, page, size)
     override suspend fun getallPlayers(): Response<List<Player>> = teamService.getallPlayers()
+    override suspend fun getPlayerPorId(
+        playerId: Int
+    ): Response<PlayerComplete> = teamService.getPlayerPorId(playerId)
 
     override suspend fun getPlayerStats(playerId: Int): Response<PlayerWithStats> = teamService.getPlayerStats(playerId)
     override suspend fun getPlayerTeams(playerId: Int): Response<PlayerTeamsResponse> = teamService.getPlayerTeams(playerId)

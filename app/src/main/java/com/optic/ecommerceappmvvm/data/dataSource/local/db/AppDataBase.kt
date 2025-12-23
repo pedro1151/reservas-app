@@ -10,11 +10,13 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixturePredictionEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedPlayerEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.PlayerEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStatsEntity
 
 @Database(
     entities = [
@@ -26,9 +28,11 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
     FollowedLeagueEntity::class,
     FollowedPlayerEntity::class,
         FollowedTeamEntity::class,
+    PlayerStatsEntity::class,
+    StandingEntity::class
 
     ],
-    version = 28,
+    version = 33,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()

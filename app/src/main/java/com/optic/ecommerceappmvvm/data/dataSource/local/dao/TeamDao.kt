@@ -4,9 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.PlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
 import kotlinx.coroutines.flow.Flow
 

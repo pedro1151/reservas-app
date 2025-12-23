@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
@@ -35,6 +36,11 @@ class PlayerStatsViewModel @Inject constructor(
     private val _fixtureTeamsState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
     val fixtureTeamsState : StateFlow<Resource<List<FixtureResponse>>> = _fixtureTeamsState
 
+    // player por id
+    private val _singlePlayerState = MutableStateFlow<Resource<PlayerComplete>>(Resource.Loading)
+    val singlePlayerState : StateFlow<Resource<PlayerComplete>> = _singlePlayerState
+
+
 
 
 
@@ -42,6 +48,14 @@ class PlayerStatsViewModel @Inject constructor(
         viewModelScope.launch {
             teamUseCase.getPlayerStatsUseCase(playerId).collectLatest { result ->
                 _playerStatsState.value = result
+            }
+        }
+    }
+
+    fun getPlayerPorId(playerId: Int) {
+        viewModelScope.launch {
+            teamUseCase.getPlayerPorIdUC(playerId).collectLatest { result ->
+                _singlePlayerState.value = result
             }
         }
     }

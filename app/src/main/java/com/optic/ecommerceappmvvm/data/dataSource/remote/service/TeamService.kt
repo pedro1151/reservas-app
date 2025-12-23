@@ -13,6 +13,7 @@ import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamRequest
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
@@ -53,6 +54,11 @@ interface TeamService {
     ): Response<List<Team>>
 
     // players
+
+    @GET("football/get/player/{player_id}")
+    suspend fun getPlayerPorId(
+        @Path("player_id") playerId: Int,
+    ): Response<PlayerComplete>
 
     @GET("football/players/name/{name}/page/{page}/size/{size}")
     suspend fun getPlayers(

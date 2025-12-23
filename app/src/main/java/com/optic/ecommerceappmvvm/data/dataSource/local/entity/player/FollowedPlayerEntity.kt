@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.data.dataSource.local.entity
+package com.optic.ecommerceappmvvm.data.dataSource.local.entity.player
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

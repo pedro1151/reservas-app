@@ -10,6 +10,7 @@ import com.optic.ecommerceappmvvm.domain.model.fixture.stats.FixtureStatsRespons
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedPlayerResponse
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedTeamResponse
+import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
@@ -34,6 +35,7 @@ interface TeamRemoteDataSource {
     suspend fun getPlayers(name: String?, page:Int, size:Int): Response<List<Player>>
 
     suspend fun getallPlayers(): Response<List<Player>>
+    suspend fun getPlayerPorId(playerId: Int): Response<PlayerComplete>
     suspend fun getPlayerStats(playerId: Int): Response<PlayerWithStats>
     suspend fun getPlayerTeams(playerId: Int): Response<PlayerTeamsResponse>
     suspend fun getPlayerLastTeam(playerId: Int): Response<PlayerLastTeamResponse>
