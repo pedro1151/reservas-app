@@ -62,7 +62,7 @@ fun ParticipateButton(
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Normal,
                     fontSize = 15.sp,
-                    color =  Color(0xFFFFC857)
+                   // color =  Color(0xFFFFC857)
                 )
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -76,7 +76,7 @@ fun ParticipateButton(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.align(Alignment.Center),
-                    tint = Color(0xFFFFC857)
+                    //tint = Color(0xFFFFC857)
                 )
             }
         }

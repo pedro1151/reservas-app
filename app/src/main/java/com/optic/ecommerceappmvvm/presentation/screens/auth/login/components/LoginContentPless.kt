@@ -67,7 +67,7 @@ fun LoginContentPless(
 
     // 🔄 Control de contador y botón de reenviar
     var showResendButton by remember { mutableStateOf(false) }
-    var remainingTime by remember { mutableStateOf(60) }
+    var remainingTime by remember { mutableStateOf(30) }
 
     LaunchedEffect(Unit) {
         while (remainingTime > 0) {

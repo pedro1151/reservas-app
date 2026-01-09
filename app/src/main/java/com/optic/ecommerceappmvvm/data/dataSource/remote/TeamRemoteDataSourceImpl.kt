@@ -20,6 +20,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsRes
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -56,7 +57,7 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
 
     override suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse> = teamService.getLeagueById(leagueId)
     override suspend fun getTopLeagues(): Response<List<League>> = teamService.getTopLeagues()
-
+    override suspend fun getProdeParticipateLeagues(userId: Int): Response<List<League>> = teamService.getProdeParticipateLeagues(userId)
     override suspend fun getCountryFixtures(
         season: Int,
         date: String
@@ -168,10 +169,16 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         season: Int
     ): Response<List<StandingResponse>> = teamService.getLeagueStandings(leagueId, season)
 
+
+    // prodes - prediction
     override suspend fun createFixturePrediction(request: FixturePredictionRequest): Response<FixturePredictionResponse> = teamService.createFixturePrediction(request)
     override suspend fun getUserFixturePredictions(
         leagueId: Int,
         season: Int
     ): Response<List<FixturePredictionResponse>> = teamService.getUserFixturePredictions(leagueId, season)
+
+    override suspend fun getPredictionRanking(
+        top: Int
+    ): Response<List<UserPredictionRanking>> = teamService.getPredictionRanking(top)
 
 }

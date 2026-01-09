@@ -32,7 +32,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStat
     StandingEntity::class
 
     ],
-    version = 33,
+    version = 36,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()

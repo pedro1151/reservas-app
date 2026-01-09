@@ -10,7 +10,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
 @Dao
 interface FixtureDao {
 
-    @Query("SELECT * FROM fixtures WHERE timestamp >= :startTs AND timestamp < :endTs ORDER BY timestamp DESC")
+    @Query("SELECT * FROM fixtures WHERE timestamp >= :startTs AND timestamp < :endTs ORDER BY timestamp ASC")
     suspend fun getFixturesByDateRange(startTs: Long, endTs: Long): List<FixtureEntity>
 
     @Query("SELECT * FROM fixtures WHERE timestamp >= :start AND timestamp < :end AND leagueId = :leagueId AND leagueSeason = :season ORDER BY timestamp DESC")
@@ -55,6 +55,23 @@ interface FixtureDao {
     suspend fun getLastTeamFixtures(
         teamId: Int,
         limit: Int
+    ): List<FixtureEntity>
+
+
+    // FIxtures asociados a predicciones de un usuario
+    @Query(
+        """
+    SELECT f.*
+    FROM fixtures f
+    INNER JOIN fixture_predictions fp ON f.id = fp.fixtureId
+    WHERE fp.userId = :userId
+      AND fp.leagueSeason = :season
+    ORDER BY f.timestamp DESC
+    """
+    )
+    suspend fun getUserFixturePredictions(
+        userId: Int,
+        season: Int
     ): List<FixtureEntity>
 
 }

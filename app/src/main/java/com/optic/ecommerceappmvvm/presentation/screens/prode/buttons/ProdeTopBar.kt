@@ -52,10 +52,13 @@ fun ProdeTopBar(
                 TextButton(
                     enabled = !isSaving,
                     onClick = if (isEditing) onSavingClick else  onEditClick,
-                    modifier = Modifier,
+                    modifier = Modifier
+                            /*
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.getGreenColorFixture
                     )
+
+                             */
                 ){
                 /*
                 Icon(
@@ -66,7 +69,7 @@ fun ProdeTopBar(
 
                  */
                 Text(
-                    text =if (isEditing) "Guardar" else "Editar",
+                    text =if (isEditing) "Guardar" else "Predecir",
                 )
             }
         },

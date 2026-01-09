@@ -23,6 +23,7 @@ interface FixturePredictionDao {
     @Query("SELECT * FROM fixture_predictions")
     suspend fun getAll(): List<FixturePredictionEntity>
 
+
     @Query("DELETE FROM fixture_predictions")
     suspend fun clearAll()
 }

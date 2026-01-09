@@ -17,10 +17,10 @@ fun FixtureResponse.toEntity(): FixtureEntity {
         periodsFirst = periodsFirst,
         periodsSecond = periodsSecond,
 
-        venueId = venue.id,
-        venueName = venue.name,
-        venueCity = venue.city,
-        venueImage = venue.image,
+        venueId = venue?.id ?: 0,
+        venueName = venue?.name,
+        venueCity = venue?.city,
+        venueImage = venue?.image,
 
         statusLong = statusLong,
         statusShort = statusShort,

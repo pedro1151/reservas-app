@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures
+package com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,12 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
-import com.optic.ecommerceappmvvm.domain.model.administracion.LeagueRound
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
-import com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.header.ProdeHeader
+import com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures.header.ProdeHeader
 
 
 @RequiresApi(Build.VERSION_CODES.O)

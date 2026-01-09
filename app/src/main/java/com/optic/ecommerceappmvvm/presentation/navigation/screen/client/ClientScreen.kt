@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SignLanguage
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -101,6 +102,18 @@ sealed class ClientScreen(
         route = "client/loginpless",
         title = "Loginpless",
         icon = Icons.Default.Menu
+    )
+
+    object BasicLogin: ClientScreen(
+        route = "client/basiclogin",
+        title = "Basic Login",
+        icon = Icons.Default.SignLanguage
+    )
+
+    object ProdeRanking: ClientScreen(
+        route = "client/proderank",
+        title = "Prode Ranking",
+        icon = Icons.Default.SignLanguage
     )
 
 

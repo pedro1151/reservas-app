@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.header
+package com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures.header
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

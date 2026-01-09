@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.auth.login.components
+package com.optic.ecommerceappmvvm.presentation.screens.auth.login.basiclogin
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -25,24 +25,26 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 import com.optic.ecommerceappmvvm.presentation.screens.auth.login.LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.components.DefaultTextField
 import com.optic.ecommerceappmvvm.presentation.components.inputs.EmailBox
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 
 
 @Composable
-fun LoginContent(
+fun BasicLoginScreen(
     navController: NavHostController,
-    paddingValues: PaddingValues,
-    vm: LoginViewModel,
-    onGoogleSignInClick: () -> Unit
+    vm: LoginViewModel = hiltViewModel()
+
 ) {
     val state = vm.state
     val context = LocalContext.current
@@ -50,15 +52,16 @@ fun LoginContent(
     val sendCodeState by vm.sendCodeState.collectAsState()   // 👈 AQUÍ
 
     // ✅ Navegación
-    LaunchedEffect(sendCodeSuccess) {
-        if (sendCodeSuccess) {
-            navController.navigate("${Graph.CLIENT}/${vm.state.email}") {
-                popUpTo(ClientScreen.Login.route) { inclusive = false }
+    val navigateToHome by vm.navigateToHome.collectAsState()
+
+    LaunchedEffect(navigateToHome) {
+        if (navigateToHome) {
+            navController.navigate(Graph.CLIENT) {
+                popUpTo(ClientScreen.BasicLogin.route) { inclusive = true }
             }
         }
     }
 
-    // ✅ Errores
     LaunchedEffect(vm.errorMessage) {
         if (vm.errorMessage.isNotEmpty()) {
             Toast.makeText(context, vm.errorMessage, Toast.LENGTH_LONG).show()
@@ -68,10 +71,9 @@ fun LoginContent(
 
     Box(
         modifier = Modifier
-            .padding(paddingValues)
             .fillMaxSize()
             .background(
-                        MaterialTheme.colorScheme.background
+                MaterialTheme.colorScheme.background
 
             )
     ) {
@@ -152,6 +154,16 @@ fun LoginContent(
                         keyboardType = KeyboardType.Email
                     )
 
+                    // ✉️ Email
+                    DefaultTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.password,
+                        onValueChange = { vm.onPasswordInput(it.take(100)) },
+                        label = "Contraseña",
+                        icon = Icons.Default.Key,
+                        keyboardType = KeyboardType.Password
+                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // 🔘 Botón principal
@@ -159,28 +171,10 @@ fun LoginContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        text = "Enviar código de acceso",
-                        onClick = { vm.loginSendCode() },
+                        text = "Sign In",
+                        onClick = { vm.login() },
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // 🔵 Google Sign-In
-                    GoogleSignInButton(onClick = { onGoogleSignInClick() })
-                    Spacer(modifier = Modifier.height(12.dp))
-
-
-                    // 🔘 Login tradicional
-                    DefaultButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        text = "Login Tradicional",
-                        onClick = {
-                            navController.navigate(ClientScreen.BasicLogin.route)
-                        },
-                        color = MaterialTheme.colorScheme.getGreenColorFixture
-                    )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -232,7 +226,7 @@ fun LoginContent(
                             )
                         }
 
-                        }
+                    }
 
 
                 }
@@ -245,5 +239,4 @@ fun LoginContent(
     )
 
 }
-
 

@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures
+package com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,13 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
-import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.prode.item.ProdeItem
-import kotlinx.coroutines.delay
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

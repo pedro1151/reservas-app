@@ -121,7 +121,13 @@ fun FixtureItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    /*
+                    Text(
+                        text = fixture.statusLong,
+                        style = MaterialTheme.typography.labelSmall
+                    )
 
+                     */
 
                     Text(
                         text = fixture.teamHome?.name ?: "",
@@ -142,6 +148,7 @@ fun FixtureItem(
                     homeScore = fixture.goalsHome,
                     awayScore = fixture.goalsAway,
                     statusShort = fixture.statusShort,
+                    statusLong = fixture.statusLong,
                     fixtureDate = fixture.date
                 )
 
@@ -174,6 +181,7 @@ fun ScoreBoxAnimated(
     homeScore: Int?,
     awayScore: Int?,
     statusShort: String?,
+    statusLong: String?,
     fixtureDate: String?
 ) {
 
@@ -208,6 +216,38 @@ fun ScoreBoxAnimated(
 
         return
     }
+
+
+    // Si el partido Se suspendiò, se pospuso, etc, entonces mostrar el status long
+    val terminalStatuses = setOf(
+        "AET", "PEN", "AWD", "WO","NT",
+        "ABD", "Abd", "Abandoned",
+        "CANC", "Canc", "PST"
+    )
+
+    if (statusShort in terminalStatuses) {
+        // estado final / no actualizable
+
+
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f))
+                .padding(vertical = 6.dp, horizontal = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = statusLong?:"Not Played",
+                /*fontWeight = FontWeight.Bold, */
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+
+        return
+    }
+
 
     // Si SÍ hay goles → marcador animado
     val green = MaterialTheme.colorScheme.getGreenColorFixture

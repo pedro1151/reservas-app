@@ -1,4 +1,4 @@
-package com.optic.ecommerceappmvvm.presentation.screens.prode.components
+package com.optic.ecommerceappmvvm.presentation.screens.prode
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,20 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.League.League
-import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
-import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.prode.components.LeagueCard
-import com.optic.ecommerceappmvvm.presentation.screens.prode.components.LeagueSearchBar
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProdeSearchContent(
+fun ProdePrincipalContent(
     modifier: Modifier = Modifier,
     topLeagues: List<League>,
     leagues: List<League>,
@@ -46,10 +39,13 @@ fun ProdeSearchContent(
     ) {
 
         // 🔍 Barra de búsqueda
+        /*
         LeagueSearchBar(
             query = query,
             onQueryChange = { viewModel.onSearchQueryChanged(it) }
         )
+
+         */
 
         LazyColumn(
             modifier = Modifier
@@ -59,6 +55,46 @@ fun ProdeSearchContent(
             verticalArrangement = Arrangement.spacedBy(1.dp),
 
             ) {
+
+            // ---------------------------------------------------------
+            // 🔥 0. SECCIÓN: LIGAS EN Q SE PARTICIPA EN PRODES — se ocultan cuando se escribe
+            // ---------------------------------------------------------
+            item {
+                AnimatedVisibility(
+                    visible = !hasQuery && sections.participateLeagues.isNotEmpty()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Ligas que estas participando",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+
+            if (!hasQuery) {
+                items(
+                    items = sections.participateLeagues,
+                    key = { it.id }
+                ) { league ->
+                    AnimatedVisibility(
+                        visible = true,
+                        modifier = Modifier.animateItemPlacement()
+                    ) {
+                        val scope = rememberCoroutineScope()
+                        LeagueCard(
+                            league = league,
+                            isFollowed = true,
+                            onFollowClick = {
+                            },
+                            navController = navController
+                        )
+                    }
+                }
+            }
 
             // ---------------------------------------------------------
             // 🔥 1. SECCIÓN: LIGAS SEGUIDAS — se ocultan cuando se escribe

@@ -21,14 +21,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddHome
-import androidx.compose.material.icons.filled.AirplanemodeActive
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -95,8 +87,8 @@ fun ProdeItem(
 
              */
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) ,
-        shape = RoundedCornerShape(10.dp),   // 👈 bordes redondeados
-        elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
+        shape = RoundedCornerShape(10.dp)  // 👈 bordes redondeados
+        //elevation = CardDefaults.cardElevation(1.dp) // sombra opcional
 
     ) {
         Column(modifier = Modifier.padding(12.dp)) {

@@ -23,12 +23,14 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.CreateFoll
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.DeleteFollowedLeagueUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.followedLeagues.GetFollowedLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetLeagueByIdUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetProdeParticipateLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetTopLeaguesUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetAllPlayersUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerLastTeamUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerPorIdUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.CreateFixturePredictionUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetPredictionRankingUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetUserFixturePredictionsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.SyncCachePredictionsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.standings.GetLeagueStandingsUC
@@ -90,6 +92,7 @@ data class TeamUseCase(
     val deleteFollowedLeagueUC  : DeleteFollowedLeagueUC,
     val getLeagueByIdUC: GetLeagueByIdUC,
     val getTopLeaguesUC: GetTopLeaguesUC,
+    val getProdeParticipateLeaguesUC: GetProdeParticipateLeaguesUC,
 
 
     //standings
@@ -102,6 +105,7 @@ data class TeamUseCase(
     // prodes
     val createFixturePredictionUC: CreateFixturePredictionUC,
     val getUserFixturePredictionsUC: GetUserFixturePredictionsUC,
+    val getPredictionRankingUC: GetPredictionRankingUC,
 
     // cache
 

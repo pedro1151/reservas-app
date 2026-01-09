@@ -7,8 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.google.gson.Gson
 import com.optic.ecommerceappmvvm.domain.model.trivias.guessplayer.GuessPlayer
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
@@ -35,9 +33,11 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import com.optic.ecommerceappmvvm.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeScreen
-import com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.LeagueProdeContent
-import com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.LeagueProdeScreen
+import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
+import com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures.LeagueProdeScreen
+import com.optic.ecommerceappmvvm.presentation.screens.prode.ranking.ProdeRankingScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -105,6 +105,14 @@ fun ClientNavGraph(
             LoginContentPless(navController, viewModel, email)
         }
 
+        composable(route = ClientScreen.ProdeRanking.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(ClientScreen.Prode.route)
+            }
+            val viewModel: ProdeViewModel = hiltViewModel(parentEntry)
+            ProdeRankingScreen(navController = navController, vm= viewModel)
+
+        }
 
         composable(route = ClientScreen.Leagues.route) {
             LeaguePrincipalScreen(navController, isAuthenticated)
@@ -116,6 +124,14 @@ fun ClientNavGraph(
         ) {
 
             MasScreen(navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.BasicLogin.route
+
+        ) {
+
+            BasicLoginScreen(navController = navController, )
         }
 
         composable(route = ClientScreen.Mas.route) {

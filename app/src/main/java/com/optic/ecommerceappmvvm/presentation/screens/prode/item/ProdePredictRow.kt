@@ -89,7 +89,7 @@ fun ProdePredictRow(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.60f)
+                    //.fillMaxWidth(0.60f)
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.surface)
                     //.background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f))
@@ -103,7 +103,7 @@ fun ProdePredictRow(
                 // TITULO + PREDICCIÓN
                 // ----------------------------
                 Row(verticalAlignment = Alignment.CenterVertically) {
-
+                   /*
                     Box(
                         modifier = Modifier
                             .scale(scale)
@@ -127,6 +127,8 @@ fun ProdePredictRow(
                         )
                     }
 
+                    */
+
                     Spacer(modifier = Modifier.width(6.dp))
 
                     Crossfade(targetState = isEditing, label = "predictionMode") { editing ->
@@ -138,6 +140,7 @@ fun ProdePredictRow(
                             Box {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
                                         .clickable { expanded = true }
                                         .background(Color(0x22FFFFFF), RoundedCornerShape(4.dp))
@@ -213,43 +216,35 @@ fun ProdePredictRow(
 
 
                 // ----------------------------
-                // TABLA DE GOLES
+                // TABLA DE GOLES (UNA SOLA FILA)
                 // ----------------------------
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    // =====================================
-                    // FILA GOLES LOCAL (ANIMADA)
-                    // =====================================
+                    // ======================
+                    // GOLES LOCAL
+                    // ======================
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
 
                         Icon(
                             imageVector = Icons.Default.Home,
                             contentDescription = null,
-                            modifier = Modifier
-                                .weight(0.3f)
-                                .size(16.dp)
+                            modifier = Modifier.size(16.dp)
                         )
 
-                        Text(
-                            text = "Goles Local",
-                            fontSize = 10.sp,
-                            modifier = Modifier.weight(1f)
-                        )
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                        AnimatedVisibility(
-                            visible = isEditing,
-                            enter = fadeIn() + slideInVertically(),
-                            exit = fadeOut() + slideOutVertically()
-                        ) {
+                        AnimatedVisibility(visible = isEditing) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
+
                                 IconButton(
                                     onClick = {
                                         vm.updateGoalsHome(
@@ -258,18 +253,17 @@ fun ProdePredictRow(
                                         )
                                     }
                                 ) {
-                                    Icon(
-                                        Icons.Default.Remove,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
+                                /*
 
                                 Text(
                                     text = (predictionSet.goalsHome ?: 0).toString(),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
                                 )
+
+                                 */
 
                                 IconButton(
                                     onClick = {
@@ -279,74 +273,46 @@ fun ProdePredictRow(
                                         )
                                     }
                                 ) {
-                                    Icon(
-                                        Icons.Default.Add,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
-                            }
-                        }
-
-                        // SOLO LECTURA (animado)
-                        AnimatedVisibility(
-                            visible = !isEditing,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .scale(scale)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .border(
-                                        width = 1.dp,
-                                        color = Color.White.copy(alpha = 0.12f),
-                                        shape = RoundedCornerShape(10.dp)
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                Text(
-                                    text = predictionSet.goalsHome?.toString() ?: "-",
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                    color = Color(0xFFFFC857)
-                                    )
-
                             }
                         }
                     }
 
+                    // ======================
+                    // MARCADOR CENTRADO
+                    // ======================
+                    Box(
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .scale(scale)
+                            .clip(RoundedCornerShape(10.dp))
+                            .border(
+                                width = 1.dp,
+                                color = Color.White.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${predictionSet.goalsHome ?: "-"}  :  ${predictionSet.goalsAway ?: "-"}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFFC857)
+                        )
+                    }
 
-                    // =====================================
-                    // FILA GOLES VISITA (ANIMADA)
-                    // =====================================
+                    // ======================
+                    // GOLES VISITA
+                    // ======================
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
 
-                        Icon(
-                            imageVector = Icons.Default.AirplanemodeActive,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .weight(0.3f)
-                                .size(16.dp)
-                                .rotate(45f)
-                        )
-
-                        Text(
-                            text = "Goles Visitante",
-                            fontSize = 10.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        AnimatedVisibility(
-                            visible = isEditing,
-                            enter = fadeIn() + slideInVertically(),
-                            exit = fadeOut() + slideOutVertically()
-                        ) {
+                        AnimatedVisibility(visible = isEditing) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
 
                                 IconButton(
@@ -357,18 +323,16 @@ fun ProdePredictRow(
                                         )
                                     }
                                 ) {
-                                    Icon(
-                                        Icons.Default.Remove,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
-
+                                /*
                                 Text(
                                     text = (predictionSet.goalsAway ?: 0).toString(),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
                                 )
+
+                                 */
 
                                 IconButton(
                                     onClick = {
@@ -378,44 +342,23 @@ fun ProdePredictRow(
                                         )
                                     }
                                 ) {
-                                    Icon(
-                                        Icons.Default.Add,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
                             }
                         }
 
-                        AnimatedVisibility(
-                            visible = !isEditing,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .scale(scale)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .border(
-                                        width = 1.dp,
-                                        color = Color.White.copy(alpha = 0.12f),
-                                        shape = RoundedCornerShape(10.dp)
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                                Text(
-                                    text = predictionSet.goalsAway?.toString() ?: "-",
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                    color = Color(0xFFFFC857)
-                                )
-
-                            }
-                        }
+                        Icon(
+                            imageVector = Icons.Default.AirplanemodeActive,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .rotate(45f)
+                        )
                     }
                 }
+
             }
         }
     }

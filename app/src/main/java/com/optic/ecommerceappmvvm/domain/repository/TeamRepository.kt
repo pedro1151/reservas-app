@@ -17,6 +17,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsRes
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -58,6 +59,8 @@ interface TeamRepository {
     suspend fun createFollowedLeague(
     leagueId: Int,
     isAuthenticated: Boolean):Flow<Resource<FollowedLeagueResponse>>
+    //cache leagues
+    suspend fun getProdeParticipateLeagues(userId:Int): Flow<Resource<List<League>>>
 
 
     suspend fun deleteFollowedLeague(leagueId: Int, isAuthenticated: Boolean):Flow<Resource<DefaultResponse>>
@@ -98,7 +101,10 @@ interface TeamRepository {
     suspend fun syncCachedPlayers()
     suspend fun syncCachedTeams()
     suspend fun syncCachedLeagues()
-    //
+    suspend fun updateFixturesByDate(
+        date: String,
+        limit: Int
+    ): Flow<Resource<List<FixtureResponse>>>
 
     //Versus
     suspend fun getFixtureVersus(
@@ -116,5 +122,18 @@ interface TeamRepository {
         request: FixturePredictionRequest,
         isAuthenticated: Boolean
     ):Flow<Resource<FixturePredictionResponse>>
-    suspend fun getUserFixturePredictions(leagueId: Int, season: Int):Flow<Resource<List<FixturePredictionResponse>>>
+
+    suspend fun getUserFixturePredictions(
+        leagueId: Int,
+        season: Int
+    )
+    :Flow<Resource<List<FixturePredictionResponse>>>
+
+    suspend fun getPredictionRanking(
+        top: Int
+    )
+    :Flow<Resource<List<UserPredictionRanking>>>
+
+
+
 }

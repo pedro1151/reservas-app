@@ -79,4 +79,19 @@ interface LeagueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSandings(standings: List<StandingEntity>)
 
+
+    /**
+     * 🔥 QUERY CLAVE
+     * Recupera ligas en donde se esta participando en prodes
+     */
+    @Query(
+        """
+    SELECT l.*
+    FROM leagues l
+    INNER JOIN fixture_predictions fp
+        ON l.id = fp.leagueId
+"""
+    )
+    fun getParticipateProdeLeagues(): List<LeagueEntity>
+
 }

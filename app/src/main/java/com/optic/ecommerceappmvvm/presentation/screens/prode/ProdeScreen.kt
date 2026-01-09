@@ -5,11 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,15 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.util.Resource
-import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
-import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
-import com.optic.ecommerceappmvvm.presentation.screens.prode.buttons.ProdeTopBar
+import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
+import com.optic.ecommerceappmvvm.presentation.screens.prode.components.PrincipalProdeTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.components.ProdeOptionsList
-import com.optic.ecommerceappmvvm.presentation.screens.prode.components.ProdeSearchContent
-import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
 fun ProdeScreen(
@@ -36,7 +31,9 @@ fun ProdeScreen(
     val viewModel: ProdeViewModel = hiltViewModel()
 
     val leagueResource by viewModel.leaguesState.collectAsState()
+    val leaguesParticipateResource by viewModel.leaguesParticipateState.collectAsState()
     val leaguesTop by viewModel.leaguesTopState.collectAsState()
+    val ranking by viewModel.ranking.collectAsState()
     val followedLeaguesResource by viewModel.followedLeaguesListState.collectAsState()
 
 
@@ -51,13 +48,16 @@ fun ProdeScreen(
     LaunchedEffect(Unit) {
         viewModel.getTopLeagues()
         viewModel.getFollowedLeagues(isAuthenticated)
+        viewModel.getPredictionRanking(10)
+        viewModel.getProdeParticipateLeagues(-1)  //-1 representa el usuario NO logueado, recupera desde cache
     }
 
     Scaffold(
         topBar = {
-            PrimaryTopBar(
+            PrincipalProdeTopBar(
                 title = "Prodes",
-                navController = navController
+                navController = navController,
+                prodeViewModel = viewModel
             )
         }
     ) { paddingValues ->
@@ -77,7 +77,10 @@ fun ProdeScreen(
                 onOptionClick = { index ->
                     when (index) {
                         0 -> {
-                            // Ranking
+                            navController.navigate(ClientScreen.ProdeRanking.route) {
+                                popUpTo(0) // elimina TODA la pila
+                                launchSingleTop = true
+                            }
                         }
                         1 -> {
                             // Ver prodes
@@ -95,7 +98,7 @@ fun ProdeScreen(
                 }
 
                 is Resource.Success -> {
-                    ProdeSearchContent(
+                    ProdePrincipalContent(
                         modifier = Modifier.weight(1f), // 👈 ocupa el resto
                         topLeagues = result.data,
                         leagues = leagues,

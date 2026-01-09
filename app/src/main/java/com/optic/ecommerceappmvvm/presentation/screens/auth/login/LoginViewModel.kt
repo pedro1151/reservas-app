@@ -73,14 +73,32 @@ class LoginViewModel @Inject constructor(
         _isLoggedIn.value = true // ✅ Actualiza el estado
     }
 
+
+
     fun login() = viewModelScope.launch {
         Log.d("LoginViewModel", "Email: ${state.email}, Password: ${state.password}")
         if (isValidForm()) {
             Log.d("LoginViewModel", "Email: ${state.email}, Password: ${state.password}")
             loginResponse = Resource.Loading // ESPERANDO
-            val result = authUseCase.login(state.email, state.password) // RETORNA UNA RESPUESTA
-            loginResponse = result // EXITOSA / ERROR
 
+
+            try {
+                val result = authUseCase.login(state.email, state.password)
+                loginResponse = result
+                if (result is Resource.Success) {
+                    _isLoggedIn.value = true
+                    _navigateToHome.value = true
+                    saveSession(result.data)
+
+                    // guarde si tiene prodes en cache
+                    teamUseCase.syncCacheUC()
+                } else {
+                    _isLoggedIn.value = false
+                }
+            } catch (e: Exception) {
+                loginResponse = Resource.Failure(e.message ?: "Error desconocido al iniciar con login basic")
+                _isLoggedIn.value = false
+            }
 
         } else {
             _isLoggedIn.value = false

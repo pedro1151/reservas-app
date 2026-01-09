@@ -16,6 +16,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsRes
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -59,6 +60,7 @@ interface TeamRemoteDataSource {
     suspend fun getLeagues(name: String, type: String, countryName: String): Response<List<League>>
     suspend fun getLeagueById(leagueId: Int): Response<LeagueCompleteResponse>
     suspend fun getTopLeagues(): Response<List<League>>
+    suspend fun getProdeParticipateLeagues(userId:Int): Response<List<League>>
 
     // FIXTURES
   //Recuperar Fixture por Id
@@ -109,6 +111,7 @@ interface TeamRemoteDataSource {
     //prodes
     suspend fun createFixturePrediction(request: FixturePredictionRequest): Response<FixturePredictionResponse>
     suspend fun getUserFixturePredictions(leagueId:Int, season:Int): Response<List<FixturePredictionResponse>>
+    suspend fun getPredictionRanking(top:Int): Response<List<UserPredictionRanking>>
 
 
 

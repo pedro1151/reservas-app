@@ -1,15 +1,11 @@
-package com.optic.ecommerceappmvvm.presentation.screens.prode.leaguefixtures.header
+package com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures.header
 
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

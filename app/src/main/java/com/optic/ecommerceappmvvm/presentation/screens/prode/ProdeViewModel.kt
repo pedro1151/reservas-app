@@ -20,6 +20,8 @@ import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import android.util.Log
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetProdeParticipateLeaguesUC
 import kotlinx.coroutines.Job
 
 @HiltViewModel
@@ -37,6 +39,12 @@ class ProdeViewModel @Inject constructor(
     // ---------------------------------------------
     private val _leaguesState = MutableStateFlow<Resource<List<League>>>(Resource.Loading)
     val leaguesState: StateFlow<Resource<List<League>>> = _leaguesState
+
+    // ---------------------------------------------
+    // STATE: ligas en donde se esta participando en algun  prode
+    // ---------------------------------------------
+    private val _leaguesParticipateState = MutableStateFlow<Resource<List<League>>>(Resource.Loading)
+    val leaguesParticipateState: StateFlow<Resource<List<League>>> = _leaguesParticipateState
 
     private val _fixtureLeagueState = MutableStateFlow<Resource<List<FixtureResponse>>>(Resource.Loading)
     val fixtureLeagueState: StateFlow<Resource<List<FixtureResponse>>> = _fixtureLeagueState
@@ -85,6 +93,12 @@ class ProdeViewModel @Inject constructor(
     private val _isSaving = MutableStateFlow(false)
     val isSaving = _isSaving.asStateFlow()
 
+
+    // ranking
+    private val _ranking = MutableStateFlow<Resource<List<UserPredictionRanking>>>(Resource.Loading)
+    val ranking: StateFlow<Resource<List<UserPredictionRanking>>> = _ranking
+
+
     init {
         observeSearch()
         observeUserPredictions()
@@ -94,20 +108,23 @@ class ProdeViewModel @Inject constructor(
     data class LeagueSections(
         val followed: List<League>,
         val top: List<League>,
+        val participateLeagues: List<League>,
         val explore: List<League>
     )
 
     val leagueSections: StateFlow<LeagueSections> =
         combine(
             leaguesState,
+            leaguesParticipateState,
             leaguesTopState,
             followedLeaguesListState,
             searchQuery
-        ) { allRes, topRes, followedRes, query ->
+        ) { allRes, participateRes, topRes, followedRes, query ->
 
             val all = (allRes as? Resource.Success)?.data.orEmpty()
             val top = (topRes as? Resource.Success)?.data.orEmpty()
             val followed = (followedRes as? Resource.Success)?.data.orEmpty()
+            val participateLeagues = (participateRes as? Resource.Success)?.data.orEmpty()
 
             val q = query.trim().lowercase()
 
@@ -120,25 +137,27 @@ class ProdeViewModel @Inject constructor(
 
             val followedIds = followed.mapNotNull { it.id }.toSet()
             val topIds = top.mapNotNull { it.id }.toSet()
+            val participateIds = participateLeagues.mapNotNull { it.id }.toSet()
 
             val topFiltered = top
-                .filter { it.id !in followedIds }
+                .filter { it.id !in followedIds && it.id !in participateIds }
                 .filter { it.matches() }
 
             val exploreFiltered = all
-                .filter { it.id !in followedIds && it.id !in topIds }
+                .filter { it.id !in followedIds && it.id !in topIds && it.id !in participateIds }
                 .filter { it.matches() }
 
             LeagueSections(
                 followed = followedFiltered,
                 top = topFiltered,
+                participateLeagues = participateLeagues,
                 explore = exploreFiltered
             )
 
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            LeagueSections(emptyList(), emptyList(), emptyList())
+            LeagueSections(emptyList(), emptyList(), emptyList(), emptyList())
         )
 
 
@@ -230,6 +249,18 @@ class ProdeViewModel @Inject constructor(
                 }
         }
     }
+
+
+    fun getProdeParticipateLeagues(userId:Int) {
+        viewModelScope.launch {
+            teamUseCase.getProdeParticipateLeaguesUC(userId)
+                .collectLatest { result ->
+                    _leaguesParticipateState.value = result
+                }
+        }
+    }
+
+
     fun getFollowedLeagues(isAuthenticated: Boolean) {
         viewModelScope.launch {
             teamUseCase.getFollowedLeaguesUC()
@@ -460,6 +491,15 @@ class ProdeViewModel @Inject constructor(
         viewModelScope.launch {
             teamUseCase.createFixturePredictionUC(request, isAuthenticated).collectLatest { result ->
                 _createFixturePredictionState.value = result
+            }
+        }
+    }
+
+    // ranking
+    fun getPredictionRanking(top: Int) {
+        viewModelScope.launch {
+            teamUseCase.getPredictionRankingUC(top).collectLatest { result ->
+                _ranking.value = result
             }
         }
     }
