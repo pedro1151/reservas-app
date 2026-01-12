@@ -1,9 +1,8 @@
-package com.optic.ecommerceappmvvm.data.dataSource.local.entity
+package com.optic.ecommerceappmvvm.data.dataSource.local.entity.prode
 
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.optic.ecommerceappmvvm.domain.model.administracion.Season
 
 @Entity(
     tableName = "fixture_predictions",

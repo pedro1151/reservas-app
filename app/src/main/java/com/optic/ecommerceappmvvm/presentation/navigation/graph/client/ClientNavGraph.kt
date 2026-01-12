@@ -33,11 +33,14 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.optic.ecommerceappmvvm.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.prode.leagueprodefixtures.LeagueProdeScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ranking.ProdeRankingScreen
+import com.optic.ecommerceappmvvm.presentation.screens.prode.ranking.UserPredictionSummaryScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -113,6 +116,30 @@ fun ClientNavGraph(
             ProdeRankingScreen(navController = navController, vm= viewModel)
 
         }
+
+        composable(
+            route = Graph.USER_PREDICTION + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graph.CLIENT)
+            }
+            val viewModel: ProdeViewModel = hiltViewModel(parentEntry)
+
+            UserPredictionSummaryScreen(
+                navController = navController,
+                vm = viewModel,
+                userId = userId
+            )
+        }
+
 
         composable(route = ClientScreen.Leagues.route) {
             LeaguePrincipalScreen(navController, isAuthenticated)

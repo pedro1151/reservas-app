@@ -20,7 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
-import com.optic.ecommerceappmvvm.presentation.screens.prode.components.PrincipalProdeTopBar
+import com.optic.ecommerceappmvvm.presentation.screens.prode.topbar.PrincipalProdeTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.components.ProdeOptionsList
 
 @Composable
@@ -72,6 +72,7 @@ fun ProdeScreen(
         ) {
 
             // 🔗 LINKS / OPCIONES (FIJO DEBAJO DEL TOPBAR)
+            /*
             ProdeOptionsList(
                 modifier = Modifier,
                 onOptionClick = { index ->
@@ -91,6 +92,8 @@ fun ProdeScreen(
                     }
                 }
             )
+
+             */
             // 👇 CONTENIDO SCROLLEABLE
             when (val result = leaguesTop) {
                 is Resource.Loading -> {

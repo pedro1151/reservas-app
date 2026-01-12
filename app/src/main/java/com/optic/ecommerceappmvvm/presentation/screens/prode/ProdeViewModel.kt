@@ -21,6 +21,7 @@ import android.util.Log
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryEnriched
 import com.optic.ecommerceappmvvm.domain.useCase.team.leagues.GetProdeParticipateLeaguesUC
 import kotlinx.coroutines.Job
 
@@ -99,6 +100,12 @@ class ProdeViewModel @Inject constructor(
     val ranking: StateFlow<Resource<List<UserPredictionRanking>>> = _ranking
 
 
+    // user prediction summary
+    private val _userPredictionSummary = MutableStateFlow<Resource<UserPredictionSummaryEnriched>>(Resource.Loading)
+    val userPredictionSummary: StateFlow<Resource<UserPredictionSummaryEnriched>> = _userPredictionSummary
+
+
+
     init {
         observeSearch()
         observeUserPredictions()
@@ -134,6 +141,9 @@ class ProdeViewModel @Inject constructor(
                         country?.name?.lowercase()?.contains(q) == true
 
             val followedFiltered = followed.filter { it.matches() }
+            val participateFiltered = participateLeagues
+                .filter { it.matches() }
+
 
             val followedIds = followed.mapNotNull { it.id }.toSet()
             val topIds = top.mapNotNull { it.id }.toSet()
@@ -150,7 +160,7 @@ class ProdeViewModel @Inject constructor(
             LeagueSections(
                 followed = followedFiltered,
                 top = topFiltered,
-                participateLeagues = participateLeagues,
+                participateLeagues = participateFiltered ,
                 explore = exploreFiltered
             )
 
@@ -584,6 +594,15 @@ class ProdeViewModel @Inject constructor(
 
     }
 
+    //user predictions summary
+
+    fun getUserPredictionSummary(userId: Int, season: Int) {
+        viewModelScope.launch {
+            teamUseCase.getUserPredictionSummaryUC(userId, season).collectLatest { result ->
+                _userPredictionSummary.value = result
+            }
+        }
+    }
 
 
 

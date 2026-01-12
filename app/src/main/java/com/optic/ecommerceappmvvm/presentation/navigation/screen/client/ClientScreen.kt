@@ -116,6 +116,12 @@ sealed class ClientScreen(
         icon = Icons.Default.SignLanguage
     )
 
+    object UserPredictionSummary: ClientScreen(
+        route = "client/user_prediction_summary",
+        title = "User prediction summary",
+        icon = Icons.Default.SignLanguage
+    )
+
 
 }
 

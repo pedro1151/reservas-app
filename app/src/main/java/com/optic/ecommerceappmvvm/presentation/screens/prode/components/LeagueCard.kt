@@ -1,14 +1,23 @@
 package com.optic.ecommerceappmvvm.presentation.screens.prode.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -17,74 +26,130 @@ import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButton
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
-import com.optic.ecommerceappmvvm.presentation.screens.prode.buttons.ParticipateButton
 
-
-// CARD PARA MOSTRAR LAS LIGAS
+val ActiveBg = Color(0xFF1E2228)          // grafito profundo
+val ActiveAccent = Color(0xFF4DA3FF)     // azul premium (FotMob vibe)
+val ActiveText = Color.White
+val ActiveSubtle = ActiveAccent.copy(alpha = 0.15f)
 @Composable
 fun LeagueCard(
     league: League,
-    isFollowed: Boolean,
+    isParticipaed: Boolean = false,
     onFollowClick: () -> Unit,
     navController: NavHostController
 ) {
+    val containerColor =
+        if (isParticipaed) ActiveBg else MaterialTheme.colorScheme.primaryContainer
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(75.dp)
-            .padding(horizontal = 1.dp, vertical = 0.dp)
+            .height(78.dp)
             .clickable {
                 league.id?.let {
                     navController.navigate("${Graph.PRODE}/$it")
                 }
-
             },
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = league.logo,
-                    contentDescription = "Logo de ${league.name}",
+
+            // 🔹 ACCENT BAR
+            if (isParticipaed) {
+                Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                        .width(4.dp)
+                        .fillMaxHeight()
+                        .background(ActiveAccent)
                 )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
-                    text = league.name,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )/*
-                Spacer(modifier = Modifier.width(16.dp))
-               Text(
-                    text = league.id.toString(),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                */
-
-
             }
 
-            // ✅ Acá es correcto usar un Composable
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 14.dp)
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(
+                        model = league.logo,
+                        contentDescription = league.name,
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column {
+                        Text(
+                            text = league.name,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 14.sp,
+                                fontWeight = if (isParticipaed) FontWeight.SemiBold else FontWeight.Medium,
+                                color = if (isParticipaed) ActiveText else MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+
+                        if (isParticipaed) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Participando",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = ActiveAccent
+                            )
+                        }
+                    }
+                }
+
                 ParticipateButton(
-                    onClick = onFollowClick
+                    isParticipaed = isParticipaed,
+                    onClick = {
+                        league.id?.let {
+                            navController.navigate("${Graph.PRODE}/$it")
+                        }
+                    }
                 )
-
-
+            }
         }
     }
 }
+
+@Composable
+fun ParticipateButton(
+    isParticipaed: Boolean,
+    onClick: () -> Unit
+) {
+    val textColor = if (isParticipaed) ActiveAccent else MaterialTheme.colorScheme.onSurface
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = if (isParticipaed) "Ver" else "Participar",
+            style = MaterialTheme.typography.labelLarge,
+            color = textColor
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            tint = textColor,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
+

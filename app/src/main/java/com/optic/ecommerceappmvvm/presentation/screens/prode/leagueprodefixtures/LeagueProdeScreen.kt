@@ -17,7 +17,7 @@ import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
-import com.optic.ecommerceappmvvm.presentation.screens.prode.buttons.ProdeTopBar
+import com.optic.ecommerceappmvvm.presentation.screens.prode.topbar.ProdeTopBar
 
 // 👉 Helper fuera del composable
 fun LeagueCompleteResponse.getLatestSeasonYear(): Int? {
@@ -57,7 +57,7 @@ fun LeagueProdeScreen(
     Scaffold(
         topBar = {
             ProdeTopBar(
-                title = "Prodes",
+                title = "Mis Predicciones",
                 navController = navController,
                 isSaving = isSaving,             // <-- 🔥 LO PASAS AQUÍ
                 isEditing = viewModel.isEditing.value,

@@ -20,6 +20,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -307,6 +308,13 @@ interface TeamService {
     suspend fun getPredictionRanking(
         @Path("top") top: Int
     ): Response<List<UserPredictionRanking>>
+
+    // user predictions summary
+    @GET("football/prode/summary/user/{user_id}/season/{season}")
+    suspend fun getUserPredictionSummary(
+        @Path("user_id") userId: Int,
+        @Path("season") season: Int
+    ): Response<UserPredictionSummaryResponse>
 
 
 

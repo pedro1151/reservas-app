@@ -18,12 +18,15 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryEnriched
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamStatsResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 interface TeamRepository {
 
@@ -129,10 +132,12 @@ interface TeamRepository {
     )
     :Flow<Resource<List<FixturePredictionResponse>>>
 
-    suspend fun getPredictionRanking(
-        top: Int
-    )
-    :Flow<Resource<List<UserPredictionRanking>>>
+    suspend fun getPredictionRanking(top: Int):Flow<Resource<List<UserPredictionRanking>>>
+    suspend fun getUserPredictionSummary(userId: Int, season: Int): Resource<UserPredictionSummaryResponse>
+    suspend fun getUserPredictionSummaryEnriched(
+        userId: Int,
+        season: Int
+    ): Flow<Resource<UserPredictionSummaryEnriched>>
 
 
 

@@ -94,4 +94,8 @@ interface LeagueDao {
     )
     fun getParticipateProdeLeagues(): List<LeagueEntity>
 
+    @Query("SELECT * FROM leagues WHERE id = :leagueId LIMIT 1")
+    suspend fun getById(leagueId: Int): LeagueEntity?
+
+
 }

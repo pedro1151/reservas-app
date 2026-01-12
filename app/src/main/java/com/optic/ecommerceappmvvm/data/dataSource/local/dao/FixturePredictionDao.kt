@@ -4,8 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixturePredictionEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.prode.FixturePredictionEntity
 
 @Dao
 interface FixturePredictionDao {

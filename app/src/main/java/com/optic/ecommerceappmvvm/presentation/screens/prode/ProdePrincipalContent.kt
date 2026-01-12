@@ -59,14 +59,14 @@ fun ProdePrincipalContent(
             // ---------------------------------------------------------
             // 🔥 0. SECCIÓN: LIGAS EN Q SE PARTICIPA EN PRODES — se ocultan cuando se escribe
             // ---------------------------------------------------------
-            item {
+            /*item {
                 AnimatedVisibility(
                     visible = !hasQuery && sections.participateLeagues.isNotEmpty()
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Ligas que estas participando",
+                            text = "Ligas en las que estas participando",
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )
@@ -75,7 +75,9 @@ fun ProdePrincipalContent(
                 }
             }
 
-            if (!hasQuery) {
+             */
+
+
                 items(
                     items = sections.participateLeagues,
                     key = { it.id }
@@ -87,14 +89,14 @@ fun ProdePrincipalContent(
                         val scope = rememberCoroutineScope()
                         LeagueCard(
                             league = league,
-                            isFollowed = true,
+                            isParticipaed = true,
                             onFollowClick = {
                             },
                             navController = navController
                         )
                     }
                 }
-            }
+
 
             // ---------------------------------------------------------
             // 🔥 1. SECCIÓN: LIGAS SEGUIDAS — se ocultan cuando se escribe
@@ -115,7 +117,7 @@ fun ProdePrincipalContent(
                 }
             }
 
-            if (!hasQuery) {
+
                 items(
                     items = sections.followed,
                     key = { it.id }
@@ -127,14 +129,13 @@ fun ProdePrincipalContent(
                         val scope = rememberCoroutineScope()
                         LeagueCard(
                             league = league,
-                            isFollowed = true,
                             onFollowClick = {
                             },
                             navController = navController
                         )
                     }
                 }
-            }
+
 
 
             // ---------------------------------------------------------
@@ -147,7 +148,7 @@ fun ProdePrincipalContent(
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Ligas famosas",
+                            text = "Explorar mas Ligas",
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )
@@ -156,7 +157,6 @@ fun ProdePrincipalContent(
                 }
             }
 
-            if (!hasQuery) {
                 items(
                     items = sections.top,
                     key = { it.id }
@@ -168,14 +168,13 @@ fun ProdePrincipalContent(
                         val scope = rememberCoroutineScope()
                         LeagueCard(
                             league = league,
-                            isFollowed = true,
                             onFollowClick = {
                             },
                             navController = navController
                         )
                     }
                 }
-
+                /*
                 item {
                     AnimatedVisibility(visible = true) {
                         Column {
@@ -189,7 +188,9 @@ fun ProdePrincipalContent(
                         }
                     }
                 }
-            }
+
+                 */
+
 
             // ---------------------------------------------------------
             // 🔥 2. RESULTADOS DE BÚSQUEDA
@@ -223,7 +224,6 @@ fun ProdePrincipalContent(
                         val scope = rememberCoroutineScope()
                         LeagueCard(
                             league = league,
-                            isFollowed = false,
                             onFollowClick = {
                                 /*
                                 if(isAuthenticated) {

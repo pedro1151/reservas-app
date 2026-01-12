@@ -23,8 +23,9 @@ import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
+import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
-import com.optic.ecommerceappmvvm.presentation.screens.prode.components.PrincipalProdeTopBar
 
 @Composable
 fun ProdeRankingScreen(
@@ -43,7 +44,7 @@ fun ProdeRankingScreen(
     Scaffold(
         topBar = {
             BackTopBar(
-                title = "Prode/Ranking",
+                title = "Ranking",
                 navController = navController,
             )
         }
@@ -89,7 +90,8 @@ fun ProdeRankingScreen(
                         ) {
                             items(ranklist) { rankitem ->
                                 RankingItem(
-                                    rankitem = rankitem
+                                    rankitem = rankitem,
+                                    navController = navController
 
                                 )
                             }
@@ -114,6 +116,7 @@ fun ProdeRankingScreen(
 fun RankingItem(
     rankitem: UserPredictionRanking,
     onFollowClick: () -> Unit = {},
+    navController: NavHostController
 ) {
 
     val medalColor = when (rankitem.ranking) {
@@ -132,7 +135,10 @@ fun RankingItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .clickable { },
+            .clickable {
+                navController.navigate("${Graph.USER_PREDICTION}/${rankitem.userId}")
+
+            },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -183,6 +189,15 @@ fun RankingItem(
 
                 Text(
                     text = rankitem.email,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 11.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = rankitem.userId.toString(),
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 11.sp
                     ),

@@ -16,4 +16,5 @@ object Graph {
     const val GAME   = "game_graph"
     const val GAME_DIFICULTY   = "gamediff_graph"
     const val GUESSPLAYER_WIN   = "guessplayer_win_graph"
+    const val USER_PREDICTION = "user_prediction_graph"
 }

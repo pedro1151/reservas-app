@@ -74,4 +74,8 @@ interface FixtureDao {
         season: Int
     ): List<FixtureEntity>
 
+    @Query("SELECT * FROM fixtures WHERE id = :fixtureId LIMIT 1")
+    suspend fun getById(fixtureId: Int): FixtureEntity?
+
+
 }

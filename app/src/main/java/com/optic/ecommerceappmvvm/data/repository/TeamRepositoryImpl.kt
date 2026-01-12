@@ -34,9 +34,14 @@ import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerTeamsResponse
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
+import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionEnriched
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
+import com.optic.ecommerceappmvvm.domain.model.prode.LastPredictionSummaryEnriched
+import com.optic.ecommerceappmvvm.domain.model.prode.LeaguePredictionSummaryEnriched
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryEnriched
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -50,6 +55,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlinx.coroutines.flow.*
 
 class TeamRepositoryImpl(
     private val teamRemoteDataSource: TeamRemoteDataSource,
@@ -68,46 +74,46 @@ class TeamRepositoryImpl(
             )
         )
     }
-*/
+   */
     override suspend fun getAll(
-        name: String,
-        country:String,
-        page: Int,
-        size: Int
-    ): Flow<Resource<List<Team>>> = flow {
+            name: String,
+            country:String,
+            page: Int,
+            size: Int
+        ): Flow<Resource<List<Team>>> = flow {
 
-    val cached = runCatching { teamDao.getTeams() }.getOrDefault(emptyList())
-    val start = (page - 1) * size
-    val end = start + size
+        val cached = runCatching { teamDao.getTeams() }.getOrDefault(emptyList())
+        val start = (page - 1) * size
+        val end = start + size
 
-// 1️⃣ Emitir lo que tengas en cache (si existe)
-    if (cached.isNotEmpty() && start < cached.size) {
-        val cachedEnd = minOf(end, cached.size)
-        emit(Resource.Success(cached.subList(start, cachedEnd).map { it.toDomain() }))
-        Log.d("precacheTeams", "5️⃣ Llamando desde cache con start $start y end $cachedEnd")
-    }
-
-// 2️⃣ Solo llamar API si cache no cubre toda la página
-    if (cached.size < end) {
-        try {
-            Log.d("precacheTeams", "5️⃣ Llamando backend…")
-            val result = teamRemoteDataSource.getAll(name, country,page, size)
-            val response = ResponseToRequest.send(result)
-
-            if (response is Resource.Success) {
-                val teams = response.data!!
-                teamDao.insertTeams(teams.map { it.toEntity() })
-                emit(Resource.Success(teams))
-                Log.d("precacheTeams", "6️⃣ Guardado de teams en Room (API)")
-            } else {
-                emit(response)
-            }
-        } catch (e: Exception) {
-            emit(Resource.Failure("Error al obtener los teams: ${e.localizedMessage ?: e.message}"))
+    // 1️⃣ Emitir lo que tengas en cache (si existe)
+        if (cached.isNotEmpty() && start < cached.size) {
+            val cachedEnd = minOf(end, cached.size)
+            emit(Resource.Success(cached.subList(start, cachedEnd).map { it.toDomain() }))
+            Log.d("precacheTeams", "5️⃣ Llamando desde cache con start $start y end $cachedEnd")
         }
-    }
 
-}.flowOn(Dispatchers.IO)
+    // 2️⃣ Solo llamar API si cache no cubre toda la página
+        if (cached.size < end) {
+            try {
+                Log.d("precacheTeams", "5️⃣ Llamando backend…")
+                val result = teamRemoteDataSource.getAll(name, country,page, size)
+                val response = ResponseToRequest.send(result)
+
+                if (response is Resource.Success) {
+                    val teams = response.data!!
+                    teamDao.insertTeams(teams.map { it.toEntity() })
+                    emit(Resource.Success(teams))
+                    Log.d("precacheTeams", "6️⃣ Guardado de teams en Room (API)")
+                } else {
+                    emit(response)
+                }
+            } catch (e: Exception) {
+                emit(Resource.Failure("Error al obtener los teams: ${e.localizedMessage ?: e.message}"))
+            }
+        }
+
+    }.flowOn(Dispatchers.IO)
 
 
 
@@ -1141,189 +1147,259 @@ class TeamRepositoryImpl(
         )
     }
 
+    override suspend fun getUserPredictionSummary(
+        userId: Int,
+        season: Int
+    ): Resource<UserPredictionSummaryResponse> =
+            ResponseToRequest.send(
+                teamRemoteDataSource.getUserPredictionSummary(userId, season)
+            )
 
-    // funciones de carga de precache
+
+
+
+    // get User prediccion summary enriquecido para el frontend
+    override suspend fun getUserPredictionSummaryEnriched(
+        userId: Int,
+        season: Int
+    ): Flow<Resource<UserPredictionSummaryEnriched>> = flow {
+        // 1️⃣ Llamamos al repo puro (suspend)
+        val resource = getUserPredictionSummary(userId, season)
+
+        when (resource) {
+            is Resource.Success -> {
+                val summary = resource.data!!
+
+                // 2️⃣ Enriquecemos las ligas
+                val enrichedLeagues = summary.leagues.mapNotNull { leagueSummary ->
+                    val leagueEntity = leagueDao.getById(leagueSummary.leagueId)
+                        ?: return@mapNotNull null
+                    val league = leagueEntity.toDomain()
+
+                    val enrichedFixture = leagueSummary.fixture?.let { mini ->
+                        fixtureDao.getById(mini.fixtureId)?.let {
+                            FixturePredictionEnriched(prediction = mini, fixture = it.toDomain())
+                        }
+                    }
+
+                    LeaguePredictionSummaryEnriched(
+                        league = league,
+                        cantFixtures = leagueSummary.cantFixtures,
+                        totalPoints = leagueSummary.totalPoints,
+                        fixture = enrichedFixture
+                    )
+                }
+
+                // 3️⃣ Enriquecemos la última predicción
+                val enrichedLastPrediction = summary.lastPrediction?.let { last ->
+                    fixtureDao.getById(last.fixtureId)?.let {
+                        LastPredictionSummaryEnriched(fixture = it.toDomain(), createdAt = last.createdAt)
+                    }
+                }
+
+                // 4️⃣ Emitimos el Resource enriquecido
+                emit(
+                    Resource.Success(
+                        UserPredictionSummaryEnriched(
+                            userId = summary.userId,
+                            season = summary.season,
+                            totalPoints = summary.totalPoints,
+                            totalFixtures = summary.totalFixtures,
+                            rankingPosition = summary.rankingPosition,
+                            leagues = enrichedLeagues,
+                            lastPrediction = enrichedLastPrediction
+                        )
+                    )
+                )
+            }
+
+            else -> {}
+        }
+    }
+
+
+                    // funciones de carga de precache
 
     override suspend fun precacheAllLeagues() {
 
-        try {
-            Log.d("precache", "⏳ Consultando TODAS las ligas desde API…")
+                try {
+                    Log.d("precache", "⏳ Consultando TODAS las ligas desde API…")
 
-            // Llamada al endpoint con parámetros vacíos
-            val response = ResponseToRequest.send(
-                teamRemoteDataSource.getLeagues(
-                    name = "",
-                    type = "",
-                    countryName = ""
-                )
-            )
+                    // Llamada al endpoint con parámetros vacíos
+                    val response = ResponseToRequest.send(
+                        teamRemoteDataSource.getLeagues(
+                            name = "",
+                            type = "",
+                            countryName = ""
+                        )
+                    )
 
-            if (response is Resource.Success) {
+                    if (response is Resource.Success) {
 
-                val leagues = response.data!!
-                Log.d("precache", "📥 API devolvió: ${leagues.size} ligas")
+                        val leagues = response.data!!
+                        Log.d("precache", "📥 API devolvió: ${leagues.size} ligas")
 
-                // Guardar TODO en Room
-                leagueDao.insertLeagues(
-                    leagues.map { it.toEntity() }
-                )
+                        // Guardar TODO en Room
+                        leagueDao.insertLeagues(
+                            leagues.map { it.toEntity() }
+                        )
 
-                val cachedCount = leagueDao.getTotalCount()
+                        val cachedCount = leagueDao.getTotalCount()
 
-                Log.d(
-                    "precache",
-                    "✔ Precarga completada. Guardadas en cache: $cachedCount ligas"
-                )
+                        Log.d(
+                            "precache",
+                            "✔ Precarga completada. Guardadas en cache: $cachedCount ligas"
+                        )
 
-            } else {
-                Log.d("precache", "❌ Error al obtener ligas: $response")
+                    } else {
+                        Log.d("precache", "❌ Error al obtener ligas: $response")
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("precache", "❌ Excepción precache ligas", e)
+                }
             }
 
-        } catch (e: Exception) {
-            Log.e("precache", "❌ Excepción precache ligas", e)
-        }
-    }
+                    override suspend fun precacheAllPlayers() {
 
-    override suspend fun precacheAllPlayers() {
+                try {
+                    Log.d("precache", "⏳ Consultando TODOS los players desde API…")
 
-        try {
-            Log.d("precache", "⏳ Consultando TODOS los players desde API…")
+                    // Llamada al endpoint con parámetros vacíos o sin parámetros según tu API
+                    val response = ResponseToRequest.send(
+                        teamRemoteDataSource.getPlayers("", 1, 20)  // trae todos
+                    )
 
-            // Llamada al endpoint con parámetros vacíos o sin parámetros según tu API
-            val response = ResponseToRequest.send(
-                teamRemoteDataSource.getPlayers("", 1, 20)  // trae todos
-            )
+                    if (response is Resource.Success) {
 
-            if (response is Resource.Success) {
+                        val players = response.data!!
+                        Log.d("precache", "📥 API devolvió: ${players.size} players")
 
-                val players = response.data!!
-                Log.d("precache", "📥 API devolvió: ${players.size} players")
+                        // Guardar TODO en Room
+                        playerDao.insertPlayers(
+                            players.map { it.toEntity() }
+                        )
 
-                // Guardar TODO en Room
-                playerDao.insertPlayers(
-                    players.map { it.toEntity() }
-                )
+                        // Optional: contar cuántos quedaron guardados
+                        val cachedCount = playerDao.getPlayers().size
 
-                // Optional: contar cuántos quedaron guardados
-                val cachedCount = playerDao.getPlayers().size
+                        Log.d(
+                            "precache",
+                            "✔ Precarga completada. Guardados en cache: $cachedCount players"
+                        )
 
-                Log.d(
-                    "precache",
-                    "✔ Precarga completada. Guardados en cache: $cachedCount players"
-                )
+                    } else {
+                        Log.d("precache", "❌ Error al obtener players: $response")
+                    }
 
-            } else {
-                Log.d("precache", "❌ Error al obtener players: $response")
+                } catch (e: Exception) {
+                    Log.e("precache", "❌ Excepción precache players", e)
+                }
             }
-
-        } catch (e: Exception) {
-            Log.e("precache", "❌ Excepción precache players", e)
-        }
-    }
 
 
     override suspend fun precacheAllTeams(
-        name:String,
-        country: String,
-        page: Int,
-        size: Int
-    ) {
+                name:String,
+                country: String,
+                page: Int,
+                size: Int
+            ) {
 
-        try {
-            Log.d("precache", "⏳ Consultando TODOS los teams desde API…")
+                try {
+                    Log.d("precache", "⏳ Consultando TODOS los teams desde API…")
 
-            // Llamada al endpoint con parámetros vacíos o sin parámetros según tu API
-            val response = ResponseToRequest.send(
-                teamRemoteDataSource.getAll(name, country, page, size)
-            )
+                    // Llamada al endpoint con parámetros vacíos o sin parámetros según tu API
+                    val response = ResponseToRequest.send(
+                        teamRemoteDataSource.getAll(name, country, page, size)
+                    )
 
-            if (response is Resource.Success) {
+                    if (response is Resource.Success) {
 
-                val teams = response.data!!
-                Log.d("precache", "📥 API devolvió: ${teams.size} players")
+                        val teams = response.data!!
+                        Log.d("precache", "📥 API devolvió: ${teams.size} players")
 
-                // Guardar TODO en Room
-                teamDao.insertTeams( teams.map { it.toEntity() })
+                        // Guardar TODO en Room
+                        teamDao.insertTeams( teams.map { it.toEntity() })
 
-                // Optional: contar cuántos quedaron guardados
-                val cachedCount = teamDao.getTeams().size
+                        // Optional: contar cuántos quedaron guardados
+                        val cachedCount = teamDao.getTeams().size
 
-                Log.d(
-                    "precache",
-                    "✔ Precarga completada. Guardados en cache: $cachedCount teams"
-                )
+                        Log.d(
+                            "precache",
+                            "✔ Precarga completada. Guardados en cache: $cachedCount teams"
+                        )
 
-            } else {
-                Log.d("precache", "❌ Error al obtener teams: $response")
+                    } else {
+                        Log.d("precache", "❌ Error al obtener teams: $response")
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("precache", "❌ Excepción precache teams", e)
+                }
             }
 
-        } catch (e: Exception) {
-            Log.e("precache", "❌ Excepción precache teams", e)
-        }
-    }
 
-
-    // sicronizacion de cache con base de datos, se usa al momento de loguearse
+                    // sicronizacion de cache con base de datos, se usa al momento de loguearse
 
     override suspend fun syncCachedPredictions() {
-        val cached = fixturePredictionDao.getAll()
-        if (cached.isEmpty()) return
+                val cached = fixturePredictionDao.getAll()
+                if (cached.isEmpty()) return
 
-        cached.forEach { entity ->
-                ResponseToRequest.send(
-                    teamRemoteDataSource.createFixturePrediction(entity.toRequest())
-                )
-        }
+                cached.forEach { entity ->
+                    ResponseToRequest.send(
+                        teamRemoteDataSource.createFixturePrediction(entity.toRequest())
+                    )
+                }
 
-        //fixturePredictionDao.clearAll()
-    }
+                //fixturePredictionDao.clearAll()
+            }
 
 
     override suspend fun syncCachedPlayers() {
-        val cached = playerDao.getAllFollowedPlayers()
-        if (cached.isEmpty()) return
+                val cached = playerDao.getAllFollowedPlayers()
+                if (cached.isEmpty()) return
 
-        cached.forEach { entity ->
-            ResponseToRequest.send(
-                teamRemoteDataSource.createFollowedPlayer(entity.player_id)
-            )
-        }
+                cached.forEach { entity ->
+                    ResponseToRequest.send(
+                        teamRemoteDataSource.createFollowedPlayer(entity.player_id)
+                    )
+                }
 
-        //fixturePredictionDao.clearAll()
-    }
+                //fixturePredictionDao.clearAll()
+            }
 
 
     override suspend fun syncCachedTeams() {
-        val cached = teamDao.getAllFollowedTeams()
-        if (cached.isEmpty()) return
+                val cached = teamDao.getAllFollowedTeams()
+                if (cached.isEmpty()) return
 
-        cached.forEach { entity ->
-            ResponseToRequest.send(
-                teamRemoteDataSource.createFollowedTeam(entity.team_id)
-            )
-        }
+                cached.forEach { entity ->
+                    ResponseToRequest.send(
+                        teamRemoteDataSource.createFollowedTeam(entity.team_id)
+                    )
+                }
 
-        //fixturePredictionDao.clearAll()
-    }
+                //fixturePredictionDao.clearAll()
+            }
 
     override suspend fun syncCachedLeagues() {
-        val cached = leagueDao.getAllFollowedLeagues()
-        if (cached.isEmpty()) return
+                val cached = leagueDao.getAllFollowedLeagues()
+                if (cached.isEmpty()) return
 
-        cached.forEach { entity ->
-            ResponseToRequest.send(
-                teamRemoteDataSource.createFollowedTeam(entity.league_id)
-            )
-        }
+                cached.forEach { entity ->
+                    ResponseToRequest.send(
+                        teamRemoteDataSource.createFollowedTeam(entity.league_id)
+                    )
+                }
 
-        //fixturePredictionDao.clearAll()
-    }
+                //fixturePredictionDao.clearAll()
+            }
 
     override suspend fun syncCached(){
-        syncCachedPlayers()
-        syncCachedPredictions()
-        syncCachedTeams()
-        syncCachedLeagues()
+                syncCachedPlayers()
+                syncCachedPredictions()
+                syncCachedTeams()
+                syncCachedLeagues()
+            }
     }
 
-}

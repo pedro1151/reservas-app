@@ -21,6 +21,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionResponse
 import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionRanking
+import com.optic.ecommerceappmvvm.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.ecommerceappmvvm.domain.model.response.DefaultResponse
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
@@ -181,4 +182,8 @@ class TeamRemoteDataSourceImpl (private val teamService: TeamService): TeamRemot
         top: Int
     ): Response<List<UserPredictionRanking>> = teamService.getPredictionRanking(top)
 
+    override suspend fun getUserPredictionSummary(
+        userId: Int,
+        season: Int
+    ): Response<UserPredictionSummaryResponse> = teamService.getUserPredictionSummary(userId, season)
 }

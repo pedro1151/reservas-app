@@ -2,15 +2,12 @@ package com.optic.ecommerceappmvvm.data.dataSource.local.mapper
 
 
 import com.google.gson.Gson
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixturePredictionEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.administracion.Country
 import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueRequest
-import com.optic.ecommerceappmvvm.domain.model.followed.FollowedLeagueResponse
-import com.optic.ecommerceappmvvm.domain.model.prode.FixturePredictionRequest
 import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 
 private val gson = Gson()

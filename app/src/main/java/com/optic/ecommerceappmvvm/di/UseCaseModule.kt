@@ -52,6 +52,7 @@ import com.optic.ecommerceappmvvm.domain.useCase.team.players.GetPlayerTeamsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.CreateFixturePredictionUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetPredictionRankingUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetUserFixturePredictionsUC
+import com.optic.ecommerceappmvvm.domain.useCase.team.prode.GetUserPredictionSummaryUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.prode.SyncCachePredictionsUC
 import com.optic.ecommerceappmvvm.domain.useCase.team.standings.GetLeagueStandingsUC
 import com.optic.ecommerceappmvvm.domain.useCase.trivias.GetDificultysUC
@@ -144,7 +145,8 @@ object UseCaseModule {
         getPredictionRankingUC = GetPredictionRankingUC(teamRepository),
         //cache prode
         syncCachePredictionsUC = SyncCachePredictionsUC(teamRepository),
-        syncCacheUC = SyncCacheUC(teamRepository)
+        syncCacheUC = SyncCacheUC(teamRepository),
+        getUserPredictionSummaryUC = GetUserPredictionSummaryUC(teamRepository)
 
 
     )

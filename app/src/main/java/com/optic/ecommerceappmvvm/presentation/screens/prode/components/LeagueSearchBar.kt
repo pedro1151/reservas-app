@@ -96,7 +96,7 @@ fun LeagueSearchBar(
                 ),
                 modifier = Modifier
                     .padding(start = 6.dp)
-                    .widthIn(min = 200.dp, max = 360.dp)
+                    .widthIn(min = 150.dp, max = 320.dp)
                     .height(50.dp)
                     .focusRequester(focusRequester)
                     .onFocusChanged { state ->
