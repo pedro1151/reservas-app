@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">Ecommerce App MVVM</string>
+    <string name="app_name">UNIFOT</string>
     <string name="select_language">Select language</string>
     <string name="home_title">Home</string>
     <string name="login_title">Sign In</string>
 </resources>
-

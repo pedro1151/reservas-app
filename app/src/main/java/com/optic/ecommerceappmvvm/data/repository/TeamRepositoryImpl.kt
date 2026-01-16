@@ -618,7 +618,7 @@ class TeamRepositoryImpl(
     }
 
     // FIXTURES
-
+  /*
     override suspend fun getFixtureFollowedTeams(
         season: Int,
         date: String
@@ -629,6 +629,57 @@ class TeamRepositoryImpl(
             )
         )
     }
+*/
+    override suspend fun getFixtureFollowedTeams(
+        season: Int,
+        date: String
+    ): Flow<Resource<List<FixtureResponse>>> = flow{
+
+        //emit(Resource.Loading)
+        emit(Resource.Loading)
+        Log.d("getFixtureFollowedTeams", "1️⃣ Loading emitido")
+
+        val localDate = LocalDate.parse(date)
+        val zone = ZoneId.systemDefault()
+
+        val startTs = localDate.atStartOfDay(zone).toEpochSecond()
+        val endTs = localDate.plusDays(1).atStartOfDay(zone).toEpochSecond()
+
+        Log.d("getFixtureFollowedTeams", "2️⃣ Consultando Room con range: $startTs - $endTs")
+
+        try {
+            // Recolectamos el Flow de Room
+            fixtureDao.getFollowedFixturesTeamsOrLeagues(startTs, endTs)
+                .collect { cached ->
+                    if (cached.isNotEmpty()) {
+
+                        Log.d("getFixtureFollowedTeams", "Emito cache de followed players")
+                        // Emitimos el cache
+                        emit(Resource.Success(cached.map { it.toDomain() }))
+                    } else {
+                        Log.d("getFixtureFollowedTeams", "5️⃣ Llamando backend…")
+
+                        val result = teamRemoteDataSource.getFixtureFollowedTeams(season, date)
+                        val response = ResponseToRequest.send(result)
+
+                        if (response is Resource.Success) {
+                            val fixtures = response.data!!
+
+                            fixtureDao.insertFixtures(fixtures.map { it.toEntity() })
+                            Log.d("getFixtureFollowedTeams", "6️⃣ Guardado en Room (API)")
+
+                            emit(Resource.Success(fixtures))
+                        } else {
+                            Log.d("getFixtureFollowedTeams", "6️⃣ API devolvió error")
+                            emit(response)
+                        }
+                    }
+                }
+        } catch (e: Exception) {
+            emit(Resource.Failure(e.localizedMessage ?: "Error al obtener los fixtures de ligas o equipos seguidas"))
+        }
+
+    }.flowOn(kotlinx.coroutines.Dispatchers.IO)
 
     override suspend fun getNoFollowFixtures(
         season: Int,

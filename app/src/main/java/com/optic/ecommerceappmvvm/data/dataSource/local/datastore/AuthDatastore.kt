@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.data.dataSource.local.datastore
 
+import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -42,5 +43,30 @@ class AuthDatastore constructor(private val dataStore: DataStore<Preferences>) {
             }
         }
     }
+
+
+    /* languages */
+
+    companion object {
+        val LANGUAGE_KEY = stringPreferencesKey("app_language")
+    }
+
+    val languageFlow: Flow<String> =
+        dataStore.data.map { it[LANGUAGE_KEY] ?: "es" }
+
+    suspend fun setLanguage(language: String) {
+        dataStore.edit {
+            it[LANGUAGE_KEY] = language
+        }
+
+    }
+
+    /** ✅ ESTA ES LA FUNCIÓN QUE FALTABA */
+    suspend fun getSavedLanguage(): String {
+        return dataStore.data.first()[LANGUAGE_KEY] ?: "es"
+    }
+
+
+
 
 }

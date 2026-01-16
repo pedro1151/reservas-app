@@ -52,7 +52,6 @@ fun MatchesScreen(
 
     // fecha real de hoy
     val today = LocalDate.now()
-    //val backStackEntry = navController.currentBackStackEntryAsState().value
 
     // estado para la fecha seleccionada (local)
     var selectedDate by remember { mutableStateOf(today) }
@@ -76,9 +75,7 @@ fun MatchesScreen(
             selectedDate = calendarDate
             previousDate = calendarDate
 
-            if (isAuthenticated ) {
-                viewModel.getFixtureFollowedTeams(2025, calendarDate.toString())
-            }
+            viewModel.getFixtureFollowedTeams(2025, calendarDate.toString())
             viewModel.getFixturesByDate(calendarDate.toString(), limit)
 
             backStackEntry?.savedStateHandle?.set("selected_date", null)
@@ -87,9 +84,7 @@ fun MatchesScreen(
 
         } else if (selectedDate == today) {
             // Cargar solo una vez al inicio
-            if (isAuthenticated ) {
-                viewModel.getFixtureFollowedTeams(2025, today.toString())
-            }
+            viewModel.getFixtureFollowedTeams(2025, today.toString())
             viewModel.getFixturesByDate(today.toString(), limit)
 
             Log.d("getFixturesByDate", "CARGA: Fecha hoy por defecto → $today")
@@ -112,9 +107,8 @@ fun MatchesScreen(
                     onDateSelected = { newDate ->
                         previousDate = selectedDate
                         selectedDate = newDate
-                        if (isAuthenticated) {
-                            viewModel.getFixtureFollowedTeams(2025, newDate.toString())
-                        }
+
+                        viewModel.getFixtureFollowedTeams(2025, newDate.toString())
                        // viewModel.getFixturesByCountry(2025, newDate.toString())
                         viewModel.getFixturesByDate(newDate.toString(), limit)
                     }

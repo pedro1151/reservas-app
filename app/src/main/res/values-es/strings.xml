@@ -1,0 +1,7 @@
+
+<resources>
+    <string name="app_name">Ecommerce App MVVM</string>
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="home_title">Inicio</string>
+    <string name="login_title">Iniciar Sesion</string>
+</resources>

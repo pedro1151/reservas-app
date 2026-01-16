@@ -100,7 +100,13 @@ fun FixturesByDate(
                     /* ---------------------------------------------------------
                      * 🔐 SECCIÓN: FIXTURES SEGUIDOS
                      * --------------------------------------------------------- */
-                if (isAuthenticated) {
+                    if (!isAuthenticated) {
+                        item{
+                            LoginLinkCard(
+                                navController = navController
+                            )
+                        }
+                    }
 
                     item(key = "followed-header") {
                         Row(
@@ -179,14 +185,7 @@ fun FixturesByDate(
 
                         else -> Unit
                     }
-                }
-                else{
-                    item{
-                        LoginLinkCard(
-                            navController = navController
-                        )
-                    }
-                }
+
                 item {
                     Row(
                         modifier = Modifier

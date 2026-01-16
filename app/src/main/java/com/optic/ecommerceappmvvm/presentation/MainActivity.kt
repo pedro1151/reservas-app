@@ -9,10 +9,12 @@ import androidx.compose.material3.*  // Importa Material3
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -23,26 +25,35 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.google.android.gms.ads.MobileAds
 import com.optic.ecommerceappmvvm.ads.RewardedAdManager
+import com.optic.ecommerceappmvvm.core.locale.LocaleManager
+import com.optic.ecommerceappmvvm.data.dataSource.local.datastore.AuthDatastore
 import com.optic.ecommerceappmvvm.presentation.authstate.AuthStateVM
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.client.ClientNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.graph.root.RootNavGraph
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.home.components.ClientBottomBar
 import com.optic.ecommerceappmvvm.presentation.screens.matches.MatchesScreen
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.AppLanguage
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalAppLanguage
 import com.optic.ecommerceappmvvm.presentation.ui.theme.AppThemeMode
 import com.optic.ecommerceappmvvm.presentation.ui.theme.EcommerceAppMVVMTheme
 import com.optic.ecommerceappmvvm.presentation.ui.theme.LocalAppTheme
 import com.optic.ecommerceappmvvm.presentation.util.logCoilCacheUsage
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
+    @Inject
+    lateinit var authDatastore: AuthDatastore
     private val mainVM: MainViewModel by viewModels() // ✅ CORRECTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+
         super.onCreate(savedInstanceState)
+
+        LocaleManager.applyLocale(this, authDatastore) // 🔥 AQUÍ
 
         val loader = ImageLoader.Builder(this)
             .crossfade(true)
@@ -70,49 +81,60 @@ class MainActivity : ComponentActivity() {
         rewardedManager.loadAd()
 
         setContent {
-            EcommerceAppMVVMTheme {
 
-                val navController = rememberNavController()
-                // ACTIVA EL MAIN VM
-                val mainVM = this@MainActivity.mainVM
+            // 🔹 Estado global del idioma
+            val appLanguageState = remember {
+                mutableStateOf(AppLanguage.ES)
+            }
 
-                val currentBackStack by navController.currentBackStackEntryAsState()
-                val currentDestination = currentBackStack?.destination
+            // 🔹 Proveemos idioma + contexto localizado
+            CompositionLocalProvider(
+                LocalAppLanguage provides appLanguageState
+            ) {
+                EcommerceAppMVVMTheme {
 
-                //val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
-                val authStateVM: AuthStateVM = hiltViewModel()
-                val isAuthenticated by authStateVM.isAuthenticated.collectAsState()
+                    val navController = rememberNavController()
+                    // ACTIVA EL MAIN VM
+                    val mainVM = this@MainActivity.mainVM
 
-                val bottomBarRoutes = listOf(
-                    ClientScreen.Matches.route,
-                    ClientScreen.Leagues.route,
-                    ClientScreen.Mas.route,
-                    ClientScreen.Profile.route,
-                    ClientScreen.Follow.route,
-                    ClientScreen.Prode.route
-                )
+                    val currentBackStack by navController.currentBackStackEntryAsState()
+                    val currentDestination = currentBackStack?.destination
 
-                val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes
+                    //val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
+                    val authStateVM: AuthStateVM = hiltViewModel()
+                    val isAuthenticated by authStateVM.isAuthenticated.collectAsState()
 
-                Scaffold(
-                    bottomBar = {
-                        if (shouldShowBottomBar) {
-                            ClientBottomBar(navController = navController)
-                        }
-                    }
-                ) { paddingValues ->
+                    val bottomBarRoutes = listOf(
+                        ClientScreen.Matches.route,
+                        ClientScreen.Leagues.route,
+                        ClientScreen.Mas.route,
+                        ClientScreen.Profile.route,
+                        ClientScreen.Follow.route,
+                        ClientScreen.Prode.route
+                    )
 
-                    // 🚀 PASO CLAVE
-                    // Pasas una función a tu NavGraph para mostrar Rewarded Ads desde cualquier pantalla
-                    ClientNavGraph(
-                        navController = navController,
-                        isAuthenticated = isAuthenticated,
-                        onShowRewardAd = {
-                            rewardedManager.showAd(this) { reward ->
-                                println("Usuario ganó $reward puntos")
+                    val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes
+
+                    Scaffold(
+                        bottomBar = {
+                            if (shouldShowBottomBar) {
+                                ClientBottomBar(navController = navController)
                             }
                         }
-                    )
+                    ) { paddingValues ->
+
+                        // 🚀 PASO CLAVE
+                        // Pasas una función a tu NavGraph para mostrar Rewarded Ads desde cualquier pantalla
+                        ClientNavGraph(
+                            navController = navController,
+                            isAuthenticated = isAuthenticated,
+                            onShowRewardAd = {
+                                rewardedManager.showAd(this) { reward ->
+                                    println("Usuario ganó $reward puntos")
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
