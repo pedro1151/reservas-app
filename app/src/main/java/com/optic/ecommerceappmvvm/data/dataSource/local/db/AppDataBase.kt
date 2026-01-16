@@ -9,10 +9,10 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.prode.FixturePredictionEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.LeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.TeamEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
@@ -32,7 +32,7 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStat
     StandingEntity::class
 
     ],
-    version = 37,
+    version = 38,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase()

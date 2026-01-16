@@ -4,11 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.LeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStatsEntity
 import kotlinx.coroutines.flow.Flow
 
 

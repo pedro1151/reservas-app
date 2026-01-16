@@ -6,6 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FixtureEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FixtureDao {
@@ -76,6 +78,36 @@ interface FixtureDao {
 
     @Query("SELECT * FROM fixtures WHERE id = :fixtureId LIMIT 1")
     suspend fun getById(fixtureId: Int): FixtureEntity?
+
+
+    // followed league fixtures or teams fixtures
+    @Query(
+        """
+    SELECT f.*
+    FROM fixtures f
+    WHERE f.timestamp BETWEEN :start AND :end
+      AND (
+          EXISTS (
+              SELECT 1
+              FROM followed_leagues fl
+              WHERE fl.league_id = f.leagueId
+          )
+          OR
+          EXISTS (
+              SELECT 1
+              FROM followed_teams ft
+              WHERE ft.team_id = f.homeTeamId
+                 OR ft.team_id = f.awayTeamId
+          )
+      )
+    ORDER BY f.timestamp ASC
+    """
+    )
+    fun getFollowedFixturesTeamsOrLeagues(
+        start: Long,
+        end: Long
+    ): Flow<List<FixtureEntity>>
+
 
 
 }

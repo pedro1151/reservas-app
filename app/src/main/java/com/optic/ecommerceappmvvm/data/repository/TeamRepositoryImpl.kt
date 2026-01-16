@@ -10,10 +10,9 @@ import com.optic.ecommerceappmvvm.data.dataSource.local.dao.FixturePredictionDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.LeagueDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.PlayerDao
 import com.optic.ecommerceappmvvm.data.dataSource.local.dao.TeamDao
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.FollowedLeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.FollowedPlayerEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedTeamEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.player.PlayerStatsEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toDomain
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toEntities
 import com.optic.ecommerceappmvvm.data.dataSource.local.mapper.toEntity
@@ -55,7 +54,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDate
 import java.time.ZoneId
-import kotlinx.coroutines.flow.*
 
 class TeamRepositoryImpl(
     private val teamRemoteDataSource: TeamRemoteDataSource,
@@ -670,8 +668,8 @@ class TeamRepositoryImpl(
         val zone = ZoneId.systemDefault()
         val now = LocalDate.now()
 
-        val startTs = now.minusDays(60).atStartOfDay(zone).toEpochSecond()
-        val endTs = now.plusDays(60).atStartOfDay(zone).toEpochSecond()
+        val startTs = now.minusDays(30).atStartOfDay(zone).toEpochSecond()
+        val endTs = now.plusDays(30).atStartOfDay(zone).toEpochSecond()
 
         Log.d(
             "precachegetFixtureTeam",
@@ -877,6 +875,7 @@ class TeamRepositoryImpl(
         }
 
     }.flowOn(kotlinx.coroutines.Dispatchers.IO)
+
 
 
     override suspend fun getFixturesByDate(

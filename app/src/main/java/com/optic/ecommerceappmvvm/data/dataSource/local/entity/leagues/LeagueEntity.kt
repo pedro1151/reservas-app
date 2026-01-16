@@ -1,9 +1,7 @@
-package com.optic.ecommerceappmvvm.data.dataSource.local.entity
+package com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
-import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 
 @Entity(tableName = "leagues")
 data class LeagueEntity(

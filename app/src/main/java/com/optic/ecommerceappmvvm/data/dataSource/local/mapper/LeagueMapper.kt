@@ -2,8 +2,8 @@ package com.optic.ecommerceappmvvm.data.dataSource.local.mapper
 
 
 import com.google.gson.Gson
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.FollowedLeagueEntity
-import com.optic.ecommerceappmvvm.data.dataSource.local.entity.LeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.FollowedLeagueEntity
+import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.LeagueEntity
 import com.optic.ecommerceappmvvm.data.dataSource.local.entity.leagues.StandingEntity
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.domain.model.administracion.Country
