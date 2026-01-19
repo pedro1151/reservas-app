@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.presentation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,7 +35,10 @@ import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientSc
 import com.optic.ecommerceappmvvm.presentation.screens.home.components.ClientBottomBar
 import com.optic.ecommerceappmvvm.presentation.screens.matches.MatchesScreen
 import com.optic.ecommerceappmvvm.presentation.settings.idiomas.AppLanguage
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LanguageViewModel
 import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalAppLanguage
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.withLocale
 import com.optic.ecommerceappmvvm.presentation.ui.theme.AppThemeMode
 import com.optic.ecommerceappmvvm.presentation.ui.theme.EcommerceAppMVVMTheme
 import com.optic.ecommerceappmvvm.presentation.ui.theme.LocalAppTheme
@@ -46,6 +50,14 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var authDatastore: AuthDatastore
+    /*
+    override fun attachBaseContext(newBase: Context) {
+
+        val localizedContext = LocaleManager.attachBaseContext(newBase, authDatastore)
+        super.attachBaseContext(localizedContext)
+    }
+
+     */
     private val mainVM: MainViewModel by viewModels() // ✅ CORRECTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        LocaleManager.applyLocale(this, authDatastore) // 🔥 AQUÍ
+        //LocaleManager.applyLocale(this, authDatastore) // 🔥 AQUÍ
 
         val loader = ImageLoader.Builder(this)
             .crossfade(true)
@@ -83,12 +95,21 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             // 🔹 Estado global del idioma
-            val appLanguageState = remember {
-                mutableStateOf(AppLanguage.ES)
+            val languageVM: LanguageViewModel = hiltViewModel()
+            val languageCode by languageVM.language.collectAsState()
+
+            val localizedContext = remember(languageCode) {
+                applicationContext.withLocale(languageCode)
             }
 
+            val appLanguageState = remember(languageCode) {
+                mutableStateOf(
+                    AppLanguage.values().first { it.code == languageCode }
+                )
+            }
             // 🔹 Proveemos idioma + contexto localizado
             CompositionLocalProvider(
+                LocalizedContext provides localizedContext,
                 LocalAppLanguage provides appLanguageState
             ) {
                 EcommerceAppMVVMTheme {

@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.presentation.components.BackTopBar
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.mas.components.MasContent
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
@@ -23,6 +24,9 @@ fun MasScreen(
     navController: NavHostController,
     isAuthenticated: Boolean
     ) {
+
+    val localizedContext = LocalizedContext.current
+
     Scaffold (
         topBar = {
             PrimaryTopBar(
@@ -35,7 +39,8 @@ fun MasScreen(
         MasContent(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            isAuthenticated = isAuthenticated
+            isAuthenticated = isAuthenticated,
+            localizedContext = localizedContext
 
         )
     }

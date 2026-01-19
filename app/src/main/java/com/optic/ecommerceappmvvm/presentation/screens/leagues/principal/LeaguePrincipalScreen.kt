@@ -11,8 +11,10 @@ import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import androidx.compose.runtime.*
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.GreyLight
 
 @Composable
@@ -30,11 +32,14 @@ fun LeaguePrincipalScreen(
         viewModel.getFollowedLeagues()
     }
 
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     Scaffold(
         topBar = {
             PrimaryTopBar(
                 navController = navController,
-                title = "Ligas"
+                title = localizedContext.getString(R.string.ligas_screen_title)
             )
         },
         //containerColor = GreyLight
@@ -54,7 +59,8 @@ fun LeaguePrincipalScreen(
                     paddingValues = paddingValues,
                     viewModel = viewModel,
                     navController = navController,
-                    isAuthenticated = isAuthenticated
+                    isAuthenticated = isAuthenticated,
+                    localizedContext = localizedContext
                 )
             }
             is Resource.Failure -> {

@@ -22,6 +22,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getColorBorderFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
@@ -37,6 +38,8 @@ fun FixtureItem(
     navController: NavHostController,
     showInfoExtra: Boolean = false
     ) {
+
+
     val fixtureDateTime = remember {
         try {
             OffsetDateTime.parse(fixture.date).toLocalDateTime()

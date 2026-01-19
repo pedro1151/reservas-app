@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.Team
 import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButtonAlternative
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,6 +49,10 @@ fun FinalTeamList(
     paddingValues: PaddingValues,
     viewModel: FollowViewModel
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
 
     val colors = listOf(
         Color(0xFFBB86FC), Color(0xFF03DAC5), Color(0xFFFFB74D),
@@ -121,7 +127,9 @@ fun FinalTeamList(
                 visible = true,
                 modifier = Modifier.animateItemPlacement()
             ) {
-                SectionDividerLabel("Equipos sugeridos")
+                SectionDividerLabel(
+                    localizedContext.getString(R.string.siguiendo_screen_equipos_sugeridos_title),
+                )
             }
         }
 

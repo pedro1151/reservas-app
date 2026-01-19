@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import java.time.format.DateTimeFormatter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import com.optic.ecommerceappmvvm.R
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,14 +122,18 @@ fun MatchesDateTopBar(
 }
 
 
+@Composable
 fun getDateLabel(date: LocalDate, today: LocalDate): String {
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     val formatterDay = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
     val formatterMonth = DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
 
     return when {
-        date == today.minusDays(1) -> "ayer"
-        date == today -> "hoy"
-        date == today.plusDays(1) -> "mañana"
+        date == today.minusDays(1) -> localizedContext.getString(R.string.matches_screen_yesterday_title)
+        date == today -> localizedContext.getString(R.string.matches_screen_today_title)
+        date == today.plusDays(1) -> localizedContext.getString(R.string.matches_screen_tomorrow_title)
         else -> "${date.format(formatterDay)} ${date.format(formatterMonth)}"
     }.replaceFirstChar { it.uppercaseChar() }
 }

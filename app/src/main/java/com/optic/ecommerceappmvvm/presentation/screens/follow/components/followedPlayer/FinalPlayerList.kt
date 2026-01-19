@@ -38,7 +38,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.input.pointer.pointerInput
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.presentation.screens.follow.FollowViewModel
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -53,6 +55,10 @@ fun FinalPlayerList(
     paddingValues: PaddingValues,
     viewModel: FollowViewModel
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
 
     val colors = listOf(
         Color(0xFFBB86FC), Color(0xFF03DAC5), Color(0xFFFFB74D),
@@ -136,7 +142,9 @@ fun FinalPlayerList(
 
         item {
             AnimatedVisibility(visible = true, modifier = Modifier.animateItemPlacement()) {
-                SectionDividerLabel(text = "Jugadores sugeridos")
+                SectionDividerLabel(
+                    text =  localizedContext.getString(R.string.siguiendo_screen_jugadores_sugeridos_title)
+                )
             }
         }
 

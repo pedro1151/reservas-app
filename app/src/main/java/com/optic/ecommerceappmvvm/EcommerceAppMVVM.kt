@@ -1,19 +1,29 @@
 package com.optic.ecommerceappmvvm
 
 import android.app.Application
+import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.optic.ecommerceappmvvm.core.locale.LocaleManager
+import com.optic.ecommerceappmvvm.data.dataSource.local.datastore.AuthDatastore
 import com.optic.ecommerceappmvvm.data.worker.UpdateFixturesWorker
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocaleEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltAndroidApp
 class EcommerceAppMVVM: Application()  {
 
     private val FIXTURES_WORK_TAG = "fixtures_worker"
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleManager.attachBaseContext(base))
+    }
 
     override fun onCreate() {
         super.onCreate()

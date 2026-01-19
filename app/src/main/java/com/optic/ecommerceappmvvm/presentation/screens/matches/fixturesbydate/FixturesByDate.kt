@@ -28,10 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.item.FixtureItem
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.IconSecondaryColor
 
 
@@ -46,6 +48,8 @@ fun FixturesByDate(
     isAuthenticated: Boolean
 ) {
 
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     when (fixtureState) {
 
@@ -125,7 +129,7 @@ fun FixturesByDate(
 
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Siguiendo",
+                                text = localizedContext.getString(R.string.matches_screen_follow_title),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontSize = 15.sp,
                                     color = MaterialTheme.colorScheme.primary,
@@ -196,7 +200,7 @@ fun FixturesByDate(
                     ) {
 
                         Text(
-                            text = "Otros partidos",
+                            text = localizedContext.getString(R.string.matches_screen_other_matches),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontSize = 15.sp,
                                 color = MaterialTheme.colorScheme.primary,

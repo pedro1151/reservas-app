@@ -12,6 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.optic.ecommerceappmvvm.R
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenLima
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,6 +27,10 @@ fun ProdeTopBar(
     onEditClick: () -> Unit,
     onSavingClick: () -> Unit
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     TopAppBar(
         title = {
             if (showTitle) {
@@ -64,7 +70,8 @@ fun ProdeTopBar(
 
                  */
                 Text(
-                    text =if (isEditing) "Guardar" else "Editar",
+                    text =if (isEditing) localizedContext.getString(R.string.prode_mispredicciones_screen_guardar_button)
+                    else localizedContext.getString(R.string.prode_mispredicciones_screen_editar_button),
                 )
             }
         },

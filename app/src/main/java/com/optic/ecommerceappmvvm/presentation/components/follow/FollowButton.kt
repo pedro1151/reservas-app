@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import com.optic.ecommerceappmvvm.R
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.followButtonBackground
 import com.optic.ecommerceappmvvm.presentation.ui.theme.followTextColor
 
@@ -19,6 +21,9 @@ fun FollowButton(
     title: String = "Seguir",
     isFollowed: Boolean = true
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     Button(
         onClick = onClick,
@@ -30,7 +35,7 @@ fun FollowButton(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)) // 👈 Contorno blanco
     ) {
         Text(
-            text = title,
+            text = localizedContext.getString(R.string.ligas_screen_follow_button),
             style = MaterialTheme.typography.labelLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 fontSize = 14.sp,

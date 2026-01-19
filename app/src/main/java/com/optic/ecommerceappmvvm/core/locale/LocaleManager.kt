@@ -1,4 +1,3 @@
-@file:Suppress("DEPRECATION")
 
 package com.optic.ecommerceappmvvm.core.locale
 
@@ -10,20 +9,15 @@ import java.util.Locale
 
 object LocaleManager {
 
-    fun applyLocale(context: Context, authDatastore: AuthDatastore) {
-        val language = runBlocking {
-            authDatastore.getSavedLanguage()
-        }
-
+    fun attachBaseContext(context: Context): Context {
+        val language = LocalePrefs.getLanguage(context)
         val locale = Locale(language)
+
         Locale.setDefault(locale)
 
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
 
-        context.resources.updateConfiguration(
-            config,
-            context.resources.displayMetrics
-        )
+        return context.createConfigurationContext(config)
     }
 }

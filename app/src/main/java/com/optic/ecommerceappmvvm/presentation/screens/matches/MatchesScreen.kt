@@ -32,8 +32,7 @@ import androidx.compose.material3.Text
 import com.optic.ecommerceappmvvm.presentation.components.LoginLinkCard
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.matches.fixturesbydate.FixturesByDate
-
-
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 
 @RequiresApi(Build.VERSION_CODES.O)

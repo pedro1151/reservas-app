@@ -13,6 +13,7 @@ import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.playerteams.PlayerLastTeamResponse
@@ -24,6 +25,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.profil
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.statistics.PlayerStatsContentTab
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.matches.PlayerMatchesTab
 import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.trayectoria.PlayerTrayectoryTab
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -38,7 +40,16 @@ fun PlayerStatsContent(
     lastTeam : Resource<PlayerLastTeamResponse>,
     playerComplete: Resource<PlayerComplete>
 ) {
-    val tabTitles = listOf("Perfil", "Estadísticas", "Partidos", "Trayectoria")
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
+    val tabTitles = listOf(
+        localizedContext.getString(R.string.jugador_detail_screen_option_perfil_title),
+        localizedContext.getString(R.string.jugador_detail_screen_option_estadisticas_title),
+        localizedContext.getString(R.string.jugador_detail_screen_option_partidos_title),
+        localizedContext.getString(R.string.jugador_detail_screen_option_trayectoria_title)
+    )
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 

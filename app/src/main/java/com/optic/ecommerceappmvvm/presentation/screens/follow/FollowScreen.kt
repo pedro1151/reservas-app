@@ -10,11 +10,13 @@ import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.components.PrimaryTopBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.follow.components.FollowContent
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -22,7 +24,15 @@ fun FollowScreen(
     navController: NavHostController,
     isAuthenticated: Boolean
 ) {
-    val tabTitles = listOf("Equipos", "Jugadores")
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
+
+    val tabTitles = listOf(
+        localizedContext.getString(R.string.siguiendo_screen_equipos_title),
+        localizedContext.getString(R.string.siguiendo_screen_equipos_title)
+    )
     val pagerState = rememberPagerState(pageCount = { tabTitles.size }) // fuera de FollowContent
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
@@ -46,7 +56,7 @@ fun FollowScreen(
         topBar = {
             PrimaryTopBar(
                 navController = navController,
-                title = "Siguiendo"
+                title = localizedContext.getString(R.string.siguiendo_screen_title)
             )
         },
         containerColor = MaterialTheme.colorScheme.background

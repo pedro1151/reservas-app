@@ -20,11 +20,15 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.ui.graphics.vector.ImageVector
 
+
+
 sealed class ClientScreen(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
+
+
     object Leagues: ClientScreen(
         route = "client/leagues",
         title = "Ligas",

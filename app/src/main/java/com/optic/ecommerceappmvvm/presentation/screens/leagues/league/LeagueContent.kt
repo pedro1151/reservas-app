@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
@@ -20,6 +21,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.player.playerStats.compon
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.header.LeagueHeader
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.leaguematches.LeagueFixture
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.standings.LeagueStandingsList
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 import kotlinx.coroutines.launch
 
@@ -33,7 +35,15 @@ fun LeagueContent(
     viewModel: LeagueViewModel,
     leagueFixtureState: Resource<List<FixtureResponse>>
 ) {
-    val tabTitles = listOf("Clasificacion", "Partidos", "Temporadas")
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
+    val tabTitles = listOf(
+        localizedContext.getString(R.string.ligas_detail_screen_option_clasificacion_title),
+        localizedContext.getString(R.string.ligas_detail_screen_option_partidos_title),
+        localizedContext.getString(R.string.ligas_detail_screen_option_temporadas_title),
+    )
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 

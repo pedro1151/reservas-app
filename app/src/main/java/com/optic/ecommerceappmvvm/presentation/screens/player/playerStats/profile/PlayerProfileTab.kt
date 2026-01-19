@@ -21,15 +21,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.player.PlayerComplete
 import com.optic.ecommerceappmvvm.domain.model.player.stats.PlayerWithStats
 import com.optic.ecommerceappmvvm.domain.util.Resource
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 
 @Composable
 fun PlayerProfileTab(
     player: Resource<PlayerComplete>
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     when (player) {
 
         is Resource.Loading -> {
@@ -101,15 +107,15 @@ fun PlayerProfileTab(
                     ) {
                         ProfileInfoItem(
                             value = data.age?.toString() ?: "0",
-                            label = "Edad"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_edad_label)
                         )
                         ProfileInfoItem(
                             value = data.height ?: "-",
-                            label = "Altura"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_estatura_label)
                         )
                         ProfileInfoItem(
                             value = data.weight ?: "-",
-                            label = "Peso"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_peso_label)
                         )
                     }
 
@@ -121,15 +127,15 @@ fun PlayerProfileTab(
                     ) {
                         ProfileInfoItemWithIcon(
                             value = data.nationality ?: "-",
-                            label = "Nacionalidad"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_nacionalidad_label)
                         )
                         ProfileInfoItem(
                             value = if (data.injured == true) "Sí" else "No",
-                            label = "Lesionado"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_lesionado_label)
                         )
                         ProfileInfoItem(
                             value = data.birthDate ?: "-",
-                            label = "Nacimiento"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_nacimiento_label)
                         )
                     }
 
@@ -141,11 +147,11 @@ fun PlayerProfileTab(
                     ) {
                         ProfileInfoItem(
                             value = data.birthPlace ?: "-",
-                            label = "Lugar de Nacimiento"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_nacimiento_lugar_label)
                         )
                         ProfileInfoItem(
                             value = data.birthCountry ?: "-",
-                            label = "País de Nacimiento"
+                            label = localizedContext.getString(R.string.jugador_detail_screen_perfil_nacimiento_pais_label)
                         )
                     }
                 }

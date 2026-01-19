@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.optic.ecommerceappmvvm.R
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.Grafito
 
 @Composable
@@ -20,12 +22,15 @@ fun LeagueSearchBar(
     onQueryChange: (String) -> Unit
 ) {
 
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     TextField(
         value = query,
         onValueChange = onQueryChange,
         placeholder = {
             Text(
-                text = "Buscar ligas",
+                text = localizedContext.getString(R.string.ligas_screen_buscar_placeholder),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
             )
         },

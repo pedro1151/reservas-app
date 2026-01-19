@@ -1,6 +1,7 @@
 package com.optic.ecommerceappmvvm.presentation.screens.mas.components
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -33,12 +34,24 @@ import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalAppLanguage
 import com.optic.ecommerceappmvvm.presentation.ui.theme.LocalAppTheme
 import com.optic.ecommerceappmvvm.presentation.ui.theme.components.ThemeSelectionBottomSheet
 import com.optic.ecommerceappmvvm.R
+import androidx.compose.ui.res.stringResource
+import com.optic.ecommerceappmvvm.core.locale.LocalePrefs
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LanguageViewModel
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
+
 @Composable
 fun MasContent(modifier: Modifier
                ,navController: NavHostController
                ,isAuthenticated: Boolean
+               ,localizedContext: Context
 
 ) {
+
+    val context = LocalContext.current
+    //val localizedContext = LocalizedContext.current
+
+
+    val languageVM: LanguageViewModel = hiltViewModel()
     val activity = LocalContext.current as? Activity
     val vm: MasViewModel = hiltViewModel()
 
@@ -70,8 +83,20 @@ fun MasContent(modifier: Modifier
         IdiomaSelectionBottomSheet(
             currentLanguage = languageState.value,
             onLanguageSelected = { selected ->
+
+                // 1️⃣ Guardado temprano (SharedPreferences)
+                LocalePrefs.setLanguage(context, selected.code)
+
+                // 2️⃣ Guardado persistente (DataStore)
+                languageVM.changeLanguage(selected)
+
+                // 3️⃣ Actualiza el estado Compose
                 languageState.value = selected
+
                 showSheetIdioma.value = false
+
+                // 4️⃣ Recrea la Activity para recargar resources
+                activity?.recreate()
             },
             onDismiss = { showSheetIdioma.value = false }
         )
@@ -87,27 +112,41 @@ fun MasContent(modifier: Modifier
     ) {
         // 🔴 NUEVO: Cerrar sesión
         if (!isAuthenticated) {
+
+
             MasCardItem(
-                title = R.string.login_title.toString(),
+                title = localizedContext.getString(R.string.mas_screen_login_title),
                 icon = Icons.Default.AccountBox,
                 onClick = { navController.navigate(ClientScreen.Login.route)}  // <-- disparador para mostrar el bottom sheet
             )
 
         }
         MasCardItem(
-            title = "Tema",
+            title = localizedContext.getString(R.string.mas_screen_theme_title),
             icon = Icons.Default.FavoriteBorder,
             onClick = { showSheet.value = true }  // <-- disparador para mostrar el bottom sheet
         )
         MasCardItem(
-            title = "Seleccionar Idioma",
+            title = localizedContext.getString(R.string.mas_screen_language_title),
             icon = Icons.Default.List,
             onClick = { showSheetIdioma.value = true }
         )
-        MasCardItem(title = "Compartir UNIFOT", icon = Icons.Default.Share)
-        MasCardItem(title = "Síguenos", icon = Icons.Default.Person)
-        MasCardItem(title = "Política de Privacidad", icon = Icons.Default.Info)
-        MasCardItem(title = "Versión de la app", icon = Icons.Default.Info)
+        MasCardItem(
+            title = localizedContext.getString(R.string.mas_screen_shared_title),
+            icon = Icons.Default.Share
+        )
+        MasCardItem(
+            title = localizedContext.getString(R.string.mas_screen_follow_title),
+            icon = Icons.Default.Person
+        )
+        MasCardItem(
+            title = localizedContext.getString(R.string.mas_screen_policy_title),
+            icon  = Icons.Default.Info
+        )
+        MasCardItem(
+            title = localizedContext.getString(R.string.mas_screen_version_title),
+            icon = Icons.Default.Info
+        )
 
         // 🔴 NUEVO: Cerrar sesión
         if (isAuthenticated) {

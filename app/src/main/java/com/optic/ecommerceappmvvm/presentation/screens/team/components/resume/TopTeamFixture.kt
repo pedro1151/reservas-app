@@ -15,9 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
 
@@ -27,6 +29,9 @@ fun TopTeamFixture(
     teamId: Int,
     navController: NavHostController
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -37,7 +42,7 @@ fun TopTeamFixture(
         ) {
             // Título
             Text(
-                text = "Últimos 5 partidos",
+                text = localizedContext.getString(R.string.team_detail_screen_ultimos5_title),
                 //style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium,

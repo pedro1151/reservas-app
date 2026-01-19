@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.presentation.screens.leagues.principal
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.principal.components.LeagueCard
@@ -29,7 +31,8 @@ fun LeaguePrincipalContent(
     paddingValues: PaddingValues,
     viewModel: LeaguePrincipalViewModel,
     navController: NavHostController,
-    isAuthenticated: Boolean = false
+    isAuthenticated: Boolean = false,
+    localizedContext: Context
 ) {
 
     val query by viewModel.searchQuery.collectAsState()
@@ -80,7 +83,7 @@ fun LeaguePrincipalContent(
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Ligas que sigues",
+                            text = localizedContext.getString(R.string.ligas_screen_siguiendo_title),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )
@@ -118,7 +121,7 @@ fun LeaguePrincipalContent(
                         Column {
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Explorar más ligas",
+                                text = localizedContext.getString(R.string.ligas_screen_explorar_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(horizontal = 12.dp)
                             )

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 
 import com.optic.ecommerceappmvvm.domain.model.fixture.League
@@ -23,6 +24,7 @@ import com.optic.ecommerceappmvvm.domain.model.standing.StandingResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import com.optic.ecommerceappmvvm.presentation.screens.fixtures.detail.FixtureDetailViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.leagues.league.LeagueViewModel
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 
 @Composable
@@ -32,6 +34,10 @@ fun LeagueStandingsList(
     viewModel: LeagueViewModel
 ) {
     val standingState by viewModel.standingState.collectAsState()
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
 
     LaunchedEffect(league.id) {
         viewModel.getLeagueStandings(league.id)
@@ -93,7 +99,11 @@ fun LeagueStandingsList(
                             ) {
                                 Text("Rank", modifier = Modifier.width(30.dp), style = MaterialTheme.typography.bodySmall)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Equipo", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    localizedContext.getString(R.string.ligas_detail_screen_clasificacion_equipo_label),
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                                 Text("J", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(30.dp))
                                 Text("DG", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(30.dp))
                                 Text("Pts", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(30.dp))

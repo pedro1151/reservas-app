@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.presentation.screens.prode.components
 
+import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -22,10 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.components.follow.FollowButton
 import com.optic.ecommerceappmvvm.presentation.components.follow.UnFollowButton
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 val ActiveBg = Color(0xFF1E2228)          // grafito profundo
 val ActiveAccent = Color(0xFF4DA3FF)     // azul premium (FotMob vibe)
@@ -40,6 +43,9 @@ fun LeagueCard(
 ) {
     val containerColor =
         if (isParticipaed) ActiveBg else MaterialTheme.colorScheme.primaryContainer
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     Card(
         modifier = Modifier
@@ -101,7 +107,7 @@ fun LeagueCard(
                         if (isParticipaed) {
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Participando",
+                                text = localizedContext.getString(R.string.prode_screen_participando_subtitle),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = ActiveAccent
                             )
@@ -115,7 +121,8 @@ fun LeagueCard(
                         league.id?.let {
                             navController.navigate("${Graph.PRODE}/$it")
                         }
-                    }
+                    },
+                    localizedContext = localizedContext
                 )
             }
         }
@@ -125,7 +132,8 @@ fun LeagueCard(
 @Composable
 fun ParticipateButton(
     isParticipaed: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    localizedContext: Context
 ) {
     val textColor = if (isParticipaed) ActiveAccent else MaterialTheme.colorScheme.onSurface
 
@@ -137,7 +145,8 @@ fun ParticipateButton(
             .padding(horizontal = 14.dp, vertical = 8.dp)
     ) {
         Text(
-            text = if (isParticipaed) "Ver" else "Participar",
+            text = if (isParticipaed) localizedContext.getString(R.string.prode_screen_ver_button)
+            else localizedContext.getString(R.string.prode_screen_participar_button),
             style = MaterialTheme.typography.labelLarge,
             color = textColor
         )

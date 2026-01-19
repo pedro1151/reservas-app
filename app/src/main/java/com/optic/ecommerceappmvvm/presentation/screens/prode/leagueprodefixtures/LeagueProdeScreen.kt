@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.LeagueCompleteResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
 
@@ -18,6 +19,7 @@ import com.optic.ecommerceappmvvm.presentation.components.ProgressBar
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
 import com.optic.ecommerceappmvvm.presentation.screens.prode.topbar.ProdeTopBar
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 // 👉 Helper fuera del composable
 fun LeagueCompleteResponse.getLatestSeasonYear(): Int? {
@@ -38,6 +40,9 @@ fun LeagueProdeScreen(
 {
     val viewModel: ProdeViewModel = hiltViewModel()
 
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     val context = LocalContext.current
 
     val leagueStateSingle by viewModel.leagueStateSingle.collectAsState()
@@ -57,7 +62,7 @@ fun LeagueProdeScreen(
     Scaffold(
         topBar = {
             ProdeTopBar(
-                title = "Mis Predicciones",
+                title = localizedContext.getString(R.string.prode_mispredicciones_screen_title),
                 navController = navController,
                 isSaving = isSaving,             // <-- 🔥 LO PASAS AQUÍ
                 isEditing = viewModel.isEditing.value,

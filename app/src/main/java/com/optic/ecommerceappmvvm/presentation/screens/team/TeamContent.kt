@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.domain.model.team.TeamResponse
 import com.optic.ecommerceappmvvm.domain.util.Resource
@@ -22,6 +23,7 @@ import com.optic.ecommerceappmvvm.presentation.screens.team.components.TeamHeade
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.resume.ResumeContent
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.stats.TeamStatsScreen
 import com.optic.ecommerceappmvvm.presentation.screens.team.components.teamFixture.TeamFixture
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -35,7 +37,15 @@ fun TeamContent(
     topFiveFixtureState: Resource<List<FixtureResponse>>,
     navController: NavHostController
 ) {
-    val tabTitles = listOf("Resumen", "Partidos", "Estadisticas")
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
+    val tabTitles = listOf(
+        localizedContext.getString(R.string.team_detail_screen_option_resumen_title),
+        localizedContext.getString(R.string.team_detail_screen_option_partidos_title),
+        localizedContext.getString(R.string.team_detail_screen_option_estadisticas_title)
+    )
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 

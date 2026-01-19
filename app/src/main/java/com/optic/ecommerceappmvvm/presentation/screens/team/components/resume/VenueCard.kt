@@ -18,13 +18,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import coil.compose.rememberAsyncImagePainter
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.team.VenueResponse
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 @Composable
 fun VenueCard(
     venue: VenueResponse,
     modifier: Modifier = Modifier
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -37,7 +43,7 @@ fun VenueCard(
         ) {
             // Título del card
             Text(
-                text = "Estadio",
+                text = localizedContext.getString(R.string.team_detail_screen_estadio_title),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier

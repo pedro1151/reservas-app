@@ -29,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.presentation.navigation.Graph
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getGreenColorFixture
 import com.optic.ecommerceappmvvm.presentation.ui.theme.getRedColorFixture
 import java.time.LocalDateTime
@@ -44,6 +46,9 @@ fun NextFixture(
     state: Resource<FixtureResponse>,
     navController: NavHostController
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     when (state) {
         is Resource.Loading -> {
@@ -63,7 +68,7 @@ fun NextFixture(
             state.data?.let { fixture ->
                 NextFixtureItem(
                     fixture = fixture,
-                    title = "Próximo partido",
+                    title = localizedContext.getString(R.string.team_detail_screen_proximo_partido_title),
                     navController
                 )
             } ?: Text(

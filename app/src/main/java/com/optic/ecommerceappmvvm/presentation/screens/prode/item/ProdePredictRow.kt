@@ -53,14 +53,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.fixture.FixtureResponse
 import com.optic.ecommerceappmvvm.presentation.screens.prode.ProdeViewModel
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 @Composable
 fun ProdePredictRow(
     fixture: FixtureResponse,
     vm: ProdeViewModel
 ) {
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     val predictionSet = vm.userPredictions.collectAsState().value[fixture.id]
         ?: ProdeViewModel.UserPrediction()
@@ -146,12 +151,15 @@ fun ProdePredictRow(
                                         .background(Color(0x22FFFFFF), RoundedCornerShape(4.dp))
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
-                                    val displayText = predictionSet.prediction ?: "SELECCIONAR"
+                                    val displayText = predictionSet.prediction ?: localizedContext.getString(
+                                        R.string.prode_mispredicciones_screen_seleccionar_resultado_label)
 
                                     // Colores modernos
                                     val textColor = when(displayText) {
-                                        "GANA LOCAL" -> Color(0xFF4A90E2) // Azul suave
-                                        "GANA VISITA" -> Color(0xFF4CAF50) // Verde suave
+                                        localizedContext.getString(
+                                            R.string.prode_mispredicciones_screen_resultado_valor_gana) -> Color(0xFF4A90E2) // Azul suave
+                                        localizedContext.getString(
+                                            R.string.prode_mispredicciones_screen_resultado_valor_visita) -> Color(0xFF4CAF50) // Verde suave
                                         else -> Color.White
                                     }
 
@@ -176,12 +184,16 @@ fun ProdePredictRow(
                                     expanded = expanded,
                                     onDismissRequest = { expanded = false }
                                 ) {
-                                    listOf("GANA LOCAL", "EMPATE", "GANA VISITA").forEach { option ->
+                                    listOf(
+                                        localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_gana),
+                                        localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_empate),
+                                        localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_visita)
+                                    ).forEach { option ->
                                         DropdownMenuItem(
                                             text = {
                                                 val color = when(option) {
-                                                    "GANA LOCAL" -> Color(0xFF4A90E2)
-                                                    "GANA VISITA" -> Color(0xFF4CAF50)
+                                                    localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_gana) -> Color(0xFF4A90E2)
+                                                    localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_visita)-> Color(0xFF4CAF50)
                                                     else -> Color.White
                                                 }
                                                 Text(option, color = color)
@@ -199,9 +211,9 @@ fun ProdePredictRow(
                             // ► Solo lectura
                             val displayText = predictionSet.prediction ?: "-"
                             val textColor = when(displayText) {
-                                "GANA LOCAL" -> Color(0xFF4A90E2)
-                                "GANA VISITA" -> Color(0xFF4CAF50)
-                                "SELECCIONAR" -> Color.White
+                                localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_gana) -> Color(0xFF4A90E2)
+                                localizedContext.getString(R.string.prode_mispredicciones_screen_resultado_valor_visita) -> Color(0xFF4CAF50)
+                                localizedContext.getString(R.string.prode_mispredicciones_screen_seleccionar_resultado_label)-> Color.White
                                 else -> Color.Red
                             }
                             Text(

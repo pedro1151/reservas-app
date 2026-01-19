@@ -1,5 +1,6 @@
 package com.optic.ecommerceappmvvm.presentation.screens.prode
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.domain.model.League.League
 import com.optic.ecommerceappmvvm.presentation.screens.prode.components.LeagueCard
 
@@ -24,7 +26,8 @@ fun ProdePrincipalContent(
     paddingValues: PaddingValues,
     viewModel: ProdeViewModel,
     navController: NavHostController,
-    isAuthenticated: Boolean
+    isAuthenticated: Boolean,
+    localizedContext: Context
 ) {
     val sections by viewModel.leagueSections.collectAsState()
     val query by viewModel.searchQuery.collectAsState()
@@ -108,7 +111,7 @@ fun ProdePrincipalContent(
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Ligas que sigues",
+                            text = localizedContext.getString(R.string.prode_screen_ligas_que_sigo_title),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )
@@ -148,7 +151,7 @@ fun ProdePrincipalContent(
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Explorar mas Ligas",
+                            text = localizedContext.getString(R.string.prode_screen_explorar_ligas_title),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )

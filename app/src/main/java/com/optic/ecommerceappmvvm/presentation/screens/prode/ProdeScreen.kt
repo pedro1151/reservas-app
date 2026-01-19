@@ -18,10 +18,12 @@ import androidx.navigation.NavHostController
 import com.optic.ecommerceappmvvm.domain.util.Resource
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
+import com.optic.ecommerceappmvvm.R
 import com.optic.ecommerceappmvvm.presentation.components.progressBar.CustomProgressBar
 import com.optic.ecommerceappmvvm.presentation.navigation.screen.client.ClientScreen
 import com.optic.ecommerceappmvvm.presentation.screens.prode.topbar.PrincipalProdeTopBar
 import com.optic.ecommerceappmvvm.presentation.screens.prode.components.ProdeOptionsList
+import com.optic.ecommerceappmvvm.presentation.settings.idiomas.LocalizedContext
 
 @Composable
 fun ProdeScreen(
@@ -29,6 +31,9 @@ fun ProdeScreen(
     isAuthenticated: Boolean = false
 ) {
     val viewModel: ProdeViewModel = hiltViewModel()
+
+    // para idioma
+    val localizedContext = LocalizedContext.current
 
     val leagueResource by viewModel.leaguesState.collectAsState()
     val leaguesParticipateResource by viewModel.leaguesParticipateState.collectAsState()
@@ -55,7 +60,7 @@ fun ProdeScreen(
     Scaffold(
         topBar = {
             PrincipalProdeTopBar(
-                title = "Prodes",
+                title = localizedContext.getString(R.string.prode_screen_title),
                 navController = navController,
                 prodeViewModel = viewModel
             )
@@ -109,7 +114,8 @@ fun ProdeScreen(
                         paddingValues = PaddingValues(0.dp), // 👈 IMPORTANTE
                         viewModel = viewModel,
                         navController = navController,
-                        isAuthenticated = isAuthenticated
+                        isAuthenticated = isAuthenticated,
+                        localizedContext = localizedContext
                     )
                 }
 
