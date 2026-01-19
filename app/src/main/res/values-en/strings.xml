@@ -20,6 +20,8 @@
     <string name="matches_screen_tomorrow_title">Tomorrow</string>
     <string name="matches_screen_follow_title">Following</string>
     <string name="matches_screen_other_matches">Other matches</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">There are no matches for this date.</string>
+
 
     <!-- Más Screen -->
     <string name="mas_screen_title">More</string>

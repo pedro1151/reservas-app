@@ -14,7 +14,7 @@
         tools:ignore="ScopedStorage" />
 
     <application
-        android:name=".EcommerceAppMVVM"
+        android:name="FootballApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -45,7 +45,7 @@
         </activity>
 
         <provider
-            android:authorities="com.optic.ecommerceappmvvm.fileprovider"
+            android:authorities="com.optic.pramosfootballappz.fileprovider"
             android:name=".presentation.util.ComposeFileProvider"
             android:grantUriPermissions="true"
             android:exported="false">

@@ -20,6 +20,7 @@
     <string name="matches_screen_tomorrow_title">Mañana</string>
     <string name="matches_screen_follow_title">Siguiendo</string>
     <string name="matches_screen_other_matches">Otros partidos</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">No hay partidos para la fecha.</string>
 
     <!-- Más Screen -->
     <string name="mas_screen_title">Más</string>

@@ -20,6 +20,8 @@
     <string name="matches_screen_tomorrow_title">明天</string>
     <string name="matches_screen_follow_title">已关注</string>
     <string name="matches_screen_other_matches">其他比赛</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">该日期没有比赛。</string>
+
 
     <!-- Más Screen -->
     <string name="mas_screen_title">更多</string>

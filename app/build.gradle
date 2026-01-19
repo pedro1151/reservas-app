@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.optic.ecommerceappmvvm'
+    namespace 'com.optic.pramosfootballappz'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.optic.ecommerceappmvvm"
+        applicationId "com.optic.pramosfootballappz"
         minSdk 23
         targetSdk 34
         versionCode 1
