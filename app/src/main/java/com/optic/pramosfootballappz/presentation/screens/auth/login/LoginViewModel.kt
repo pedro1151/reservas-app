@@ -108,15 +108,19 @@ class LoginViewModel @Inject constructor(
     fun loginWithGoogle(idToken: String) {
         viewModelScope.launch {
             loginResponse = Resource.Loading
+            Log.d("loginWithGoogle", "loading")
             try {
                 val result = externalUseCase.login(idToken)
                 loginResponse = result
                 if (result is Resource.Success) {
+                    Log.d("loginWithGoogle", "result sucess: ${result}")
                     saveSession(result.data)
                 } else {
+                    Log.d("loginWithGoogle", "result NO success: ${result}")
                     _isLoggedIn.value = false
                 }
             } catch (e: Exception) {
+                Log.d("loginWithGoogle", "Error general en login con google api: ${e.message }")
                 loginResponse = Resource.Failure(e.message ?: "Error desconocido al iniciar con Google")
                 _isLoggedIn.value = false
             }

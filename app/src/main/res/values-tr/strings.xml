@@ -1,0 +1,107 @@
+<resources>
+    <!-- TURCO -->
+    <string name="app_name">UNIFOT</string>
+    <string name="select_language">Dil Seçin</string>
+
+    <!-- Link login -->
+    <string name="link_card_login_title">Giriş Yap</string>
+    <string name="link_card_login_notnow_option">Şimdi Değil</string>
+    <string name="link_card_login_login_option">Giriş Yap</string>
+
+    <!-- Menú principal -->
+    <string name="menu_principal_prode">Tahminler</string>
+    <string name="menu_principal_matches">Maçlar</string>
+    <string name="menu_principal_leagues">Ligler</string>
+    <string name="menu_principal_follow">Takip Edilen</string>
+    <string name="menu_principal_mas">Diğer</string>
+
+    <!-- Matches Screen -->
+    <string name="matches_screen_today_title">Bugün</string>
+    <string name="matches_screen_yesterday_title">Dün</string>
+    <string name="matches_screen_tomorrow_title">Yarın</string>
+    <string name="matches_screen_follow_title">Takip Edilen</string>
+    <string name="matches_screen_other_matches">Diğer Maçlar</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">Bu tarihe ait maç yok.</string>
+
+    <!-- Más Screen -->
+    <string name="mas_screen_title">Diğer</string>
+    <string name="mas_screen_login_title">Giriş Yap</string>
+    <string name="mas_screen_logout_title">Çıkış Yap</string>
+    <string name="mas_screen_theme_title">Tema</string>
+    <string name="mas_screen_language_title">Dil</string>
+    <string name="mas_screen_shared_title">UNIFOT’u Paylaş</string>
+    <string name="mas_screen_follow_title">Bizi Takip Et</string>
+    <string name="mas_screen_policy_title">Gizlilik Politikası</string>
+    <string name="mas_screen_version_title">Uygulama Sürümü</string>
+
+    <!-- Prode Screen -->
+    <string name="prode_screen_title">Tahminler</string>
+    <string name="prode_screen_ligas_que_sigo_title">Takip Edilen</string>
+    <string name="prode_screen_explorar_ligas_title">Ligleri Keşfet</string>
+    <string name="prode_screen_rank_title">Sıralama</string>
+    <string name="prode_screen_buscar_ligas_placeholder">Lig Ara</string>
+    <string name="prode_screen_participar_button">Katıl</string>
+    <string name="prode_screen_ver_button">Görüntüle</string>
+    <string name="prode_screen_participando_subtitle">Katılıyor</string>
+
+    <!-- Ligas -->
+    <string name="ligas_screen_title">Ligler</string>
+    <string name="ligas_screen_buscar_placeholder">Lig Ara</string>
+    <string name="ligas_screen_siguiendo_title">Takip Edilen</string>
+    <string name="ligas_screen_explorar_title">Ligleri Keşfet</string>
+    <string name="ligas_screen_follow_button">Takip Et</string>
+
+    <!-- Siguiendo -->
+    <string name="siguiendo_screen_title">Takip Edilen</string>
+    <string name="siguiendo_screen_equipos_title">Takımlar</string>
+    <string name="siguiendo_screen_jugadores_title">Oyuncular</string>
+    <string name="siguiendo_screen_jugadores_sugeridos_title">Önerilen Oyuncular</string>
+    <string name="siguiendo_screen_equipos_sugeridos_title">Önerilen Takımlar</string>
+    <string name="siguiendo_screen_followiguiendo_screen_follow_button">Takip Et</string>
+
+    <!-- Prode - Mis Predicciones -->
+    <string name="prode_mispredicciones_screen_title">Tahminlerim</string>
+    <string name="prode_mispredicciones_screen_seleccionar_resultado_label">Sonucu Seç</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_gana">Ev Sahibi Kazanır</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_empate">Beraberlik</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_visita">Deplasman Kazanır</string>
+    <string name="prode_mispredicciones_screen_editar_button">Düzenle</string>
+    <string name="prode_mispredicciones_screen_guardar_button">Kaydet</string>
+
+    <!-- Detalle Partido -->
+    <string name="matches_detail_screen_option_alineacion_title">Kadrolar</string>
+    <string name="matches_detail_screen_option_clasificacion_title">Sıralama</string>
+    <string name="matches_detail_screen_option_caraacara_title">Karşı Karşıya</string>
+    <string name="matches_detail_screen_option_estatisticas_title">İstatistikler</string>
+
+    <!-- Ligas Detalle -->
+    <string name="ligas_detail_screen_option_clasificacion_title">Sıralama</string>
+    <string name="ligas_detail_screen_option_partidos_title">Maçlar</string>
+    <string name="ligas_detail_screen_option_temporadas_title">Sezonlar</string>
+    <string name="ligas_detail_screen_siguiendo_label">Takip Edilen</string>
+    <string name="ligas_detail_screen_clasificacion_equipo_label">Takım</string>
+
+    <!-- Equipos Detalle -->
+    <string name="team_detail_screen_option_resumen_title">Özet</string>
+    <string name="team_detail_screen_option_partidos_title">Maçlar</string>
+    <string name="team_detail_screen_option_estadisticas_title">İstatistikler</string>
+    <string name="team_detail_screen_siguiendo_label">Takip Edilen</string>
+    <string name="team_detail_screen_proximo_partido_title">Sonraki Maç</string>
+    <string name="team_detail_screen_ultimos5_title">Son 5 Maç</string>
+    <string name="team_detail_screen_estadio_title">Stadyum</string>
+    <string name="team_detail_screen_clasificacion_title">Sıralama</string>
+
+    <!-- Jugadores Detalle -->
+    <string name="jugador_detail_screen_option_perfil_title">Profil</string>
+    <string name="jugador_detail_screen_option_estadisticas_title">İstatistikler</string>
+    <string name="jugador_detail_screen_option_partidos_title">Maçlar</string>
+    <string name="jugador_detail_screen_option_trayectoria_title">Kariyer</string>
+    <string name="jugador_detail_screen_perfil_edad_label">Yaş</string>
+    <string name="jugador_detail_screen_perfil_estatura_label">Boy</string>
+    <string name="jugador_detail_screen_perfil_peso_label">Kilo</string>
+    <string name="jugador_detail_screen_perfil_nacionalidad_label">Milliyet</string>
+    <string name="jugador_detail_screen_perfil_lesionado_label">Sakat</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_label">Doğum Tarihi</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_lugar_label">Doğum Yeri</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_pais_label">Doğum Ülkesi</string>
+</resources>

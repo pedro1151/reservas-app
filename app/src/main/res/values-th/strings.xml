@@ -1,0 +1,107 @@
+<resources>
+    <!-- TAILANDES -->
+    <string name="app_name">UNIFOT</string>
+    <string name="select_language">เลือกภาษา</string>
+
+    <!-- Link login -->
+    <string name="link_card_login_title">เข้าสู่ระบบ</string>
+    <string name="link_card_login_notnow_option">ไม่ใช่ตอนนี้</string>
+    <string name="link_card_login_login_option">เข้าสู่ระบบ</string>
+
+    <!-- Menú principal -->
+    <string name="menu_principal_prode">ทำนายผล</string>
+    <string name="menu_principal_matches">การแข่งขัน</string>
+    <string name="menu_principal_leagues">ลีก</string>
+    <string name="menu_principal_follow">กำลังติดตาม</string>
+    <string name="menu_principal_mas">เพิ่มเติม</string>
+
+    <!-- Matches Screen -->
+    <string name="matches_screen_today_title">วันนี้</string>
+    <string name="matches_screen_yesterday_title">เมื่อวาน</string>
+    <string name="matches_screen_tomorrow_title">พรุ่งนี้</string>
+    <string name="matches_screen_follow_title">กำลังติดตาม</string>
+    <string name="matches_screen_other_matches">การแข่งขันอื่นๆ</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">ไม่มีการแข่งขันในวันที่นี้</string>
+
+    <!-- Más Screen -->
+    <string name="mas_screen_title">เพิ่มเติม</string>
+    <string name="mas_screen_login_title">เข้าสู่ระบบ</string>
+    <string name="mas_screen_logout_title">ออกจากระบบ</string>
+    <string name="mas_screen_theme_title">ธีม</string>
+    <string name="mas_screen_language_title">ภาษา</string>
+    <string name="mas_screen_shared_title">แชร์ UNIFOT</string>
+    <string name="mas_screen_follow_title">ติดตามเรา</string>
+    <string name="mas_screen_policy_title">นโยบายความเป็นส่วนตัว</string>
+    <string name="mas_screen_version_title">เวอร์ชันแอป</string>
+
+    <!-- Prode Screen -->
+    <string name="prode_screen_title">ทำนายผล</string>
+    <string name="prode_screen_ligas_que_sigo_title">กำลังติดตาม</string>
+    <string name="prode_screen_explorar_ligas_title">สำรวจลีก</string>
+    <string name="prode_screen_rank_title">อันดับ</string>
+    <string name="prode_screen_buscar_ligas_placeholder">ค้นหาลีก</string>
+    <string name="prode_screen_participar_button">เข้าร่วม</string>
+    <string name="prode_screen_ver_button">ดู</string>
+    <string name="prode_screen_participando_subtitle">กำลังเข้าร่วม</string>
+
+    <!-- Ligas -->
+    <string name="ligas_screen_title">ลีก</string>
+    <string name="ligas_screen_buscar_placeholder">ค้นหาลีก</string>
+    <string name="ligas_screen_siguiendo_title">กำลังติดตาม</string>
+    <string name="ligas_screen_explorar_title">สำรวจลีก</string>
+    <string name="ligas_screen_follow_button">ติดตาม</string>
+
+    <!-- Siguiendo -->
+    <string name="siguiendo_screen_title">กำลังติดตาม</string>
+    <string name="siguiendo_screen_equipos_title">ทีม</string>
+    <string name="siguiendo_screen_jugadores_title">ผู้เล่น</string>
+    <string name="siguiendo_screen_jugadores_sugeridos_title">ผู้เล่นแนะนำ</string>
+    <string name="siguiendo_screen_equipos_sugeridos_title">ทีมแนะนำ</string>
+    <string name="siguiendo_screen_followiguiendo_screen_follow_button">ติดตาม</string>
+
+    <!-- Prode - Mis Predicciones -->
+    <string name="prode_mispredicciones_screen_title">ทำนายของฉัน</string>
+    <string name="prode_mispredicciones_screen_seleccionar_resultado_label">เลือกผลลัพธ์</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_gana">เจ้าบ้านชนะ</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_empate">เสมอ</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_visita">ทีมเยือนชนะ</string>
+    <string name="prode_mispredicciones_screen_editar_button">แก้ไข</string>
+    <string name="prode_mispredicciones_screen_guardar_button">บันทึก</string>
+
+    <!-- Detalle Partido -->
+    <string name="matches_detail_screen_option_alineacion_title">ผู้เล่นตัวจริง</string>
+    <string name="matches_detail_screen_option_clasificacion_title">อันดับ</string>
+    <string name="matches_detail_screen_option_caraacara_title">เผชิญหน้า</string>
+    <string name="matches_detail_screen_option_estatisticas_title">สถิติ</string>
+
+    <!-- Ligas Detalle -->
+    <string name="ligas_detail_screen_option_clasificacion_title">อันดับ</string>
+    <string name="ligas_detail_screen_option_partidos_title">การแข่งขัน</string>
+    <string name="ligas_detail_screen_option_temporadas_title">ฤดูกาล</string>
+    <string name="ligas_detail_screen_siguiendo_label">กำลังติดตาม</string>
+    <string name="ligas_detail_screen_clasificacion_equipo_label">ทีม</string>
+
+    <!-- Equipos Detalle -->
+    <string name="team_detail_screen_option_resumen_title">สรุป</string>
+    <string name="team_detail_screen_option_partidos_title">การแข่งขัน</string>
+    <string name="team_detail_screen_option_estadisticas_title">สถิติ</string>
+    <string name="team_detail_screen_siguiendo_label">กำลังติดตาม</string>
+    <string name="team_detail_screen_proximo_partido_title">การแข่งขันถัดไป</string>
+    <string name="team_detail_screen_ultimos5_title">5 แมตช์ล่าสุด</string>
+    <string name="team_detail_screen_estadio_title">สนาม</string>
+    <string name="team_detail_screen_clasificacion_title">อันดับ</string>
+
+    <!-- Jugadores Detalle -->
+    <string name="jugador_detail_screen_option_perfil_title">โปรไฟล์</string>
+    <string name="jugador_detail_screen_option_estadisticas_title">สถิติ</string>
+    <string name="jugador_detail_screen_option_partidos_title">การแข่งขัน</string>
+    <string name="jugador_detail_screen_option_trayectoria_title">เส้นทางอาชีพ</string>
+    <string name="jugador_detail_screen_perfil_edad_label">อายุ</string>
+    <string name="jugador_detail_screen_perfil_estatura_label">ส่วนสูง</string>
+    <string name="jugador_detail_screen_perfil_peso_label">น้ำหนัก</string>
+    <string name="jugador_detail_screen_perfil_nacionalidad_label">สัญชาติ</string>
+    <string name="jugador_detail_screen_perfil_lesionado_label">บาดเจ็บ</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_label">วันเกิด</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_lugar_label">สถานที่เกิด</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_pais_label">ประเทศต้นกำเนิด</string>
+</resources>

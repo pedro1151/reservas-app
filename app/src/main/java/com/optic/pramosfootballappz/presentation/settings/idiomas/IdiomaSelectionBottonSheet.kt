@@ -31,10 +31,25 @@ fun IdiomaSelectionBottomSheet(
         )
 
         Column {
-            LanguageOption("Español", AppLanguage.ES, currentLanguage, onLanguageSelected)
-            LanguageOption("English", AppLanguage.EN, currentLanguage, onLanguageSelected)
-            LanguageOption("中文", AppLanguage.ZH, currentLanguage, onLanguageSelected)
-            LanguageOption("Português", AppLanguage.PT, currentLanguage, onLanguageSelected)
+            // Orden alfabético por nombre mostrado
+            LanguageOption("العربية", AppLanguage.AR, currentLanguage, onLanguageSelected) // Árabe
+            LanguageOption("Deutsch", AppLanguage.DE, currentLanguage, onLanguageSelected) // Alemán
+            LanguageOption("English", AppLanguage.EN, currentLanguage, onLanguageSelected) // Inglés
+            LanguageOption("Español", AppLanguage.ES, currentLanguage, onLanguageSelected) // Español
+            LanguageOption("Français", AppLanguage.FR, currentLanguage, onLanguageSelected) // Francés
+            LanguageOption("हिन्दी", AppLanguage.HI, currentLanguage, onLanguageSelected) // Hindi
+            LanguageOption("Bahasa Indonesia", AppLanguage.ID, currentLanguage, onLanguageSelected) // Indonesio
+            LanguageOption("Italiano", AppLanguage.IT, currentLanguage, onLanguageSelected) // Italiano
+            LanguageOption("日本語", AppLanguage.JA, currentLanguage, onLanguageSelected) // Japonés
+            LanguageOption("한국어", AppLanguage.KO, currentLanguage, onLanguageSelected) // Coreano
+            LanguageOption("Polski", AppLanguage.PL, currentLanguage, onLanguageSelected) // Polaco
+            LanguageOption("Русский", AppLanguage.RU, currentLanguage, onLanguageSelected) // Ruso
+            LanguageOption("Português", AppLanguage.PT, currentLanguage, onLanguageSelected) // Portugués
+            LanguageOption("Türkçe", AppLanguage.TR, currentLanguage, onLanguageSelected) // Turco
+            LanguageOption("Tiếng Việt", AppLanguage.VI, currentLanguage, onLanguageSelected) // Vietnamita
+            LanguageOption("ไทย", AppLanguage.TH, currentLanguage, onLanguageSelected) // Tailandés
+            LanguageOption("中文 (简体)", AppLanguage.ZH, currentLanguage, onLanguageSelected) // Chino simplificado
+            LanguageOption("中文 (繁體)", AppLanguage.ZH_TW, currentLanguage, onLanguageSelected) // Chino tradicional
         }
     }
 }

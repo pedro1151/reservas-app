@@ -1,0 +1,107 @@
+<resources>
+    <!-- VIETNAMITA-->
+    <string name="app_name">UNIFOT</string>
+    <string name="select_language">Chọn ngôn ngữ</string>
+
+    <!-- Link login -->
+    <string name="link_card_login_title">Đăng nhập</string>
+    <string name="link_card_login_notnow_option">Không phải bây giờ</string>
+    <string name="link_card_login_login_option">Đăng nhập</string>
+
+    <!-- Menú principal -->
+    <string name="menu_principal_prode">Dự đoán</string>
+    <string name="menu_principal_matches">Trận đấu</string>
+    <string name="menu_principal_leagues">Giải đấu</string>
+    <string name="menu_principal_follow">Đang theo dõi</string>
+    <string name="menu_principal_mas">Khác</string>
+
+    <!-- Matches Screen -->
+    <string name="matches_screen_today_title">Hôm nay</string>
+    <string name="matches_screen_yesterday_title">Hôm qua</string>
+    <string name="matches_screen_tomorrow_title">Ngày mai</string>
+    <string name="matches_screen_follow_title">Đang theo dõi</string>
+    <string name="matches_screen_other_matches">Các trận khác</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">Không có trận đấu nào cho ngày này.</string>
+
+    <!-- Más Screen -->
+    <string name="mas_screen_title">Khác</string>
+    <string name="mas_screen_login_title">Đăng nhập</string>
+    <string name="mas_screen_logout_title">Đăng xuất</string>
+    <string name="mas_screen_theme_title">Giao diện</string>
+    <string name="mas_screen_language_title">Ngôn ngữ</string>
+    <string name="mas_screen_shared_title">Chia sẻ UNIFOT</string>
+    <string name="mas_screen_follow_title">Theo dõi chúng tôi</string>
+    <string name="mas_screen_policy_title">Chính sách bảo mật</string>
+    <string name="mas_screen_version_title">Phiên bản ứng dụng</string>
+
+    <!-- Prode Screen -->
+    <string name="prode_screen_title">Dự đoán</string>
+    <string name="prode_screen_ligas_que_sigo_title">Đang theo dõi</string>
+    <string name="prode_screen_explorar_ligas_title">Khám phá giải đấu</string>
+    <string name="prode_screen_rank_title">Bảng xếp hạng</string>
+    <string name="prode_screen_buscar_ligas_placeholder">Tìm giải đấu</string>
+    <string name="prode_screen_participar_button">Tham gia</string>
+    <string name="prode_screen_ver_button">Xem</string>
+    <string name="prode_screen_participando_subtitle">Đang tham gia</string>
+
+    <!-- Ligas -->
+    <string name="ligas_screen_title">Giải đấu</string>
+    <string name="ligas_screen_buscar_placeholder">Tìm giải đấu</string>
+    <string name="ligas_screen_siguiendo_title">Đang theo dõi</string>
+    <string name="ligas_screen_explorar_title">Khám phá giải đấu</string>
+    <string name="ligas_screen_follow_button">Theo dõi</string>
+
+    <!-- Siguiendo -->
+    <string name="siguiendo_screen_title">Đang theo dõi</string>
+    <string name="siguiendo_screen_equipos_title">Đội bóng</string>
+    <string name="siguiendo_screen_jugadores_title">Cầu thủ</string>
+    <string name="siguiendo_screen_jugadores_sugeridos_title">Cầu thủ gợi ý</string>
+    <string name="siguiendo_screen_equipos_sugeridos_title">Đội bóng gợi ý</string>
+    <string name="siguiendo_screen_followiguiendo_screen_follow_button">Theo dõi</string>
+
+    <!-- Prode - Mis Predicciones -->
+    <string name="prode_mispredicciones_screen_title">Dự đoán của tôi</string>
+    <string name="prode_mispredicciones_screen_seleccionar_resultado_label">Chọn kết quả</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_gana">Chủ nhà thắng</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_empate">Hòa</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_visita">Đội khách thắng</string>
+    <string name="prode_mispredicciones_screen_editar_button">Chỉnh sửa</string>
+    <string name="prode_mispredicciones_screen_guardar_button">Lưu</string>
+
+    <!-- Detalle Partido -->
+    <string name="matches_detail_screen_option_alineacion_title">Đội hình</string>
+    <string name="matches_detail_screen_option_clasificacion_title">Bảng xếp hạng</string>
+    <string name="matches_detail_screen_option_caraacara_title">Đối đầu</string>
+    <string name="matches_detail_screen_option_estatisticas_title">Thống kê</string>
+
+    <!-- Ligas Detalle -->
+    <string name="ligas_detail_screen_option_clasificacion_title">Bảng xếp hạng</string>
+    <string name="ligas_detail_screen_option_partidos_title">Trận đấu</string>
+    <string name="ligas_detail_screen_option_temporadas_title">Mùa giải</string>
+    <string name="ligas_detail_screen_siguiendo_label">Đang theo dõi</string>
+    <string name="ligas_detail_screen_clasificacion_equipo_label">Đội bóng</string>
+
+    <!-- Equipos Detalle -->
+    <string name="team_detail_screen_option_resumen_title">Tóm tắt</string>
+    <string name="team_detail_screen_option_partidos_title">Trận đấu</string>
+    <string name="team_detail_screen_option_estadisticas_title">Thống kê</string>
+    <string name="team_detail_screen_siguiendo_label">Đang theo dõi</string>
+    <string name="team_detail_screen_proximo_partido_title">Trận đấu tiếp theo</string>
+    <string name="team_detail_screen_ultimos5_title">5 trận gần nhất</string>
+    <string name="team_detail_screen_estadio_title">Sân vận động</string>
+    <string name="team_detail_screen_clasificacion_title">Bảng xếp hạng</string>
+
+    <!-- Jugadores Detalle -->
+    <string name="jugador_detail_screen_option_perfil_title">Hồ sơ</string>
+    <string name="jugador_detail_screen_option_estadisticas_title">Thống kê</string>
+    <string name="jugador_detail_screen_option_partidos_title">Trận đấu</string>
+    <string name="jugador_detail_screen_option_trayectoria_title">Sự nghiệp</string>
+    <string name="jugador_detail_screen_perfil_edad_label">Tuổi</string>
+    <string name="jugador_detail_screen_perfil_estatura_label">Chiều cao</string>
+    <string name="jugador_detail_screen_perfil_peso_label">Cân nặng</string>
+    <string name="jugador_detail_screen_perfil_nacionalidad_label">Quốc tịch</string>
+    <string name="jugador_detail_screen_perfil_lesionado_label">Chấn thương</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_label">Ngày sinh</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_lugar_label">Nơi sinh</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_pais_label">Quốc gia xuất xứ</string>
+</resources>

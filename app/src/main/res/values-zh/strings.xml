@@ -1,4 +1,5 @@
 <resources>
+    <!-- chino simplificado -->
     <string name="app_name">UNIFOT</string>
     <string name="select_language">选择语言</string>
 

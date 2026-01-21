@@ -1,0 +1,107 @@
+<resources>
+    <!-- ALEMAN -->
+    <string name="app_name">UNIFOT</string>
+    <string name="select_language">Sprache auswählen</string>
+
+    <!-- Link login -->
+    <string name="link_card_login_title">Anmelden</string>
+    <string name="link_card_login_notnow_option">Jetzt nicht</string>
+    <string name="link_card_login_login_option">Anmelden</string>
+
+    <!-- Menú principal -->
+    <string name="menu_principal_prode">Tipps</string>
+    <string name="menu_principal_matches">Spiele</string>
+    <string name="menu_principal_leagues">Ligen</string>
+    <string name="menu_principal_follow">Gefolgt</string>
+    <string name="menu_principal_mas">Mehr</string>
+
+    <!-- Matches Screen -->
+    <string name="matches_screen_today_title">Heute</string>
+    <string name="matches_screen_yesterday_title">Gestern</string>
+    <string name="matches_screen_tomorrow_title">Morgen</string>
+    <string name="matches_screen_follow_title">Gefolgt</string>
+    <string name="matches_screen_other_matches">Weitere Spiele</string>
+    <string name="matches_screen_no_hay_partidos_mensaje">Keine Spiele für dieses Datum.</string>
+
+    <!-- Más Screen -->
+    <string name="mas_screen_title">Mehr</string>
+    <string name="mas_screen_login_title">Anmelden</string>
+    <string name="mas_screen_logout_title">Abmelden</string>
+    <string name="mas_screen_theme_title">Design</string>
+    <string name="mas_screen_language_title">Sprache</string>
+    <string name="mas_screen_shared_title">UNIFOT teilen</string>
+    <string name="mas_screen_follow_title">Folge uns</string>
+    <string name="mas_screen_policy_title">Datenschutzrichtlinie</string>
+    <string name="mas_screen_version_title">App-Version</string>
+
+    <!-- Prode Screen -->
+    <string name="prode_screen_title">Tipps</string>
+    <string name="prode_screen_ligas_que_sigo_title">Gefolgt</string>
+    <string name="prode_screen_explorar_ligas_title">Ligen entdecken</string>
+    <string name="prode_screen_rank_title">Rangliste</string>
+    <string name="prode_screen_buscar_ligas_placeholder">Ligen suchen</string>
+    <string name="prode_screen_participar_button">Teilnehmen</string>
+    <string name="prode_screen_ver_button">Ansehen</string>
+    <string name="prode_screen_participando_subtitle">Teilnehmend</string>
+
+    <!-- Ligas -->
+    <string name="ligas_screen_title">Ligen</string>
+    <string name="ligas_screen_buscar_placeholder">Ligen suchen</string>
+    <string name="ligas_screen_siguiendo_title">Gefolgt</string>
+    <string name="ligas_screen_explorar_title">Ligen entdecken</string>
+    <string name="ligas_screen_follow_button">Folgen</string>
+
+    <!-- Siguiendo -->
+    <string name="siguiendo_screen_title">Gefolgt</string>
+    <string name="siguiendo_screen_equipos_title">Teams</string>
+    <string name="siguiendo_screen_jugadores_title">Spieler</string>
+    <string name="siguiendo_screen_jugadores_sugeridos_title">Empfohlene Spieler</string>
+    <string name="siguiendo_screen_equipos_sugeridos_title">Empfohlene Teams</string>
+    <string name="siguiendo_screen_followiguiendo_screen_follow_button">Folgen</string>
+
+    <!-- Prode - Mis Predicciones -->
+    <string name="prode_mispredicciones_screen_title">Meine Tipps</string>
+    <string name="prode_mispredicciones_screen_seleccionar_resultado_label">Ergebnis auswählen</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_gana">Heimsieg</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_empate">Unentschieden</string>
+    <string name="prode_mispredicciones_screen_resultado_valor_visita">Auswärtssieg</string>
+    <string name="prode_mispredicciones_screen_editar_button">Bearbeiten</string>
+    <string name="prode_mispredicciones_screen_guardar_button">Speichern</string>
+
+    <!-- Detalle Partido -->
+    <string name="matches_detail_screen_option_alineacion_title">Aufstellung</string>
+    <string name="matches_detail_screen_option_clasificacion_title">Tabelle</string>
+    <string name="matches_detail_screen_option_caraacara_title">Direkter Vergleich</string>
+    <string name="matches_detail_screen_option_estatisticas_title">Statistiken</string>
+
+    <!-- Ligas Detalle -->
+    <string name="ligas_detail_screen_option_clasificacion_title">Tabelle</string>
+    <string name="ligas_detail_screen_option_partidos_title">Spiele</string>
+    <string name="ligas_detail_screen_option_temporadas_title">Saisons</string>
+    <string name="ligas_detail_screen_siguiendo_label">Gefolgt</string>
+    <string name="ligas_detail_screen_clasificacion_equipo_label">Team</string>
+
+    <!-- Equipos Detalle -->
+    <string name="team_detail_screen_option_resumen_title">Übersicht</string>
+    <string name="team_detail_screen_option_partidos_title">Spiele</string>
+    <string name="team_detail_screen_option_estadisticas_title">Statistiken</string>
+    <string name="team_detail_screen_siguiendo_label">Gefolgt</string>
+    <string name="team_detail_screen_proximo_partido_title">Nächstes Spiel</string>
+    <string name="team_detail_screen_ultimos5_title">Letzte 5 Spiele</string>
+    <string name="team_detail_screen_estadio_title">Stadion</string>
+    <string name="team_detail_screen_clasificacion_title">Platzierung</string>
+
+    <!-- Jugadores Detalle -->
+    <string name="jugador_detail_screen_option_perfil_title">Profil</string>
+    <string name="jugador_detail_screen_option_estadisticas_title">Statistiken</string>
+    <string name="jugador_detail_screen_option_partidos_title">Spiele</string>
+    <string name="jugador_detail_screen_option_trayectoria_title">Karriere</string>
+    <string name="jugador_detail_screen_perfil_edad_label">Alter</string>
+    <string name="jugador_detail_screen_perfil_estatura_label">Größe</string>
+    <string name="jugador_detail_screen_perfil_peso_label">Gewicht</string>
+    <string name="jugador_detail_screen_perfil_nacionalidad_label">Nationalität</string>
+    <string name="jugador_detail_screen_perfil_lesionado_label">Verletzt</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_label">Geburtsdatum</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_lugar_label">Geburtsort</string>
+    <string name="jugador_detail_screen_perfil_nacimiento_pais_label">Herkunftsland</string>
+</resources>
