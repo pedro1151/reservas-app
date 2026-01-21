@@ -38,7 +38,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var authDatastore: AuthDatastore
-    /*
+    /*  NO SE USA DE MOMENTO
     override fun attachBaseContext(newBase: Context) {
 
         val localizedContext = LocaleManager.attachBaseContext(newBase, authDatastore)
