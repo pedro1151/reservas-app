@@ -21,6 +21,7 @@ import com.optic.pramosreservasappz.domain.model.prode.UserPredictionSummaryEnri
 import com.optic.pramosreservasappz.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.model.standing.StandingResponse
 import com.optic.pramosreservasappz.domain.model.team.TeamResponse
@@ -31,8 +32,9 @@ import kotlinx.coroutines.flow.Flow
 interface ReservasRepository {
 
     // teams
-    suspend fun getClientsByProvider(providerId: Int): Flow<Resource<List<ClientResponse>>>
+    suspend fun getClientsByProvider(providerId: Int, fullName:String, email:String): Flow<Resource<List<ClientResponse>>>
     suspend fun getServicesByProvider(providerId: Int, name:String): Flow<Resource<List<ServiceResponse>>>
+    suspend fun getStaffTotales(): Flow<Resource<List<StaffResponse>>>
    /* suspend fun getSuggestedTeams(limit: Int): Flow<Resource<List<Team>>>
     suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>>
 

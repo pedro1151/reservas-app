@@ -3,6 +3,7 @@ package com.optic.pramosreservasappz.data.dataSource.remote.service
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -10,9 +11,11 @@ import retrofit2.http.Query
 
 interface ReservasService {
 /* Se utiliza Response de retrofit, en los archivos de servicios */
-    @GET("/reservas/client/list/byprovider/{provider_id}")
+    @GET("/reservas/client/list/byprovider")
     suspend fun getClientsByProvider(
-    @Path("provider_id") providerId: Int
+    @Query("provider_id") providerId: Int,
+    @Query("full_name") fullName: String,
+    @Query("email") email: String,
     ): Response<List<ClientResponse>>
 
     @GET("/reservas/service/list/byprovider")
@@ -20,6 +23,11 @@ interface ReservasService {
         @Query("provider_id") providerId: Int,
         @Query("name") name: String
     ): Response<List<ServiceResponse>>
+
+    /* staff */
+    @GET("/reservas/staff/list")
+    suspend fun getStaffsTotales(
+    ): Response<List<StaffResponse>>
 
     /*
     @GET("football/teams/{team_id}")

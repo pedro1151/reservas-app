@@ -4,6 +4,7 @@ import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasServi
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import retrofit2.Response
 
 class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService): ReservasRemoteDataSource {
@@ -169,11 +170,16 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
 
      */
     override suspend fun getClientsByProvider(
-        providerId: Int
-    ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(providerId)
+        providerId: Int,
+        fullName: String,
+        email: String
+    ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(providerId, fullName, email)
 
     override suspend fun getServicesByProvider(
         providerId: Int,
         name: String
     ): Response<List<ServiceResponse>> = reservasService.getServicesByProvider(providerId, name)
+
+    override suspend fun getStaffTotales(
+    ): Response<List<StaffResponse>> = reservasService.getStaffsTotales()
 }

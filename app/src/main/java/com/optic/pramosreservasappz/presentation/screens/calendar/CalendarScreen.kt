@@ -21,8 +21,11 @@ fun CalendarScreen(
     val viewModel: CalendarViewModel = hiltViewModel()
     val clientResource by viewModel.clientsState.collectAsState()
 
+    val staffResource by viewModel.staffState.collectAsState()
+
     LaunchedEffect(Unit) {
-        viewModel.getClientsByProvider(1)
+        viewModel.getStaffTotales()
+        viewModel.getClientsByProvider(1, "", "")
     }
 
     // para idioma
@@ -38,15 +41,16 @@ fun CalendarScreen(
         //containerColor = GreyLight
     ) { paddingValues ->
 
-
-        when (val result = clientResource) {
+        val clients = (clientResource as? Resource.Success)?.data ?: emptyList()
+        when (val result = staffResource) {
             is Resource.Loading -> {
                // CircularProgressIndicator()
             }
             is Resource.Success -> {
                 CalendarContent(
                     modifier = Modifier,
-                    clients = result.data,
+                    staff = result.data,
+                    clients = clients,
                     paddingValues = paddingValues,
                     viewModel = viewModel,
                     navController = navController,

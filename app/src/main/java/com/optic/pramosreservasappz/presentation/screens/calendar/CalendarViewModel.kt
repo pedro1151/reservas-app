@@ -3,7 +3,9 @@ package com.optic.pramosreservasappz.presentation.screens.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
+import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -12,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val reservasRepository: ReservasRepository
+    private val reservasUC: ReservasUC
 ) : ViewModel() {
 
     // ---------------------------------------------
@@ -20,6 +22,13 @@ class CalendarViewModel @Inject constructor(
     // ---------------------------------------------
     private val _clientsState = MutableStateFlow<Resource<List<ClientResponse>>>(Resource.Loading)
     val clientsState: StateFlow<Resource<List<ClientResponse>>> = _clientsState
+
+    // ---------------------------------------------
+    // STATE: Lista completa o filtrada según búsqueda
+    // ---------------------------------------------
+    private val _staffState = MutableStateFlow<Resource<List<StaffResponse>>>(Resource.Loading)
+    val staffState: StateFlow<Resource<List<StaffResponse>>> = _staffState
+
 
 
     // ---------------------------------------------
@@ -43,9 +52,13 @@ class CalendarViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collectLatest { q ->
                     if (q.isBlank()) {
-                        getClientsByProvider(1)
+                        getClientsByProvider(1, "", "")
                     } else {
-                        getClientsByProvider(1)
+                        getClientsByProvider(
+                            1,
+                            fullName = q,
+                            email = q
+                        )
                     }
                 }
         }
@@ -60,12 +73,24 @@ class CalendarViewModel @Inject constructor(
     // API CALLS
     // ---------------------------------------------
     fun getClientsByProvider(
-        providerId: Int
+        providerId: Int,
+        fullName:String,
+        email:String
     ) {
         viewModelScope.launch {
-            reservasRepository.getClientsByProvider(providerId)
+            reservasUC.getClientPorProviderUC(providerId, fullName, email)
                 .collectLatest { result ->
                     _clientsState.value = result
+                }
+        }
+    }
+
+    fun getStaffTotales(
+    ) {
+        viewModelScope.launch {
+            reservasUC.getStaffTotalesUC()
+                .collectLatest { result ->
+                    _staffState.value = result
                 }
         }
     }

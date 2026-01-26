@@ -63,7 +63,7 @@ class ClientViewModel @Inject constructor(
         providerId: Int
     ) {
         viewModelScope.launch {
-            reservasRepository.getClientsByProvider(providerId)
+            reservasRepository.getClientsByProvider(providerId, "", "")
                 .collectLatest { result ->
                     _clientsState.value = result
                 }

@@ -3,6 +3,7 @@ package com.optic.pramosreservasappz.data.dataSource.remote
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import retrofit2.Response
 
 interface ReservasRemoteDataSource {
@@ -10,8 +11,10 @@ interface ReservasRemoteDataSource {
    esta aclarcion es util, ya que en las implementaciones se utiliza FLow
    */
     // Teams
-    suspend fun getClientsByProvider(providerId: Int): Response<List<ClientResponse>>
+    suspend fun getClientsByProvider(providerId: Int, fullName:String, email:String): Response<List<ClientResponse>>
     suspend fun getServicesByProvider(providerId: Int, name:String): Response<List<ServiceResponse>>
+
+    suspend fun getStaffTotales(): Response<List<StaffResponse>>
     /*
     suspend fun getSuggestedTeams(limit: Int): Response<List<Team>>
     suspend fun getTeamById(teamId: Int): Response<TeamResponse>

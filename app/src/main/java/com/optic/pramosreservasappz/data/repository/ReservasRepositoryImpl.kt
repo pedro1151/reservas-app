@@ -14,6 +14,7 @@ import com.optic.pramosreservasappz.data.dataSource.remote.ReservasRemoteDataSou
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -1423,11 +1424,13 @@ class ReservasRepositoryImpl(
 
  */
     override suspend fun getClientsByProvider(
-        providerId: Int
+        providerId: Int,
+        fullName: String,
+        email:String
     ): Flow<Resource<List<ClientResponse>>> =flow{
     emit(
         ResponseToRequest.send(
-            teamRemoteDataSource.getClientsByProvider(providerId)
+            teamRemoteDataSource.getClientsByProvider(providerId, fullName, email)
         )
     )
 }
@@ -1439,6 +1442,16 @@ class ReservasRepositoryImpl(
         emit(
             ResponseToRequest.send(
                 teamRemoteDataSource.getServicesByProvider(providerId, name)
+            )
+        )
+    }
+
+    override suspend fun getStaffTotales(
+
+    ): Flow<Resource<List<StaffResponse>>> =flow{
+        emit(
+            ResponseToRequest.send(
+                teamRemoteDataSource.getStaffTotales()
             )
         )
     }

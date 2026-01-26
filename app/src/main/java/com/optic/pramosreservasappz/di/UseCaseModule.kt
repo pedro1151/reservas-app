@@ -11,6 +11,7 @@ import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.staff.GetStaffTotalesUC
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +38,8 @@ object UseCaseModule {
 
     fun provideTeamUseCase(reservasRepository: ReservasRepository) = ReservasUC(
         getClientPorProviderUC = GetClientPorProviderUC(reservasRepository),
-        getServicesPorProviderUC = GetServicesPorProviderUC(reservasRepository)
+        getServicesPorProviderUC = GetServicesPorProviderUC(reservasRepository),
+        getStaffTotalesUC = GetStaffTotalesUC(reservasRepository)
 
      /*
         //getallTeamUseCase = GetallTeamUseCase(teamRepository)

@@ -23,7 +23,7 @@ fun ClientPrincipalScreen(
     val clientResource by viewModel.clientsState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getClientsByProvider(1)
+        viewModel.getClientsByProvider(1, "", "")
     }
 
     // para idioma
