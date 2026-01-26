@@ -14,7 +14,7 @@
         tools:ignore="ScopedStorage" />
 
     <application
-        android:name="FootballApp"
+        android:name="ReservasApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -45,7 +45,7 @@
         </activity>
 
         <provider
-            android:authorities="com.optic.pramosfootballappz.fileprovider"
+            android:authorities="com.optic.pramosreservasappz.fileprovider"
             android:name=".presentation.util.ComposeFileProvider"
             android:grantUriPermissions="true"
             android:exported="false">

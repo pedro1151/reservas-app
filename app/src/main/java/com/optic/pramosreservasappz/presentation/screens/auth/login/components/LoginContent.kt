@@ -1,0 +1,240 @@
+package com.optic.pramosreservasappz.presentation.screens.auth.login.components
+
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.components.DefaultButton
+import com.optic.pramosreservasappz.presentation.components.GoogleSignInButton
+import com.optic.pramosreservasappz.presentation.navigation.Graph
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.auth.login.LoginViewModel
+import androidx.compose.foundation.background
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
+import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.components.inputs.EmailBox
+import com.optic.pramosreservasappz.presentation.components.progressBar.CustomProgressBar
+import com.optic.pramosreservasappz.presentation.ui.theme.getGreenColorFixture
+
+
+@Composable
+fun LoginContent(
+    navController: NavHostController,
+    paddingValues: PaddingValues,
+    vm: LoginViewModel,
+    onGoogleSignInClick: () -> Unit
+) {
+    val state = vm.state
+    val context = LocalContext.current
+    val sendCodeSuccess by vm.sendCodeSuccess
+    val sendCodeState by vm.sendCodeState.collectAsState()   // 👈 AQUÍ
+
+    // ✅ Navegación
+    LaunchedEffect(sendCodeSuccess) {
+        if (sendCodeSuccess) {
+            navController.navigate("${Graph.CLIENT}/${vm.state.email}") {
+                popUpTo(ClientScreen.Login.route) { inclusive = false }
+            }
+        }
+    }
+
+    // ✅ Errores
+    LaunchedEffect(vm.errorMessage) {
+        if (vm.errorMessage.isNotEmpty()) {
+            Toast.makeText(context, vm.errorMessage, Toast.LENGTH_LONG).show()
+            vm.errorMessage = ""
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+            .background(
+                        MaterialTheme.colorScheme.background
+
+            )
+    ) {
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .verticalScroll(rememberScrollState())
+                .align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // 🖼 Logo centrado
+            Image(
+                painter = painterResource(id = com.optic.pramosreservasappz.R.drawable.portada_reservas),
+                contentDescription = "Logo App de Reservas",
+                modifier = Modifier
+                    .size(450.dp)
+                    .padding(bottom = 10.dp)
+            )
+
+            // 🌫️ Card de login más compacta
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+               /* shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+
+                */
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Reserly",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.8.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        thickness = 1.dp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    /*
+                    // ✉️ Email
+                    EmailBox(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.email,
+                        onValueChange = { vm.onEmailInput(it.take(100)) },
+                        label = "Correo electrónico",
+                        icon = Icons.Default.Email,
+                        keyboardType = KeyboardType.Email
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 🔘 Botón principal
+                    DefaultButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        text = "Enviar código de acceso",
+                        onClick = { vm.loginSendCode() },
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                     */
+
+                    // 🔵 Google Sign-In
+
+                    GoogleSignInButton(onClick = { onGoogleSignInClick() })
+                    Spacer(modifier = Modifier.height(12.dp))
+
+
+                    // 🔘 Login tradicional
+                    DefaultButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        text = "Accede con tu email",
+                        onClick = {
+                            navController.navigate(ClientScreen.BasicLogin.route)
+                        },
+                        color = MaterialTheme.colorScheme.background,
+                        icon = Icons.Default.Email
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    /*HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        thickness = 1.dp
+                    )
+
+                     */
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // 🔗 Registro
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        Text(
+                            text = "Términos y Condiciones",
+                            color = Color.Gray,
+                            fontSize = 13.sp
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Reserly",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Text(
+                                text = "2025",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        }
+
+
+                }
+            }
+        }
+    }
+    //  PROGRESS BAR MOSTRADO SOLO CUANDO SE ENVÍA EL CÓDIGO
+    CustomProgressBar(
+        isLoading = sendCodeState is Resource.Loading   // 👈 AQUÍ
+    )
+
+}
+
+

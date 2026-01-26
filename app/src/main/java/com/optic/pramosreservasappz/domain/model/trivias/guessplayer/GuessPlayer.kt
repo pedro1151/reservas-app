@@ -1,0 +1,17 @@
+package com.optic.pramosreservasappz.domain.model.trivias.guessplayer
+
+import com.google.gson.annotations.SerializedName
+
+data class GuessPlayer(
+    @SerializedName("id")
+    val id: Int,
+
+    @SerializedName("firstname")
+    val firstname: String,
+
+    @SerializedName("photo")
+    val photo: String? = null,
+
+    @SerializedName("nationality")
+    val nationality: String? = null
+)

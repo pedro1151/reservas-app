@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.optic.pramosfootballappz'
+    namespace 'com.optic.pramosreservasappz'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.optic.pramosfootballappz"
+        applicationId "com.optic.pramosreservasappz"
         minSdk 23
         targetSdk 34
         versionCode 1
