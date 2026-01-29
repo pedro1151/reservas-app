@@ -21,7 +21,7 @@ fun BackTopBar(
                 Text(
                     text = title,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 20.sp
                 )
             }
@@ -36,8 +36,8 @@ fun BackTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer, // Fondo
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.background, // Fondo
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.primary
         )
     )

@@ -15,6 +15,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val teamRepository: ReservasRepository
 ) : ViewModel() {
+    /*
 
     init {
         viewModelScope.launch {
@@ -69,6 +70,8 @@ class MainViewModel @Inject constructor(
         super.onCleared()
         fixturesJob?.cancel()
     }
+
+     */
 
 
 }

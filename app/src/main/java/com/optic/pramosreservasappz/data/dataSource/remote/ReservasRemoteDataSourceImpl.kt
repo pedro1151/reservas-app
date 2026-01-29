@@ -3,7 +3,9 @@ package com.optic.pramosreservasappz.data.dataSource.remote
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasService
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import retrofit2.Response
 
@@ -169,6 +171,8 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     ): Response<UserPredictionSummaryResponse> = teamService.getUserPredictionSummary(userId, season)
 
      */
+
+    //clientes
     override suspend fun getClientsByProvider(
         providerId: Int,
         fullName: String,
@@ -182,4 +186,19 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
 
     override suspend fun getStaffTotales(
     ): Response<List<StaffResponse>> = reservasService.getStaffsTotales()
+
+     // services
+    override suspend fun createService(
+         request: ServiceCreateRequest
+    ): Response<ServiceResponse> = reservasService.createService(request)
+
+    override suspend fun updateService(
+        serviceId: Int,
+        request: ServiceUpdateRequest
+    ): Response<ServiceResponse> = reservasService.updateService(serviceId, request)
+
+    override suspend fun getServiceById(
+        serviceId: Int
+    ): Response<ServiceResponse> = reservasService.getServiceById(serviceId)
+
 }

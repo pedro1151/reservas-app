@@ -10,7 +10,10 @@ import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.services.UpdateServiceUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.staff.GetStaffTotalesUC
 import dagger.Module
 import dagger.Provides
@@ -37,9 +40,15 @@ object UseCaseModule {
     @Provides
 
     fun provideTeamUseCase(reservasRepository: ReservasRepository) = ReservasUC(
+
+        //clients
         getClientPorProviderUC = GetClientPorProviderUC(reservasRepository),
+        // services
         getServicesPorProviderUC = GetServicesPorProviderUC(reservasRepository),
-        getStaffTotalesUC = GetStaffTotalesUC(reservasRepository)
+        createServiceUC = CreateServiceUC(reservasRepository),
+        updateServiceUC = UpdateServiceUC(reservasRepository),
+        getStaffTotalesUC = GetStaffTotalesUC(reservasRepository),
+        getServicesPorIdUC = GetServicesPorIdUC(reservasRepository)
 
      /*
         //getallTeamUseCase = GetallTeamUseCase(teamRepository)

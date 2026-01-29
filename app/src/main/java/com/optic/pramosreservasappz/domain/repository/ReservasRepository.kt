@@ -20,7 +20,9 @@ import com.optic.pramosreservasappz.domain.model.prode.UserPredictionRanking
 import com.optic.pramosreservasappz.domain.model.prode.UserPredictionSummaryEnriched
 import com.optic.pramosreservasappz.domain.model.prode.UserPredictionSummaryResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.model.standing.StandingResponse
@@ -31,10 +33,25 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReservasRepository {
 
-    // teams
+    // clients
     suspend fun getClientsByProvider(providerId: Int, fullName:String, email:String): Flow<Resource<List<ClientResponse>>>
     suspend fun getServicesByProvider(providerId: Int, name:String): Flow<Resource<List<ServiceResponse>>>
     suspend fun getStaffTotales(): Flow<Resource<List<StaffResponse>>>
+
+    //services
+    suspend fun createService(
+        request: ServiceCreateRequest
+    ): Flow<Resource<ServiceResponse>>
+
+    suspend fun updateService(
+        serviceId: Int,
+        request: ServiceUpdateRequest
+    ): Flow<Resource<ServiceResponse>>
+
+    suspend fun getServiceById(
+        serviceId: Int,
+    ): Flow<Resource<ServiceResponse>>
+
    /* suspend fun getSuggestedTeams(limit: Int): Flow<Resource<List<Team>>>
     suspend fun getTeamById(teamId: Int): Flow<Resource<TeamResponse>>
 

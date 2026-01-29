@@ -15,5 +15,12 @@ data class ServiceResponse(
     @SerializedName("created_by") val createdBy: String? = null,
     @SerializedName("created") val created: Date,
     @SerializedName("updated_by") val updatedBy: String? = null,
-    @SerializedName("updated") val updated: Date
+    @SerializedName("updated") val updated: Date,
+
+    @SerializedName("buffer_time") val bufferTime: Double? = null,
+    @SerializedName("category") val category: String? = null,
+    @SerializedName("color") val color: String? = null,
+    @SerializedName("hidden") val hidden: Boolean? = null
+
+
 )

@@ -43,26 +43,8 @@ fun ServiceScreen(
                 navController = navController,
                 title = "Servicios"
             )
-        },
-        floatingActionButton = {
-            // Botón flotante "+", fijo en pantalla
-            FloatingActionButton(
-                onClick = {
-                    // Acción al hacer click, por ejemplo navegar a crear servicio
-                    //navController.navigate("service/create")
-                },
-                containerColor = Color(0xFF1E88E5), // azul moderno, puedes usar tu color primario también
-                contentColor = Color.White,
-                shape = RoundedCornerShape(16.dp),
-                elevation = FloatingActionButtonDefaults.elevation(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Agregar servicio"
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End // derecha inferior
+        }
+
     ) { paddingValues ->
 
         when (val result = serviceResource) {
