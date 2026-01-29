@@ -2,10 +2,15 @@ package com.optic.pramosreservasappz.data.dataSource.remote.service
 
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -17,6 +22,25 @@ interface ReservasService {
     @Query("full_name") fullName: String,
     @Query("email") email: String,
     ): Response<List<ClientResponse>>
+
+    //servicios
+
+    @POST("/reservas/service/create")
+    suspend fun createService(
+        @Body request: ServiceCreateRequest
+    ): Response<ServiceResponse>
+
+    @GET("/reservas/service/id/{service_id}")
+    suspend fun getServiceById(
+        @Path("service_id") serviceId: Int
+    ): Response<ServiceResponse>
+
+
+    @PUT("/reservas/service/update/{service_id}")
+    suspend fun updateService(
+        @Path("service_id") serviceId: Int,
+        @Body request: ServiceUpdateRequest
+    ): Response<ServiceResponse>
 
     @GET("/reservas/service/list/byprovider")
     suspend fun getServicesByProvider(

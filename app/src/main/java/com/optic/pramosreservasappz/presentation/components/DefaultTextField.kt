@@ -20,22 +20,26 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DefaultTextField(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (value: String) -> Unit,
     label: String,
     icon: ImageVector,
     keyboardType: KeyboardType = KeyboardType.Text,
-    hideText: Boolean = false
+    hideText: Boolean = false,
+    minLines: Int = 1,
+    maxLines: Int = 1
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        label = { Text(
-            text = label,
-            color = MaterialTheme.colorScheme.surface
-        ) },
+        label = {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.surface
+            )
+        },
         shape = RoundedCornerShape(10.dp),
         leadingIcon = {
             Icon(
@@ -45,9 +49,13 @@ fun DefaultTextField(
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        visualTransformation = if (hideText) PasswordVisualTransformation() else VisualTransformation.None,
+        visualTransformation = if (hideText)
+            PasswordVisualTransformation()
+        else
+            VisualTransformation.None,
+        minLines = minLines,
+        maxLines = maxLines,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            // Si querés personalizar colores, por ejemplo:
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             cursorColor = MaterialTheme.colorScheme.primary,
@@ -56,3 +64,4 @@ fun DefaultTextField(
         )
     )
 }
+

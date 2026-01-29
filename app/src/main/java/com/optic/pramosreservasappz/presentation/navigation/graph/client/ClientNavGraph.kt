@@ -19,11 +19,16 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
+import com.optic.pramosreservasappz.presentation.screens.services.create.CreateServiceScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -39,8 +44,9 @@ fun ClientNavGraph(
         startDestination = if (isAuthenticated)
             ClientScreen.Clientes.route
         else
-            ClientScreen.Login.route
-    ) {
+            ClientScreen.Login.route,
+        modifier = Modifier.fillMaxSize() // 👈 CLAVE
+    ){
 
         composable(route = ClientScreen.Clientes.route) {
            ClientPrincipalScreen(navController, isAuthenticated)
@@ -53,6 +59,32 @@ fun ClientNavGraph(
         composable(route = ClientScreen.Servicios.route) {
            ServiceScreen(navController, isAuthenticated)
         }
+
+        composable(
+            route = ClientScreen.CreateServicio.route,
+            arguments = listOf(
+                navArgument("serviceId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                },
+                navArgument("editable") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+
+            val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
+            val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
+
+            CreateServiceScreen(
+                navController = navController,
+                serviceId = serviceId,
+                editable = editable
+            )
+        }
+
 
         composable(
             route = ClientScreen.Login.route,

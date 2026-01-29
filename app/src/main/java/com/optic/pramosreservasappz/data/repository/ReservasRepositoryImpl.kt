@@ -13,7 +13,9 @@ import com.optic.pramosreservasappz.data.dataSource.local.mapper.toEntity
 import com.optic.pramosreservasappz.data.dataSource.remote.ReservasRemoteDataSource
 import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
@@ -25,7 +27,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class ReservasRepositoryImpl(
-    private val teamRemoteDataSource: ReservasRemoteDataSource,
+    private val reservasRemoteDataSource: ReservasRemoteDataSource,
     private val fixtureDao: FixtureDao,
     private val leagueDao: LeagueDao,
     private val playerDao: PlayerDao,
@@ -1423,6 +1425,8 @@ class ReservasRepositoryImpl(
             }
 
  */
+
+    //clients
     override suspend fun getClientsByProvider(
         providerId: Int,
         fullName: String,
@@ -1430,10 +1434,11 @@ class ReservasRepositoryImpl(
     ): Flow<Resource<List<ClientResponse>>> =flow{
     emit(
         ResponseToRequest.send(
-            teamRemoteDataSource.getClientsByProvider(providerId, fullName, email)
+            reservasRemoteDataSource.getClientsByProvider(providerId, fullName, email)
         )
     )
 }
+    //services
 
     override suspend fun getServicesByProvider(
         providerId: Int,
@@ -1441,7 +1446,7 @@ class ReservasRepositoryImpl(
     ): Flow<Resource<List<ServiceResponse>>> =flow{
         emit(
             ResponseToRequest.send(
-                teamRemoteDataSource.getServicesByProvider(providerId, name)
+                reservasRemoteDataSource.getServicesByProvider(providerId, name)
             )
         )
     }
@@ -1451,7 +1456,38 @@ class ReservasRepositoryImpl(
     ): Flow<Resource<List<StaffResponse>>> =flow{
         emit(
             ResponseToRequest.send(
-                teamRemoteDataSource.getStaffTotales()
+                reservasRemoteDataSource.getStaffTotales()
+            )
+        )
+    }
+
+    override suspend fun createService(
+        request: ServiceCreateRequest
+    ): Flow<Resource<ServiceResponse>> = flow{
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.createService(request)
+            )
+        )
+    }
+
+    override suspend fun updateService(
+        serviceId: Int,
+        request: ServiceUpdateRequest
+    ): Flow<Resource<ServiceResponse>>  = flow{
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.updateService(serviceId, request)
+            )
+        )
+    }
+
+    override suspend fun getServiceById(
+        serviceId: Int
+    ): Flow<Resource<ServiceResponse>> =flow{
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.getServiceById(serviceId)
             )
         )
     }

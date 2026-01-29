@@ -34,7 +34,10 @@ import com.optic.pramosreservasappz.presentation.components.DefaultTextField
 import com.optic.pramosreservasappz.presentation.screens.auth.register.RegisterViewModel
 import com.optic.pramosreservasappz.R
 @Composable
-fun RegisterContent(paddingValues: PaddingValues, vm: RegisterViewModel = hiltViewModel()) {
+fun RegisterContent(
+    paddingValues: PaddingValues,
+    vm: RegisterViewModel = hiltViewModel()
+) {
 
     val state = vm.state
     val context = LocalContext.current

@@ -46,6 +46,19 @@ sealed class ClientScreen(
     )
 
 
+
+    object CreateServicio : ClientScreen(
+        route = "client/create_service?serviceId={serviceId}&editable={editable}",
+        title = "Crear/Editar Servicio",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(serviceId: Int? = null, editable: Boolean = false): String {
+            return "client/create_service?serviceId=${serviceId ?: ""}&editable=$editable"
+        }
+    }
+
+
+
     object Matches: ClientScreen(
         route = "client/calendario",
         title = "Calendario",

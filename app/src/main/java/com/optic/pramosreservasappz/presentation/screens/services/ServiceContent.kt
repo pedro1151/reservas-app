@@ -99,16 +99,6 @@ fun ServiceContent(
                         val scope = rememberCoroutineScope()
                         ServiceCard(
                             service = service,
-                            isFollowed = false,
-                            onFollowClick = {
-                                /*
-                                    scope.launch {
-                                        viewModel.createFollowedLeague(league.id, isAuthenticated)
-                                    }
-
-                                 */
-
-                            },
                             navController = navController
                         )
                     }

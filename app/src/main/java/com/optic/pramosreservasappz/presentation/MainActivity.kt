@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*  // Importa Material3
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -21,6 +23,7 @@ import com.google.android.gms.ads.MobileAds
 import com.optic.pramosreservasappz.ads.RewardedAdManager
 import com.optic.pramosreservasappz.data.dataSource.local.datastore.AuthDatastore
 import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
+import com.optic.pramosreservasappz.presentation.components.buttons.CustomFloatingActionButton
 import com.optic.pramosreservasappz.presentation.navigation.graph.client.ClientNavGraph
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.menubottombar.components.ClientBottomBar
@@ -108,6 +111,7 @@ class MainActivity : ComponentActivity() {
 
                     val currentBackStack by navController.currentBackStackEntryAsState()
                     val currentDestination = currentBackStack?.destination
+                    val currentRoute = currentDestination?.route
 
                     //val mainVM: MainViewModel = hiltViewModel()  // ✅ Aquí instancias MainViewModel
                     val authStateVM: AuthStateVM = hiltViewModel()
@@ -124,6 +128,18 @@ class MainActivity : ComponentActivity() {
                     val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes
 
                     Scaffold(
+                        floatingActionButton = {
+                            if (currentRoute == ClientScreen.Servicios.route) {
+                                if (currentRoute == ClientScreen.Servicios.route) {
+                                    CustomFloatingActionButton(
+                                        onClick = {
+                                            navController.navigate(ClientScreen.CreateServicio.createRoute())
+                                        },
+                                        icon = { Icon(Icons.Default.Add, contentDescription = "Agregar servicio") }
+                                    )
+                                }
+                            }
+                        },
                         bottomBar = {
                             if (shouldShowBottomBar) {
                                 ClientBottomBar(navController = navController)
