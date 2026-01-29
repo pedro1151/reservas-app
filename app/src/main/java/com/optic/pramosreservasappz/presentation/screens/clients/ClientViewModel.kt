@@ -15,60 +15,39 @@ class ClientViewModel @Inject constructor(
     private val reservasRepository: ReservasRepository
 ) : ViewModel() {
 
-    // ---------------------------------------------
-    // STATE: Lista completa o filtrada según búsqueda
-    // ---------------------------------------------
-    private val _clientsState = MutableStateFlow<Resource<List<ClientResponse>>>(Resource.Loading)
+    private val _clientsState =
+        MutableStateFlow<Resource<List<ClientResponse>>>(Resource.Loading)
     val clientsState: StateFlow<Resource<List<ClientResponse>>> = _clientsState
 
-
-    // ---------------------------------------------
-    // QUERY en StateFlow
-    // ---------------------------------------------
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
-
 
     init {
         observeSearch()
     }
 
-    // ---------------------------------------------
-    // OBSERVAR EL SEARCH QUERY
-    // ---------------------------------------------
     private fun observeSearch() {
         viewModelScope.launch {
             _searchQuery
                 .debounce(400)
                 .distinctUntilChanged()
-                .collectLatest { q ->
-                    if (q.isBlank()) {
-                        getClientsByProvider(1)
-                    } else {
-                        getClientsByProvider(1)
-                    }
+                .collectLatest {
+                    getClientsByProvider(1)
                 }
         }
     }
 
-    // Llamado desde el UI
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
 
-    // ---------------------------------------------
-    // API CALLS
-    // ---------------------------------------------
-    fun getClientsByProvider(
-        providerId: Int
-    ) {
+    fun getClientsByProvider(providerId: Int) {
         viewModelScope.launch {
-            reservasRepository.getClientsByProvider(providerId, "", "")
+            reservasRepository
+                .getClientsByProvider(providerId, "", "")
                 .collectLatest { result ->
                     _clientsState.value = result
                 }
         }
     }
-
-
 }
