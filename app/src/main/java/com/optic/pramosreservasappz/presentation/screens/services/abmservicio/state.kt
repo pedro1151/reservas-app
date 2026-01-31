@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.services.create
+package com.optic.pramosreservasappz.presentation.screens.services.abmservicio
 
 data class ServiceCreateState(
     val name: String = "",

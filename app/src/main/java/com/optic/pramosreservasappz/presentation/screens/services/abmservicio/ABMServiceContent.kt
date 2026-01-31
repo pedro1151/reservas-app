@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.services.create
+package com.optic.pramosreservasappz.presentation.screens.services.abmservicio
 
 
 import android.widget.Toast
@@ -34,7 +34,7 @@ import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewMod
 
 
 @Composable
-fun CreateServiceContent(
+fun ABMServiceContent(
     navController: NavHostController,
     serviceId: Int?,
     editable: Boolean,

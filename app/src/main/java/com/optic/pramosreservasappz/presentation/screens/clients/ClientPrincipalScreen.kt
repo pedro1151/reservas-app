@@ -1,14 +1,18 @@
 package com.optic.pramosreservasappz.presentation.screens.clients
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
-import com.optic.pramosreservasappz.presentation.components.progressBar.CustomProgressBar
-import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedContext
 
 @Composable
 fun ClientPrincipalScreen(
@@ -18,8 +22,6 @@ fun ClientPrincipalScreen(
     val viewModel: ClientViewModel = hiltViewModel()
     val clientResource by viewModel.clientsState.collectAsState()
 
-    val localizedContext = LocalizedContext.current
-
     Scaffold(
         topBar = {
             PrimaryTopBar(
@@ -28,28 +30,44 @@ fun ClientPrincipalScreen(
             )
         }
     ) { paddingValues ->
-
         when (val result = clientResource) {
-            is Resource.Loading -> Unit
+            is Resource.Loading -> {
+                // Mostrar loading
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
 
             is Resource.Success -> {
                 ClientContent(
-                    modifier = Modifier,
                     clients = result.data,
                     paddingValues = paddingValues,
-                    navController = navController,
-                    isAuthenticated = isAuthenticated,
-                    localizedContext = localizedContext
+                    viewModel = viewModel,
+                    navController = navController
                 )
             }
 
             is Resource.Failure -> {
-                // manejar error si querés
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.material3.Text("Error: ${result.message}")
+                }
             }
 
-            else -> Unit
+            else -> {
+                // Estado por defecto
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
-
-        CustomProgressBar(isLoading = clientResource is Resource.Loading)
     }
 }
