@@ -1,4 +1,4 @@
-!@@package com.optic.pramosreservasappz.presentation.screens.clients
+package com.optic.pramosreservasappz.presentation.screens.clients
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -62,7 +62,7 @@ class ClientViewModel @Inject constructor(
         providerId:Int
     ) {
         viewModelScope.launch {
-            reservasRepository.getClientsByProvider(
+            reservasUC.getClientPorProviderUC(
                 providerId = 1,
                 fullName = fullName ,
                 email = email
