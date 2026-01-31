@@ -2,7 +2,9 @@ package com.optic.pramosreservasappz.data.dataSource.remote
 
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasService
 import com.optic.pramosreservasappz.domain.model.Team
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -178,6 +180,23 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
         fullName: String,
         email: String
     ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(providerId, fullName, email)
+
+    override suspend fun getClientById(
+        clientId: Int
+    ): Response<ClientResponse> = reservasService.getClientById(clientId)
+
+
+    override suspend fun createClient(
+        request: ClientCreateRequest
+    ): Response<ClientResponse> = reservasService.createClient(request)
+
+    override suspend fun updateClient(
+        clientId: Int,
+        request: ClientUpdateRequest
+    ): Response<ClientResponse> = reservasService.updateClient(clientId = clientId, request=request)
+
+
+    // servicios
 
     override suspend fun getServicesByProvider(
         providerId: Int,

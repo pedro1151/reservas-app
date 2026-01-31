@@ -1,7 +1,9 @@
 package com.optic.pramosreservasappz.data.dataSource.remote.service
 
 import com.optic.pramosreservasappz.domain.model.Team
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -16,12 +18,34 @@ import retrofit2.http.Query
 
 interface ReservasService {
 /* Se utiliza Response de retrofit, en los archivos de servicios */
+
+    //clientes
+
     @GET("/reservas/client/list/byprovider")
     suspend fun getClientsByProvider(
     @Query("provider_id") providerId: Int,
     @Query("full_name") fullName: String,
     @Query("email") email: String,
     ): Response<List<ClientResponse>>
+
+    @POST("/reservas/client/create")
+    suspend fun createClient(
+        @Body request: ClientCreateRequest
+    ): Response<ClientResponse>
+
+    @PUT("/reservas/client/update/{client_id}")
+    suspend fun updateClient(
+        @Path("client_id") clientId: Int,
+        @Body request: ClientUpdateRequest
+    ): Response<ClientResponse>
+
+    @GET("/reservas/client/id/{client_id}")
+    suspend fun getClientById(
+        @Path("client_id") clientId: Int
+    ): Response<ClientResponse>
+
+
+
 
     //servicios
 

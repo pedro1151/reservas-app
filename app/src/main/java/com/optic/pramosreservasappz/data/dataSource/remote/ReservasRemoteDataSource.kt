@@ -1,7 +1,9 @@
 package com.optic.pramosreservasappz.data.dataSource.remote
 
 import com.optic.pramosreservasappz.domain.model.Team
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -13,15 +15,33 @@ interface ReservasRemoteDataSource {
    esta aclarcion es util, ya que en las implementaciones se utiliza FLow
    */
     // CLIENTS
-    suspend fun getClientsByProvider(providerId: Int, fullName:String, email:String): Response<List<ClientResponse>>
-    suspend fun getServicesByProvider(providerId: Int, name:String): Response<List<ServiceResponse>>
+    suspend fun getClientsByProvider(
+    providerId: Int,
+    fullName:String,
+    email:String
+    ): Response<List<ClientResponse>>
 
-    suspend fun getStaffTotales(): Response<List<StaffResponse>>
+    suspend fun getClientById(
+      clientId: Int
+    ): Response<ClientResponse>
+
+    suspend fun createClient(
+      request: ClientCreateRequest
+    ): Response<ClientResponse>
+
+    suspend fun updateClient(
+      clientId: Int,
+      request: ClientUpdateRequest
+    ): Response<ClientResponse>
 
     //services
     suspend fun createService(request: ServiceCreateRequest): Response<ServiceResponse>
     suspend fun updateService(serviceId: Int, request: ServiceUpdateRequest): Response<ServiceResponse>
     suspend fun getServiceById(serviceId: Int): Response<ServiceResponse>
+    suspend fun getServicesByProvider(providerId: Int, name:String): Response<List<ServiceResponse>>
+
+    suspend fun getStaffTotales(): Response<List<StaffResponse>>
+
 
 
   /*
