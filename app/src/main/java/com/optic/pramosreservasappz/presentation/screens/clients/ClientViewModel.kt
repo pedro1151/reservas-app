@@ -2,8 +2,12 @@ package com.optic.pramosreservasappz.presentation.screens.clients
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
+import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -12,12 +16,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ClientViewModel @Inject constructor(
-    private val reservasRepository: ReservasRepository
+    private val reservasUC: ReservasUC
 ) : ViewModel() {
 
     private val _clientsState =
         MutableStateFlow<Resource<List<ClientResponse>>>(Resource.Loading)
     val clientsState: StateFlow<Resource<List<ClientResponse>>> = _clientsState
+
+    // ---------------------------------------------
+    // create client state
+    // ---------------------------------------------
+    private val _createClientState = MutableStateFlow<Resource<ClientResponse>>(Resource.Idle)
+    val createClientState: StateFlow<Resource<ClientResponse>> = _createClientState
+
+    // ---------------------------------------------
+    // update client state
+    // ---------------------------------------------
+    private val _updateClientState = MutableStateFlow<Resource<ClientResponse>>(Resource.Idle)
+    val updateClientState: StateFlow<Resource<ClientResponse>> = _updateClientState
+
+
+    // ---------------------------------------------
+    // STATE: get client por id state
+    // ---------------------------------------------
+    private val _oneClientState = MutableStateFlow<Resource<ClientResponse>>(Resource.Loading)
+    val oneClientState: StateFlow<Resource<ClientResponse>> = _oneClientState
+
+
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
@@ -41,12 +66,56 @@ class ClientViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+    // get client por provider
     fun getClientsByProvider(providerId: Int) {
         viewModelScope.launch {
-            reservasRepository
-                .getClientsByProvider(providerId, "", "")
+            reservasUC
+                .getClientPorProviderUC(providerId, "", "")
                 .collectLatest { result ->
                     _clientsState.value = result
+                }
+        }
+    }
+
+
+    // get client por ID de cliente
+    fun getClientsById(clientId: Int) {
+        viewModelScope.launch {
+            reservasUC
+                .getClientPorIdUC(clientId)
+                .collectLatest { result ->
+                    _oneClientState.value = result
+                }
+        }
+    }
+
+    // crear cliente
+    fun createClient(
+        request: ClientCreateRequest
+    ) {
+        viewModelScope.launch {
+            reservasUC
+                .createClientUC(request)
+                .collectLatest { result ->
+                    _createClientState.value = result
+                }
+        }
+    }
+
+
+    // actualizar cliente
+    fun updateClient(
+        clientId: Int,
+        request: ClientUpdateRequest
+    ) {
+        viewModelScope.launch {
+            reservasUC
+                .updateClientUC(
+                    clientId=clientId,
+                    request = request
+                )
+                .collectLatest { result ->
+                    _updateClientState.value = result
                 }
         }
     }

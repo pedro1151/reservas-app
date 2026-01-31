@@ -9,7 +9,10 @@ import com.optic.pramosreservasappz.domain.useCase.auth.loginpless.LoginSendCode
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorProviderUC
@@ -43,6 +46,11 @@ object UseCaseModule {
 
         //clients
         getClientPorProviderUC = GetClientPorProviderUC(reservasRepository),
+        getClientPorIdUC = GetClientPorIdUC(reservasRepository),
+        createClientUC = CreateClientUC(reservasRepository),
+        updateClientUC = UpdateClientUC(reservasRepository),
+
+
         // services
         getServicesPorProviderUC = GetServicesPorProviderUC(reservasRepository),
         createServiceUC = CreateServiceUC(reservasRepository),
