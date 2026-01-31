@@ -129,16 +129,28 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         floatingActionButton = {
-                            if (currentRoute == ClientScreen.Servicios.route) {
+
+                            // LLAMO A LA PANTALLA DE CREAR SERVICIOL
                                 if (currentRoute == ClientScreen.Servicios.route) {
                                     CustomFloatingActionButton(
                                         onClick = {
-                                            navController.navigate(ClientScreen.CreateServicio.createRoute())
+                                            navController.navigate(ClientScreen.ABMServicio.createRoute())
                                         },
-                                        icon = { Icon(Icons.Default.Add, contentDescription = "Agregar servicio") }
+                                        icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar servicio") }
                                     )
                                 }
-                            }
+
+                            // LAMO A LA PANTALLA DE CREAR CLIENTES
+                                if (currentRoute == ClientScreen.Clientes.route) {
+                                    CustomFloatingActionButton(
+                                        onClick = {
+                                            // crear un client screen
+                                            navController.navigate(ClientScreen.ABMCliente.createRoute())
+                                        },
+                                        icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar cliente") }
+                                    )
+                                }
+
                         },
                         bottomBar = {
                             if (shouldShowBottomBar) {

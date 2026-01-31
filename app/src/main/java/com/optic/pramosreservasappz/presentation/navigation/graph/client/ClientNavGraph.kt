@@ -27,8 +27,9 @@ import androidx.navigation.navArgument
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
+import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
-import com.optic.pramosreservasappz.presentation.screens.services.create.CreateServiceScreen
+import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -61,7 +62,7 @@ fun ClientNavGraph(
         }
 
         composable(
-            route = ClientScreen.CreateServicio.route,
+            route = ClientScreen.ABMServicio.route,
             arguments = listOf(
                 navArgument("serviceId") {
                     type = NavType.StringType
@@ -78,9 +79,35 @@ fun ClientNavGraph(
             val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
             val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
 
-            CreateServiceScreen(
+            ABMServiceScreen(
                 navController = navController,
                 serviceId = serviceId,
+                editable = editable
+            )
+        }
+
+
+        composable(
+            route = ClientScreen.ABMCliente.route,
+            arguments = listOf(
+                navArgument("clientId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                },
+                navArgument("editable") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+
+            val clientId = backStackEntry.arguments?.getString("clientId")?.toIntOrNull()
+            val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
+
+            ABMClienteScreen(
+                navController = navController,
+                clientId = clientId,
                 editable = editable
             )
         }

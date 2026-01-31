@@ -1,11 +1,10 @@
-package com.optic.pramosreservasappz.presentation.screens.services.create
+package com.optic.pramosreservasappz.presentation.screens.services.abmservicio
 
 
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 import androidx.navigation.NavHostController
@@ -15,7 +14,7 @@ import com.optic.pramosreservasappz.presentation.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateServiceScreen(
+fun ABMServiceScreen(
     navController: NavHostController,
     serviceId: Int?,
     editable: Boolean,
@@ -30,7 +29,7 @@ fun CreateServiceScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            CreateServiceContent(
+            ABMServiceContent(
                 navController = navController,
                 serviceId =  serviceId,
                 editable = editable

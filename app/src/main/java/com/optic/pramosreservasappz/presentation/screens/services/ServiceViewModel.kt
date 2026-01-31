@@ -32,6 +32,7 @@ class ServiceViewModel @Inject constructor(
     private val _createServiceState = MutableStateFlow<Resource<ServiceResponse>>(Resource.Idle)
     val createServiceState: StateFlow<Resource<ServiceResponse>> = _createServiceState
 
+
     // ---------------------------------------------
     // update service state
     // ---------------------------------------------
@@ -67,7 +68,7 @@ class ServiceViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collectLatest { q ->
                     if (q.isBlank()) {
-                        getServicesByProvider(1)
+                        getServicesByProvider(1, "")
                     } else {
                         getServicesByProvider(
                             providerId = 1,
