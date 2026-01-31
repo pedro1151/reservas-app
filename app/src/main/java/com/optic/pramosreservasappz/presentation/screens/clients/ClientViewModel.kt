@@ -1,5 +1,6 @@
 package com.optic.pramosreservasappz.presentation.screens.clients
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
@@ -12,10 +13,12 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -101,5 +104,66 @@ class ClientViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
+    }
+
+    // get cliente por ID
+    private fun getClientById(clientId: Int) {
+        viewModelScope.launch {
+
+            reservasUC.getClientPorIdUC(clientId)
+                .onStart {
+
+                    _oneClientState.value = Resource.Loading
+                }
+                .catch { e ->
+                    _oneClientState.value = Resource.Failure(e.message ?: "Error desconocido")
+                }
+                .collectLatest { result ->
+                    _oneClientState.value = result
+                }
+        }
+    }
+
+
+    // crear cliente
+    private fun createClient(
+        request: ClientCreateRequest
+    ) {
+        viewModelScope.launch {
+
+            reservasUC.createClientUC(request)
+                .onStart {
+
+                    _createClientState.value = Resource.Loading
+                }
+                .catch { e ->
+                    _createClientState.value = Resource.Failure(e.message ?: "Error desconocido")
+                }
+                .collectLatest { result ->
+                    _createClientState.value = result
+                }
+        }
+    }
+
+
+    // update client
+    private fun updateClient(
+        clientId: Int,
+        request: ClientUpdateRequest
+    ) {
+        viewModelScope.launch {
+
+            reservasUC.updateClientUC(clientId, request)
+                .onStart {
+
+                    _updateClientState.value = Resource.Loading
+                }
+                .catch { e ->
+                    _updateClientState.value  = Resource.Failure(e.message ?: "Error desconocido")
+                }
+                .collectLatest { result ->
+                    _updateClientState.value  = result
+                }
+        }
     }
 }
