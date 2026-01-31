@@ -47,13 +47,23 @@ sealed class ClientScreen(
 
 
 
-    object CreateServicio : ClientScreen(
+    object ABMServicio : ClientScreen(
         route = "client/create_service?serviceId={serviceId}&editable={editable}",
         title = "Crear/Editar Servicio",
         icon = Icons.Default.SpaceDashboard
     ) {
         fun createRoute(serviceId: Int? = null, editable: Boolean = false): String {
             return "client/create_service?serviceId=${serviceId ?: ""}&editable=$editable"
+        }
+    }
+
+    object ABMCliente : ClientScreen(
+        route = "create_client?clientId={clientId}&editable={editable}",
+        title = "Crear/Editar Cliente",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(clientId: Int? = null, editable: Boolean = false): String {
+            return "create_client?clientId=${clientId ?: ""}&editable=$editable"
         }
     }
 

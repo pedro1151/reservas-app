@@ -33,7 +33,7 @@ fun ServiceCard(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable {
                 navController.navigate(
-                    ClientScreen.CreateServicio.createRoute(
+                    ClientScreen.ABMServicio.createRoute(
                         serviceId = service.id,
                         editable = true
                     )

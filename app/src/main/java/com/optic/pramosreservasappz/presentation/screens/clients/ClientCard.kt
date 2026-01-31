@@ -10,6 +10,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 
 @Composable
 fun ClientCard(
@@ -21,7 +22,12 @@ fun ClientCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable {
-                // navController.navigate("client_detail/${client.id}")
+                navController.navigate(
+                    ClientScreen.ABMCliente.createRoute(
+                        clientId = client.id,
+                        editable = true
+                    )
+                )
             },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(

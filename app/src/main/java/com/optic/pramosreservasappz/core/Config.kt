@@ -1,6 +1,6 @@
 package com.optic.pramosreservasappz.core
 
-object Config {
+object  Config {
 
     const val URL_BASE = "http://136.113.44.38/"
 
