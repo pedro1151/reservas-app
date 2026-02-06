@@ -8,6 +8,7 @@ import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreate
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import retrofit2.Response
 
 interface ReservasRemoteDataSource {
@@ -34,7 +35,13 @@ interface ReservasRemoteDataSource {
       request: ClientUpdateRequest
     ): Response<ClientResponse>
 
-    //services
+
+  suspend fun deleteClient(
+    clientId: Int,
+  ): Response<DefaultResponse>
+
+
+  //services
     suspend fun createService(request: ServiceCreateRequest): Response<ServiceResponse>
     suspend fun updateService(serviceId: Int, request: ServiceUpdateRequest): Response<ServiceResponse>
     suspend fun getServiceById(serviceId: Int): Response<ServiceResponse>

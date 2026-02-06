@@ -10,6 +10,7 @@ import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.DeleteClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
@@ -49,6 +50,7 @@ object UseCaseModule {
         getClientPorIdUC = GetClientPorIdUC(reservasRepository),
         createClientUC = CreateClientUC(reservasRepository),
         updateClientUC = UpdateClientUC(reservasRepository),
+        deleteClientUC = DeleteClientUC(reservasRepository),
 
 
         // services
