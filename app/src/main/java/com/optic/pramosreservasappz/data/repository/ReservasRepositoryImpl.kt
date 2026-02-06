@@ -19,6 +19,7 @@ import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreate
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -1461,6 +1462,15 @@ class ReservasRepositoryImpl(
             )
         )
     }
+
+    override suspend fun deleteClient(
+        clientId:Int,
+    ): Resource<DefaultResponse> = ResponseToRequest.send(
+                reservasRemoteDataSource.deleteClient(clientId)
+    )
+
+
+
 
     override suspend fun getClientById(
         clientId: Int

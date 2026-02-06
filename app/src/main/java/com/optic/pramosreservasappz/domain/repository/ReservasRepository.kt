@@ -32,6 +32,7 @@ import com.optic.pramosreservasappz.domain.model.team.TeamResponse
 import com.optic.pramosreservasappz.domain.model.team.TeamStatsResponse
 import com.optic.pramosreservasappz.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 interface ReservasRepository {
 
@@ -50,6 +51,10 @@ interface ReservasRepository {
         clientId: Int,
         request: ClientUpdateRequest
     ): Flow<Resource<ClientResponse>>
+
+    suspend fun deleteClient(
+        clientId:Int,
+    ): Resource<DefaultResponse>
 
 
     suspend fun getClientById(
