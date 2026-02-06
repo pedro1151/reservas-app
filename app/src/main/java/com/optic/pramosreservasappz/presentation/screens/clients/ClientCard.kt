@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 
+
 @Composable
 fun ClientCard(
     client: ClientResponse,

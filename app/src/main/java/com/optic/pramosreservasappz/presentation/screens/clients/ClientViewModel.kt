@@ -107,7 +107,7 @@ class ClientViewModel @Inject constructor(
     }
 
     // get cliente por ID
-    private fun getClientById(clientId: Int) {
+    fun getClientById(clientId: Int) {
         viewModelScope.launch {
 
             reservasUC.getClientPorIdUC(clientId)
@@ -126,7 +126,7 @@ class ClientViewModel @Inject constructor(
 
 
     // crear cliente
-    private fun createClient(
+    fun createClient(
         request: ClientCreateRequest
     ) {
         viewModelScope.launch {
@@ -147,7 +147,7 @@ class ClientViewModel @Inject constructor(
 
 
     // update client
-    private fun updateClient(
+    fun updateClient(
         clientId: Int,
         request: ClientUpdateRequest
     ) {
@@ -166,4 +166,5 @@ class ClientViewModel @Inject constructor(
                 }
         }
     }
+
 }
