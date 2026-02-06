@@ -1,12 +1,17 @@
 package com.optic.pramosreservasappz.presentation.screens.clients
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -51,6 +56,13 @@ class ClientViewModel @Inject constructor(
     val oneClientState: StateFlow<Resource<ClientResponse>> = _oneClientState
 
 
+    // ---------------------------------------------
+    // STATE: get client por id state
+    // ---------------------------------------------
+    private val _deleteClientState =
+        mutableStateOf<Resource<DefaultResponse>>(Resource.Loading)
+
+    val deleteClientState: State<Resource<DefaultResponse>> = _deleteClientState
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
@@ -166,4 +178,24 @@ class ClientViewModel @Inject constructor(
                 }
         }
     }
+
+
+    // update client
+    // ---------------------------------------------
+    // CREATE SERVICE
+    // ---------------------------------------------
+    private fun deleteClient(clientId: Int) {
+        viewModelScope.launch {
+            _deleteClientState.value = Resource.Loading
+
+            try {
+                val response = reservasUC.deleteClientUC(clientId)
+                _deleteClientState.value = response
+            } catch (e: Exception) {
+                _deleteClientState.value =
+                    Resource.Failure(e.localizedMessage ?: "Error al eliminar cliente")
+            }
+        }
+    }
+
 }
