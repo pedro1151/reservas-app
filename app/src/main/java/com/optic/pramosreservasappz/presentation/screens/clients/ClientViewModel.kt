@@ -71,7 +71,7 @@ class ClientViewModel @Inject constructor(
        observeSearch()
     }
 
-    private fun loadClients(
+    fun loadClients(
         fullName: String,
         email: String,
         providerId:Int
