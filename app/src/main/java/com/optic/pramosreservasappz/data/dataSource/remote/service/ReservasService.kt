@@ -11,6 +11,7 @@ import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -46,7 +47,7 @@ interface ReservasService {
     ): Response<ClientResponse>
 
 
-    @GET("/reservas/client/delete/{client_id}")
+    @DELETE("/reservas/client/delete/{client_id}")
     suspend fun deleteClient(
         @Path("client_id") clientId: Int
     ): Response<DefaultResponse>
