@@ -22,6 +22,9 @@ import com.optic.pramosreservasappz.domain.model.prode.UserPredictionSummaryResp
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationCreateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationResponse
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -33,8 +36,27 @@ import com.optic.pramosreservasappz.domain.model.team.TeamStatsResponse
 import com.optic.pramosreservasappz.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 interface ReservasRepository {
+
+    // reservas
+
+    suspend fun createReservation(
+        request: ReservationCreateRequest
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun updateReservation(
+        reservationId: Int,
+        request: ReservationUpdateRequest
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun getReservationById(
+        reservationId: Int,
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun getReservations(
+    ): Flow<Resource<List<ReservationResponse>>>
 
     // clients
     suspend fun getClientsByProvider(

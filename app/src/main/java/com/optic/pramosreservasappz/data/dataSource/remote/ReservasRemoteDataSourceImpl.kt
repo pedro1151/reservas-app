@@ -5,6 +5,9 @@ import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationCreateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationResponse
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -191,6 +194,8 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
         request: ClientCreateRequest
     ): Response<ClientResponse> = reservasService.createClient(request)
 
+
+
     override suspend fun updateClient(
         clientId: Int,
         request: ClientUpdateRequest
@@ -224,5 +229,27 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     override suspend fun getServiceById(
         serviceId: Int
     ): Response<ServiceResponse> = reservasService.getServiceById(serviceId)
+
+
+    // reservas
+
+    override suspend fun getReservations(
+    ): Response<List<ReservationResponse>> = reservasService.getReservations()
+
+    override suspend fun getReservationById(
+        reservationId: Int
+    ): Response<ReservationResponse> = reservasService.getReservationById(reservationId)
+
+    override suspend fun createReservation(
+        request: ReservationCreateRequest
+    ): Response<ReservationResponse> = reservasService.createReservation(request)
+
+    override suspend fun updateReservation(
+        reservationId: Int,
+        request: ReservationUpdateRequest
+    ): Response<ReservationResponse> = reservasService.updateReservation(
+        reservationId = reservationId,
+        request = request
+    )
 
 }

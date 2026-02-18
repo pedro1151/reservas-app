@@ -4,6 +4,9 @@ import com.optic.pramosreservasappz.domain.model.Team
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationCreateRequest
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationResponse
+import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
@@ -15,6 +18,29 @@ interface ReservasRemoteDataSource {
   /* tambien en este archivo de datasource, se responde con Response de retrofit,
    esta aclarcion es util, ya que en las implementaciones se utiliza FLow
    */
+
+  // reservas
+
+  // CLIENTS
+  suspend fun getReservations(
+  ): Response<List<ReservationResponse>>
+
+  suspend fun getReservationById(
+    reservationId: Int
+  ): Response<ReservationResponse>
+
+  suspend fun createReservation(
+    request: ReservationCreateRequest
+  ):Response<ReservationResponse>
+
+  suspend fun updateReservation(
+    reservationId: Int,
+    request: ReservationUpdateRequest
+  ): Response<ReservationResponse>
+
+
+
+
     // CLIENTS
     suspend fun getClientsByProvider(
     providerId: Int,
