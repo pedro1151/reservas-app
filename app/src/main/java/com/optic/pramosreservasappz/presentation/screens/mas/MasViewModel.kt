@@ -1,33 +1,51 @@
-package com.optic.pramosreservasappz.presentation.screens.mas;
+package com.optic.pramosreservasappz.presentation.screens.mas
 
-
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.User
-import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MasViewModel @Inject constructor(private val authUseCase: AuthUseCase): ViewModel() {
+class MasViewModel @Inject constructor(
+    // Aquí puedes inyectar dependencias si las necesitas
+) : ViewModel() {
 
-    var user by mutableStateOf<User?>(null)
-    private set
+    // 🎨 Estado del tema seleccionado
+    private val _selectedTheme = MutableStateFlow("Sistema")
+    val selectedTheme: StateFlow<String> = _selectedTheme.asStateFlow()
 
-    init {
-        getSessionData()
+    // 🌐 Estado del idioma seleccionado
+    private val _selectedLanguage = MutableStateFlow("Español")
+    val selectedLanguage: StateFlow<String> = _selectedLanguage.asStateFlow()
+
+    // 🔔 Estado de notificaciones
+    private val _notificationsEnabled = MutableStateFlow(true)
+    val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled.asStateFlow()
+
+    // 📧 Estado de emails
+    private val _emailNotificationsEnabled = MutableStateFlow(true)
+    val emailNotificationsEnabled: StateFlow<Boolean> = _emailNotificationsEnabled.asStateFlow()
+
+    // Funciones para actualizar estados
+    fun updateTheme(theme: String) {
+        _selectedTheme.value = theme
+        // Aquí puedes implementar la lógica para cambiar el tema
     }
 
-    fun getSessionData() = viewModelScope.launch {
-        authUseCase.getSessionData().collect() { data ->
-                user = data.user
-        }
+    fun updateLanguage(language: String) {
+        _selectedLanguage.value = language
+        // Aquí puedes implementar la lógica para cambiar el idioma
     }
 
-    fun logout() = viewModelScope.launch {
-        authUseCase.logout()
+    fun toggleNotifications() {
+        _notificationsEnabled.value = !_notificationsEnabled.value
+        // Aquí puedes implementar la lógica para activar/desactivar notificaciones
     }
 
+    fun toggleEmailNotifications() {
+        _emailNotificationsEnabled.value = !_emailNotificationsEnabled.value
+        // Aquí puedes implementar la lógica para activar/desactivar emails
+    }
 }

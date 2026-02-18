@@ -46,19 +46,19 @@ fun ClientNavGraph(
             ClientScreen.Clientes.route
         else
             ClientScreen.Login.route,
-        modifier = Modifier.fillMaxSize() // 👈 CLAVE
+        modifier = Modifier.fillMaxSize()
     ){
 
         composable(route = ClientScreen.Clientes.route) {
-           ClientPrincipalScreen(navController, isAuthenticated)
+            ClientPrincipalScreen(navController, isAuthenticated)
         }
 
         composable(route = ClientScreen.Calendario.route) {
-            CalendarScreen(navController, isAuthenticated)
+            CalendarScreen(navController = navController)
         }
 
         composable(route = ClientScreen.Servicios.route) {
-           ServiceScreen(navController, isAuthenticated)
+            ServiceScreen(navController, isAuthenticated)
         }
 
         composable(
@@ -119,25 +119,25 @@ fun ClientNavGraph(
                 slideInVertically(
                     initialOffsetY = { it },
                     animationSpec = tween(durationMillis = 350)
-                ) // entra desde derecha → izquierda
+                )
             },
             exitTransition = {
                 slideOutVertically(
                     targetOffsetY = { it },
                     animationSpec = tween(durationMillis = 350)
-                ) // sale hacia derecha ← izquierda
+                )
             },
             popEnterTransition = {
                 slideInVertically(
                     initialOffsetY = { -it },
                     animationSpec = tween(durationMillis = 350)
-                ) // cuando regresa, entra desde izq → der
+                )
             },
             popExitTransition = {
                 slideOutVertically(
                     targetOffsetY = { -it },
                     animationSpec = tween(durationMillis = 350)
-                ) // cuando retrocede, sale hacia izq ← der
+                )
             }
         ) {
             LoginScreen(navController)
@@ -153,33 +153,18 @@ fun ClientNavGraph(
             LoginContentPless(navController, viewModel, email)
         }
 
-
-
-
-
-
-        composable(
-            route = ClientScreen.Profile.route
-
-        ) {
-
+        composable(route = ClientScreen.Profile.route) {
             MasScreen(navController, isAuthenticated)
         }
 
-        composable(
-            route = ClientScreen.BasicLogin.route
-
-        ) {
-
-            BasicLoginScreen(navController = navController, )
+        composable(route = ClientScreen.BasicLogin.route) {
+            BasicLoginScreen(navController = navController)
         }
 
         composable(route = ClientScreen.Mas.route) {
             MasScreen(navController, isAuthenticated)
         }
 
-
         ProfileNavGraph(navController)
-
     }
 }

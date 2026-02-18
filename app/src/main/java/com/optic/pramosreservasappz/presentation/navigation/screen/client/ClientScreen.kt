@@ -1,31 +1,14 @@
 package com.optic.pramosreservasappz.presentation.navigation.screen.client
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.AccountTree
-import androidx.compose.material.icons.filled.AddModerator
-import androidx.compose.material.icons.filled.Airplay
-import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.SentimentSatisfied
-import androidx.compose.material.icons.filled.SignLanguage
-import androidx.compose.material.icons.filled.SpaceDashboard
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
-
-
 
 sealed class ClientScreen(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
-
 
     object Clientes: ClientScreen(
         route = "client/clientes",
@@ -44,8 +27,6 @@ sealed class ClientScreen(
         title = "Servicios",
         icon = Icons.Default.SpaceDashboard
     )
-
-
 
     object ABMServicio : ClientScreen(
         route = "client/create_service?serviceId={serviceId}&editable={editable}",
@@ -67,13 +48,14 @@ sealed class ClientScreen(
         }
     }
 
-
-
+    // Mejor comentado:
+    /*
     object Matches: ClientScreen(
         route = "client/calendario",
         title = "Calendario",
         icon = Icons.Default.DateRange
     )
+    */
 
     object Games: ClientScreen(
         route = "client/games",
@@ -146,7 +128,4 @@ sealed class ClientScreen(
         title = "User prediction summary",
         icon = Icons.Default.SignLanguage
     )
-
-
 }
-

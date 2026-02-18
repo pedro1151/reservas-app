@@ -1,18 +1,18 @@
-package com.optic.pramosreservasappz.presentation.screens.mas.components
+package com.optic.pramosreservasappz.presentation.screens.mas
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.background
+import android.net.Uri
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,185 +20,650 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.presentation.MainActivity
-import com.optic.pramosreservasappz.presentation.settings.idiomas.IdiomaSelectionBottomSheet
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.mas.MasViewModel
-import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalAppLanguage
-import com.optic.pramosreservasappz.presentation.ui.theme.LocalAppTheme
-import com.optic.pramosreservasappz.presentation.ui.theme.components.ThemeSelectionBottomSheet
-import com.optic.pramosreservasappz.R
-import com.optic.pramosreservasappz.core.locale.LocalePrefs
-import com.optic.pramosreservasappz.presentation.settings.idiomas.LanguageViewModel
 
 @Composable
-fun MasContent(modifier: Modifier
-               ,navController: NavHostController
-               ,isAuthenticated: Boolean
-               ,localizedContext: Context
-
+fun MasContent(
+    paddingValues: PaddingValues,
+    viewModel: MasViewModel,
+    navController: NavHostController
 ) {
-
     val context = LocalContext.current
-    //val localizedContext = LocalizedContext.current
 
-
-    val languageVM: LanguageViewModel = hiltViewModel()
-    val activity = LocalContext.current as? Activity
-    val vm: MasViewModel = hiltViewModel()
-
-    // Estado que controla el tema de la app
-    val themeState = LocalAppTheme.current
-    val showSheet = remember { mutableStateOf(false) }
-
-
-    val languageState = LocalAppLanguage.current
-
-
-    if (showSheet.value) {
-        ThemeSelectionBottomSheet(
-            currentTheme = themeState.value,
-            onThemeSelected = {
-                themeState.value = it
-                showSheet.value = false // cierra el popup
-            },
-            onDismiss = { showSheet.value = false }
-        )
-    }
-
-
-    // Estado que controla el idioma de la app
-    //val idiomaState = LocalAppTheme.current
-    val showSheetIdioma = remember { mutableStateOf(false) }
-
-    if (showSheetIdioma.value) {
-        IdiomaSelectionBottomSheet(
-            currentLanguage = languageState.value,
-            onLanguageSelected = { selected ->
-
-                // 1️⃣ Guardado temprano (SharedPreferences)
-                LocalePrefs.setLanguage(context, selected.code)
-
-                // 2️⃣ Guardado persistente (DataStore)
-                languageVM.changeLanguage(selected)
-
-                // 3️⃣ Actualiza el estado Compose
-                languageState.value = selected
-
-                showSheetIdioma.value = false
-
-                // 4️⃣ Recrea la Activity para recargar resources
-                activity?.recreate()
-            },
-            onDismiss = { showSheetIdioma.value = false }
-        )
-    }
-
+    // Estados para diálogos
+    var showAboutDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showSocialDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 1.dp, vertical = 1.dp),
-        verticalArrangement = Arrangement.spacedBy(1.dp)
+            .padding(paddingValues)
+            .verticalScroll(rememberScrollState())
     ) {
-        // 🔴 NUEVO: Cerrar sesión
-        if (!isAuthenticated) {
 
+        Spacer(Modifier.height(8.dp))
 
-            MasCardItem(
-                title = localizedContext.getString(R.string.mas_screen_login_title),
-                icon = Icons.Default.AccountBox,
-                onClick = { navController.navigate(ClientScreen.Login.route)}  // <-- disparador para mostrar el bottom sheet
+        // 🎨 SECCIÓN: Apariencia
+        SectionHeader(text = "Apariencia")
+
+        MenuCard {
+            MenuItem(
+                icon = Icons.Outlined.Palette,
+                title = "Tema",
+                subtitle = "Claro, Oscuro o Sistema",
+                onClick = { showThemeDialog = true }
             )
 
-        }
-        MasCardItem(
-            title = localizedContext.getString(R.string.mas_screen_theme_title),
-            icon = Icons.Default.FavoriteBorder,
-            onClick = { showSheet.value = true }  // <-- disparador para mostrar el bottom sheet
-        )
-        MasCardItem(
-            title = localizedContext.getString(R.string.mas_screen_language_title),
-            icon = Icons.Default.List,
-            onClick = { showSheetIdioma.value = true }
-        )
-        MasCardItem(
-            title = "Compartir App Reservas",
-            icon = Icons.Default.Share
-        )
-        MasCardItem(
-            title = localizedContext.getString(R.string.mas_screen_follow_title),
-            icon = Icons.Default.Person
-        )
-        MasCardItem(
-            title = localizedContext.getString(R.string.mas_screen_policy_title),
-            icon  = Icons.Default.Info
-        )
-        MasCardItem(
-            title = localizedContext.getString(R.string.mas_screen_version_title),
-            icon = Icons.Default.Info
-        )
+            Divider(color = Color(0xFFE0E0E0))
 
-        // 🔴 NUEVO: Cerrar sesión
-        if (isAuthenticated) {
-            MasCardItem(
+            MenuItem(
+                icon = Icons.Outlined.Language,
+                title = "Idioma",
+                subtitle = "Español",
+                onClick = { showLanguageDialog = true }
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // 🌐 SECCIÓN: Social
+        SectionHeader(text = "Síguenos")
+
+        MenuCard {
+            MenuItem(
+                icon = Icons.Outlined.Groups,
+                title = "Síguenos",
+                subtitle = "Redes sociales",
+                onClick = { showSocialDialog = true }
+            )
+
+            Divider(color = Color(0xFFE0E0E0))
+
+            MenuItem(
+                icon = Icons.Outlined.Share,
+                title = "Compartir App Reservas",
+                subtitle = "Invita a tus amigos",
+                onClick = { shareApp(context) }
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // ℹ️ SECCIÓN: Información
+        SectionHeader(text = "Información")
+
+        MenuCard {
+            MenuItem(
+                icon = Icons.Outlined.Shield,
+                title = "Política de privacidad",
+                subtitle = "Cómo protegemos tus datos",
+                onClick = { showPrivacyDialog = true }
+            )
+
+            Divider(color = Color(0xFFE0E0E0))
+
+            MenuItem(
+                icon = Icons.Outlined.Info,
+                title = "Versión de la app",
+                subtitle = getAppVersion(),
+                onClick = { showAboutDialog = true },
+                showChevron = false
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // 🚪 SECCIÓN: Cuenta
+        SectionHeader(text = "Cuenta")
+
+        MenuCard {
+            MenuItem(
+                icon = Icons.Outlined.ExitToApp,
                 title = "Cerrar sesión",
-                icon = Icons.Default.Logout,
+                subtitle = "Salir de la aplicación",
+                onClick = { /* Implementar logout */ },
+                iconTint = MaterialTheme.colorScheme.error,
+                titleColor = MaterialTheme.colorScheme.error
+            )
+        }
+
+        Spacer(Modifier.height(32.dp))
+
+        // Footer con créditos
+        AppFooter()
+
+        Spacer(Modifier.height(16.dp))
+    }
+
+    // 🎭 Diálogos
+    if (showThemeDialog) {
+        ThemeDialog(onDismiss = { showThemeDialog = false })
+    }
+
+    if (showLanguageDialog) {
+        LanguageDialog(onDismiss = { showLanguageDialog = false })
+    }
+
+    if (showSocialDialog) {
+        SocialDialog(
+            onDismiss = { showSocialDialog = false },
+            context = context
+        )
+    }
+
+    if (showPrivacyDialog) {
+        PrivacyPolicyDialog(onDismiss = { showPrivacyDialog = false })
+    }
+
+    if (showAboutDialog) {
+        AboutAppDialog(onDismiss = { showAboutDialog = false })
+    }
+}
+
+// 📌 Componente: Header de sección
+@Composable
+private fun SectionHeader(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+    )
+}
+
+// 🎴 Componente: Card contenedor de menú
+@Composable
+private fun MenuCard(
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 1.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 4.dp)
+        ) {
+            content()
+        }
+    }
+}
+
+// 📋 Componente: Item de menú
+@Composable
+private fun MenuItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
+    titleColor: Color = Color(0xFF212121),
+    showChevron: Boolean = true
+) {
+    Surface(
+        onClick = onClick,
+        color = Color.Transparent,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Ícono
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = iconTint.copy(alpha = 0.1f),
+                modifier = Modifier.size(44.dp)
             ) {
-                vm.logout()
-                activity?.finish()
-                activity?.startActivity(Intent(activity, MainActivity::class.java))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = iconTint,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(14.dp))
+
+            // Textos
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = titleColor
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF757575)
+                )
+            }
+
+            // Chevron
+            if (showChevron) {
+                Icon(
+                    imageVector = Icons.Outlined.ChevronRight,
+                    contentDescription = null,
+                    tint = Color(0xFFBDBDBD),
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
 }
 
+// 👣 Componente: Footer de la app
 @Composable
-fun MasCardItem(
-    icon: ImageVector,
-    title: String,
-    modifier: Modifier = Modifier,
-    iconTint: Color = MaterialTheme.colorScheme.primary, // Gris moderno
-    textColor: Color = MaterialTheme.colorScheme.primary,
-    onClick: () -> Unit = {}
+private fun AppFooter() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Hecho con ❤️ en Bolivia",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF9E9E9E)
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "© ${java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)} Reservas App",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFFBDBDBD)
+        )
+    }
+}
+
+// 🔧 Función: Obtener versión de la app
+private fun getAppVersion(): String {
+    // Puedes actualizar esto manualmente o conectarlo a tu sistema de versiones
+    return "Versión 1.0.0 (1)"
+}
+
+// 📤 Función: Compartir app
+private fun shareApp(context: Context) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, "Reservas App")
+        putExtra(
+            Intent.EXTRA_TEXT,
+            "¡Descarga Reservas App! La mejor aplicación para gestionar tus reservas. " +
+                    "\n\nDescárgala aquí: [Link de tu app en Play Store]"
+        )
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Compartir vía"))
+}
+
+// 🎨 Diálogo: Tema
+@Composable
+private fun ThemeDialog(onDismiss: () -> Unit) {
+    var selectedTheme by remember { mutableStateOf("Sistema") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Palette,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Seleccionar tema")
+        },
+        text = {
+            Column {
+                ThemeOption("Claro", selectedTheme) { selectedTheme = "Claro" }
+                ThemeOption("Oscuro", selectedTheme) { selectedTheme = "Oscuro" }
+                ThemeOption("Sistema", selectedTheme) { selectedTheme = "Sistema" }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Aceptar")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+private fun ThemeOption(
+    name: String,
+    selected: String,
+    onSelect: () -> Unit
 ) {
-    Card(
-        modifier = modifier
+    Row(
+        modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(horizontal = 1.dp, vertical = 1.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-        elevation = CardDefaults.cardElevation(0.dp)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected == name,
+            onClick = onSelect
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(name)
+    }
+}
+
+// 🌐 Diálogo: Idioma
+@Composable
+private fun LanguageDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Language,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Seleccionar idioma")
+        },
+        text = {
+            Column {
+                Text("🇪🇸 Español")
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Próximamente: Inglés, Portugués",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF757575)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Aceptar")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+// 🌐 Diálogo: Redes sociales
+@Composable
+private fun SocialDialog(
+    onDismiss: () -> Unit,
+    context: Context
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Groups,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Síguenos en redes sociales")
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                SocialButton(
+                    icon = "📘",
+                    name = "Facebook",
+                    onClick = {
+                        openUrl(context, "https://facebook.com/reservasapp")
+                    }
+                )
+                SocialButton(
+                    icon = "📷",
+                    name = "Instagram",
+                    onClick = {
+                        openUrl(context, "https://instagram.com/reservasapp")
+                    }
+                )
+                SocialButton(
+                    icon = "🐦",
+                    name = "Twitter",
+                    onClick = {
+                        openUrl(context, "https://twitter.com/reservasapp")
+                    }
+                )
+                SocialButton(
+                    icon = "💼",
+                    name = "LinkedIn",
+                    onClick = {
+                        openUrl(context, "https://linkedin.com/company/reservasapp")
+                    }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+private fun SocialButton(
+    icon: String,
+    name: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = Color(0xFFF5F5F5),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start // Podés usar Center si querés centrarlos horizontalmente
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint
-            )
-            Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 13.sp
-                ),
-                color = textColor
+                text = icon,
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
             )
         }
+    }
+}
+
+// 🔒 Diálogo: Política de privacidad
+@Composable
+private fun PrivacyPolicyDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Shield,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Política de Privacidad")
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                PrivacySection("1. Información que recopilamos",
+                    "Recopilamos información personal como nombre, correo electrónico y teléfono " +
+                            "únicamente para gestionar tus reservas y mejorar nuestro servicio.")
+
+                PrivacySection("2. Uso de la información",
+                    "Tu información se utiliza para procesar reservas, enviar notificaciones " +
+                            "y mejorar la experiencia del usuario.")
+
+                PrivacySection("3. Protección de datos",
+                    "Implementamos medidas de seguridad para proteger tu información contra " +
+                            "acceso no autorizado.")
+
+                PrivacySection("4. Compartir información",
+                    "No compartimos tu información personal con terceros sin tu consentimiento.")
+
+                PrivacySection("5. Cookies",
+                    "Utilizamos cookies para mejorar tu experiencia de navegación y recordar " +
+                            "tus preferencias.")
+
+                PrivacySection("6. Tus derechos",
+                    "Tienes derecho a acceder, modificar o eliminar tu información personal " +
+                            "en cualquier momento.")
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    "Última actualización: Febrero 2026",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF9E9E9E),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Entendido")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+private fun PrivacySection(title: String, content: String) {
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = content,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF424242)
+        )
+    }
+}
+
+// ℹ️ Diálogo: Acerca de la app
+@Composable
+private fun AboutAppDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Acerca de Reservas App")
+        },
+        text = {
+            Column {
+                Text(
+                    text = "Versión ${getAppVersion()}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    "Reservas App es tu solución completa para gestionar reservas de forma " +
+                            "simple y eficiente.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    "✨ Características:",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                BulletPoint("Gestión de clientes y servicios")
+                BulletPoint("Calendario de reservas")
+                BulletPoint("Notificaciones en tiempo real")
+                BulletPoint("Reportes y estadísticas")
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    "Desarrollado en Bolivia 🇧🇴",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF757575),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+private fun BulletPoint(text: String) {
+    Row(
+        modifier = Modifier.padding(vertical = 2.dp)
+    ) {
+        Text("• ", color = MaterialTheme.colorScheme.primary)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF424242)
+        )
+    }
+}
+
+// 🔗 Función: Abrir URL
+private fun openUrl(context: Context, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Manejar error
     }
 }

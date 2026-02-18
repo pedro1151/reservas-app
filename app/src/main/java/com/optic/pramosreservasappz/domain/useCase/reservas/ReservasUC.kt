@@ -28,4 +28,6 @@ data class ReservasUC(
     val updateServiceUC: UpdateServiceUC,
     val getStaffTotalesUC: GetStaffTotalesUC,
     val getServicesPorIdUC: GetServicesPorIdUC
+
+
 )

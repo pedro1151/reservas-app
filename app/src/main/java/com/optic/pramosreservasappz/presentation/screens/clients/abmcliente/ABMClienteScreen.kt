@@ -1,21 +1,33 @@
 package com.optic.pramosreservasappz.presentation.screens.clients.abmcliente
 
-import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
+import com.optic.pramosreservasappz.presentation.components.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ABMClienteScreen(
     navController: NavHostController,
     clientId: Int?,
     editable: Boolean,
-    vm: ClientViewModel = hiltViewModel()
 ) {
-    ABMClienteContent(
-        navController = navController,
-        clientId = clientId,
-        editable = editable,
-        vm = vm
-    )
+    Scaffold(
+        topBar = {
+            BackTopBar(
+                title = if (editable) "Editar Cliente" else "Nuevo Cliente",
+                navController = navController,
+                showTitle = true
+            )
+        }
+    ) { paddingValues ->
+        ABMClienteContent(
+            paddingValues = paddingValues,  // ✅ AGREGAR ESTO
+            navController = navController,
+            clientId = clientId,
+            editable = editable
+        )
+    }
 }

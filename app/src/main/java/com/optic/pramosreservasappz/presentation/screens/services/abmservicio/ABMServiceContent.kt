@@ -1,283 +1,263 @@
 package com.optic.pramosreservasappz.presentation.screens.services.abmservicio
 
-
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.CurrencyExchange
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.SpaceDashboard
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
-import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.components.*
-import com.optic.pramosreservasappz.presentation.components.colorselector.ColorSelectorRow
-import com.optic.pramosreservasappz.presentation.components.progressBar.CustomProgressBar
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewModel
-
 
 @Composable
 fun ABMServiceContent(
+    paddingValues: PaddingValues,
     navController: NavHostController,
-    serviceId: Int?,
-    editable: Boolean,
-    vm: ServiceViewModel = hiltViewModel()
+    serviceId: Int? = null,
+    editable: Boolean = false
 ) {
+    // Estados del formulario
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var duration by remember { mutableStateOf("") }
+    var bufferTime by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
 
-
-    val context = LocalContext.current
-    val createState = remember { mutableStateOf(ServiceCreateState()) }
-    val createResource by vm.createServiceState.collectAsState()
-    val updateResource by vm.updateServiceState.collectAsState()
-    var isButtonEnabled by remember { mutableStateOf(true) }
-
-
-    LaunchedEffect(serviceId, editable) {
-        if (editable && serviceId != null) {
-            vm.getServiceById(serviceId) // debes tener este método
-        }
+    // Color aleatorio generado automáticamente
+    val randomColor = remember {
+        val colors = listOf(
+            Color(0xFF3F51B5), Color(0xFF2196F3), Color(0xFF00BCD4),
+            Color(0xFF009688), Color(0xFF4CAF50), Color(0xFFFF5722),
+            Color(0xFFE91E63), Color(0xFF9C27B0)
+        )
+        colors.random()
     }
 
-    val serviceResource by vm.serviceState.collectAsState()
+    val scrollState = rememberScrollState()
 
-    LaunchedEffect(serviceResource) {
-                if (serviceResource is Resource.Success) {
-                    val service = (serviceResource as Resource.Success<ServiceResponse>).data
-
-                    createState.value = createState.value.copy(
-                        name = service.name,
-                        description = service.description ?: "",
-                        price = service.price?.toString() ?: "",
-                        durationMinutes = service.durationMinutes.toString(),
-                        isActive = service.isActive ?: true,
-                        bufferTime = service.bufferTime.toString() ?: "",
-                        category = service.category?:"",
-                        hidden = service.hidden ?: false,
-                        color =  service.color?: "",
-                    )
-                }
-            }
-
-
-    // Mostrar mensaje si error
-    LaunchedEffect(key1 = createResource) {
-        if (createResource is Resource.Failure) {
-            Toast.makeText(context, (createResource as Resource.Failure).message, Toast.LENGTH_LONG).show()
-            isButtonEnabled = true
-        } else if (createResource is Resource.Success) {
-            // Ir a pantalla principal de servicios limpiando historial
-            navController.navigate(ClientScreen.Servicios.route) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
-
-    // Mostrar mensaje si error
-    LaunchedEffect(key1 = updateResource) {
-        if (updateResource is Resource.Failure) {
-            Toast.makeText(context, (updateResource as Resource.Failure).message, Toast.LENGTH_LONG).show()
-            isButtonEnabled = true
-        } else if (updateResource is Resource.Success) {
-            // Ir a pantalla principal de servicios limpiando historial
-            navController.navigate(ClientScreen.Servicios.route) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
-
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.White)
+            .padding(paddingValues)
+            .verticalScroll(scrollState)
     ) {
-
-
-        Column(
+        // Header moderno con icono
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 5.dp, vertical = 5.dp)
-                    .clickable { /* Puedes manejar navegación aquí */ },
+            Surface(
+                modifier = Modifier.size(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.background // Fondo blanco/gris muy claro
-                ),
+                color = Color(0xFFF5F5F5)
             ) {
-                Column(
+                Icon(
+                    imageVector = Icons.Outlined.MiscellaneousServices,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                ) {
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.name,
-                        onValueChange = { createState.value = createState.value.copy(name = it) },
-                        label = "Titulo",
-                        icon = Icons.Default.SpaceDashboard,
-                        placeholder = "Ejemplo: Servicio de consultoria"
-                    )
+                        .fillMaxSize()
+                        .padding(14.dp)
+                )
+            }
 
+            Spacer(Modifier.width(14.dp))
 
-                    Spacer(modifier = Modifier.height(20.dp))
-                    ColorSelectorRow(
-                        label = "Color",
-                        selectedColor = createState.value.color,
-                        onColorSelected = { selected ->
-                            createState.value = createState.value.copy(color = selected)
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.description,
-                        onValueChange = { createState.value = createState.value.copy(description = it) },
-                        label = "Descripción",
-                        keyboardType = KeyboardType.Text,
-                        icon = Icons.Default.Info,
-                        minLines = 4,
-                        maxLines = 4,
-                        placeholder = "Describe tu servicio"
-
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.durationMinutes,
-                        onValueChange = { createState.value = createState.value.copy(durationMinutes = it) },
-                        label = "Duración",
-                        keyboardType = KeyboardType.Number,
-                        icon = Icons.Default.AccessTime,
-                        placeholder = "Ingresar la duracion (mins)"
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.bufferTime,
-                        onValueChange = { createState.value = createState.value.copy(bufferTime = it) },
-                        label = "Tiempo de buffer",
-                        keyboardType = KeyboardType.Number,
-                        icon = Icons.Default.AccessTime,
-                        placeholder = "Ingresar el tiempo de espera (mins)"
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.price,
-                        onValueChange = { createState.value = createState.value.copy(price = it) },
-                        label = "Precio",
-                        keyboardType = KeyboardType.Decimal,
-                        icon = Icons.Default.CurrencyExchange,
-                        placeholder = "Ingresar el precio"
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.category,
-                        onValueChange = { createState.value = createState.value.copy(category = it) },
-                        label = "Categoria",
-                        keyboardType = KeyboardType.Text,
-                        icon = Icons.Default.CurrencyExchange,
-                        placeholder = "Selecciona la categoria"
-                    )
-
-                    AlternativeTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = createState.value.hidden.toString(),
-                        onValueChange = { createState.value = createState.value.copy(hidden = it.isNotBlank()) },
-                        label = "Oculto",
-                        keyboardType = KeyboardType.Text,
-                        icon = Icons.Default.CurrencyExchange,
-                        placeholder = "Oculto"
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    DefaultButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        text = if (editable ) "Editar" else "Crear",
-                        enabled = isButtonEnabled,
-                        color = MaterialTheme.colorScheme.primary,
-                        textColor = MaterialTheme.colorScheme.background,
-                        onClick = {
-                            if (editable == false){
-                            isButtonEnabled = false
-                            val request = ServiceCreateRequest(
-                                providerId = 1, // Cambiar si necesitas dinámico
-                                name = createState.value.name,
-                                durationMinutes = createState.value.durationMinutes.toIntOrNull() ?: 0,
-                                description = createState.value.description.takeIf { it.isNotBlank() },
-                                price = createState.value.price.toDoubleOrNull(),
-                                isActive = createState.value.isActive,
-                                createdBy = "user", // puedes reemplazar con el usuario actual
-                                bufferTime = createState.value.bufferTime.toDoubleOrNull(),
-                                category = createState.value.category.takeIf { it.isNotBlank() },
-                                color = createState.value.color.takeIf { it.isNotBlank() },
-                                hidden = createState.value.hidden
-                            )
-                            vm.createService(request)
-
-                        }else{
-                                isButtonEnabled = false
-                                val requestUpdate = ServiceUpdateRequest(
-                                    name = createState.value.name,
-                                    durationMinutes = createState.value.durationMinutes.toIntOrNull() ?: 0,
-                                    description = createState.value.description.takeIf { it.isNotBlank() },
-                                    price = createState.value.price.toDoubleOrNull(),
-                                    isActive = createState.value.isActive,
-                                    updatedBy = "user" ,// puedes reemplazar con el usuario actual
-                                    bufferTime = createState.value.bufferTime.toDoubleOrNull(),
-                                    category = createState.value.category.takeIf { it.isNotBlank() },
-                                    color = createState.value.color.takeIf { it.isNotBlank() },
-                                    hidden = createState.value.hidden
-                                )
-                                serviceId?.let { vm.updateService(it, requestUpdate) }
-                            }
-
-                            }
-                    )
-                }
+            Column {
+                Text(
+                    text = if (editable) "Actualizar información" else "Completar datos",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF000000),
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = if (editable) "del servicio" else "del nuevo servicio",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF757575)
+                )
             }
         }
 
-        // ProgressBar mientras se procesa
-        if (editable == true ){
-            CustomProgressBar(isLoading = updateResource is Resource.Loading)
-        }else {
-            CustomProgressBar(isLoading = createResource is Resource.Loading)
+        Spacer(Modifier.height(8.dp))
+
+        // Título
+        ModernTextField(
+            label = "Título",
+            value = title,
+            onValueChange = { title = it },
+            icon = Icons.Outlined.Title,
+            placeholder = "Ejemplo: Servicio de consultoría"
+        )
+
+        // Descripción
+        ModernTextField(
+            label = "Descripción",
+            value = description,
+            onValueChange = { description = it },
+            icon = Icons.Outlined.Description,
+            placeholder = "Describe tu servicio",
+            minLines = 3,
+            maxLines = 5
+        )
+
+        // Duración
+        ModernTextField(
+            label = "Duración",
+            value = duration,
+            onValueChange = { duration = it },
+            icon = Icons.Outlined.AccessTime,
+            placeholder = "Ingresar la duración (mins)",
+            keyboardType = KeyboardType.Number
+        )
+
+        // Tiempo de buffer
+        ModernTextField(
+            label = "Tiempo de buffer",
+            value = bufferTime,
+            onValueChange = { bufferTime = it },
+            icon = Icons.Outlined.HourglassEmpty,
+            placeholder = "Ingresar el tiempo de espera (mins)",
+            keyboardType = KeyboardType.Number,
+            isOptional = true
+        )
+
+        // Precio
+        ModernTextField(
+            label = "Precio",
+            value = price,
+            onValueChange = { price = it },
+            icon = Icons.Outlined.AttachMoney,
+            placeholder = "Ingresar el precio",
+            keyboardType = KeyboardType.Decimal
+        )
+
+        // Categoría
+        ModernTextField(
+            label = "Categoría",
+            value = category,
+            onValueChange = { category = it },
+            icon = Icons.Outlined.Category,
+            placeholder = "Selecciona la categoría",
+            isOptional = true
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // Botón de acción con texto visible
+        Button(
+            onClick = { /* Guardar */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(52.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = if (editable) "Guardar cambios" else "Crear servicio",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = Color.White
+            )
         }
 
+        Spacer(Modifier.height(32.dp))
+    }
+}
+
+@Composable
+private fun ModernTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    icon: ImageVector,
+    placeholder: String = "",
+    isOptional: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    minLines: Int = 1,
+    maxLines: Int = 1,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        // Label con icono
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = Color(0xFF000000)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF000000),
+                    fontWeight = FontWeight.Normal
+                )
+            }
+
+            if (isOptional) {
+                Text(
+                    text = "Opcional",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color(0xFF9E9E9E)
+                )
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // TextField
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFBDBDBD),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            minLines = minLines,
+            maxLines = maxLines,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = Color(0xFFE0E0E0),
+                focusedTextColor = Color(0xFF000000),
+                unfocusedTextColor = Color(0xFF000000),
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

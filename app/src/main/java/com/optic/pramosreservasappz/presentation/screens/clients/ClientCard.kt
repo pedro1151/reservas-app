@@ -2,11 +2,14 @@ package com.optic.pramosreservasappz.presentation.screens.clients.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,13 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import kotlin.math.abs
 
 @Composable
 fun ClientCard(
@@ -29,220 +35,283 @@ fun ClientCard(
     onDelete: (ClientResponse) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showMenu by remember { mutableStateOf(false) }
+    var offsetX by remember { mutableStateOf(0f) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-
-    // Animación de entrada
     var visible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        visible = true
-    }
 
-    // 🎨 Generar color único basado en el ID del cliente
-    val avatarColor = remember(client.id) {
-        getAvatarColor(client.id)
-    }
+    LaunchedEffect(Unit) { visible = true }
 
-    // 🎨 Obtener las iniciales del nombre
-    val initials = remember(client.fullName) {
-        getInitials(client.fullName)
-    }
+    val avatarColor = remember(client.id) { getAvatarColor(client.id) }
+    val initials = remember(client.fullName) { getInitials(client.fullName) }
+
+    val maxSwipeDistance = -200f
+    val editThreshold = -60f
+    val deleteThreshold = -140f
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(animationSpec = tween(300)) +
-                expandVertically(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(200)) +
-                shrinkVertically(animationSpec = tween(200))
+        enter = fadeIn(tween(300)) + expandVertically(tween(300)),
+        exit = fadeOut(tween(200)) + shrinkVertically(tween(200))
     ) {
-        Card(
+        Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .clickable {
-                    navController.navigate(
-                        ClientScreen.ABMCliente.createRoute(
-                            clientId = client.id,
-                            editable = true
-                        )
-                    )
-                },
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 1.dp,
-                pressedElevation = 3.dp
-            )
+                .padding(horizontal = 14.dp, vertical = 4.dp)
+                .clickable(enabled = offsetX != 0f, onClick = { offsetX = 0f })
         ) {
+            // Fondo swipe
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.Top
+                    .matchParentSize()
+                    .clip(RoundedCornerShape(14.dp)),
+                horizontalArrangement = Arrangement.End
             ) {
-
-                // 🎨 Avatar con iniciales y color único
-                Surface(
-                    modifier = Modifier.size(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = avatarColor
+                AnimatedVisibility(
+                    visible = offsetX <= editThreshold,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
                 ) {
                     Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(
-                            text = initials,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White
-                        )
-                    }
-                }
-
-                Spacer(Modifier.width(14.dp))
-
-                // 📋 Información del cliente
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(top = 2.dp)
-                ) {
-                    // Nombre
-                    Text(
-                        text = client.fullName,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(Modifier.height(6.dp))
-
-                    // Email con ícono
-                    client.email?.let {
-                        InfoRow(
-                            icon = Icons.Outlined.Email,
-                            text = it,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-
-                    // Teléfono con ícono
-                    client.phone?.let {
-                        InfoRow(
-                            icon = Icons.Outlined.Phone,
-                            text = it,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-
-                    // Ubicación
-                    if (!client.city.isNullOrBlank() || !client.country.isNullOrBlank()) {
-                        Spacer(Modifier.height(2.dp))
-                        InfoRow(
-                            icon = Icons.Outlined.LocationOn,
-                            text = listOfNotNull(client.city, client.country)
-                                .joinToString(" · ")
-                        )
-                    }
-                }
-
-                // 📍 Menú de opciones
-                Box {
-                    IconButton(
-                        onClick = { showMenu = true },
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Más opciones",
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    // 🔹 CORRECCIÓN: Usar MaterialTheme para el menú
-                    MaterialTheme(
-                        colorScheme = MaterialTheme.colorScheme.copy(
-                            surface = Color.White,
-                            onSurface = Color(0xFF212121)
-                        )
-                    ) {
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false },
-                            offset = DpOffset((-8).dp, 0.dp),
-                            modifier = Modifier
-                                .width(180.dp)
-                        ) {
-                            // Editar
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Edit,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                        Spacer(Modifier.width(12.dp))
-                                        Text(
-                                            "Editar",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color(0xFF212121)
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    navController.navigate(
-                                        ClientScreen.ABMCliente.createRoute(
-                                            clientId = client.id,
-                                            editable = true
-                                        )
+                        modifier = Modifier
+                            .width(95.dp)
+                            .fillMaxHeight()
+                            .background(Color(0xFF2196F3))
+                            .clickable {
+                                offsetX = 0f
+                                navController.navigate(
+                                    ClientScreen.ABMCliente.createRoute(
+                                        clientId = client.id,
+                                        editable = true
                                     )
-                                }
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
-
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                            // Eliminar
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Delete,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp),
-                                            tint = MaterialTheme.colorScheme.error
-                                        )
-                                        Spacer(Modifier.width(12.dp))
-                                        Text(
-                                            "Eliminar",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    showDeleteDialog = true
-                                }
+                            Spacer(Modifier.height(3.dp))
+                            Text(
+                                text = "Editar",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Medium
                             )
                         }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = offsetX <= deleteThreshold,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(95.dp)
+                            .fillMaxHeight()
+                            .background(Color(0xFFEF5350))
+                            .clickable { showDeleteDialog = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Eliminar",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.height(3.dp))
+                            Text(
+                                text = "Eliminar",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Card principal
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(x = offsetX.dp)
+                    .graphicsLayer {
+                        val scale = 1f - (abs(offsetX) / 1000f)
+                        scaleY = scale.coerceIn(0.98f, 1f)
+                    }
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                when {
+                                    offsetX <= deleteThreshold -> offsetX = maxSwipeDistance
+                                    offsetX <= editThreshold -> offsetX = -95f
+                                    else -> offsetX = 0f
+                                }
+                            },
+                            onHorizontalDrag = { _, dragAmount ->
+                                offsetX = (offsetX + dragAmount).coerceIn(maxSwipeDistance, 0f)
+                            }
+                        )
+                    }
+                    .clickable {
+                        if (offsetX == 0f) {
+                            navController.navigate(
+                                ClientScreen.ABMCliente.createRoute(
+                                    clientId = client.id,
+                                    editable = true
+                                )
+                            )
+                        } else {
+                            offsetX = 0f
+                        }
+                    },
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 1.dp,
+                    pressedElevation = 2.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Avatar
+                    Surface(
+                        modifier = Modifier.size(46.dp),
+                        shape = RoundedCornerShape(11.dp),
+                        color = avatarColor
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = initials,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.width(13.dp))
+
+                    // Información
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = client.fullName,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(0xFF000000),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(Modifier.height(4.dp))
+
+                        client.email?.let {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Email,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(13.dp),
+                                    tint = Color(0xFF757575)
+                                )
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF757575),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            client.phone?.let {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Phone,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(13.dp),
+                                        tint = Color(0xFF757575)
+                                    )
+                                    Spacer(Modifier.width(5.dp))
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF757575),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+
+                            if (!client.city.isNullOrBlank() || !client.country.isNullOrBlank()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.LocationOn,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(13.dp),
+                                        tint = Color(0xFF757575)
+                                    )
+                                    Spacer(Modifier.width(5.dp))
+                                    Text(
+                                        text = listOfNotNull(client.city, client.country)
+                                            .joinToString(" · "),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF757575),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (offsetX == 0f) {
+                        Icon(
+                            imageVector = Icons.Outlined.ChevronRight,
+                            contentDescription = null,
+                            tint = Color(0xFFE0E0E0),
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
         }
     }
 
-    // 🗑️ Diálogo de confirmación de eliminación
     if (showDeleteDialog) {
         DeleteConfirmationDialog(
             clientName = client.fullName,
@@ -253,31 +322,22 @@ fun ClientCard(
             },
             onDismiss = {
                 showDeleteDialog = false
+                offsetX = 0f
             }
         )
     }
 }
 
-// 🎨 Función para generar color de avatar basado en ID
 private fun getAvatarColor(id: Int): Color {
     val colors = listOf(
-        Color(0xFF2196F3), // Azul
-        Color(0xFF4CAF50), // Verde
-        Color(0xFFFF9800), // Naranja
-        Color(0xFF9C27B0), // Púrpura
-        Color(0xFFF44336), // Rojo
-        Color(0xFF00BCD4), // Cian
-        Color(0xFFFF5722), // Naranja oscuro
-        Color(0xFF673AB7), // Índigo
-        Color(0xFF009688), // Teal
-        Color(0xFFE91E63), // Rosa
-        Color(0xFF3F51B5), // Azul índigo
-        Color(0xFFFFC107)  // Ámbar
+        Color(0xFF4CAF50), Color(0xFFFF5722), Color(0xFF9C27B0),
+        Color(0xFF2196F3), Color(0xFF00BCD4), Color(0xFFFF9800),
+        Color(0xFF673AB7), Color(0xFF009688), Color(0xFFE91E63),
+        Color(0xFF3F51B5), Color(0xFFFFC107), Color(0xFFF44336)
     )
     return colors[id % colors.size]
 }
 
-// 🎨 Función para obtener iniciales del nombre
 private fun getInitials(fullName: String): String {
     val parts = fullName.trim().split(" ")
     return when {
@@ -291,35 +351,6 @@ private fun getInitials(fullName: String): String {
     }
 }
 
-// 📌 Componente para mostrar información con ícono
-@Composable
-private fun InfoRow(
-    icon: ImageVector,
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(14.dp),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-// 🗑️ Diálogo de confirmación de eliminación
 @Composable
 private fun DeleteConfirmationDialog(
     clientName: String,
@@ -333,13 +364,13 @@ private fun DeleteConfirmationDialog(
                 imageVector = Icons.Outlined.Warning,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(28.dp)
             )
         },
         title = {
             Text(
                 text = "¿Eliminar cliente?",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
         },
         text = {
@@ -347,15 +378,16 @@ private fun DeleteConfirmationDialog(
                 Text(
                     text = "Estás a punto de eliminar a:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = Color(0xFF757575)
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
                 Text(
                     text = clientName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = "Esta acción no se puede deshacer.",
                     style = MaterialTheme.typography.bodySmall,
@@ -378,7 +410,7 @@ private fun DeleteConfirmationDialog(
                 Text("Cancelar")
             }
         },
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         containerColor = Color.White
     )
 }
