@@ -5,5 +5,5 @@ data class ClientCreateState(
     val email: String = "",
     val phone: String = "",
     val city: String = "",
-    val country: String = ""
+    val country: String
 )
