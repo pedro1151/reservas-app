@@ -7,18 +7,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.components.ClientCard
 import com.optic.pramosreservasappz.presentation.screens.clients.components.ClientSearchBar
 import kotlinx.coroutines.launch
@@ -34,59 +37,40 @@ fun ClientContent(
 ) {
     val query by viewModel.searchQuery.collectAsState()
     val deleteState by viewModel.deleteClientState
-
-    // 🔹 USAR LISTA LOCAL en lugar de la del servidor
     val localClients by viewModel.localClientsList.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
     var isDeleting by remember { mutableStateOf(false) }
 
-    // Observar el estado de eliminación
     LaunchedEffect(deleteState) {
         when (val state = deleteState) {
             is Resource.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Cliente eliminado exitosamente",
-                        duration = SnackbarDuration.Short
-                    )
+                    snackbarHostState.showSnackbar("Cliente eliminado", duration = SnackbarDuration.Short)
                 }
                 isDeleting = false
             }
             is Resource.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Error al eliminar: ${state.message}",
-                        duration = SnackbarDuration.Long
-                    )
+                    snackbarHostState.showSnackbar("Error: ${state.message}", duration = SnackbarDuration.Long)
                 }
                 isDeleting = false
             }
-            is Resource.Loading -> {
-                isDeleting = true
-            }
-            else -> {
-                isDeleting = false
-            }
+            is Resource.Loading -> isDeleting = true
+            else -> isDeleting = false
         }
     }
 
     val hasQuery = query.isNotBlank()
-
-    // 🔹 Filtrar usando la lista LOCAL
     val filteredClients = remember(query, localClients) {
-        if (query.isBlank()) {
-            localClients
-        } else {
-            localClients.filter { client ->
-                client.fullName.contains(query, ignoreCase = true) ||
-                        client.email?.contains(query, ignoreCase = true) == true ||
-                        client.phone?.contains(query, ignoreCase = true) == true ||
-                        client.city?.contains(query, ignoreCase = true) == true ||
-                        client.country?.contains(query, ignoreCase = true) == true
-            }
+        if (query.isBlank()) localClients
+        else localClients.filter { client ->
+            client.fullName.contains(query, ignoreCase = true) ||
+                    client.email?.contains(query, ignoreCase = true) == true ||
+                    client.phone?.contains(query, ignoreCase = true) == true ||
+                    client.city?.contains(query, ignoreCase = true) == true ||
+                    client.country?.contains(query, ignoreCase = true) == true
         }
     }
 
@@ -94,216 +78,164 @@ fun ClientContent(
         modifier = modifier
             .padding(paddingValues)
             .fillMaxSize()
+            .background(Color.White)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-
-            // Barra de búsqueda
-            ClientSearchBar(
-                query = query,
-                onQueryChange = { viewModel.onSearchQueryChanged(it) }
+        if (localClients.isEmpty() && !hasQuery) {
+            EmptyClientsState(
+                onAddClient = {
+                    navController.navigate(
+                        ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
+                    )
+                }
             )
+        } else {
+            Column(modifier = Modifier.fillMaxSize()) {
 
-            // Contador de resultados
-            AnimatedVisibility(
-                visible = localClients.isNotEmpty(),
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
+                // ── Search bar + contador integrado ──
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = if (hasQuery) {
-                            "${filteredClients.size} resultado${if (filteredClients.size != 1) "s" else ""}"
-                        } else {
-                            "${filteredClients.size} cliente${if (filteredClients.size != 1) "s" else ""}"
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    // Campo de búsqueda ocupa el espacio disponible
+                    ClientSearchBar(
+                        query = query,
+                        onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                        modifier = Modifier.weight(1f)
                     )
-                }
-            }
 
-            // Lista de clientes
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                if (hasQuery && filteredClients.isEmpty()) {
-                    item {
-                        EmptySearchState()
-                    }
-                } else if (filteredClients.isEmpty() && !hasQuery) {
-                    item {
-                        EmptyClientsState()
-                    }
-                } else {
-                    items(
-                        items = filteredClients,
-                        key = { it.id }
-                    ) { client ->
-                        ClientCard(
-                            client = client,
-                            navController = navController,
-                            onDelete = {
-                                // 🔹 Llamar directamente a eliminar
-                                viewModel.deleteClient(client.id)
-                            },
-                            modifier = Modifier.animateItemPlacement(
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow
-                                )
-                            )
+                    // Contador sutil a la derecha — solo visible si no hay búsqueda activa
+                    if (!hasQuery && localClients.isNotEmpty()) {
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "${localClients.size}",
+                            fontSize = 12.sp,
+                            color = Color(0xFFBBBBBB),
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(end = 4.dp)
                         )
                     }
+                }
 
-                    item {
-                        Spacer(Modifier.height(80.dp))
+                // Lista
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 4.dp,
+                        bottom = 80.dp
+                    )
+                ) {
+                    if (hasQuery && filteredClients.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 80.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.Search,
+                                        null,
+                                        tint = Color(0xFFDDDDDD),
+                                        modifier = Modifier.size(36.dp)
+                                    )
+                                    Text(
+                                        "Sin resultados para \"$query\"",
+                                        fontSize = 13.sp,
+                                        color = Color(0xFFBBBBBB)
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        items(
+                            items = filteredClients,
+                            key = { it.id }
+                        ) { client ->
+                            ClientCard(
+                                client = client,
+                                navController = navController,
+                                onDelete = { viewModel.deleteClient(client.id) },
+                                modifier = Modifier.animateItemPlacement(
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    )
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
 
-        // SnackbarHost
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
-        )
-
-        // Loading overlay
-        if (isDeleting) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.size(100.dp),
-                    shape = MaterialTheme.shapes.large,
-                    color = Color.White,
-                    shadowElevation = 8.dp
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(36.dp),
-                            strokeWidth = 3.dp,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = "Eliminando...",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF424242)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptySearchState() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp)
-            .padding(top = 80.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Surface(
-                modifier = Modifier.size(80.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.SearchOff,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                    )
-                }
-            }
-
-            Text(
-                text = "No se encontraron resultados",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+        ) { data ->
+            Snackbar(
+                snackbarData = data,
+                containerColor = Color(0xFF1A1A1A),
+                contentColor = Color.White,
+                shape = RoundedCornerShape(12.dp)
             )
+        }
 
-            Text(
-                text = "Intenta con otro término de búsqueda",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        AnimatedVisibility(
+            visible = isDeleting,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            CircularProgressIndicator(
+                color = Color.Black,
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(28.dp)
             )
         }
     }
 }
 
 @Composable
-private fun EmptyClientsState() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp)
-            .padding(top = 100.dp),
-        contentAlignment = Alignment.Center
-    ) {
+private fun EmptyClientsState(onAddClient: () -> Unit) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(horizontal = 40.dp)
         ) {
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            Text(
+                "No hay clientes para mostrar.",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.Black,
+                letterSpacing = (-0.2).sp
+            )
+            Spacer(Modifier.height(4.dp))
+            Button(
+                onClick = onAddClient,
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                    )
-                }
+                Text("Añadir nuevo cliente", fontSize = 15.sp, color = Color.White)
             }
-
-            Text(
-                text = "No hay clientes registrados",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Text(
-                text = "Comienza agregando tu primer cliente con el botón +",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
+            OutlinedButton(
+                onClick = { },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(25.dp)
+            ) {
+                Text("Importar desde contactos", fontSize = 15.sp, color = Color.Black)
+            }
         }
     }
 }
