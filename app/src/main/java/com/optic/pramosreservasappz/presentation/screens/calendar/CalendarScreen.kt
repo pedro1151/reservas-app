@@ -2,7 +2,9 @@ package com.optic.pramosreservasappz.presentation.screens.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,23 +26,24 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
-enum class CalendarViewMode {
-    AGENDA, DAY, THREE_DAYS
-}
+enum class CalendarViewMode { AGENDA, DAY, THREE_DAYS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
     navController: NavHostController,
-    viewModel: CalendarViewModel = hiltViewModel()
+    viewModel: CalendarViewModel = hiltViewModel(),
+    activityViewModel: ActivityViewModel = hiltViewModel()
 ) {
     var viewMode by remember { mutableStateOf(CalendarViewMode.AGENDA) }
     var showCreateDialog by remember { mutableStateOf(false) }
+    var showActivitySheet by remember { mutableStateOf(false) }
 
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedDateReservations by viewModel.selectedDateReservations.collectAsState()
-    val weeklyEarnings by viewModel.weeklyEarnings.collectAsState()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val activities by activityViewModel.activities.collectAsState()
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
@@ -57,9 +61,11 @@ fun CalendarScreen(
     ) {
         Scaffold(
             topBar = {
-                CalendarTopAppBar(
+                MinimalTopBar(
                     currentDate = selectedDate,
+                    hasActivity = activities.isNotEmpty(),
                     onMenuClick = { scope.launch { drawerState.open() } },
+                    onBellClick = { showActivitySheet = true },
                     onDateClick = { }
                 )
             },
@@ -68,115 +74,108 @@ fun CalendarScreen(
                     onClick = { showCreateDialog = true },
                     containerColor = Color.Black,
                     contentColor = Color.White,
-                    shape = RoundedCornerShape(50)
+                    shape = CircleShape,
+                    modifier = Modifier.size(52.dp)
                 ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Agregar",
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
                 }
             },
-            bottomBar = {
-                CalendarBottomBar(
-                    selectedTab = 0,
-                    onTabSelected = { }
-                )
-            },
-            containerColor = Color(0xFFFAFAFA)
-        ) { paddingValues ->
+            bottomBar = { MinimalBottomBar() },
+            containerColor = Color(0xFFF8F8F8)
+        ) { padding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(padding)
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // Semana horizontal siempre visible
-                    WeekStripHeader(
+                    WeekStrip(
                         selectedDate = selectedDate,
                         onDateSelect = { viewModel.selectDate(it) }
                     )
-
-                    HorizontalDivider(color = Color(0xFFE0E0E0))
-
-                    // Contenido según modo
                     Box(modifier = Modifier.weight(1f)) {
                         when (viewMode) {
-                            CalendarViewMode.AGENDA -> {
-                                WeekAgendaView(
-                                    selectedDate = selectedDate,
-                                    reservations = selectedDateReservations,
-                                    onDateSelect = { viewModel.selectDate(it) }
-                                )
-                            }
-                            CalendarViewMode.DAY -> {
-                                DayTimelineView(
-                                    selectedDate = selectedDate,
-                                    reservations = selectedDateReservations,
-                                    onTimeSlotClick = { showCreateDialog = true }
-                                )
-                            }
-                            CalendarViewMode.THREE_DAYS -> {
-                                ThreeDaysView(
-                                    selectedDate = selectedDate,
-                                    onDateSelect = { viewModel.selectDate(it) }
-                                )
-                            }
+                            CalendarViewMode.AGENDA -> WeekAgendaView(
+                                selectedDate = selectedDate,
+                                reservations = selectedDateReservations,
+                                onDateSelect = { viewModel.selectDate(it) }
+                            )
+                            CalendarViewMode.DAY -> DayTimelineView(
+                                selectedDate = selectedDate,
+                                reservations = selectedDateReservations,
+                                onTimeSlotClick = { showCreateDialog = true }
+                            )
+                            CalendarViewMode.THREE_DAYS -> ThreeDaysView(
+                                selectedDate = selectedDate,
+                                onDateSelect = { viewModel.selectDate(it) }
+                            )
                         }
                     }
                 }
 
-                // Banner flotante "Comenzar prueba gratuita"
-                PromoBanner(
+                PromoPill(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp, start = 16.dp, end = 80.dp)
+                        .padding(bottom = 12.dp, end = 68.dp)
                 )
             }
         }
     }
 
-    // Bottom sheet para crear
     if (showCreateDialog) {
-        CreateEventBottomSheet(onDismiss = { showCreateDialog = false })
+        CreateSheet(onDismiss = { showCreateDialog = false })
+    }
+
+    if (showActivitySheet) {
+        ActivityBottomSheet(
+            activities = activities,
+            onDismiss = { showActivitySheet = false }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CalendarTopAppBar(
+private fun MinimalTopBar(
     currentDate: LocalDate,
+    hasActivity: Boolean,
     onMenuClick: () -> Unit,
+    onBellClick: () -> Unit,
     onDateClick: () -> Unit
 ) {
     TopAppBar(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.clickable(onClick = onDateClick)
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onDateClick
+                )
             ) {
                 Text(
                     text = currentDate.month
                         .getDisplayName(TextStyle.FULL, Locale("es", "ES"))
                         .replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontSize = 20.sp
+                    letterSpacing = (-0.3).sp
                 )
                 Text(
-                    text = currentDate.year.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Normal,
-                    color = Color(0xFF9E9E9E),
-                    fontSize = 20.sp
+                    text = " ${currentDate.year}",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color(0xFFAAAAAA),
+                    letterSpacing = (-0.3).sp
                 )
                 Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
+                    Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = Color.Black
+                    modifier = Modifier
+                        .size(18.dp)
+                        .padding(start = 2.dp),
+                    tint = Color(0xFFAAAAAA)
                 )
             }
         },
@@ -184,235 +183,295 @@ private fun CalendarTopAppBar(
             IconButton(onClick = onMenuClick) {
                 Icon(
                     Icons.Default.Menu,
-                    contentDescription = "Menú",
+                    contentDescription = null,
                     tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
         },
         actions = {
-            IconButton(onClick = { }) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .clickable(onClick = onBellClick),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
                     Icons.Outlined.Notifications,
-                    contentDescription = "Notificaciones",
-                    tint = Color.Black
+                    contentDescription = "Actividad",
+                    tint = Color.Black,
+                    modifier = Modifier.size(22.dp)
                 )
-            }
-            IconButton(onClick = { }) {
-                Surface(
-                    modifier = Modifier.size(34.dp),
-                    shape = RoundedCornerShape(17.dp),
-                    color = Color(0xFFE0E0E0)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            "JT",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    }
+                if (hasActivity) {
+                    Box(
+                        modifier = Modifier
+                            .size(7.dp)
+                            .background(Color(0xFFEF5350), CircleShape)
+                            .align(Alignment.TopEnd)
+                            .offset(x = (-8).dp, y = 8.dp)
+                    )
                 }
             }
+
+            Spacer(Modifier.width(4.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(Color(0xFF1A1A1A), CircleShape)
+                    .clip(CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "JT",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    letterSpacing = 0.5.sp
+                )
+            }
+            Spacer(Modifier.width(12.dp))
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
     )
 }
 
 @Composable
-private fun WeekStripHeader(
+private fun WeekStrip(
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit
 ) {
     val today = LocalDate.now()
-    // Calculamos el lunes de la semana actual del selectedDate
     val monday = selectedDate.minusDays(selectedDate.dayOfWeek.value.toLong() - 1)
+    val dayLetters = listOf("L", "M", "M", "J", "V", "S", "D")
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        val dayLabels = listOf("L", "M", "M", "J", "V", "S", "D")
-        dayLabels.forEachIndexed { index, label ->
-            val date = monday.plusDays(index.toLong())
-            val isSelected = date == selectedDate
-            val isToday = date == today
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+    Surface(color = Color.White, shadowElevation = 0.dp) {
+        Column {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable { onDateSelect(date) }
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9E9E9E),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(Modifier.height(4.dp))
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(
-                            color = when {
-                                isSelected && isToday -> Color.Black
-                                isSelected -> Color.Black
-                                isToday -> Color(0xFFEEEEEE)
-                                else -> Color.Transparent
-                            },
-                            shape = RoundedCornerShape(18.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = date.dayOfMonth.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal,
-                        color = when {
-                            isSelected -> Color.White
-                            isToday -> Color.Black
-                            else -> Color(0xFF424242)
-                        },
-                        fontSize = 14.sp
-                    )
+                dayLetters.forEachIndexed { i, letter ->
+                    val date = monday.plusDays(i.toLong())
+                    val isSelected = date == selectedDate
+                    val isToday = date == today
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onDateSelect(date) }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = letter,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (isToday && !isSelected) Color(0xFF1A1A1A) else Color(0xFFBBBBBB),
+                            letterSpacing = 0.5.sp
+                        )
+                        Spacer(Modifier.height(3.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(
+                                    color = if (isSelected) Color(0xFF1A1A1A) else Color.Transparent,
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = date.dayOfMonth.toString(),
+                                fontSize = 13.sp,
+                                fontWeight = when {
+                                    isSelected -> FontWeight.SemiBold
+                                    isToday -> FontWeight.Bold
+                                    else -> FontWeight.Normal
+                                },
+                                color = when {
+                                    isSelected -> Color.White
+                                    isToday -> Color(0xFF1A1A1A)
+                                    else -> Color(0xFF666666)
+                                },
+                                letterSpacing = (-0.2).sp
+                            )
+                        }
+                    }
                 }
+            }
+            HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 0.5.dp)
+        }
+    }
+}
+
+@Composable
+private fun MinimalBottomBar() {
+    Surface(
+        color = Color.White,
+        shadowElevation = 0.dp,
+        modifier = Modifier.height(68.dp)
+    ) {
+        Column {
+            HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 0.5.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BottomBarItem(
+                    label = "Calendario",
+                    isSelected = true,
+                    content = {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .background(Color(0xFF1A1A1A), RoundedCornerShape(6.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                LocalDate.now().dayOfMonth.toString(),
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                )
+                BottomBarItem(
+                    label = "Servicios",
+                    isSelected = false,
+                    content = {
+                        Icon(
+                            Icons.Outlined.GridView,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp),
+                            tint = Color(0xFFAAAAAA)
+                        )
+                    }
+                )
+                BottomBarItem(
+                    label = "Clientes",
+                    isSelected = false,
+                    content = {
+                        Icon(
+                            Icons.Outlined.SentimentSatisfied,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp),
+                            tint = Color(0xFFAAAAAA)
+                        )
+                    }
+                )
+                BottomBarItem(
+                    label = "Config.",
+                    isSelected = false,
+                    content = {
+                        Icon(
+                            Icons.Outlined.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp),
+                            tint = Color(0xFFAAAAAA)
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PromoBanner(modifier: Modifier = Modifier) {
+private fun RowScope.BottomBarItem(
+    label: String,
+    isSelected: Boolean,
+    content: @Composable () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+    ) {
+        content()
+        Spacer(Modifier.height(3.dp))
+        Text(
+            text = label,
+            fontSize = 10.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (isSelected) Color(0xFF1A1A1A) else Color(0xFFAAAAAA),
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun PromoPill(modifier: Modifier = Modifier) {
     Surface(
-        modifier = modifier.height(48.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = Color(0xFFE8F5E9),
-        shadowElevation = 4.dp
+        modifier = modifier.height(42.dp),
+        shape = RoundedCornerShape(21.dp),
+        color = Color(0xFFEEF8F0),
+        shadowElevation = 6.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(7.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.FlightTakeoff,
+                Icons.Default.FlightTakeoff,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(16.dp),
                 tint = Color(0xFF2E7D32)
             )
             Text(
                 text = "Comenzar prueba gratuita",
-                style = MaterialTheme.typography.labelLarge,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color(0xFF2E7D32),
-                fontWeight = FontWeight.Medium
+                letterSpacing = (-0.2).sp
             )
         }
     }
 }
 
-@Composable
-private fun CalendarBottomBar(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit
-) {
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        modifier = Modifier.height(70.dp)
-    ) {
-        NavigationBarItem(
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(if (selectedTab == 0) 36.dp else 0.dp)
-                        .background(Color.Black, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (selectedTab == 0) {
-                        Text(
-                            text = LocalDate.now().dayOfMonth.toString(),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-            },
-            label = {
-                Text(
-                    "Calendario",
-                    fontWeight = if (selectedTab == 0) FontWeight.SemiBold else FontWeight.Normal
-                )
-            },
-            selected = selectedTab == 0,
-            onClick = { onTabSelected(0) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedTextColor = Color.Black,
-                indicatorColor = Color.Transparent
-            )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.List, contentDescription = null) },
-            label = { Text("Servicios") },
-            selected = selectedTab == 1,
-            onClick = { onTabSelected(1) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedTextColor = Color.Black,
-                unselectedTextColor = Color(0xFF757575),
-                indicatorColor = Color.Transparent
-            )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.SentimentSatisfied, contentDescription = null) },
-            label = { Text("Clientes") },
-            selected = selectedTab == 2,
-            onClick = { onTabSelected(2) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedTextColor = Color.Black,
-                unselectedTextColor = Color(0xFF757575),
-                indicatorColor = Color.Transparent
-            )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-            label = { Text("Configuración") },
-            selected = selectedTab == 3,
-            onClick = { onTabSelected(3) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedTextColor = Color.Black,
-                unselectedTextColor = Color(0xFF757575),
-                indicatorColor = Color.Transparent
-            )
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateEventBottomSheet(onDismiss: () -> Unit) {
+private fun CreateSheet(onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 4.dp)
+                    .width(36.dp)
+                    .height(4.dp)
+                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.dp))
+            )
+        }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp)
+                .padding(bottom = 36.dp)
         ) {
-            CreateOption(Icons.Outlined.List, "Servicio")
-            CreateOption(Icons.Outlined.School, "Clase")
-            CreateOption(Icons.Outlined.Event, "Evento")
-            CreateOption(Icons.Outlined.CalendarToday, "Reunión única")
+            SheetOption(Icons.Outlined.ContentCut, "Servicio")
+            SheetOption(Icons.Outlined.School, "Clase")
+            SheetOption(Icons.Outlined.Event, "Evento")
+            SheetOption(Icons.Outlined.VideoCall, "Reunión única")
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(color = Color(0xFFF0F0F0), modifier = Modifier.padding(vertical = 6.dp))
 
             Row(
                 modifier = Modifier
@@ -423,52 +482,53 @@ private fun CreateEventBottomSheet(onDismiss: () -> Unit) {
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    Icon(
-                        Icons.Outlined.AttachMoney,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Black
-                    )
+                    Icon(Icons.Outlined.CreditCard, null, Modifier.size(20.dp), Color(0xFF444444))
+                    Text("Pago rápido", fontSize = 15.sp, color = Color.Black)
+                }
+                Surface(
+                    onClick = {},
+                    shape = RoundedCornerShape(20.dp),
+                    border = ButtonDefaults.outlinedButtonBorder,
+                    color = Color.Transparent
+                ) {
                     Text(
-                        "Pago rápido",
-                        style = MaterialTheme.typography.bodyLarge,
+                        "Conectar",
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        fontSize = 13.sp,
                         color = Color.Black
                     )
                 }
-                OutlinedButton(
-                    onClick = {},
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Text("Conectar", color = Color.Black)
-                }
             }
 
-            CreateOption(Icons.Outlined.People, "Miembro del equipo")
-            CreateOption(Icons.Outlined.Person, "Cliente")
+            SheetOption(Icons.Outlined.Groups, "Miembro del equipo")
+            SheetOption(Icons.Outlined.PersonAddAlt, "Cliente")
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(color = Color(0xFFF0F0F0), modifier = Modifier.padding(vertical = 6.dp))
 
-            CreateOption(Icons.Outlined.QrCode, "Compartir página de reservas")
+            SheetOption(Icons.Outlined.QrCode2, "Compartir página de reservas")
         }
     }
 }
 
 @Composable
-private fun CreateOption(
+private fun SheetOption(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { }
+            .padding(horizontal = 24.dp, vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(24.dp), tint = Color.Black)
-        Text(title, style = MaterialTheme.typography.bodyLarge, color = Color.Black)
+        Icon(icon, null, Modifier.size(20.dp), Color(0xFF444444))
+        Text(title, fontSize = 15.sp, color = Color.Black, fontWeight = FontWeight.Normal)
     }
 }

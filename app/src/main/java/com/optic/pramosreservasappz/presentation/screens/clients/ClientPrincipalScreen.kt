@@ -1,20 +1,23 @@
 package com.optic.pramosreservasappz.presentation.screens.clients
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientPrincipalScreen(
     navController: NavHostController,
@@ -29,20 +32,47 @@ fun ClientPrincipalScreen(
 
     Scaffold(
         topBar = {
-            PrimaryTopBar(
-                navController = navController,
-                title = "Clientes"
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Clientes",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        letterSpacing = (-0.5).sp
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(
+                        ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
+                    )
+                },
+                containerColor = Color.Black,
+                contentColor = Color.White,
+                shape = CircleShape,
+                modifier = Modifier.size(52.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
+            }
+        },
+        containerColor = Color.White
     ) { paddingValues ->
         when (val result = clientResource) {
             is Resource.Loading -> {
-                // Mostrar loading
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = Color.Black,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
             }
 
@@ -57,20 +87,37 @@ fun ClientPrincipalScreen(
 
             is Resource.Failure -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.material3.Text("Error: ${result.message}")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "No se pudo cargar los clientes",
+                            color = Color(0xFF9E9E9E),
+                            fontSize = 15.sp
+                        )
+                        TextButton(onClick = { viewModel.loadClients("", "", 1) }) {
+                            Text("Reintentar", color = Color.Black)
+                        }
+                    }
                 }
             }
 
             else -> {
-                // Estado por defecto
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = Color.Black,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
             }
         }

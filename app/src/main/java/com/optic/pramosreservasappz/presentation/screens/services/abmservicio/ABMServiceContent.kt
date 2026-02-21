@@ -1,22 +1,27 @@
 package com.optic.pramosreservasappz.presentation.screens.services.abmservicio
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
@@ -24,26 +29,22 @@ fun ABMServiceContent(
     paddingValues: PaddingValues,
     navController: NavHostController,
     serviceId: Int? = null,
-    editable: Boolean = false
+    editable: Boolean = false,
+    title: String = "",
+    onTitleChange: (String) -> Unit = {},
+    description: String = "",
+    onDescriptionChange: (String) -> Unit = {},
+    duration: String = "",
+    onDurationChange: (String) -> Unit = {},
+    bufferTime: String = "",
+    onBufferTimeChange: (String) -> Unit = {},
+    price: String = "",
+    onPriceChange: (String) -> Unit = {},
+    category: String = "",
+    onCategoryChange: (String) -> Unit = {},
+    isHidden: Boolean = false,
+    onHiddenChange: (Boolean) -> Unit = {}
 ) {
-    // Estados del formulario
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var duration by remember { mutableStateOf("") }
-    var bufferTime by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-
-    // Color aleatorio generado automáticamente
-    val randomColor = remember {
-        val colors = listOf(
-            Color(0xFF3F51B5), Color(0xFF2196F3), Color(0xFF00BCD4),
-            Color(0xFF009688), Color(0xFF4CAF50), Color(0xFFFF5722),
-            Color(0xFFE91E63), Color(0xFF9C27B0)
-        )
-        colors.random()
-    }
-
     val scrollState = rememberScrollState()
 
     Column(
@@ -53,129 +54,140 @@ fun ABMServiceContent(
             .padding(paddingValues)
             .verticalScroll(scrollState)
     ) {
-        // Header moderno con icono
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                modifier = Modifier.size(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFF5F5F5)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.MiscellaneousServices,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(14.dp)
-                )
-            }
+        Spacer(Modifier.height(4.dp))
 
-            Spacer(Modifier.width(14.dp))
-
-            Column {
-                Text(
-                    text = if (editable) "Actualizar información" else "Completar datos",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF000000),
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = if (editable) "del servicio" else "del nuevo servicio",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF757575)
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
+        // Sección "Detalles del servicio"
+        SectionLabel("Detalles del servicio")
 
         // Título
-        ModernTextField(
-            label = "Título",
-            value = title,
-            onValueChange = { title = it },
-            icon = Icons.Outlined.Title,
-            placeholder = "Ejemplo: Servicio de consultoría"
-        )
+        LabeledField(label = "Título", required = true) {
+            ServiceOutlinedField(
+                value = title,
+                onValueChange = onTitleChange,
+                placeholder = "Título del servicio"
+            )
+        }
 
         // Descripción
-        ModernTextField(
-            label = "Descripción",
-            value = description,
-            onValueChange = { description = it },
-            icon = Icons.Outlined.Description,
-            placeholder = "Describe tu servicio",
-            minLines = 3,
-            maxLines = 5
-        )
+        LabeledField(label = "Descripción") {
+            ServiceOutlinedField(
+                value = description,
+                onValueChange = onDescriptionChange,
+                placeholder = "Describe tu servicio a los visitantes de la página de reservas",
+                singleLine = false,
+                minLines = 4,
+                maxLines = 6,
+                modifier = Modifier.heightIn(min = 100.dp)
+            )
+        }
 
         // Duración
-        ModernTextField(
-            label = "Duración",
-            value = duration,
-            onValueChange = { duration = it },
-            icon = Icons.Outlined.AccessTime,
-            placeholder = "Ingresar la duración (mins)",
-            keyboardType = KeyboardType.Number
-        )
+        LabeledField(label = "Duración", required = true) {
+            ServiceOutlinedField(
+                value = duration,
+                onValueChange = onDurationChange,
+                placeholder = "",
+                keyboardType = KeyboardType.Number,
+                suffix = {
+                    Text("min", fontSize = 14.sp, color = Color(0xFF888888))
+                }
+            )
+        }
 
         // Tiempo de buffer
-        ModernTextField(
+        LabeledField(
             label = "Tiempo de buffer",
-            value = bufferTime,
-            onValueChange = { bufferTime = it },
-            icon = Icons.Outlined.HourglassEmpty,
-            placeholder = "Ingresar el tiempo de espera (mins)",
-            keyboardType = KeyboardType.Number,
-            isOptional = true
-        )
+            infoIcon = true
+        ) {
+            ServiceOutlinedField(
+                value = bufferTime,
+                onValueChange = onBufferTimeChange,
+                placeholder = "0",
+                keyboardType = KeyboardType.Number,
+                suffix = {
+                    Text("min", fontSize = 14.sp, color = Color(0xFF888888))
+                }
+            )
+        }
 
-        // Precio
-        ModernTextField(
-            label = "Precio",
-            value = price,
-            onValueChange = { price = it },
-            icon = Icons.Outlined.AttachMoney,
-            placeholder = "Ingresar el precio",
-            keyboardType = KeyboardType.Decimal
-        )
+        // Coste
+        LabeledField(label = "Coste") {
+            ServiceOutlinedField(
+                value = price,
+                onValueChange = onPriceChange,
+                placeholder = "0",
+                keyboardType = KeyboardType.Decimal,
+                prefix = {
+                    Text("Bs. ", fontSize = 14.sp, color = Color(0xFF555555), fontWeight = FontWeight.Medium)
+                }
+            )
+        }
 
-        // Categoría
-        ModernTextField(
-            label = "Categoría",
-            value = category,
-            onValueChange = { category = it },
-            icon = Icons.Outlined.Category,
-            placeholder = "Selecciona la categoría",
-            isOptional = true
-        )
+        Spacer(Modifier.height(4.dp))
 
-        Spacer(Modifier.height(16.dp))
+        // Equipo (dropdown)
+        LabeledField(label = "Equipo", required = true) {
+            DropdownField(
+                value = "Jonathan Ticona Pérez",
+                onClick = { /* TODO */ }
+            )
+        }
 
-        // Botón de acción con texto visible
-        Button(
-            onClick = { /* Guardar */ },
+        // Ubicación (dropdown)
+        LabeledField(label = "Ubicación") {
+            DropdownField(
+                value = "",
+                placeholder = "Seleccionar ubicación",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        // Categoría (dropdown)
+        LabeledField(label = "Categoría") {
+            DropdownField(
+                value = category,
+                placeholder = "Selecciona una o más categorías",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        // Establecer como oculto
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(52.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
+                .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
-            Text(
-                text = if (editable) "Guardar cambios" else "Crear servicio",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = Color.White
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Establecer como oculto",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Cuando se configura como oculto, un servicio no está visible en tu página de reservas.",
+                        fontSize = 12.sp,
+                        color = Color(0xFF888888),
+                        lineHeight = 17.sp
+                    )
+                }
+                Spacer(Modifier.width(12.dp))
+                Switch(
+                    checked = isHidden,
+                    onCheckedChange = onHiddenChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color.Black,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFCCCCCC)
+                    )
+                )
+            }
         }
 
         Spacer(Modifier.height(32.dp))
@@ -183,81 +195,140 @@ fun ABMServiceContent(
 }
 
 @Composable
-private fun ModernTextField(
+private fun SectionLabel(text: String) {
+    Text(
+        text = text,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Color.Black,
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+    )
+}
+
+@Composable
+private fun LabeledField(
     label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    icon: ImageVector,
-    placeholder: String = "",
-    isOptional: Boolean = false,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    minLines: Int = 1,
-    maxLines: Int = 1,
-    modifier: Modifier = Modifier
+    required: Boolean = false,
+    infoIcon: Boolean = false,
+    content: @Composable () -> Unit
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 20.dp, vertical = 6.dp)
     ) {
-        // Label con icono
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = label,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.Black
+            )
+            if (required) {
+                Text(" *", fontSize = 14.sp, color = Color.Black)
+            }
+            if (infoIcon) {
+                Spacer(Modifier.width(4.dp))
+                Icon(
+                    Icons.Outlined.Info,
+                    null,
+                    tint = Color(0xFFBBBBBB),
+                    modifier = Modifier.size(15.dp)
+                )
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        content()
+    }
+}
+
+@Composable
+private fun ServiceOutlinedField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    maxLines: Int = 1,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = {
+            Text(text = placeholder, fontSize = 14.sp, color = Color(0xFFCCCCCC))
+        },
+        prefix = prefix,
+        suffix = suffix,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        singleLine = singleLine,
+        minLines = minLines,
+        maxLines = maxLines,
+        shape = RoundedCornerShape(8.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(0xFFBBBBBB),
+            unfocusedBorderColor = Color(0xFFDDDDDD),
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        ),
+        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun DropdownField(
+    value: String,
+    placeholder: String = "",
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .border(0.5.dp, Color(0xFFDDDDDD), RoundedCornerShape(8.dp))
+            .background(Color.White)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 14.dp, vertical = 14.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = Color(0xFF000000)
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF000000),
-                    fontWeight = FontWeight.Normal
-                )
-            }
-
-            if (isOptional) {
-                Text(
-                    text = "Opcional",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9E9E9E)
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        // TextField
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = {
+            if (value.isNotBlank()) {
+                // Chip con el valor seleccionado
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color(0xFFF0F0F0))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(value, fontSize = 13.sp, color = Color(0xFF333333))
+                }
+            } else {
                 Text(
                     text = placeholder,
-                    color = Color(0xFFBDBDBD),
-                    style = MaterialTheme.typography.bodyMedium
+                    fontSize = 14.sp,
+                    color = Color(0xFFCCCCCC)
                 )
-            },
-            minLines = minLines,
-            maxLines = maxLines,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color(0xFFE0E0E0),
-                focusedTextColor = Color(0xFF000000),
-                unfocusedTextColor = Color(0xFF000000),
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
+            }
+            Icon(
+                Icons.Outlined.KeyboardArrowDown,
+                null,
+                tint = Color(0xFFAAAAAA),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }

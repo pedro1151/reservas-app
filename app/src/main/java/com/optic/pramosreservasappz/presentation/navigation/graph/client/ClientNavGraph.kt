@@ -26,8 +26,10 @@ import androidx.navigation.navArgument
 
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
+import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
+import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
 import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
 
@@ -47,7 +49,7 @@ fun ClientNavGraph(
         else
             ClientScreen.Login.route,
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
 
         composable(route = ClientScreen.Clientes.route) {
             ClientPrincipalScreen(navController, isAuthenticated)
@@ -75,17 +77,14 @@ fun ClientNavGraph(
                 }
             )
         ) { backStackEntry ->
-
             val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
             val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
-
             ABMServiceScreen(
                 navController = navController,
                 serviceId = serviceId,
                 editable = editable
             )
         }
-
 
         composable(
             route = ClientScreen.ABMCliente.route,
@@ -101,10 +100,8 @@ fun ClientNavGraph(
                 }
             )
         ) { backStackEntry ->
-
             val clientId = backStackEntry.arguments?.getString("clientId")?.toIntOrNull()
             val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
-
             ABMClienteScreen(
                 navController = navController,
                 clientId = clientId,
@@ -112,6 +109,37 @@ fun ClientNavGraph(
             )
         }
 
+        // Detalle del cliente
+        composable(
+            route = ClientScreen.ClientDetail.route,
+            arguments = listOf(
+                navArgument("clientId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val clientId = backStackEntry.arguments?.getInt("clientId") ?: return@composable
+            ClientDetailScreen(
+                navController = navController,
+                clientId = clientId
+            )
+        }
+
+        // Detalle del servicio
+        composable(
+            route = ClientScreen.ServiceDetail.route,
+            arguments = listOf(
+                navArgument("serviceId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: return@composable
+            ServiceDetailScreen(
+                navController = navController,
+                serviceId = serviceId
+            )
+        }
 
         composable(
             route = ClientScreen.Login.route,
@@ -148,7 +176,6 @@ fun ClientNavGraph(
                 navController.getBackStackEntry(ClientScreen.Login.route)
             }
             val viewModel: LoginViewModel = hiltViewModel(parentEntry)
-
             val email = backStackEntry.arguments?.getString("email") ?: ""
             LoginContentPless(navController, viewModel, email)
         }

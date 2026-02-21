@@ -48,14 +48,23 @@ sealed class ClientScreen(
         }
     }
 
-    // Mejor comentado:
-    /*
-    object Matches: ClientScreen(
-        route = "client/calendario",
-        title = "Calendario",
-        icon = Icons.Default.DateRange
-    )
-    */
+    // Pantalla de detalle del cliente
+    object ClientDetail : ClientScreen(
+        route = "client/detail/{clientId}",
+        title = "Detalle Cliente",
+        icon = Icons.Default.Person
+    ) {
+        fun createRoute(clientId: Int): String = "client/detail/$clientId"
+    }
+
+    // Pantalla de detalle del servicio
+    object ServiceDetail : ClientScreen(
+        route = "client/service_detail/{serviceId}",
+        title = "Detalle Servicio",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(serviceId: Int): String = "client/service_detail/$serviceId"
+    }
 
     object Games: ClientScreen(
         route = "client/games",
