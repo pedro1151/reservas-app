@@ -124,7 +124,7 @@ fun MasContent(
                 icon = Icons.Outlined.ExitToApp,
                 title = "Cerrar sesión",
                 subtitle = "Salir de la aplicación",
-                onClick = { /* Implementar logout */ },
+                onClick = { viewModel.logout() },
                 iconTint = MaterialTheme.colorScheme.error,
                 titleColor = MaterialTheme.colorScheme.error
             )

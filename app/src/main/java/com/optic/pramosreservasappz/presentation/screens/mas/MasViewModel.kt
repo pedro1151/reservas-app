@@ -1,15 +1,20 @@
 package com.optic.pramosreservasappz.presentation.screens.mas
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
+import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MasViewModel @Inject constructor(
     // Aquí puedes inyectar dependencias si las necesitas
+    private val authUseCase: AuthUseCase
 ) : ViewModel() {
 
     // 🎨 Estado del tema seleccionado
@@ -47,5 +52,10 @@ class MasViewModel @Inject constructor(
     fun toggleEmailNotifications() {
         _emailNotificationsEnabled.value = !_emailNotificationsEnabled.value
         // Aquí puedes implementar la lógica para activar/desactivar emails
+    }
+
+
+    fun logout() = viewModelScope.launch {
+        authUseCase.logout()
     }
 }
