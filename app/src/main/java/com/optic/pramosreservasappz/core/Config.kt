@@ -27,6 +27,6 @@ object  Config {
 
 
     /*google auht */
-    const val CLIENT_ID_GOOGLE ="433710092520-nd1o59g64euv89shqa2il9i570eekofv.apps.googleusercontent.com"
+    const val CLIENT_ID_GOOGLE ="433710092520-m7644hv1215dgfqr11ks4dseusl8rcgl.apps.googleusercontent.com"
 
 }

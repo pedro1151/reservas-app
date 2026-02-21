@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
 
 @Composable
 fun MasContent(
@@ -124,7 +125,7 @@ fun MasContent(
                 icon = Icons.Outlined.ExitToApp,
                 title = "Cerrar sesión",
                 subtitle = "Salir de la aplicación",
-                onClick = { /* Implementar logout */ },
+                onClick = { viewModel.logout()},
                 iconTint = MaterialTheme.colorScheme.error,
                 titleColor = MaterialTheme.colorScheme.error
             )
