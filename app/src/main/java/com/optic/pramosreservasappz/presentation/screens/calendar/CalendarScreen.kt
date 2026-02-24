@@ -35,9 +35,12 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
     activityViewModel: ActivityViewModel = hiltViewModel()
 ) {
-    var viewMode by remember { mutableStateOf(CalendarViewMode.AGENDA) }
-    var showCreateDialog by remember { mutableStateOf(false) }
+    // Vista inicial = DAY
+    var viewMode by remember { mutableStateOf(CalendarViewMode.DAY) }
+    var showReservationTypeSheet by remember { mutableStateOf(false) }
+    var showServiceWizard by remember { mutableStateOf(false) }
     var showActivitySheet by remember { mutableStateOf(false) }
+    var showProTrialSheet by remember { mutableStateOf(false) }
 
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedDateReservations by viewModel.selectedDateReservations.collectAsState()
@@ -71,7 +74,7 @@ fun CalendarScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { showCreateDialog = true },
+                    onClick = { showReservationTypeSheet = true },
                     containerColor = Color.Black,
                     contentColor = Color.White,
                     shape = CircleShape,
@@ -103,7 +106,7 @@ fun CalendarScreen(
                             CalendarViewMode.DAY -> DayTimelineView(
                                 selectedDate = selectedDate,
                                 reservations = selectedDateReservations,
-                                onTimeSlotClick = { showCreateDialog = true }
+                                onTimeSlotClick = { showReservationTypeSheet = true }
                             )
                             CalendarViewMode.THREE_DAYS -> ThreeDaysView(
                                 selectedDate = selectedDate,
@@ -114,22 +117,48 @@ fun CalendarScreen(
                 }
 
                 PromoPill(
+                    onClick = { showProTrialSheet = true },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 12.dp, end = 68.dp)
+                        .padding(bottom = 12.dp)
                 )
             }
         }
     }
 
-    if (showCreateDialog) {
-        CreateSheet(onDismiss = { showCreateDialog = false })
+    // Bottom Sheet para seleccionar tipo de reserva
+    if (showReservationTypeSheet) {
+        ReservationTypeBottomSheet(
+            onDismiss = { showReservationTypeSheet = false },
+            onTypeSelected = { type ->
+                showReservationTypeSheet = false
+                when (type) {
+                    ReservationType.SERVICE -> showServiceWizard = true
+                    ReservationType.CLASS -> { /* TODO */ }
+                    ReservationType.EVENT -> { /* TODO */ }
+                    ReservationType.MEETING -> { /* TODO */ }
+                }
+            }
+        )
+    }
+
+    // Flujo para crear reserva de servicio (con deslizamientos suaves)
+    if (showServiceWizard) {
+        ServiceReservationFlow(
+            onDismiss = { showServiceWizard = false }
+        )
     }
 
     if (showActivitySheet) {
         ActivityBottomSheet(
             activities = activities,
             onDismiss = { showActivitySheet = false }
+        )
+    }
+
+    if (showProTrialSheet) {
+        ProTrialBottomSheet(
+            onDismiss = { showProTrialSheet = false }
         )
     }
 }
@@ -158,25 +187,18 @@ private fun MinimalTopBar(
                         .getDisplayName(TextStyle.FULL, Locale("es", "ES"))
                         .replaceFirstChar { it.uppercase() },
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.W400,
                     color = Color.Black,
                     letterSpacing = (-0.3).sp
                 )
                 Text(
                     text = " ${currentDate.year}",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color(0xFFAAAAAA),
+                    fontWeight = FontWeight.W300,
+                    color = Color(0xFF9E9E9E),
                     letterSpacing = (-0.3).sp
                 )
-                Icon(
-                    Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .padding(start = 2.dp),
-                    tint = Color(0xFFAAAAAA)
-                )
+                // Sin flecha
             }
         },
         navigationIcon = {
@@ -273,7 +295,7 @@ private fun WeekStrip(
                         Text(
                             text = letter,
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.W500,
                             color = if (isToday && !isSelected) Color(0xFF1A1A1A) else Color(0xFFBBBBBB),
                             letterSpacing = 0.5.sp
                         )
@@ -291,9 +313,9 @@ private fun WeekStrip(
                                 text = date.dayOfMonth.toString(),
                                 fontSize = 13.sp,
                                 fontWeight = when {
-                                    isSelected -> FontWeight.SemiBold
-                                    isToday -> FontWeight.Bold
-                                    else -> FontWeight.Normal
+                                    isSelected -> FontWeight.W600
+                                    isToday -> FontWeight.W700
+                                    else -> FontWeight.W400
                                 },
                                 color = when {
                                     isSelected -> Color.White
@@ -405,7 +427,7 @@ private fun RowScope.BottomBarItem(
         Text(
             text = label,
             fontSize = 10.sp,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (isSelected) FontWeight.W600 else FontWeight.W400,
             color = if (isSelected) Color(0xFF1A1A1A) else Color(0xFFAAAAAA),
             letterSpacing = 0.sp
         )
@@ -413,122 +435,38 @@ private fun RowScope.BottomBarItem(
 }
 
 @Composable
-private fun PromoPill(modifier: Modifier = Modifier) {
+private fun PromoPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
+        onClick = onClick,
         modifier = modifier.height(42.dp),
         shape = RoundedCornerShape(21.dp),
         color = Color(0xFFEEF8F0),
-        shadowElevation = 6.dp
+        shadowElevation = 4.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 18.dp),
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(7.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 Icons.Default.FlightTakeoff,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(15.dp),
                 tint = Color(0xFF2E7D32)
             )
+            Spacer(Modifier.width(7.dp))
             Text(
                 text = "Comenzar prueba gratuita",
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.W500,
                 color = Color(0xFF2E7D32),
-                letterSpacing = (-0.2).sp
+                letterSpacing = (-0.1).sp
             )
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CreateSheet(onDismiss: () -> Unit) {
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = Color.White,
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 4.dp)
-                    .width(36.dp)
-                    .height(4.dp)
-                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.dp))
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 36.dp)
-        ) {
-            SheetOption(Icons.Outlined.ContentCut, "Servicio")
-            SheetOption(Icons.Outlined.School, "Clase")
-            SheetOption(Icons.Outlined.Event, "Evento")
-            SheetOption(Icons.Outlined.VideoCall, "Reunión única")
-
-            HorizontalDivider(color = Color(0xFFF0F0F0), modifier = Modifier.padding(vertical = 6.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Icon(Icons.Outlined.CreditCard, null, Modifier.size(20.dp), Color(0xFF444444))
-                    Text("Pago rápido", fontSize = 15.sp, color = Color.Black)
-                }
-                Surface(
-                    onClick = {},
-                    shape = RoundedCornerShape(20.dp),
-                    border = ButtonDefaults.outlinedButtonBorder,
-                    color = Color.Transparent
-                ) {
-                    Text(
-                        "Conectar",
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                        fontSize = 13.sp,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            SheetOption(Icons.Outlined.Groups, "Miembro del equipo")
-            SheetOption(Icons.Outlined.PersonAddAlt, "Cliente")
-
-            HorizontalDivider(color = Color(0xFFF0F0F0), modifier = Modifier.padding(vertical = 6.dp))
-
-            SheetOption(Icons.Outlined.QrCode2, "Compartir página de reservas")
-        }
-    }
-}
-
-@Composable
-private fun SheetOption(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { }
-            .padding(horizontal = 24.dp, vertical = 15.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Icon(icon, null, Modifier.size(20.dp), Color(0xFF444444))
-        Text(title, fontSize = 15.sp, color = Color.Black, fontWeight = FontWeight.Normal)
     }
 }

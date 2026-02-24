@@ -5,19 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationResponse
 import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationUpdateRequest
-import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.screens.calendar.components.Reservation
 import com.optic.pramosreservasappz.presentation.screens.calendar.components.ReservationStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,12 +21,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    // TODO: Inyectar tu UseCase de reservas cuando lo tengas
     private val reservasUC: ReservasUC
 ) : ViewModel() {
 
@@ -52,6 +47,22 @@ class CalendarViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // Estados para crear reserva
+    private val _selectedServiceIdForReservation = MutableStateFlow<Int?>(null)
+    val selectedServiceIdForReservation: StateFlow<Int?> = _selectedServiceIdForReservation.asStateFlow()
+
+    private val _selectedClientIdForReservation = MutableStateFlow<Int?>(null)
+    val selectedClientIdForReservation: StateFlow<Int?> = _selectedClientIdForReservation.asStateFlow()
+
+    private val _selectedDateForReservation = MutableStateFlow<LocalDate?>(null)
+    val selectedDateForReservation: StateFlow<LocalDate?> = _selectedDateForReservation.asStateFlow()
+
+    private val _selectedTimeForReservation = MutableStateFlow<LocalTime?>(null)
+    val selectedTimeForReservation: StateFlow<LocalTime?> = _selectedTimeForReservation.asStateFlow()
+
+    private val _internalNoteForReservation = MutableStateFlow("")
+    val internalNoteForReservation: StateFlow<String> = _internalNoteForReservation.asStateFlow()
 
     init {
         loadMonth(YearMonth.now())
@@ -125,7 +136,7 @@ class CalendarViewModel @Inject constructor(
                 clientName = "Gaston Edul",
                 serviceName = "Peluquería Caballeros",
                 serviceColor = Color(0xFFFF5722),
-                startTime = java.time.LocalTime.of(10, 0),
+                startTime = LocalTime.of(10, 0),
                 durationMinutes = 30,
                 status = ReservationStatus.CONFIRMED,
                 price = 25.50
@@ -135,7 +146,7 @@ class CalendarViewModel @Inject constructor(
                 clientName = "Edgar Ramirez",
                 serviceName = "Tintura de cabello",
                 serviceColor = Color(0xFF2196F3),
-                startTime = java.time.LocalTime.of(11, 30),
+                startTime = LocalTime.of(11, 30),
                 durationMinutes = 60,
                 status = ReservationStatus.PENDING,
                 price = 35.00
@@ -145,7 +156,7 @@ class CalendarViewModel @Inject constructor(
                 clientName = "Eduardo Abaroa",
                 serviceName = "Masajes corporales",
                 serviceColor = Color(0xFF4CAF50),
-                startTime = java.time.LocalTime.of(15, 0),
+                startTime = LocalTime.of(15, 0),
                 durationMinutes = 60,
                 status = ReservationStatus.COMPLETED,
                 price = 70.50
@@ -153,43 +164,52 @@ class CalendarViewModel @Inject constructor(
         )
     }
 
+    // ✅ NUEVO: Funciones para manejar creación de reserva
+    fun setSelectedServiceForReservation(serviceId: Int?) {
+        _selectedServiceIdForReservation.value = serviceId
+    }
 
+    fun setSelectedClientForReservation(clientId: Int?) {
+        _selectedClientIdForReservation.value = clientId
+    }
 
+    fun setSelectedDateForReservation(date: LocalDate?) {
+        _selectedDateForReservation.value = date
+    }
 
-    // casos de uso reales  (pedro) para implementar en las pantallas de reservas
+    fun setSelectedTimeForReservation(time: LocalTime?) {
+        _selectedTimeForReservation.value = time
+    }
 
-    // ---------------------------------------------
-    // STATE: Lista de reservas: cada vez q se crea una reserva llamar en launched effect a esta lista
-    // ---------------------------------------------
+    fun setInternalNoteForReservation(note: String) {
+        _internalNoteForReservation.value = note
+    }
+
+    fun clearReservationForm() {
+        _selectedServiceIdForReservation.value = null
+        _selectedClientIdForReservation.value = null
+        _selectedDateForReservation.value = null
+        _selectedTimeForReservation.value = null
+        _internalNoteForReservation.value = ""
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // CASOS DE USO REALES (API) - Ya estaban en tu código
+    // ══════════════════════════════════════════════════════════════
+
     private val _reservasState = MutableStateFlow<Resource<List<ReservationResponse>>>(Resource.Loading)
-    val reservasState : StateFlow<Resource<List<ReservationResponse>>> = _reservasState .asStateFlow()
+    val reservasState: StateFlow<Resource<List<ReservationResponse>>> = _reservasState.asStateFlow()
 
-
-
-    // ---------------------------------------------
-    // STATE: Crear uan reserva
-    // ---------------------------------------------
     private val _createReservationState = MutableStateFlow<Resource<ReservationResponse>>(Resource.Idle)
     val createReservationState: StateFlow<Resource<ReservationResponse>> = _createReservationState.asStateFlow()
 
-    // ---------------------------------------------
-    // STATE: Actualizar reserva
-    // ---------------------------------------------
     private val _updateReservationState = MutableStateFlow<Resource<ReservationResponse>>(Resource.Idle)
-    val updateReservationState : StateFlow<Resource<ReservationResponse>> = _updateReservationState.asStateFlow()
+    val updateReservationState: StateFlow<Resource<ReservationResponse>> = _updateReservationState.asStateFlow()
 
-    // ---------------------------------------------
-    // STATE: Obtener una reserva por ID
-    // ---------------------------------------------
-    private val _oneReservationState =MutableStateFlow<Resource<ReservationResponse>>(Resource.Idle)
+    private val _oneReservationState = MutableStateFlow<Resource<ReservationResponse>>(Resource.Idle)
     val oneReservationState: StateFlow<Resource<ReservationResponse>> = _oneReservationState.asStateFlow()
 
-
-    // ---------------------------------------------
-    // FUNCIÓN: Obtener todas las reservas
-    // ---------------------------------------------
-    fun getReservations(
-    ) {
+    fun getReservations() {
         viewModelScope.launch {
             reservasUC.getReservationsUC()
                 .onStart {
@@ -204,15 +224,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-
-
-
-    // ---------------------------------------------
-    // FUNCIÓN: Obtener cliente por ID
-    // ---------------------------------------------
-    fun getReservationById(
-        reservationId: Int,
-    ) {
+    fun getReservationById(reservationId: Int) {
         viewModelScope.launch {
             reservasUC.getReservationByIdUC(reservationId)
                 .onStart {
@@ -227,12 +239,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    // ---------------------------------------------
-    // FUNCIÓN: Crear REserva
-    // ---------------------------------------------
-    fun createReservation(
-        request: ReservationCreateRequest
-    ) {
+    fun createReservation(request: ReservationCreateRequest) {
         viewModelScope.launch {
             reservasUC.createReservationUC(request)
                 .onStart {
@@ -243,29 +250,21 @@ class CalendarViewModel @Inject constructor(
                 }
                 .collectLatest { result ->
                     _createReservationState.value = result
-
                 }
         }
     }
 
-    // ---------------------------------------------
-    // FUNCIÓN: actualizar reserva
-    // ---------------------------------------------
-    fun updateReservation(
-        reservationId: Int,
-        request: ReservationUpdateRequest
-    ) {
+    fun updateReservation(reservationId: Int, request: ReservationUpdateRequest) {
         viewModelScope.launch {
             reservasUC.updateReservationUC(reservationId, request)
                 .onStart {
                     _updateReservationState.value = Resource.Loading
                 }
                 .catch { e ->
-                    _updateReservationState.value = Resource.Failure(e.message ?: "Error al actualizar cliente")
+                    _updateReservationState.value = Resource.Failure(e.message ?: "Error al actualizar reserva")
                 }
                 .collectLatest { result ->
                     _updateReservationState.value = result
-
                 }
         }
     }
