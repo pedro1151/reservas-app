@@ -1,6 +1,6 @@
 package com.optic.pramosreservasappz.domain.util
 
-import com.optic.pramosreservasappz.domain.model.ErrorResponse
+import com.optic.pramosreservasappz.domain.model.auth.ErrorResponse
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException

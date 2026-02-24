@@ -2,9 +2,10 @@ package com.optic.pramosreservasappz.data.repository
 
 import com.optic.pramosreservasappz.data.dataSource.local.AuthLocalDataSource
 import com.optic.pramosreservasappz.data.dataSource.remote.AuthRemoteDataSource
-import com.optic.pramosreservasappz.domain.model.AuthResponse
-import com.optic.pramosreservasappz.domain.model.User
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
+import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.repository.AuthRepository
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.domain.util.ResponseToRequest
@@ -44,6 +45,14 @@ class AuthRepositoryImpl(
     override suspend fun loginSendCode(email: String): Resource<LoginSendCodeResponse> = ResponseToRequest.send(
         authRemoteDataSource.loginSendCode(email)
     )
+
+
+    override suspend fun refreshToken(
+        request: RefreshTokenRequest
+    ): Resource<AuthResponse> = ResponseToRequest.send(
+        authRemoteDataSource.refreshToken(request)
+    )
+
 
 
 }

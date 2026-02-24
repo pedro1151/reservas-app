@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
+import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.util.Log
+import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.state.ClientCreateState
 
 
 @HiltViewModel
@@ -124,6 +125,20 @@ class ClientViewModel @Inject constructor(
                 }
                 .collectLatest { result ->
                     _oneClientState.value = result
+
+                    if (result is Resource.Success) {
+                        val client = result.data
+
+                        _formState.value = ClientCreateState(
+                            fullName = client.fullName ?: "",
+                            email = client.email ?: "",
+                            phone = client.phone ?: "",
+                            country = client.country ?: "",
+                            address = client.address ?: "",
+                            city = client.city ?: "",
+                            state = client.state ?: ""
+                        )
+                    }
                 }
         }
     }
@@ -278,5 +293,20 @@ class ClientViewModel @Inject constructor(
 
     fun clearSearch() {
         _searchQuery.value = ""
+    }
+
+
+    // ---------------------------------------------
+// FORM STATE (CREATE / UPDATE)
+// ---------------------------------------------
+    private val _formState = MutableStateFlow(ClientCreateState())
+    val formState: StateFlow<ClientCreateState> = _formState.asStateFlow()
+
+    fun onFormChange(newState: ClientCreateState) {
+        _formState.value = newState
+    }
+
+    fun resetForm() {
+        _formState.value = ClientCreateState()
     }
 }

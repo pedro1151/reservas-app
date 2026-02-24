@@ -9,6 +9,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
+import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
 
@@ -20,18 +22,11 @@ fun ABMClienteScreen(
     editable: Boolean,
 ) {
     val viewModel: ClientViewModel = hiltViewModel()
+    val formState by viewModel.formState.collectAsState()
+    val createState by viewModel.createClientState.collectAsState()
+    val updateState by viewModel.updateClientState.collectAsState()
     val oneClientState by viewModel.oneClientState.collectAsState()
 
-    // Pre-fill con datos existentes cuando editamos
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var company by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf("") }
-    var dataLoaded by remember { mutableStateOf(false) }
 
     // Cargar datos del cliente si estamos editando
     LaunchedEffect(clientId) {
@@ -40,21 +35,7 @@ fun ABMClienteScreen(
         }
     }
 
-    // Cuando llegan los datos, pre-rellenar los campos (solo una vez)
-    LaunchedEffect(oneClientState) {
-        if (editable && !dataLoaded) {
-            val state2 = oneClientState
-            if (state2 is Resource.Success) {
-                val client = state2.data
-                fullName = client.fullName
-                email = client.email ?: ""
-                phone = client.phone ?: ""
-                city = client.city ?: ""
-                country = client.country ?: ""
-                dataLoaded = true
-            }
-        }
-    }
+
 
     Scaffold(
         topBar = {
@@ -75,12 +56,41 @@ fun ABMClienteScreen(
                 actions = {
                     TextButton(
                         onClick = {
+
+                            val state = viewModel.formState.value
+
                             if (editable && clientId != null) {
-                                // TODO: viewModel.updateClient(clientId, ...)
+
+                                viewModel.updateClient(
+                                    clientId,
+                                    ClientUpdateRequest(
+                                        fullName = state.fullName,
+                                        email = state.email,
+                                        phone = state.phone,
+                                        enterpriseName = state.enterprise,
+                                        country = state.country,
+                                        address = state.address,
+                                        city = state.city,
+                                        state = state.state
+                                    )
+                                )
+
                             } else {
-                                // TODO: viewModel.createClient(...)
+
+                                viewModel.createClient(
+                                    ClientCreateRequest(
+                                        fullName = state.fullName,
+                                        email = state.email,
+                                        phone = state.phone,
+                                        enterpriseName = state.enterprise,
+                                        country = state.country,
+                                        address = state.address,
+                                        city = state.city,
+                                        state = state.state,
+                                        providerId = 1
+                                    )
+                                )
                             }
-                            navController.popBackStack()
                         }
                     ) {
                         Text(
@@ -101,14 +111,23 @@ fun ABMClienteScreen(
             navController = navController,
             clientId = clientId,
             editable = editable,
-            fullName = fullName, onFullNameChange = { fullName = it },
-            phone = phone, onPhoneChange = { phone = it },
-            email = email, onEmailChange = { email = it },
-            company = company, onCompanyChange = { company = it },
-            country = country, onCountryChange = { country = it },
-            address = address, onAddressChange = { address = it },
-            city = city, onCityChange = { city = it },
-            state = state, onStateChange = { state = it }
+            viewModel = viewModel
         )
+    }
+
+    LaunchedEffect(createState) {
+        if (createState is Resource.Success) {
+            viewModel.resetCreateState()
+            viewModel.resetForm()
+            navController.popBackStack()
+        }
+    }
+
+    LaunchedEffect(updateState) {
+        if (updateState is Resource.Success) {
+            viewModel.resetUpdateState()
+            viewModel.resetForm()
+            navController.popBackStack()
+        }
     }
 }

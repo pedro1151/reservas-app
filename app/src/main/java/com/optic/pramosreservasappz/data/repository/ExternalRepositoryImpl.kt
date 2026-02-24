@@ -1,7 +1,7 @@
 package com.optic.pramosreservasappz.data.repository
 
 import com.optic.pramosreservasappz.data.dataSource.remote.service.external.ExternalRemoteDataSource
-import com.optic.pramosreservasappz.domain.model.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
 import com.optic.pramosreservasappz.domain.repository.ExternalRepository
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.domain.util.ResponseToRequest

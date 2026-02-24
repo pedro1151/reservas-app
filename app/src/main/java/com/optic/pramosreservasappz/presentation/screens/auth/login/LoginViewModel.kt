@@ -5,7 +5,7 @@ import android.util.Patterns
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase

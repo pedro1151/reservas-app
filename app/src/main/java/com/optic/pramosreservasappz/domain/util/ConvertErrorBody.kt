@@ -1,7 +1,7 @@
 package com.optic.pramosreservasappz.domain.util
 
 import android.util.Log
-import com.optic.pramosreservasappz.domain.model.ErrorResponse
+import com.optic.pramosreservasappz.domain.model.auth.ErrorResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.ResponseBody

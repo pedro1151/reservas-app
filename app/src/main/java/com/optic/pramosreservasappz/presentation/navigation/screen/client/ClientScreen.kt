@@ -13,7 +13,7 @@ sealed class ClientScreen(
     object Clientes: ClientScreen(
         route = "client/clientes",
         title = "Clientes",
-        icon = Icons.Default.SentimentSatisfied
+        icon = Icons.Default.Star
     )
 
     object Calendario: ClientScreen(

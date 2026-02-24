@@ -1,6 +1,6 @@
 package com.optic.pramosreservasappz.domain.useCase.reservas.clients
 
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 
 class UpdateClientUC constructor(private val repository: ReservasRepository) {

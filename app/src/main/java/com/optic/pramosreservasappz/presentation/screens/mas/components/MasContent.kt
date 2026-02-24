@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,7 +21,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 
 @Composable
 fun MasContent(
@@ -29,6 +32,8 @@ fun MasContent(
     navController: NavHostController
 ) {
     val context = LocalContext.current
+    val authStateVM: AuthStateVM = hiltViewModel()
+    val userEmail by authStateVM.userEmail.collectAsState()
 
     // Estados para diálogos
     var showAboutDialog by remember { mutableStateOf(false) }
@@ -121,12 +126,12 @@ fun MasContent(
 
         MenuCard {
             MenuItem(
-                icon = Icons.Outlined.ExitToApp,
+                icon = Icons.Default.Air,
                 title = "Cerrar sesión",
-                subtitle = "Salir de la aplicación",
+                subtitle = userEmail,
                 onClick = { viewModel.logout() },
-                iconTint = MaterialTheme.colorScheme.error,
-                titleColor = MaterialTheme.colorScheme.error
+                iconTint = MaterialTheme.colorScheme.primary,
+                titleColor = MaterialTheme.colorScheme.primary
             )
         }
 

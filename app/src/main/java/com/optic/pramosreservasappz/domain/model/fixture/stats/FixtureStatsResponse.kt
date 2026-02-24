@@ -1,4 +1,6 @@
+
 package com.optic.pramosreservasappz.domain.model.fixture.stats
+
 
 import com.google.gson.annotations.SerializedName
 
