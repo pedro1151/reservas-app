@@ -26,6 +26,9 @@ import androidx.navigation.navArgument
 
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateCalendarStepOneScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptree.CreateCalendarStepThreeScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptwo.CreateCalendarStepTwoScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
@@ -61,6 +64,19 @@ fun ClientNavGraph(
 
         composable(route = ClientScreen.Servicios.route) {
             ServiceScreen(navController, isAuthenticated)
+        }
+
+
+        composable(route = ClientScreen.CreateReservationStepOne.route) {
+            CreateCalendarStepOneScreen(navController)
+        }
+
+        composable(route = ClientScreen.CreateReservationStepThree.route) {
+            CreateCalendarStepThreeScreen(navController)
+        }
+
+        composable(route = ClientScreen.CreateReservationStepTwo.route) {
+            CreateCalendarStepTwoScreen(navController)
         }
 
         composable(
