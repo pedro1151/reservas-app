@@ -14,8 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewModel

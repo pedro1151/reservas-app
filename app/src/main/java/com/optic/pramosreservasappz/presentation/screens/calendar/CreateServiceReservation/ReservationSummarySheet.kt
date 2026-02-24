@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
