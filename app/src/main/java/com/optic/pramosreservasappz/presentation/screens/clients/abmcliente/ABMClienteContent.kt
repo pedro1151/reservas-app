@@ -5,12 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +19,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
+import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.components.ClientDefaultField
 
 @Composable
 fun ABMClienteContent(
@@ -29,24 +28,10 @@ fun ABMClienteContent(
     navController: NavHostController,
     clientId: Int? = null,
     editable: Boolean = false,
-    fullName: String = "",
-    onFullNameChange: (String) -> Unit = {},
-    phone: String = "",
-    onPhoneChange: (String) -> Unit = {},
-    email: String = "",
-    onEmailChange: (String) -> Unit = {},
-    company: String = "",
-    onCompanyChange: (String) -> Unit = {},
-    country: String = "",
-    onCountryChange: (String) -> Unit = {},
-    address: String = "",
-    onAddressChange: (String) -> Unit = {},
-    city: String = "",
-    onCityChange: (String) -> Unit = {},
-    state: String = "",
-    onStateChange: (String) -> Unit = {}
+    viewModel: ClientViewModel
 ) {
     val scrollState = rememberScrollState()
+    val formState by viewModel.formState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -106,16 +91,16 @@ fun ABMClienteContent(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Nombre completo
-            WhiteFieldWithBorder(
-                value = fullName,
-                onValueChange = onFullNameChange,
+            ClientDefaultField(
+                value = formState.fullName,
+                onValueChange = { viewModel.onFormChange(formState.copy(fullName = it)) },
                 placeholder = "Nombre completo"
             )
 
             // Teléfono con bandera Bolivia
-            WhiteFieldWithBorder(
-                value = phone,
-                onValueChange = onPhoneChange,
+            ClientDefaultField(
+                value = formState.phone,
+                onValueChange ={ viewModel.onFormChange(formState.copy(phone = it)) },
                 placeholder = "Número de teléfono",
                 keyboardType = KeyboardType.Phone,
                 prefix = {
@@ -145,9 +130,9 @@ fun ABMClienteContent(
             )
 
             // Correo electrónico
-            WhiteFieldWithBorder(
-                value = email,
-                onValueChange = onEmailChange,
+            ClientDefaultField(
+                value = formState.email,
+                onValueChange = { viewModel.onFormChange(formState.copy(email = it)) },
                 placeholder = "Correo electrónico",
                 keyboardType = KeyboardType.Email,
                 suffix = {
@@ -162,60 +147,37 @@ fun ABMClienteContent(
             )
 
             // Empresa
-            WhiteFieldWithBorder(
-                value = company,
-                onValueChange = onCompanyChange,
+            ClientDefaultField(
+                value = formState.enterprise,
+                onValueChange = { viewModel.onFormChange(formState.copy(enterprise = it)) },
                 placeholder = "Nombre de la empresa"
             )
 
             // País (dropdown visual)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White)
-                    .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = if (country.isBlank()) "País" else country,
-                        fontSize = 15.sp,
-                        color = if (country.isBlank()) Color(0xFFAAAAAA) else Color.Black
-                    )
-                    Icon(
-                        Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = null,
-                        tint = Color(0xFFAAAAAA),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
+            ClientDefaultField(
+                value = formState.country,
+                onValueChange = { viewModel.onFormChange(formState.copy(country = it)) },
+                placeholder = "Pais"
+            )
 
             // Dirección
-            WhiteFieldWithBorder(
-                value = address,
-                onValueChange = onAddressChange,
+            ClientDefaultField(
+                value = formState.address,
+                onValueChange = { viewModel.onFormChange(formState.copy(address = it)) },
                 placeholder = "Dirección"
             )
 
             // Ciudad
-            WhiteFieldWithBorder(
-                value = city,
-                onValueChange = onCityChange,
+            ClientDefaultField(
+                value = formState.city,
+                onValueChange = { viewModel.onFormChange(formState.copy(city = it)) },
                 placeholder = "Ciudad"
             )
 
             // Estado / Provincia
-            WhiteFieldWithBorder(
-                value = state,
-                onValueChange = onStateChange,
+            ClientDefaultField(
+                value = formState.state,
+                onValueChange = { viewModel.onFormChange(formState.copy(state = it)) },
                 placeholder = "Estado"
             )
         }
@@ -224,40 +186,3 @@ fun ABMClienteContent(
     }
 }
 
-@Composable
-private fun WhiteFieldWithBorder(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    prefix: @Composable (() -> Unit)? = null,
-    suffix: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(text = placeholder, fontSize = 15.sp, color = Color(0xFFAAAAAA))
-        },
-        prefix = prefix,
-        suffix = suffix,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = true,
-        shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            cursorColor = Color.Black
-        ),
-        textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
-        modifier = modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
-    )
-}

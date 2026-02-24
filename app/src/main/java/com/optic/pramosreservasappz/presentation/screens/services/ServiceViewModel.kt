@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
+import com.optic.pramosreservasappz.domain.model.services.ServiceCreateRequest
+import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.util.Log
+import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ServiceCreateState
 
 @HiltViewModel
 class ServiceViewModel @Inject constructor(
@@ -193,8 +194,23 @@ class ServiceViewModel @Inject constructor(
                     _serviceState.value = Resource.Failure(e.message ?: "Error desconocido")
                 }
                 .collectLatest { result ->
-                    Log.d("ServiceVM", "📥 Resultado recibido: $result")
                     _serviceState.value = result
+
+                    if (result is Resource.Success) {
+                        val service = result.data
+
+                        _formState.value = ServiceCreateState(
+                            name = service.name,
+                            description = service.description ?: "",
+                            price = service.price?.toString() ?: "",
+                            durationMinutes = service.durationMinutes.toString(),
+                            isActive = service.isActive ?: true,
+                            bufferTime = service.bufferTime?.toString() ?: "",
+                            category = service.category ?: "",
+                            hidden = service.hidden ?: false,
+                            color = service.color ?: ""
+                        )
+                    }
                 }
         }
     }
@@ -304,5 +320,20 @@ class ServiceViewModel @Inject constructor(
 
     fun clearSearch() {
         _searchQuery.value = ""
+    }
+
+
+    // ---------------------------------------------
+// FORM STATE (CREATE / UPDATE)
+// ---------------------------------------------
+    private val _formState = MutableStateFlow(ServiceCreateState())
+    val formState: StateFlow<ServiceCreateState> = _formState.asStateFlow()
+
+    fun onFormChange(newState: ServiceCreateState) {
+        _formState.value = newState
+    }
+
+    fun resetForm() {
+        _formState.value = ServiceCreateState()
     }
 }

@@ -1,6 +1,6 @@
 package com.optic.pramosreservasappz.data.dataSource.local
 
-import com.optic.pramosreservasappz.domain.model.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
 import kotlinx.coroutines.flow.Flow
 
 interface AuthLocalDataSource {

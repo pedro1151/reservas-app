@@ -1,5 +1,5 @@
-package com.optic.pramosreservasappz.domain.model.fixture.lineups
 
+package com.optic.pramosreservasappz.domain.model.fixture.lineups
 
 import com.google.gson.annotations.SerializedName
 

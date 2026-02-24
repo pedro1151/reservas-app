@@ -1,8 +1,9 @@
 package com.optic.pramosreservasappz.data.dataSource.remote
 
-import com.optic.pramosreservasappz.domain.model.AuthResponse
-import com.optic.pramosreservasappz.domain.model.User
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
+import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import retrofit2.Response
 
 interface AuthRemoteDataSource {
@@ -14,5 +15,9 @@ interface AuthRemoteDataSource {
     suspend fun loginPless(email: String, code:String): Response<AuthResponse>
     suspend fun loginSendCode(email: String): Response<LoginSendCodeResponse>
 
+    // refresh token
+    suspend fun refreshToken(
+        request: RefreshTokenRequest
+    ): Response<AuthResponse>
 
 }

@@ -45,7 +45,7 @@ fun ClientNavGraph(
         navController = navController,
         route = Graph.CLIENT,
         startDestination = if (isAuthenticated)
-            ClientScreen.Clientes.route
+            ClientScreen.Calendario.route
         else
             ClientScreen.Login.route,
         modifier = Modifier.fillMaxSize()

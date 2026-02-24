@@ -1,6 +1,6 @@
 package com.optic.pramosreservasappz.domain.repository
 
-import com.optic.pramosreservasappz.domain.model.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
 import com.optic.pramosreservasappz.domain.util.Resource
 
 interface ExternalRepository {

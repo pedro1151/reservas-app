@@ -6,14 +6,14 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.domain.model.services.ServiceCreateRequest
+import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,33 +26,9 @@ fun ABMServiceScreen(
     val viewModel: ServiceViewModel = hiltViewModel()
     val serviceState by viewModel.serviceState.collectAsState()
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var duration by remember { mutableStateOf("") }
-    var bufferTime by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var isHidden by remember { mutableStateOf(false) }
-    var dataLoaded by remember { mutableStateOf(false) }
-
     LaunchedEffect(serviceId) {
         if (editable && serviceId != null) {
             viewModel.getServiceById(serviceId)
-        }
-    }
-
-    LaunchedEffect(serviceState) {
-        if (editable && !dataLoaded) {
-            val state = serviceState
-            if (state is Resource.Success) {
-                val s = state.data
-                title = s.name
-                description = s.description ?: ""
-                duration = s.durationMinutes.toString()
-                price = s.price?.toString() ?: ""
-                category = s.category ?: ""
-                dataLoaded = true
-            }
         }
     }
 
@@ -80,22 +56,40 @@ fun ABMServiceScreen(
                     // Botón Guardar como chip redondeado
                     Button(
                         onClick = {
+
+                            val state = viewModel.formState.value
+
                             if (editable && serviceId != null) {
-                                // TODO: viewModel.updateService(serviceId, ...)
+
+                                viewModel.updateService(
+                                    serviceId,
+                                    ServiceUpdateRequest(
+                                        name = state.name,
+                                        description = state.description,
+                                        price = state.price.toDoubleOrNull(),
+                                        durationMinutes = state.durationMinutes.toIntOrNull() ?: 0,
+                                        bufferTime = state.bufferTime.toIntOrNull(),
+                                        category = state.category,
+                                        hidden = state.hidden
+                                    )
+                                )
+
                             } else {
-                                // TODO: viewModel.createService(...)
+
+                                viewModel.createService(
+                                    ServiceCreateRequest(
+                                        name = state.name,
+                                        description = state.description,
+                                        price = state.price.toDoubleOrNull(),
+                                        durationMinutes = state.durationMinutes.toIntOrNull() ?: 0,
+                                        bufferTime = state.bufferTime.toIntOrNull(),
+                                        category = state.category,
+                                        hidden = state.hidden,
+                                        providerId = 1 // tu provider real
+                                    )
+                                )
                             }
-                            navController.popBackStack()
-                        },
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFEEEEEE),
-                            contentColor = Color(0xFF888888)
-                        ),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                            horizontal = 16.dp,
-                            vertical = 6.dp
-                        )
+                        }
                     ) {
                         Text(
                             text = "Guardar",
@@ -118,13 +112,7 @@ fun ABMServiceScreen(
             navController = navController,
             serviceId = serviceId,
             editable = editable,
-            title = title, onTitleChange = { title = it },
-            description = description, onDescriptionChange = { description = it },
-            duration = duration, onDurationChange = { duration = it },
-            bufferTime = bufferTime, onBufferTimeChange = { bufferTime = it },
-            price = price, onPriceChange = { price = it },
-            category = category, onCategoryChange = { category = it },
-            isHidden = isHidden, onHiddenChange = { isHidden = it }
+            viewModel = viewModel
         )
     }
 }

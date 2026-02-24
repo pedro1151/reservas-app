@@ -1,8 +1,9 @@
 package com.optic.pramosreservasappz.domain.repository
 
-import com.optic.pramosreservasappz.domain.model.AuthResponse
-import com.optic.pramosreservasappz.domain.model.User
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
+import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -18,4 +19,9 @@ interface AuthRepository {
     //password less login
     suspend fun loginPless(email: String, code:String):  Resource<AuthResponse>
     suspend fun loginSendCode(email: String):  Resource<LoginSendCodeResponse>
+
+    // refresh token
+    suspend fun refreshToken(
+        request: RefreshTokenRequest
+    ):  Resource<AuthResponse>
 }

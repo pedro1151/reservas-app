@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -18,11 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewModel
+import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.components.ServiceOutlinedField
 
 @Composable
 fun ABMServiceContent(
@@ -30,22 +33,32 @@ fun ABMServiceContent(
     navController: NavHostController,
     serviceId: Int? = null,
     editable: Boolean = false,
-    title: String = "",
-    onTitleChange: (String) -> Unit = {},
-    description: String = "",
-    onDescriptionChange: (String) -> Unit = {},
-    duration: String = "",
-    onDurationChange: (String) -> Unit = {},
-    bufferTime: String = "",
-    onBufferTimeChange: (String) -> Unit = {},
-    price: String = "",
-    onPriceChange: (String) -> Unit = {},
-    category: String = "",
-    onCategoryChange: (String) -> Unit = {},
-    isHidden: Boolean = false,
-    onHiddenChange: (Boolean) -> Unit = {}
+    viewModel: ServiceViewModel
 ) {
     val scrollState = rememberScrollState()
+
+    val context = LocalContext.current
+    val formState by viewModel.formState.collectAsState()
+    var isButtonEnabled by remember { mutableStateOf(true) }
+    val serviceResource by viewModel.serviceState.collectAsState()
+
+    val createState by viewModel.createServiceState.collectAsState()
+    val updateState by viewModel.updateServiceState.collectAsState()
+
+    LaunchedEffect(createState) {
+        if (createState is Resource.Success) {
+            viewModel.resetCreateState()
+            viewModel.resetForm()
+            navController.popBackStack()
+        }
+    }
+
+    LaunchedEffect(updateState) {
+        if (updateState is Resource.Success) {
+            viewModel.resetUpdateState()
+            navController.popBackStack()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -62,19 +75,20 @@ fun ABMServiceContent(
         // Título
         LabeledField(label = "Título", required = true) {
             ServiceOutlinedField(
-                value = title,
-                onValueChange = onTitleChange,
-                placeholder = "Título del servicio"
+                value =  formState.name,
+                onValueChange =  { viewModel.onFormChange(formState.copy(name = it)) },
+                placeholder = "Ejemplo: Servicio de consultoria"
             )
         }
 
         // Descripción
         LabeledField(label = "Descripción") {
             ServiceOutlinedField(
-                value = description,
-                onValueChange = onDescriptionChange,
+                value = formState.description,
+                onValueChange =  { viewModel.onFormChange(formState.copy(description = it)) },
                 placeholder = "Describe tu servicio a los visitantes de la página de reservas",
                 singleLine = false,
+                keyboardType = KeyboardType.Text,
                 minLines = 4,
                 maxLines = 6,
                 modifier = Modifier.heightIn(min = 100.dp)
@@ -84,8 +98,8 @@ fun ABMServiceContent(
         // Duración
         LabeledField(label = "Duración", required = true) {
             ServiceOutlinedField(
-                value = duration,
-                onValueChange = onDurationChange,
+                value = formState.durationMinutes,
+                onValueChange =  { viewModel.onFormChange(formState.copy(durationMinutes = it)) },
                 placeholder = "",
                 keyboardType = KeyboardType.Number,
                 suffix = {
@@ -100,8 +114,9 @@ fun ABMServiceContent(
             infoIcon = true
         ) {
             ServiceOutlinedField(
-                value = bufferTime,
-                onValueChange = onBufferTimeChange,
+
+                value = formState.bufferTime,
+                onValueChange =  { viewModel.onFormChange(formState.copy(bufferTime = it)) },
                 placeholder = "0",
                 keyboardType = KeyboardType.Number,
                 suffix = {
@@ -113,8 +128,8 @@ fun ABMServiceContent(
         // Coste
         LabeledField(label = "Coste") {
             ServiceOutlinedField(
-                value = price,
-                onValueChange = onPriceChange,
+                value = formState.price,
+                onValueChange = { viewModel.onFormChange(formState.copy(price = it)) },
                 placeholder = "0",
                 keyboardType = KeyboardType.Decimal,
                 prefix = {
@@ -144,10 +159,10 @@ fun ABMServiceContent(
 
         // Categoría (dropdown)
         LabeledField(label = "Categoría") {
-            DropdownField(
-                value = category,
-                placeholder = "Selecciona una o más categorías",
-                onClick = { /* TODO */ }
+            ServiceOutlinedField(
+                value = formState.category,
+                onValueChange = { viewModel.onFormChange(formState.copy(category = it)) },
+                placeholder = "Selecciona una o más categorías"
             )
         }
 
@@ -178,8 +193,8 @@ fun ABMServiceContent(
                 }
                 Spacer(Modifier.width(12.dp))
                 Switch(
-                    checked = isHidden,
-                    onCheckedChange = onHiddenChange,
+                    checked = formState.hidden,
+                    onCheckedChange =   { viewModel.onFormChange(formState.copy(hidden = it)) },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Color.Black,
@@ -242,45 +257,6 @@ private fun LabeledField(
     }
 }
 
-@Composable
-private fun ServiceOutlinedField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    singleLine: Boolean = true,
-    minLines: Int = 1,
-    maxLines: Int = 1,
-    prefix: @Composable (() -> Unit)? = null,
-    suffix: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(text = placeholder, fontSize = 14.sp, color = Color(0xFFCCCCCC))
-        },
-        prefix = prefix,
-        suffix = suffix,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = singleLine,
-        minLines = minLines,
-        maxLines = maxLines,
-        shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFFBBBBBB),
-            unfocusedBorderColor = Color(0xFFDDDDDD),
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            cursorColor = Color.Black,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White
-        ),
-        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-        modifier = modifier.fillMaxWidth()
-    )
-}
 
 @Composable
 private fun DropdownField(

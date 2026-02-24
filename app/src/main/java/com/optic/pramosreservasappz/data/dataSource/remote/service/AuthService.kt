@@ -1,11 +1,12 @@
 package com.optic.pramosreservasappz.data.dataSource.remote.service
 
-import com.optic.pramosreservasappz.domain.model.AuthResponse
-import com.optic.pramosreservasappz.domain.model.LoginRequest
-import com.optic.pramosreservasappz.domain.model.User
+import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.LoginRequest
+import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginPlessRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
+import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -30,6 +31,12 @@ interface AuthService {
     @POST("auth-reservas/register")
     suspend fun register(
         @Body() user: User,
+    ): Response<AuthResponse>
+
+    // refresh token
+    @POST("auth-reservas/refresh")
+    suspend fun refresToken(
+        @Body request: RefreshTokenRequest
     ): Response<AuthResponse>
 
     //Login sin password

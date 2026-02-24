@@ -11,17 +11,16 @@ import com.optic.pramosreservasappz.data.dataSource.local.dao.TeamDao
 import com.optic.pramosreservasappz.data.dataSource.local.mapper.toDomain
 import com.optic.pramosreservasappz.data.dataSource.local.mapper.toEntity
 import com.optic.pramosreservasappz.data.dataSource.remote.ReservasRemoteDataSource
-import com.optic.pramosreservasappz.domain.model.Team
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientResponse
-import com.optic.pramosreservasappz.domain.model.reservas.clients.ClientUpdateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationResponse
-import com.optic.pramosreservasappz.domain.model.reservas.reservations.ReservationUpdateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceCreateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceResponse
-import com.optic.pramosreservasappz.domain.model.reservas.services.ServiceUpdateRequest
-import com.optic.pramosreservasappz.domain.model.reservas.staff.StaffResponse
+import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
+import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
+import com.optic.pramosreservasappz.domain.model.reservations.ReservationResponse
+import com.optic.pramosreservasappz.domain.model.reservations.ReservationUpdateRequest
+import com.optic.pramosreservasappz.domain.model.services.ServiceCreateRequest
+import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
+import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
+import com.optic.pramosreservasappz.domain.model.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository

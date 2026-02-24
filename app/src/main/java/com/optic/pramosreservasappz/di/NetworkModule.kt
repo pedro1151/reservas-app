@@ -22,15 +22,69 @@ import javax.inject.Named
 object NetworkModule {
 
 
+    /** OkHttpClient principal con interceptor que refresca token automáticamente */
     @Provides
     @Singleton
-    fun provideOkHttpClient(datastore: AuthDatastore) = OkHttpClient.Builder().addInterceptor {
-        val token = runBlocking {
-            datastore.getData().first().token
-        }
-        val newRequest = it.request().newBuilder().addHeader("Authorization", token ?: "").build()
-        it.proceed(newRequest)
-    }.build()
+    fun provideOkHttpClient(datastore: AuthDatastore): OkHttpClient {
+
+        // Retrofit temporal solo para refresh token (sin ciclo)
+        val retrofitTemp = Retrofit.Builder()
+            .baseUrl(Config.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val authServiceTemp = retrofitTemp.create(AuthService::class.java)
+
+        return OkHttpClient.Builder().addInterceptor { chain ->
+            val originalRequest = chain.request()
+
+            var authResponse = runBlocking { datastore.getData().first() }
+            var token = authResponse.token
+
+            // Request original con token
+            var requestWithToken = originalRequest.newBuilder()
+                .addHeader("Authorization", token ?: "")
+                .build()
+
+            var response = chain.proceed(requestWithToken)
+
+            // Si expira, intentamos refresh
+            if (response.code == 401) {
+                response.close()
+                val refreshToken = authResponse.refresh_token
+                if (!refreshToken.isNullOrBlank()) {
+                    try {
+                        val newAuthResponse = runBlocking {
+                            authServiceTemp.refresToken(
+                                com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest(
+                                    refreshToken
+                                )
+                            ).body()
+                        }
+
+                        if (newAuthResponse != null && !newAuthResponse.token.isNullOrBlank()) {
+                            runBlocking { datastore.save(newAuthResponse) }
+                            token = newAuthResponse.token
+
+                            // Reintentamos request original con nuevo token
+                            val retryRequest = originalRequest.newBuilder()
+                                .addHeader("Authorization", token)
+                                .build()
+
+                            response = chain.proceed(retryRequest)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            response
+        }.build()
+    }
+
+
+
 
     // --- Retrofit para auth ---
     @Provides
