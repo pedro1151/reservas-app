@@ -2,6 +2,7 @@ package com.optic.pramosreservasappz.di
 
 import com.optic.pramosreservasappz.core.Config
 import com.optic.pramosreservasappz.data.dataSource.local.datastore.AuthDatastore
+import com.optic.pramosreservasappz.data.dataSource.remote.interceptor.AppApiKeyInterceptor
 import com.optic.pramosreservasappz.data.dataSource.remote.service.AuthService
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ExternalService
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasService
@@ -25,7 +26,10 @@ object NetworkModule {
     /** OkHttpClient principal con interceptor que refresca token automáticamente */
     @Provides
     @Singleton
-    fun provideOkHttpClient(datastore: AuthDatastore): OkHttpClient {
+    fun provideOkHttpClient(
+        datastore: AuthDatastore,
+        appApiKeyInterceptor: AppApiKeyInterceptor
+    ): OkHttpClient {
 
         // Retrofit temporal solo para refresh token (sin ciclo)
         val retrofitTemp = Retrofit.Builder()
@@ -35,7 +39,9 @@ object NetworkModule {
 
         val authServiceTemp = retrofitTemp.create(AuthService::class.java)
 
-        return OkHttpClient.Builder().addInterceptor { chain ->
+        return OkHttpClient.Builder()
+            .addInterceptor(appApiKeyInterceptor) // 👈 PRIMERO API KEY
+            .addInterceptor { chain ->   // 👈 DESPUÉS JWT
             val originalRequest = chain.request()
 
             var authResponse = runBlocking { datastore.getData().first() }
