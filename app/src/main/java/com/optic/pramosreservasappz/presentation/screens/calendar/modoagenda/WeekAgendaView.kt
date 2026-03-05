@@ -1,10 +1,9 @@
-package com.optic.pramosreservasappz.presentation.screens.calendar.components
+package com.optic.pramosreservasappz.presentation.screens.calendar.modoagenda
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,38 +13,63 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.optic.pramosreservasappz.domain.model.reservations.completeresponse.ReservationResponseComplete
+import com.optic.pramosreservasappz.presentation.screens.calendar.components.ReservationCardReal
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
 @Composable
 fun WeekAgendaView(
     selectedDate: LocalDate,
-    reservations: List<Reservation>,
+    reservations: List<ReservationResponseComplete>,
     onDateSelect: (LocalDate) -> Unit
 ) {
-    // Muestra 7 días desde el día seleccionado
+
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+
+    // Mostrar 7 días desde la fecha seleccionada
     val days = (0..6).map { selectedDate.plusDays(it.toLong()) }
 
+    // Agrupar reservas por fecha
+    val reservationsByDate = reservations.groupBy {
+
+        try {
+            LocalDateTime.parse(it.startTime, formatter).toLocalDate()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
+
             items(days) { date ->
+
+                val dayReservations =
+                    reservationsByDate[date]?.sortedBy {
+                        LocalDateTime.parse(it.startTime, formatter)
+                    } ?: emptyList()
+
                 AgendaDaySection(
                     date = date,
-                    reservations = if (date == selectedDate) reservations else emptyList(),
+                    reservations = dayReservations,
                     isToday = date == LocalDate.now()
                 )
             }
         }
 
-        // Barra de ingresos de la semana
+        // Ingresos semanales
         WeeklyEarningsBar(
-            earnings = reservations.sumOf { it.price },
+            earnings = reservations.sumOf { it.service?.price ?: 0.0 },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -56,12 +80,17 @@ fun WeekAgendaView(
 @Composable
 private fun AgendaDaySection(
     date: LocalDate,
-    reservations: List<Reservation>,
+    reservations: List<ReservationResponseComplete>,
     isToday: Boolean
 ) {
-    val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
+
+    val dayOfWeek =
+        date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
+
     val dayNumber = date.dayOfMonth
-    val month = date.month.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
+
+    val month =
+        date.month.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
 
     Column(
         modifier = Modifier
@@ -69,6 +98,7 @@ private fun AgendaDaySection(
             .background(Color.White)
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
+
         Text(
             text = "${dayOfWeek.replaceFirstChar { it.uppercase() }}, $dayNumber $month",
             style = MaterialTheme.typography.bodyLarge,
@@ -80,25 +110,29 @@ private fun AgendaDaySection(
         Spacer(Modifier.height(6.dp))
 
         if (reservations.isEmpty()) {
+
             Text(
                 text = "Nada planeado",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFF9E9E9E)
             )
+
         } else {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+
                 reservations.forEach { reservation ->
-                    ReservationCard(
-                        reservation = reservation,
-                        onEdit = { },
-                        onCancel = { },
-                        onStatusChange = { _, _ -> }
-                    )
+
+                    ReservationCardReal(reservation)
+
                 }
             }
         }
     }
 }
+
 
 @Composable
 private fun WeeklyEarningsBar(

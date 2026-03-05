@@ -23,12 +23,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-
+import androidx.navigation.navigation
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateCalendarStepOneScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steofour.CreateReservationStepFourScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateResevationStepOneScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptree.CreateCalendarStepThreeScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptwo.CreateCalendarStepTwoScreen
+import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptwo.CreateReservationStepTwoScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
@@ -67,17 +69,100 @@ fun ClientNavGraph(
         }
 
 
-        composable(route = ClientScreen.CreateReservationStepOne.route) {
-            CreateCalendarStepOneScreen(navController)
+        navigation(
+            route = Graph.CREATE_RESERVATION_GRAPH,
+            startDestination = ClientScreen.CreateReservationStepOne.route
+        ) {
+
+            composable(
+                route = ClientScreen.CreateReservationStepOne.route,
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                }
+            ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
+                }
+
+                val viewModel: CalendarViewModel = hiltViewModel(parentEntry)
+
+                CreateResevationStepOneScreen(
+                    navController,
+                    viewModel
+                )
+            }
+
+            composable(
+                route = ClientScreen.CreateReservationStepTwo.route
+            ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
+                }
+
+                val viewModel: CalendarViewModel = hiltViewModel(parentEntry)
+
+                CreateReservationStepTwoScreen(
+                    navController,
+                    viewModel
+                )
+            }
+
+            composable(
+                route = ClientScreen.CreateReservationStepThree.route
+            ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
+                }
+
+                val viewModel: CalendarViewModel = hiltViewModel(parentEntry)
+
+                CreateCalendarStepThreeScreen(
+                    navController,
+                    viewModel
+                )
+            }
+
+            composable(
+                route = ClientScreen.CreateReservationStepFour.route
+            ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
+                }
+
+                val viewModel: CalendarViewModel = hiltViewModel(parentEntry)
+
+                CreateReservationStepFourScreen(
+                    navController,
+                    viewModel
+                )
+            }
         }
 
-        composable(route = ClientScreen.CreateReservationStepThree.route) {
-            CreateCalendarStepThreeScreen(navController)
-        }
-
-        composable(route = ClientScreen.CreateReservationStepTwo.route) {
-            CreateCalendarStepTwoScreen(navController)
-        }
 
         composable(
             route = ClientScreen.ABMServicio.route,

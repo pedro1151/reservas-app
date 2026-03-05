@@ -22,6 +22,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
 import javax.inject.Inject
+import android.util.Log
+import com.optic.pramosreservasappz.domain.model.reservations.completeresponse.ReservationResponseComplete
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
@@ -204,13 +206,60 @@ class CalendarViewModel @Inject constructor(
     private val _oneReservationState = MutableStateFlow<Resource<ReservationResponse>>(Resource.Idle)
     val oneReservationState: StateFlow<Resource<ReservationResponse>> = _oneReservationState.asStateFlow()
 
-    // TODO: API — llamar desde CalendarScreen en un LaunchedEffect al inicio
+
+    /** State exposed to UI for the full reservations list */
+    private val _listReservasState = MutableStateFlow<Resource<List<ReservationResponseComplete>>>(Resource.Loading)
+    val listReservasState : StateFlow<Resource<List<ReservationResponseComplete>>> = _listReservasState.asStateFlow()
+
     fun getReservations() {
         viewModelScope.launch {
             reservasUC.getReservationsUC()
                 .onStart  { _reservasState.value = Resource.Loading }
                 .catch { e -> _reservasState.value = Resource.Failure(e.message ?: "Error al recuperar las reservas") }
                 .collectLatest { _reservasState.value = it }
+        }
+    }
+
+
+    // TODO: API — llamar desde CalendarScreen en un LaunchedEffect al inicio
+
+    fun getReservationsByProvider(
+        providerId: Int
+    ) {
+        viewModelScope.launch {
+
+            Log.d("CalendarVM", "getReservationsByProvider() llamado con providerId=$providerId")
+
+            reservasUC.getReservationsByProviderUC(providerId)
+                .onStart {
+                    Log.d("CalendarVM", "Iniciando request de reservas...")
+                    _listReservasState.value = Resource.Loading
+                }
+                .catch { e ->
+                    Log.e("CalendarVM", "Error recuperando reservas", e)
+                    _listReservasState.value =
+                        Resource.Failure(e.message ?: "Error al recuperar las reservas POR PROVIDER")
+                }
+                .collectLatest { result ->
+
+                    Log.d("CalendarVM", "Resultado recibido: $result")
+
+                    if (result is Resource.Success) {
+                        Log.d(
+                            "CalendarVM",
+                            "Reservas recuperadas: ${result.data.size}"
+                        )
+
+                        result.data.forEach {
+                            Log.d(
+                                "CalendarVM",
+                                "Reserva -> id=${it.id}, start=${it.startTime}, client=${it.client?.fullName}"
+                            )
+                        }
+                    }
+
+                    _listReservasState.value = result
+                }
         }
     }
 
@@ -235,16 +284,39 @@ class CalendarViewModel @Inject constructor(
      *   )
      * Observar createReservationState en la UI para mostrar loading/error.
      */
+    private  val TAG = "CalendarVM"
     fun createReservation(request: ReservationCreateRequest) {
+
+        Log.d(TAG, "createReservation() llamado")
+        Log.d(TAG, "Request enviado: $request")
+
         viewModelScope.launch {
+
             reservasUC.createReservationUC(request)
-                .onStart  { _createReservationState.value = Resource.Loading }
-                .catch { e -> _createReservationState.value = Resource.Failure(e.message ?: "Error al crear la reserva") }
+                .onStart {
+                    Log.d(TAG, "Flow iniciado - Loading")
+                    _createReservationState.value = Resource.Loading
+                }
+                .catch { e ->
+                    Log.e(TAG, "Error en createReservation: ${e.message}", e)
+                    _createReservationState.value =
+                        Resource.Failure(e.message ?: "Error al crear la reserva")
+                }
                 .collectLatest { result ->
+
+                    Log.d(TAG, "Resultado recibido: $result")
+
                     _createReservationState.value = result
-                    // Al tener éxito, refrescar el mes para mostrar el nuevo punto en el calendario
+
                     if (result is Resource.Success) {
+                        Log.d(TAG, "Reserva creada con éxito ✅")
+                        Log.d(TAG, "Refrescando mes actual: ${_currentMonth.value}")
+
                         loadMonth(_currentMonth.value)
+                    }
+
+                    if (result is Resource.Failure) {
+                        Log.e(TAG, "Fallo lógico del backend: ${result.message}")
                     }
                 }
         }
@@ -297,4 +369,34 @@ class CalendarViewModel @Inject constructor(
             status = ReservationStatus.COMPLETED, price = 70.50
         )
     )
+
+
+
+    // ─────────────────────────────────────────────
+// Wizard control
+// ─────────────────────────────────────────────
+
+    fun startReservationWizard() {
+        clearReservationForm()
+    }
+
+    fun selectServiceAndContinue(serviceId: Int) {
+        _selectedServiceIdForReservation.value = serviceId
+    }
+
+    fun selectDateTimeAndContinue(date: LocalDate, time: LocalTime) {
+        _selectedDateForReservation.value = date
+        _selectedTimeForReservation.value = time
+    }
+
+    fun selectClientAndContinue(clientId: Int) {
+        _selectedClientIdForReservation.value = clientId
+    }
+
+    fun isReservationFormComplete(): Boolean {
+        return _selectedServiceIdForReservation.value != null &&
+                _selectedClientIdForReservation.value != null &&
+                _selectedDateForReservation.value != null &&
+                _selectedTimeForReservation.value != null
+    }
 }

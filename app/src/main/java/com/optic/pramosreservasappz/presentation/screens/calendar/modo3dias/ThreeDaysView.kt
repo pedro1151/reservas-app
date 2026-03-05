@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.calendar.components
+package com.optic.pramosreservasappz.presentation.screens.calendar.modo3dias
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.optic.pramosreservasappz.domain.model.reservations.completeresponse.ReservationResponseComplete
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -24,11 +26,22 @@ import java.util.*
 fun ThreeDaysView(
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
-    reservationsByDate: Map<LocalDate, List<Reservation>> = emptyMap()
+    reservations: List<ReservationResponseComplete> = emptyList()
 ) {
+
     val days = (0..2).map { selectedDate.plusDays(it.toLong()) }
     val hours = (0..23).map { LocalTime.of(it, 0) }
+
     val listState = rememberLazyListState()
+
+    // Convertir reservas → Map<LocalDate, List<Reservation>>
+    val reservationsByDate = remember(reservations) {
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+
+        reservations.groupBy {
+            LocalDateTime.parse(it.startTime, formatter).toLocalDate()
+        }
+    }
 
     // Auto-scroll a hora actual
     LaunchedEffect(Unit) {
@@ -37,23 +50,32 @@ fun ThreeDaysView(
         listState.scrollToItem(scrollTo)
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        // Header con los 3 días
-        ThreeDaysHeader(days = days, onDateSelect = onDateSelect)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+
+        ThreeDaysHeader(
+            days = days,
+            onDateSelect = onDateSelect
+        )
 
         HorizontalDivider(color = Color(0xFFEEEEEE))
 
-        // Grid con horas
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 120.dp)
         ) {
+
             items(
                 count = hours.size,
                 key = { it }
             ) { index ->
+
                 val hour = hours[index]
+
                 ThreeDaysTimeRow(
                     time = hour,
                     days = days,
@@ -134,8 +156,9 @@ private fun ThreeDaysHeader(
 private fun ThreeDaysTimeRow(
     time: LocalTime,
     days: List<LocalDate>,
-    reservationsByDate: Map<LocalDate, List<Reservation>>
+    reservationsByDate: Map<LocalDate, List<ReservationResponseComplete>>
 ) {
+
     val formatter = DateTimeFormatter.ofPattern("H:mm")
     val isCurrentHour = LocalTime.now().hour == time.hour
 
@@ -144,19 +167,23 @@ private fun ThreeDaysTimeRow(
             .fillMaxWidth()
             .height(64.dp)
     ) {
-        // Columna de hora
+
+        // Columna hora
         Box(
             modifier = Modifier
                 .width(56.dp)
                 .fillMaxHeight()
-                .padding(end = 8.dp, top = 0.dp),
+                .padding(end = 8.dp),
             contentAlignment = Alignment.TopEnd
         ) {
+
             if (time.hour > 0) {
+
                 Text(
                     text = time.format(formatter),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (isCurrentHour) MaterialTheme.colorScheme.primary
+                    color = if (isCurrentHour)
+                        MaterialTheme.colorScheme.primary
                     else Color(0xFF9E9E9E),
                     fontSize = 11.sp,
                     fontWeight = if (isCurrentHour) FontWeight.Bold else FontWeight.Normal
@@ -164,10 +191,15 @@ private fun ThreeDaysTimeRow(
             }
         }
 
-        // Columnas de cada día
-        days.forEachIndexed { index, date ->
+        // Columnas por día
+        days.forEach { date ->
+
             val dayReservations = reservationsByDate[date]
-                ?.filter { it.startTime.hour == time.hour }
+                ?.filter {
+
+                    val start = LocalDateTime.parse(it.startTime, DateTimeFormatter.ISO_DATE_TIME)
+                    start.hour == time.hour
+                }
                 ?: emptyList()
 
             Box(
@@ -184,28 +216,39 @@ private fun ThreeDaysTimeRow(
                         else Color.White
                     )
             ) {
+
                 if (dayReservations.isNotEmpty()) {
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(2.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
+
                         dayReservations.forEach { reservation ->
+
+                            val serviceColor =
+                                parseColor(reservation.service?.color)
+
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
                                 shape = RoundedCornerShape(4.dp),
-                                color = reservation.serviceColor.copy(alpha = 0.15f),
+                                color = serviceColor.copy(alpha = 0.15f),
                                 border = androidx.compose.foundation.BorderStroke(
                                     1.dp,
-                                    reservation.serviceColor.copy(alpha = 0.5f)
+                                    serviceColor.copy(alpha = 0.5f)
                                 )
                             ) {
+
                                 Text(
-                                    text = reservation.clientName,
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                    text = reservation.client?.fullName ?: "Cliente",
+                                    modifier = Modifier.padding(
+                                        horizontal = 4.dp,
+                                        vertical = 2.dp
+                                    ),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
                                     color = Color.Black,
@@ -217,5 +260,20 @@ private fun ThreeDaysTimeRow(
                 }
             }
         }
+    }
+}
+
+fun parseColor(color: String?): Color {
+
+    return try {
+
+        if (color.isNullOrBlank())
+            Color(0xFF90CAF9)
+        else
+            Color(android.graphics.Color.parseColor(color))
+
+    } catch (e: Exception) {
+
+        Color(0xFF90CAF9)
     }
 }

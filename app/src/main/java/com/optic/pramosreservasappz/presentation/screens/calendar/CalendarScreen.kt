@@ -20,7 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.screens.calendar.components.*
+import com.optic.pramosreservasappz.presentation.screens.calendar.modo1dia.DayTimelineView
+import com.optic.pramosreservasappz.presentation.screens.calendar.modo3dias.ThreeDaysView
+import com.optic.pramosreservasappz.presentation.screens.calendar.modoagenda.WeekAgendaView
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -48,6 +52,19 @@ fun CalendarScreen(
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val reservationsState by viewModel.listReservasState.collectAsState()
+
+
+    // Recupero la lista de reservas real - Pedro
+    val reservations = when (reservationsState) {
+        is Resource.Success -> (reservationsState as Resource.Success).data
+        else -> emptyList()
+    }
+    // cargo mis reservas creadas desde la api
+    LaunchedEffect(Unit) {
+        viewModel.getReservationsByProvider(providerId = 1) // luego usarás el real
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -97,20 +114,25 @@ fun CalendarScreen(
                         onDateSelect = { viewModel.selectDate(it) }
                     )
                     Box(modifier = Modifier.weight(1f)) {
+
+                        // Paso la lista de reservas real
+                        // implicò cambiar el model dentro de cada tipo de modo de vista
+                        // Pero la logica no se rompe, solo cambia el modelo .Pedro
                         when (viewMode) {
                             CalendarViewMode.AGENDA -> WeekAgendaView(
                                 selectedDate = selectedDate,
-                                reservations = selectedDateReservations,
+                                reservations =  reservations,
                                 onDateSelect = { viewModel.selectDate(it) }
                             )
                             CalendarViewMode.DAY -> DayTimelineView(
                                 selectedDate = selectedDate,
-                                reservations = selectedDateReservations,
+                                reservations = reservations,
                                 onTimeSlotClick = { showReservationTypeSheet = true }
                             )
                             CalendarViewMode.THREE_DAYS -> ThreeDaysView(
                                 selectedDate = selectedDate,
-                                onDateSelect = { viewModel.selectDate(it) }
+                                onDateSelect = { viewModel.selectDate(it) },
+                                reservations = reservations
                             )
                         }
                     }
@@ -138,7 +160,8 @@ fun CalendarScreen(
                     ReservationType.EVENT -> { /* TODO */ }
                     ReservationType.MEETING -> { /* TODO */ }
                 }
-            }
+            },
+            navController  = navController
         )
     }
 

@@ -40,7 +40,8 @@ data class Reservation(
     val status: ReservationStatus,
     val price: Double
 )
-
+// de momento no se esta usando
+// Pero sirve para poder implementarlo -Pedro
 @Composable
 fun ReservationCard(
     reservation: Reservation,

@@ -34,6 +34,12 @@ sealed class ClientScreen(
         icon = Icons.Default.Star
     )
 
+    object CreateReservationStepFour: ClientScreen(
+        route = "client/create_reservation_step_four",
+        title = "Create Reservation step four",
+        icon = Icons.Default.Star
+    )
+
     object Calendario: ClientScreen(
         route = "client/calendar",
         title = "Calendario",

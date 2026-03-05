@@ -8,6 +8,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPor
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.CreateReservationUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationByIdUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationsByProviderUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationsUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.UpdateReservationUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
@@ -38,7 +39,8 @@ data class ReservasUC(
     val getReservationsUC: GetReservationsUC,
     val createReservationUC: CreateReservationUC,
     val updateReservationUC: UpdateReservationUC,
-    val getReservationByIdUC: GetReservationByIdUC
+    val getReservationByIdUC: GetReservationByIdUC,
+    val getReservationsByProviderUC: GetReservationsByProviderUC
 
 
 )

@@ -16,6 +16,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.navigation.Graph
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 
 enum class ReservationType {
     SERVICE, CLASS, EVENT, MEETING
@@ -25,7 +28,8 @@ enum class ReservationType {
 @Composable
 fun ReservationTypeBottomSheet(
     onDismiss: () -> Unit,
-    onTypeSelected: (ReservationType) -> Unit
+    onTypeSelected: (ReservationType) -> Unit,
+    navController: NavHostController
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -57,7 +61,7 @@ fun ReservationTypeBottomSheet(
                 icon = Icons.Outlined.MiscellaneousServices,
                 label = "Servicio",
                 onClick = {
-                    onTypeSelected(ReservationType.SERVICE)
+                    navController.navigate(Graph.CREATE_RESERVATION_GRAPH)
                 }
             )
 

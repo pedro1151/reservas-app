@@ -8,6 +8,9 @@ enum class ReservationType {
     @SerializedName("appointment")
     APPOINTMENT,
 
+    @SerializedName("service")
+    SERVICE,
+
     @SerializedName("class")
     CLASS,
 
