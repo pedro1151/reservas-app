@@ -7,6 +7,7 @@ import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationResponse
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationUpdateRequest
+import com.optic.pramosreservasappz.domain.model.reservations.completeresponse.ReservationResponseComplete
 import com.optic.pramosreservasappz.domain.model.services.ServiceCreateRequest
 import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
@@ -47,6 +48,13 @@ interface ReservasService {
     @GET("/reservation/list")
     suspend fun getReservations(
     ): Response<List<ReservationResponse>>
+
+
+
+    @GET("/reservas/reservation/list/byprovider/{provider_id}")
+    suspend fun getReservationsByProvider(
+        @Path("provider_id") providerId: Int,
+    ): Response<List<ReservationResponseComplete>>
 
 
 

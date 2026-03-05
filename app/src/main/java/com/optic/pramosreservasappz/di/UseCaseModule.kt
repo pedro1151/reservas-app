@@ -16,6 +16,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPor
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.CreateReservationUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationByIdUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationsByProviderUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationsUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.UpdateReservationUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
@@ -68,76 +69,8 @@ object UseCaseModule {
         getReservationsUC = GetReservationsUC(reservasRepository),
         createReservationUC = CreateReservationUC(reservasRepository),
         updateReservationUC = UpdateReservationUC(reservasRepository),
-        getReservationByIdUC = GetReservationByIdUC(reservasRepository)
-
-
-     /*
-        //getallTeamUseCase = GetallTeamUseCase(teamRepository)
-
-        getPlayersUseCase = GetPlayersUseCase(teamRepository),
-        getPlayerStatsUseCase = GetPlayerStatsUseCase(teamRepository),
-        getLeaguesUseCase = GetLeaguesUseCase(teamRepository),
-        getFollowedPlayersUC = GetFollowedPlayersUC(teamRepository),
-        createFollowedPlayerUC = CreateFollowedPlayerUC(teamRepository),
-        deleteFollowedPlayerUC = DeleteFollowedPlayerUC(teamRepository),
-
-        //players
-        getAllPlayersUC = GetAllPlayersUC(teamRepository),
-        getPlayerPorIdUC = GetPlayerPorIdUC(teamRepository),
-
-        getFollowedTeamsUC = GetFollowedTeamsUC(teamRepository),
-        createFollowedTeamUC = CreateFollowedTeamUC(teamRepository),
-        deleteFollowedTeamUC =   DeleteFollowedTeamUC(teamRepository),
-
-        getFixtureFollowedTeamsUC = GetFixtureFollowedTeamsUC(teamRepository),
-
-        getFollowedLeaguesUC = GetFollowedLeaguesUC(teamRepository),
-        createFollowedLeagueUC = CreateFollowedLeagueUC(teamRepository),
-        deleteFollowedLeagueUC = DeleteFollowedLeagueUC(teamRepository),
-        getTeamByIdUC = GetTeamByIdUC(teamRepository),
-        //FIxtures
-        getCountryFixturesUC = GetCountryFixturesUC(teamRepository),
-        getFixtureTeamUC = GetFixtureTeamUC(teamRepository),
-        getNextFixtureTeamUC = GetNextFixtureTeamUC(teamRepository),
-        getTopFiveFixtureTeamUC = GetTopFiveFixtureTeamUC(teamRepository),
-        getFixtureByIdUC = GetFixtureByIdUC(teamRepository),
-        getFixtureLeagueUC =  GetFixtureLeagueUC(teamRepository),
-        getFixtureByDateUC = GetFixtureByDateUC(teamRepository),
-        saveFixturesCacheUC = SaveFixturesCacheUC(teamRepository),
-        getFixtureByRangeUC = GetFixtureByRangeUC(teamRepository),
-
-        //leagues
-        getLeagueStandingsUC = GetLeagueStandingsUC(teamRepository),
-        getVersusFixtureTeamUC = GetVersusFixtureTeamUC(teamRepository),
-        getPlayerTeamsUC = GetPlayerTeamsUC(teamRepository),
-        getPlayerLastTeamUC = GetPlayerLastTeamUC(teamRepository),
-        getLeagueByIdUC = GetLeagueByIdUC(teamRepository),
-        getNoFollowFixturesUC = GetNoFollowFixturesUC(teamRepository),
-        getTopLeaguesUC = GetTopLeaguesUC(teamRepository),
-        getProdeParticipateLeaguesUC = GetProdeParticipateLeaguesUC(teamRepository),
-
-        //lineups
-        getFixtureLineupsUC = GetFixtureLineupsUC(teamRepository),
-        getFixtureStatsUC = GetFixtureStatsUC(teamRepository),
-
-        //teams stats
-        getTeamStatsUC = GetTeamStatsUC(teamRepository),
-
-        //suggested teams
-        getSuggestedTeamsUC = GetSuggestedTeamsUC(teamRepository),
-        getFixturesByRoundUC = GetFixturesByRoundUC(teamRepository),
-
-        // prode
-        createFixturePredictionUC = CreateFixturePredictionUC(teamRepository),
-        getUserFixturePredictionsUC = GetUserFixturePredictionsUC(teamRepository),
-        getPredictionRankingUC = GetPredictionRankingUC(teamRepository),
-        //cache prode
-        syncCachePredictionsUC = SyncCachePredictionsUC(teamRepository),
-        syncCacheUC = SyncCacheUC(teamRepository),
-        getUserPredictionSummaryUC = GetUserPredictionSummaryUC(teamRepository)
-
-      */
-
+        getReservationByIdUC = GetReservationByIdUC(reservasRepository),
+        getReservationsByProviderUC = GetReservationsByProviderUC(reservasRepository)
 
     )
 
