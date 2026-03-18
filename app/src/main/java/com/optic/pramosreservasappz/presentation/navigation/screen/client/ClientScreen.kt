@@ -16,6 +16,12 @@ sealed class ClientScreen(
         icon = Icons.Default.Star
     )
 
+    object Sales: ClientScreen(
+        route = "client/sales",
+        title = "Sales",
+        icon = Icons.Default.Chalet
+    )
+
     object CreateReservationStepOne: ClientScreen(
         route = "client/create_reservation_step_one",
         title = "Create Reservation step one",

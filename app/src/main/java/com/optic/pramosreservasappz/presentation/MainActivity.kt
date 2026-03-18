@@ -122,7 +122,8 @@ class MainActivity : ComponentActivity() {
                         ClientScreen.Clientes.route,
                         ClientScreen.Mas.route,
                         ClientScreen.Profile.route,
-                        ClientScreen.Servicios.route
+                        ClientScreen.Servicios.route,
+                        ClientScreen.Sales.route
                     )
 
                     val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes

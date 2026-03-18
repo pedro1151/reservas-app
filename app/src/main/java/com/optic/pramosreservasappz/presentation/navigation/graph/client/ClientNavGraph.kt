@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.optic.pramosreservasappz.presentation.sales.SalesContent
+import com.optic.pramosreservasappz.presentation.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
@@ -56,15 +58,123 @@ fun ClientNavGraph(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        composable(route = ClientScreen.Clientes.route) {
+        composable(
+            route = ClientScreen.Sales.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            SalesScreen( navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.Clientes.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             ClientPrincipalScreen(navController, isAuthenticated)
         }
 
-        composable(route = ClientScreen.Calendario.route) {
+        composable(
+            route = ClientScreen.Calendario.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             CalendarScreen(navController = navController)
         }
 
-        composable(route = ClientScreen.Servicios.route) {
+        composable(
+            route = ClientScreen.Servicios.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             ServiceScreen(navController, isAuthenticated)
         }
 
@@ -176,7 +286,31 @@ fun ClientNavGraph(
                     type = NavType.BoolType
                     defaultValue = false
                 }
-            )
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
         ) { backStackEntry ->
             val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
             val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
@@ -199,7 +333,31 @@ fun ClientNavGraph(
                     type = NavType.BoolType
                     defaultValue = false
                 }
-            )
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
         ) { backStackEntry ->
             val clientId = backStackEntry.arguments?.getString("clientId")?.toIntOrNull()
             val editable = backStackEntry.arguments?.getBoolean("editable") ?: false
@@ -217,7 +375,31 @@ fun ClientNavGraph(
                 navArgument("clientId") {
                     type = NavType.IntType
                 }
-            )
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
         ) { backStackEntry ->
             val clientId = backStackEntry.arguments?.getInt("clientId") ?: return@composable
             ClientDetailScreen(
@@ -233,7 +415,31 @@ fun ClientNavGraph(
                 navArgument("serviceId") {
                     type = NavType.IntType
                 }
-            )
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
         ) { backStackEntry ->
             val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: return@composable
             ServiceDetailScreen(
@@ -281,15 +487,87 @@ fun ClientNavGraph(
             LoginContentPless(navController, viewModel, email)
         }
 
-        composable(route = ClientScreen.Profile.route) {
+        composable(route = ClientScreen.Profile.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }) {
             MasScreen(navController, isAuthenticated)
         }
 
-        composable(route = ClientScreen.BasicLogin.route) {
+        composable(route = ClientScreen.BasicLogin.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }) {
             BasicLoginScreen(navController = navController)
         }
 
-        composable(route = ClientScreen.Mas.route) {
+        composable(route = ClientScreen.Mas.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }) {
             MasScreen(navController, isAuthenticated)
         }
 
