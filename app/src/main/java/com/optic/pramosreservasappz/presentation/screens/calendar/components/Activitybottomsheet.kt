@@ -32,6 +32,8 @@ data class ActivityItem(
     val action: String,          // texto en negrita
     val target: String,          // texto normal después
     val timestamp: LocalDateTime
+//  action string: insert delete update
+    // val type: reservation, service, client
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

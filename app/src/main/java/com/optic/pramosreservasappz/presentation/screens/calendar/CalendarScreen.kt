@@ -39,95 +39,82 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
     activityViewModel: ActivityViewModel = hiltViewModel()
 ) {
-    // Vista inicial = DAY
-    var viewMode by remember { mutableStateOf(CalendarViewMode.DAY) }
-    var showReservationTypeSheet by remember { mutableStateOf(false) }
-    var showServiceWizard by remember { mutableStateOf(false) }
-    var showActivitySheet by remember { mutableStateOf(false) }
-    var showProTrialSheet by remember { mutableStateOf(false) }
+    var viewMode                   by remember { mutableStateOf(CalendarViewMode.DAY) }
+    var showReservationTypeSheet   by remember { mutableStateOf(false) }
+    var showServiceWizard          by remember { mutableStateOf(false) }
+    var showActivitySheet          by remember { mutableStateOf(false) }
+    var showProTrialSheet          by remember { mutableStateOf(false) }
 
-    val selectedDate by viewModel.selectedDate.collectAsState()
-    val selectedDateReservations by viewModel.selectedDateReservations.collectAsState()
-    val activities by activityViewModel.activities.collectAsState()
+    val selectedDate                 by viewModel.selectedDate.collectAsState()
+    val selectedDateReservations     by viewModel.selectedDateReservations.collectAsState()
+    val activities                   by activityViewModel.activities.collectAsState()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    val scope       = rememberCoroutineScope()
 
     val reservationsState by viewModel.listReservasState.collectAsState()
-
-
-    // Recupero la lista de reservas real - Pedro
     val reservations = when (reservationsState) {
         is Resource.Success -> (reservationsState as Resource.Success).data
-        else -> emptyList()
+        else                -> emptyList()
     }
-    // cargo mis reservas creadas desde la api
+
     LaunchedEffect(Unit) {
-        viewModel.getReservationsByProvider(providerId = 1) // luego usarás el real
+        viewModel.getReservationsByProvider(providerId = 1)
     }
 
     ModalNavigationDrawer(
-        drawerState = drawerState,
+        drawerState   = drawerState,
         drawerContent = {
             CalendarDrawerContent(
-                currentViewMode = viewMode,
-                onViewModeChange = {
-                    viewMode = it
-                    scope.launch { drawerState.close() }
-                },
-                onDrawerClose = { scope.launch { drawerState.close() } }
+                currentViewMode  = viewMode,
+                onViewModeChange = { viewMode = it; scope.launch { drawerState.close() } },
+                onDrawerClose    = { scope.launch { drawerState.close() } }
             )
         }
     ) {
         Scaffold(
             topBar = {
                 MinimalTopBar(
-                    currentDate = selectedDate,
-                    hasActivity = activities.isNotEmpty(),
-                    onMenuClick = { scope.launch { drawerState.open() } },
-                    onBellClick = { showActivitySheet = true },
-                    onDateClick = { }
+                    currentDate  = selectedDate,
+                    hasActivity  = activities.isNotEmpty(),
+                    onMenuClick  = { scope.launch { drawerState.open() } },
+                    onBellClick  = { showActivitySheet = true },
+                    onDateClick  = { }
                 )
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { showReservationTypeSheet = true },
+                    onClick        = { showReservationTypeSheet = true },
                     containerColor = Color.Black,
-                    contentColor = Color.White,
-                    shape = CircleShape,
-                    modifier = Modifier.size(52.dp)
+                    contentColor   = Color.White,
+                    shape          = CircleShape,
+                    modifier       = Modifier.size(52.dp)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
                 }
             },
-            bottomBar = { MinimalBottomBar() },
+            bottomBar      = { MinimalBottomBar() },
             containerColor = Color(0xFFF8F8F8)
         ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     WeekStrip(
                         selectedDate = selectedDate,
                         onDateSelect = { viewModel.selectDate(it) }
                     )
                     Box(modifier = Modifier.weight(1f)) {
-
-                        // Paso la lista de reservas real
-                        // implicò cambiar el model dentro de cada tipo de modo de vista
-                        // Pero la logica no se rompe, solo cambia el modelo .Pedro
                         when (viewMode) {
                             CalendarViewMode.AGENDA -> WeekAgendaView(
                                 selectedDate = selectedDate,
-                                reservations =  reservations,
+                                reservations = reservations,
                                 onDateSelect = { viewModel.selectDate(it) }
                             )
                             CalendarViewMode.DAY -> DayTimelineView(
-                                selectedDate = selectedDate,
-                                reservations = reservations,
-                                onTimeSlotClick = { showReservationTypeSheet = true }
+                                selectedDate    = selectedDate,
+                                reservations    = reservations,
+                                onTimeSlotClick = { showReservationTypeSheet = true },
+                                // ── FIX: conectar onDateChange al viewModel ────
+                                onDateChange    = { newDate -> viewModel.selectDate(newDate) }
                             )
                             CalendarViewMode.THREE_DAYS -> ThreeDaysView(
                                 selectedDate = selectedDate,
@@ -139,7 +126,7 @@ fun CalendarScreen(
                 }
 
                 PromoPill(
-                    onClick = { showProTrialSheet = true },
+                    onClick  = { showProTrialSheet = true },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 12.dp)
@@ -148,44 +135,36 @@ fun CalendarScreen(
         }
     }
 
-    // Bottom Sheet para seleccionar tipo de reserva
     if (showReservationTypeSheet) {
         ReservationTypeBottomSheet(
-            onDismiss = { showReservationTypeSheet = false },
+            onDismiss    = { showReservationTypeSheet = false },
             onTypeSelected = { type ->
                 showReservationTypeSheet = false
                 when (type) {
                     ReservationType.SERVICE -> showServiceWizard = true
-                    ReservationType.CLASS -> { /* TODO */ }
-                    ReservationType.EVENT -> { /* TODO */ }
+                    ReservationType.CLASS   -> { /* TODO */ }
+                    ReservationType.EVENT   -> { /* TODO */ }
                     ReservationType.MEETING -> { /* TODO */ }
                 }
             },
-            navController  = navController
+            navController = navController
         )
     }
 
-    // Flujo para crear reserva de servicio (con deslizamientos suaves)
     if (showServiceWizard) {
-        ServiceReservationFlow(
-            onDismiss = { showServiceWizard = false }
-        )
+        ServiceReservationFlow(onDismiss = { showServiceWizard = false })
     }
 
     if (showActivitySheet) {
-        ActivityBottomSheet(
-            activities = activities,
-            onDismiss = { showActivitySheet = false }
-        )
+        ActivityBottomSheet(activities = activities, onDismiss = { showActivitySheet = false })
     }
 
     if (showProTrialSheet) {
-        ProTrialBottomSheet(
-            onDismiss = { showProTrialSheet = false }
-        )
+        ProTrialBottomSheet(onDismiss = { showProTrialSheet = false })
     }
 }
 
+// ── Top bar ───────────────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MinimalTopBar(
@@ -199,55 +178,41 @@ private fun MinimalTopBar(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(
+                modifier          = Modifier.clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onDateClick
+                    indication        = null,
+                    onClick           = onDateClick
                 )
             ) {
                 Text(
-                    text = currentDate.month
+                    text          = currentDate.month
                         .getDisplayName(TextStyle.FULL, Locale("es", "ES"))
                         .replaceFirstChar { it.uppercase() },
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W400,
-                    color = Color.Black,
+                    fontSize      = 18.sp,
+                    fontWeight    = FontWeight.W400,
+                    color         = Color.Black,
                     letterSpacing = (-0.3).sp
                 )
                 Text(
-                    text = " ${currentDate.year}",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W300,
-                    color = Color(0xFF9E9E9E),
+                    text          = " ${currentDate.year}",
+                    fontSize      = 18.sp,
+                    fontWeight    = FontWeight.W300,
+                    color         = Color(0xFF9E9E9E),
                     letterSpacing = (-0.3).sp
                 )
-                // Sin flecha
             }
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
-                Icon(
-                    Icons.Default.Menu,
-                    contentDescription = null,
-                    tint = Color.Black,
-                    modifier = Modifier.size(22.dp)
-                )
+                Icon(Icons.Default.Menu, null, tint = Color.Black, modifier = Modifier.size(22.dp))
             }
         },
         actions = {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .clickable(onClick = onBellClick),
+                modifier         = Modifier.size(40.dp).clip(CircleShape).clickable(onClick = onBellClick),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    Icons.Outlined.Notifications,
-                    contentDescription = "Actividad",
-                    tint = Color.Black,
-                    modifier = Modifier.size(22.dp)
-                )
+                Icon(Icons.Outlined.Notifications, "Actividad", tint = Color.Black, modifier = Modifier.size(22.dp))
                 if (hasActivity) {
                     Box(
                         modifier = Modifier
@@ -258,23 +223,12 @@ private fun MinimalTopBar(
                     )
                 }
             }
-
             Spacer(Modifier.width(4.dp))
-
             Box(
-                modifier = Modifier
-                    .size(30.dp)
-                    .background(Color(0xFF1A1A1A), CircleShape)
-                    .clip(CircleShape),
+                modifier         = Modifier.size(30.dp).background(Color(0xFF1A1A1A), CircleShape).clip(CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "JT",
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    letterSpacing = 0.5.sp
-                )
+                Text("JT", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White, letterSpacing = 0.5.sp)
             }
             Spacer(Modifier.width(12.dp))
         },
@@ -282,49 +236,45 @@ private fun MinimalTopBar(
     )
 }
 
+// ── Week strip ────────────────────────────────────────────────────────────────
 @Composable
-private fun WeekStrip(
-    selectedDate: LocalDate,
-    onDateSelect: (LocalDate) -> Unit
-) {
-    val today = LocalDate.now()
-    val monday = selectedDate.minusDays(selectedDate.dayOfWeek.value.toLong() - 1)
+private fun WeekStrip(selectedDate: LocalDate, onDateSelect: (LocalDate) -> Unit) {
+    val today      = LocalDate.now()
+    val monday     = selectedDate.minusDays(selectedDate.dayOfWeek.value.toLong() - 1)
     val dayLetters = listOf("L", "M", "M", "J", "V", "S", "D")
 
     Surface(color = Color.White, shadowElevation = 0.dp) {
         Column {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                modifier            = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 dayLetters.forEachIndexed { i, letter ->
-                    val date = monday.plusDays(i.toLong())
+                    val date       = monday.plusDays(i.toLong())
                     val isSelected = date == selectedDate
-                    val isToday = date == today
+                    val isToday    = date == today
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
+                        modifier            = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(10.dp))
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
-                                indication = null
+                                indication        = null
                             ) { onDateSelect(date) }
                             .padding(vertical = 4.dp)
                     ) {
                         Text(
-                            text = letter,
-                            fontSize = 10.sp,
+                            text       = letter,
+                            fontSize   = 10.sp,
                             fontWeight = FontWeight.W500,
-                            color = if (isToday && !isSelected) Color(0xFF1A1A1A) else Color(0xFFBBBBBB),
+                            color      = if (isToday && !isSelected) Color(0xFF1A1A1A) else Color(0xFFBBBBBB),
                             letterSpacing = 0.5.sp
                         )
                         Spacer(Modifier.height(3.dp))
                         Box(
-                            modifier = Modifier
+                            modifier         = Modifier
                                 .size(30.dp)
                                 .background(
                                     color = if (isSelected) Color(0xFF1A1A1A) else Color.Transparent,
@@ -333,17 +283,17 @@ private fun WeekStrip(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = date.dayOfMonth.toString(),
-                                fontSize = 13.sp,
+                                text       = date.dayOfMonth.toString(),
+                                fontSize   = 13.sp,
                                 fontWeight = when {
                                     isSelected -> FontWeight.W600
-                                    isToday -> FontWeight.W700
-                                    else -> FontWeight.W400
+                                    isToday    -> FontWeight.W700
+                                    else       -> FontWeight.W400
                                 },
-                                color = when {
+                                color      = when {
                                     isSelected -> Color.White
-                                    isToday -> Color(0xFF1A1A1A)
-                                    else -> Color(0xFF666666)
+                                    isToday    -> Color(0xFF1A1A1A)
+                                    else       -> Color(0xFF666666)
                                 },
                                 letterSpacing = (-0.2).sp
                             )
@@ -356,140 +306,76 @@ private fun WeekStrip(
     }
 }
 
+// ── Bottom bar ────────────────────────────────────────────────────────────────
 @Composable
 private fun MinimalBottomBar() {
-    Surface(
-        color = Color.White,
-        shadowElevation = 0.dp,
-        modifier = Modifier.height(68.dp)
-    ) {
+    Surface(color = Color.White, shadowElevation = 0.dp, modifier = Modifier.height(68.dp)) {
         Column {
             HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 0.5.dp)
             Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                modifier              = Modifier.fillMaxSize().padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
-                BottomBarItem(
-                    label = "Calendario",
-                    isSelected = true,
-                    content = {
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .background(Color(0xFF1A1A1A), RoundedCornerShape(6.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                LocalDate.now().dayOfMonth.toString(),
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp
-                            )
-                        }
+                BottomBarItem(label = "Calendario", isSelected = true) {
+                    Box(
+                        modifier         = Modifier.size(28.dp).background(Color(0xFF1A1A1A), RoundedCornerShape(6.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(LocalDate.now().dayOfMonth.toString(), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
-                )
-                BottomBarItem(
-                    label = "Servicios",
-                    isSelected = false,
-                    content = {
-                        Icon(
-                            Icons.Outlined.GridView,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = Color(0xFFAAAAAA)
-                        )
-                    }
-                )
-                BottomBarItem(
-                    label = "Clientes",
-                    isSelected = false,
-                    content = {
-                        Icon(
-                            Icons.Outlined.SentimentSatisfied,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = Color(0xFFAAAAAA)
-                        )
-                    }
-                )
-                BottomBarItem(
-                    label = "Config.",
-                    isSelected = false,
-                    content = {
-                        Icon(
-                            Icons.Outlined.Settings,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = Color(0xFFAAAAAA)
-                        )
-                    }
-                )
+                }
+                BottomBarItem(label = "Servicios", isSelected = false) {
+                    Icon(Icons.Outlined.GridView, null, modifier = Modifier.size(22.dp), tint = Color(0xFFAAAAAA))
+                }
+                BottomBarItem(label = "Clientes", isSelected = false) {
+                    Icon(Icons.Outlined.SentimentSatisfied, null, modifier = Modifier.size(22.dp), tint = Color(0xFFAAAAAA))
+                }
+                BottomBarItem(label = "Config.", isSelected = false) {
+                    Icon(Icons.Outlined.Settings, null, modifier = Modifier.size(22.dp), tint = Color(0xFFAAAAAA))
+                }
             }
         }
     }
 }
 
 @Composable
-private fun RowScope.BottomBarItem(
-    label: String,
-    isSelected: Boolean,
-    content: @Composable () -> Unit
-) {
+private fun RowScope.BottomBarItem(label: String, isSelected: Boolean, content: @Composable () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight()
+        modifier            = Modifier.weight(1f).fillMaxHeight()
     ) {
         content()
         Spacer(Modifier.height(3.dp))
         Text(
-            text = label,
-            fontSize = 10.sp,
+            text       = label,
+            fontSize   = 10.sp,
             fontWeight = if (isSelected) FontWeight.W600 else FontWeight.W400,
-            color = if (isSelected) Color(0xFF1A1A1A) else Color(0xFFAAAAAA),
+            color      = if (isSelected) Color(0xFF1A1A1A) else Color(0xFFAAAAAA),
             letterSpacing = 0.sp
         )
     }
 }
 
+// ── Promo pill ────────────────────────────────────────────────────────────────
 @Composable
-private fun PromoPill(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun PromoPill(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
-        onClick = onClick,
-        modifier = modifier.height(42.dp),
-        shape = RoundedCornerShape(21.dp),
-        color = Color(0xFFEEF8F0),
+        onClick         = onClick,
+        modifier        = modifier.height(42.dp),
+        shape           = RoundedCornerShape(21.dp),
+        color           = Color(0xFFEEF8F0),
         shadowElevation = 4.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier              = Modifier.fillMaxHeight().padding(horizontal = 20.dp),
+            verticalAlignment     = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                Icons.Default.FlightTakeoff,
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-                tint = Color(0xFF2E7D32)
-            )
+            Icon(Icons.Default.FlightTakeoff, null, modifier = Modifier.size(15.dp), tint = Color(0xFF2E7D32))
             Spacer(Modifier.width(7.dp))
-            Text(
-                text = "Comenzar prueba gratuita",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.W500,
-                color = Color(0xFF2E7D32),
-                letterSpacing = (-0.1).sp
-            )
+            Text("Comenzar prueba gratuita", fontSize = 13.sp, fontWeight = FontWeight.W500, color = Color(0xFF2E7D32), letterSpacing = (-0.1).sp)
         }
     }
 }

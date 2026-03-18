@@ -32,162 +32,138 @@ import kotlinx.coroutines.launch
 fun SelectServiceContent(
     modifier: Modifier = Modifier,
     services: List<ServiceResponse>,
-    paddingValues: PaddingValues,
+    paddingValues: PaddingValues,   // ← parámetro mantenido para no romper el caller
     viewModel: ServiceViewModel,
     calendarViewModel: CalendarViewModel,
     navController: NavHostController,
     isAuthenticated: Boolean = false,
     localizedContext: Context
 ) {
-    val query by viewModel.searchQuery.collectAsState()
-    val deleteState by viewModel.deleteServiceState
+    val query         by viewModel.searchQuery.collectAsState()
+    val deleteState   by viewModel.deleteServiceState
     val localServices by viewModel.localServicesList.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    var isDeleting by remember { mutableStateOf(false) }
+    val scope             = rememberCoroutineScope()
+    var isDeleting        by remember { mutableStateOf(false) }
 
+    // ── lógica sin cambios ─────────────────────────────────────────────────────
     LaunchedEffect(deleteState) {
         when (val state = deleteState) {
             is Resource.Success -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Servicio eliminado", duration = SnackbarDuration.Short)
-                }
+                scope.launch { snackbarHostState.showSnackbar("Servicio eliminado", duration = SnackbarDuration.Short) }
                 isDeleting = false
             }
             is Resource.Failure -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Error: ${state.message}", duration = SnackbarDuration.Long)
-                }
+                scope.launch { snackbarHostState.showSnackbar("Error: ${state.message}", duration = SnackbarDuration.Long) }
                 isDeleting = false
             }
             is Resource.Loading -> isDeleting = true
-            else -> isDeleting = false
+            else                -> isDeleting = false
         }
     }
 
     val hasQuery = query.isNotBlank()
     val filteredServices = remember(query, localServices) {
         if (query.isBlank()) localServices
-        else localServices.filter { service ->
-            service.name.contains(query, ignoreCase = true) ||
-                    service.description?.contains(query, ignoreCase = true) == true ||
-                    service.category?.contains(query, ignoreCase = true) == true
+        else localServices.filter { s ->
+            s.name.contains(query, ignoreCase = true) ||
+                    s.description?.contains(query, ignoreCase = true) == true ||
+                    s.category?.contains(query, ignoreCase = true) == true
         }
     }
-
-    // Agrupar por categoría
     val grouped = remember(filteredServices) {
         filteredServices.groupBy { it.category?.ifBlank { null } ?: "Servicios" }
     }
 
+    // FIX: NO aplicamos paddingValues aquí — el padre (Scaffold Column) ya lo aplicó
     Box(
         modifier = modifier
-            .padding(paddingValues)
             .fillMaxSize()
             .background(Color.White)
     ) {
         if (localServices.isEmpty() && !hasQuery) {
             EmptyServicesState(
                 onAddService = {
-                    navController.navigate(
-                        ClientScreen.ABMServicio.createRoute(serviceId = null, editable = false)
-                    )
+                    navController.navigate(ClientScreen.ABMServicio.createRoute(serviceId = null, editable = false))
                 }
             )
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                // ── Search bar + contador integrado (IGUAL QUE CLIENTES) ──
+                // ── Search bar + contador ──────────────────────────────────────
                 Row(
-                    modifier = Modifier
+                    modifier          = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 1.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),   // vertical reducido
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Campo de búsqueda ocupa el espacio disponible
                     ServiceSearchBar(
-                        query = query,
+                        query         = query,
                         onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                        modifier = Modifier.weight(1f)
+                        modifier      = Modifier.weight(1f)
                     )
-
-                    // Contador sutil a la derecha — solo visible si no hay búsqueda activa
                     if (!hasQuery && localServices.isNotEmpty()) {
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "${localServices.size}",
-                            fontSize = 12.sp,
-                            color = Color(0xFFBBBBBB),
+                            text       = "${localServices.size}",
+                            fontSize   = 12.sp,
+                            color      = Color(0xFFBBBBBB),
                             fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(end = 4.dp)
+                            modifier   = Modifier.padding(end = 4.dp)
                         )
                     }
                 }
 
-                // ── Lista ──
+                // ── Lista ─────────────────────────────────────────────────────
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp,
-                        top = 4.dp, bottom = 80.dp
-                    )
+                    modifier       = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 80.dp)   // sin padding horizontal/top extra
                 ) {
                     if (hasQuery && filteredServices.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(top = 80.dp),
+                                modifier         = Modifier.fillMaxWidth().padding(top = 80.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Icon(
-                                        Icons.Outlined.Search, null,
-                                        tint = Color(0xFFDDDDDD),
-                                        modifier = Modifier.size(36.dp)
-                                    )
-                                    Text(
-                                        "Sin resultados para \"$query\"",
-                                        fontSize = 13.sp, color = Color(0xFFBBBBBB)
-                                    )
+                                    Icon(Icons.Outlined.Search, null, tint = Color(0xFFDDDDDD), modifier = Modifier.size(36.dp))
+                                    Text("Sin resultados para \"$query\"", fontSize = 13.sp, color = Color(0xFFBBBBBB))
                                 }
                             }
                         }
                     } else {
                         grouped.forEach { (category, categoryServices) ->
-                            // Header de categoría solo si hay más de 1 categoría
                             if (grouped.size > 1) {
                                 stickyHeader(key = "header_$category") {
                                     Text(
-                                        text = category,
-                                        fontSize = 11.sp,
+                                        text       = category,
+                                        fontSize   = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFFAAAAAA),
+                                        color      = Color(0xFFAAAAAA),
                                         letterSpacing = 0.8.sp,
-                                        modifier = Modifier
+                                        modifier   = Modifier
                                             .fillMaxWidth()
                                             .background(Color.White)
-                                            .padding(horizontal = 4.dp, vertical = 8.dp)
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
                                     )
                                 }
                             }
                             items(
                                 items = categoryServices,
-                                key = { it.id }
+                                key   = { it.id }
                             ) { service ->
-                               SelectServiceCard(
-                                    service = service,
+                                SelectServiceCard(
+                                    service     = service,
                                     navController = navController,
-                                    onDelete = { viewModel.deleteService(it.id) },
-                                    modifier = Modifier.animateItemPlacement(
-                                        animationSpec = spring(
-                                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                                            stiffness = Spring.StiffnessLow
-                                        )
+                                    onDelete    = { viewModel.deleteService(it.id) },
+                                    modifier    = Modifier.animateItemPlacement(
+                                        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
                                     ),
-                                   viewModel = calendarViewModel
+                                    viewModel   = calendarViewModel
                                 )
                             }
                         }
@@ -198,25 +174,22 @@ fun SelectServiceContent(
 
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
+            modifier  = Modifier.align(Alignment.BottomCenter).padding(16.dp)
         ) { data ->
             Snackbar(
-                snackbarData = data,
+                snackbarData   = data,
                 containerColor = Color(0xFF1A1A1A),
-                contentColor = Color.White,
-                shape = RoundedCornerShape(12.dp)
+                contentColor   = Color.White,
+                shape          = RoundedCornerShape(12.dp)
             )
         }
 
         AnimatedVisibility(
-            visible = isDeleting,
-            enter = fadeIn(), exit = fadeOut(),
+            visible  = isDeleting,
+            enter    = fadeIn(), exit = fadeOut(),
             modifier = Modifier.align(Alignment.Center)
         ) {
-            CircularProgressIndicator(
-                color = Color.Black, strokeWidth = 2.dp,
-                modifier = Modifier.size(28.dp)
-            )
+            CircularProgressIndicator(color = Color.Black, strokeWidth = 2.dp, modifier = Modifier.size(28.dp))
         }
     }
 }
@@ -227,21 +200,15 @@ private fun EmptyServicesState(onAddService: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(horizontal = 40.dp)
+            modifier            = Modifier.padding(horizontal = 40.dp)
         ) {
-            Text(
-                "No hay servicios para mostrar.",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.Black,
-                letterSpacing = (-0.2).sp
-            )
+            Text("No hay servicios para mostrar.", fontSize = 17.sp, fontWeight = FontWeight.Normal, color = Color.Black, letterSpacing = (-0.2).sp)
             Spacer(Modifier.height(4.dp))
             Button(
-                onClick = onAddService,
+                onClick  = onAddService,
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                shape    = RoundedCornerShape(25.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text("Añadir nuevo servicio", fontSize = 15.sp, color = Color.White)
             }

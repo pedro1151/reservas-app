@@ -1,5 +1,7 @@
 package com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steofour
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -19,34 +22,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationStatus
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationType
-import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
-import com.optic.pramosreservasappz.presentation.screens.calendar.components.ServiceReservationStep
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceViewModel
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
+import kotlinx.coroutines.delay
 
+// ── Palette ────────────────────────────────────────────────────────────────────
+private val RCBlack   = Color(0xFF0D0D0D)
+private val RCGray100 = Color(0xFFF2F2F2)
+private val RCGray400 = Color(0xFFAAAAAA)
+private val RCGray600 = Color(0xFF666666)
 
-// ── Step 4: Resumen ────────────────────────────────────────────────────────────
 @Composable
 fun ResumeContent(
     navController: NavHostController,
     calendarViewModel: CalendarViewModel
 ) {
-
+    // ── lógica sin cambios ─────────────────────────────────────────────────────
     val serviceViewModel: ServiceViewModel = hiltViewModel()
-    val clientViewModel: ClientViewModel = hiltViewModel()
+    val clientViewModel: ClientViewModel   = hiltViewModel()
 
     val selectedServiceId by calendarViewModel.selectedServiceIdForReservation.collectAsState()
     val selectedClientId  by calendarViewModel.selectedClientIdForReservation.collectAsState()
@@ -56,200 +58,258 @@ fun ResumeContent(
     val date = selectedDate
     val time = selectedTime
 
-    val services          by serviceViewModel.localServicesList.collectAsState()
-    val clients           by clientViewModel.localClientsList.collectAsState()
+    val services by serviceViewModel.localServicesList.collectAsState()
+    val clients  by clientViewModel.localClientsList.collectAsState()
 
     val service = services.firstOrNull { it.id == selectedServiceId }
-    val client  = clients.firstOrNull  { it.id == selectedClientId }
+    val client  = clients.firstOrNull  { it.id == selectedClientId  }
 
     val timeFmt = remember { DateTimeFormatter.ofPattern("HH:mm") }
 
     val createState by calendarViewModel.createReservationState.collectAsState()
 
+    // ── Success overlay state ──────────────────────────────────────────────────
+    var showSuccess by remember { mutableStateOf(false) }
+
     LaunchedEffect(createState) {
         if (createState is Resource.Success) {
-
+            showSuccess = true
+            delay(2000)
             calendarViewModel.clearReservationForm()
-
             navController.navigate(ClientScreen.Calendario.route) {
                 popUpTo(ClientScreen.Calendario.route) { inclusive = true }
             }
         }
     }
 
+    // ── UI ─────────────────────────────────────────────────────────────────────
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier       = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
 
-    Column(Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)) {
-            if (service != null) item {
-                SummaryCard {
-                    SummaryRow(Icons.Outlined.MiscellaneousServices, Color(0xFF009688), "Servicio", service.name)
-                    HorizontalDivider(color = Color(0xFFF5F5F5), modifier = Modifier.padding(start = 44.dp))
+                // ── Servicio ──────────────────────────────────────────────────
+                if (service != null) item {
+                    ResumeRow(Icons.Outlined.MiscellaneousServices, "Servicio", service.name)
                     Row(
-                        Modifier
+                        modifier              = Modifier
                             .fillMaxWidth()
-                            .padding(start = 44.dp, top = 12.dp, bottom = 12.dp), Arrangement.spacedBy(40.dp)) {
-                        LabelValue("Costo", "Bs ${service.price ?: 0}")
-                        LabelValue("Duración", "${service.durationMinutes} min")
+                            .padding(start = 56.dp, end = 20.dp, bottom = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(40.dp)
+                    ) {
+                        SubLabelValue("Costo", "Bs ${service.price ?: 0}")
+                        SubLabelValue("Duración", "${service.durationMinutes} min")
                     }
+                    HorizontalDivider(color = RCGray100)
                 }
-                Spacer(Modifier.height(12.dp))
-            }
-            if (date != null && time != null) item {
-                val dow = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("es","ES")).replaceFirstChar { it.uppercase() }
-                val end = time.plusMinutes(service?.durationMinutes?.toLong() ?: 0)
-                SummaryCard {
-                    SummaryRow(Icons.Outlined.CalendarToday, Color(0xFF9E9E9E), "Fecha",
-                        "$dow ${date.dayOfMonth} ${date.month.getDisplayName(TextStyle.SHORT, Locale("es","ES"))} ${date.year}")
-                    HorizontalDivider(color = Color(0xFFF5F5F5), modifier = Modifier.padding(start = 44.dp))
-                    SummaryRow(Icons.Outlined.AccessTime, Color(0xFF9E9E9E), "Hora",
-                        "${time.format(timeFmt)} – ${end.format(timeFmt)}")
+
+                // ── Fecha y hora ──────────────────────────────────────────────
+                if (date != null && time != null) item {
+                    val dow = date.dayOfWeek
+                        .getDisplayName(TextStyle.FULL, Locale("es", "ES"))
+                        .replaceFirstChar { it.uppercase() }
+                    val mon = date.month
+                        .getDisplayName(TextStyle.SHORT, Locale("es", "ES"))
+                        .replaceFirstChar { it.uppercase() }
+                    val end = time.plusMinutes(service?.durationMinutes?.toLong() ?: 0)
+
+                    ResumeRow(Icons.Outlined.CalendarToday, "Fecha", "$dow ${date.dayOfMonth} $mon ${date.year}")
+                    HorizontalDivider(color = RCGray100)
+                    ResumeRow(Icons.Outlined.AccessTime, "Hora", "${time.format(timeFmt)} – ${end.format(timeFmt)}")
+                    HorizontalDivider(color = RCGray100)
                 }
-                Spacer(Modifier.height(12.dp))
-            }
-            if (client != null) item {
-                SummaryCard {
+
+                // ── Cliente ───────────────────────────────────────────────────
+                if (client != null) item {
                     Row(
-                        Modifier
+                        modifier              = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp), Arrangement.spacedBy(14.dp), Alignment.CenterVertically) {
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                        verticalAlignment     = Alignment.CenterVertically
+                    ) {
                         Box(
-                            Modifier
-                                .size(44.dp)
-                                .background(avatarColor(client.id), CircleShape), Alignment.Center) {
-                            Text(initials(client.fullName), fontSize = 15.sp, fontWeight = FontWeight.W700, color = Color.White)
+                            Modifier.size(40.dp).clip(CircleShape).background(resumeAvatarColor(client.id)),
+                            Alignment.Center
+                        ) {
+                            Text(resumeInitials(client.fullName), fontSize = 13.sp, fontWeight = FontWeight.W700, color = Color.White)
                         }
                         Column(Modifier.weight(1f)) {
-                            Text(client.fullName, fontSize = 15.sp, fontWeight = FontWeight.W500, color = Color(0xFF111111))
-                            client.email?.let { Text(it, fontSize = 12.sp, color = Color(0xFF9E9E9E)) }
+                            Text(client.fullName, fontSize = 15.sp, fontWeight = FontWeight.W500, color = RCBlack)
+                            client.email?.let { Text(it, fontSize = 12.sp, color = RCGray400) }
                         }
                     }
+                    HorizontalDivider(color = RCGray100)
                 }
-                Spacer(Modifier.height(12.dp))
+
+                // ── Extras ────────────────────────────────────────────────────
+                item {
+                    ResumeRow(Icons.Outlined.Repeat,      "Repetir",        "No se repite")
+                    HorizontalDivider(color = RCGray100)
+                    ResumeRow(Icons.Outlined.Description, "Notas internas", "")
+                    HorizontalDivider(color = RCGray100)
+                    ResumeRow(Icons.Outlined.LocalOffer,  "Etiqueta",       "Sin etiqueta")
+                }
             }
-            item {
-                SummaryCard {
-                    SummaryRow(Icons.Outlined.Repeat, Color(0xFF9E9E9E), "Repetir", "No se repite")
-                    HorizontalDivider(color = Color(0xFFF5F5F5), modifier = Modifier.padding(start = 44.dp))
-                    SummaryRow(Icons.Outlined.Description, Color(0xFF9E9E9E), "Notas internas",
-                        "") // TODO: API — calendarViewModel.internalNoteForReservation.collectAsState()
-                    HorizontalDivider(color = Color(0xFFF5F5F5), modifier = Modifier.padding(start = 44.dp))
-                    SummaryRow(Icons.Outlined.LocalOffer, Color(0xFF9E9E9E), "Etiqueta", "Sin etiqueta")
+
+            // ── Botón Crear cita ──────────────────────────────────────────────
+            Surface(color = Color.White, shadowElevation = 4.dp) {
+                Button(
+                    onClick = {
+                        if (calendarViewModel.isReservationFormComplete()) {
+                            val startDateTime = selectedDate!!.atTime(selectedTime)
+                            val endDateTime   = startDateTime.plusMinutes(service!!.durationMinutes.toLong())
+                            val formatter     = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                            calendarViewModel.createReservation(
+                                ReservationCreateRequest(
+                                    type         = ReservationType.SERVICE,
+                                    providerId   = 1,
+                                    startTime    = startDateTime.format(formatter),
+                                    endTime      = endDateTime.format(formatter),
+                                    status       = ReservationStatus.PENDING,
+                                    staffId      = null,
+                                    clientId     = selectedClientId,
+                                    serviceId    = selectedServiceId,
+                                    classmateId  = null,
+                                    eventId      = null,
+                                    meetingId    = null,
+                                    internalNote = null,
+                                    createdBy    = "PRUEBA"
+                                )
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .height(52.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = RCBlack, contentColor = Color.White),
+                    shape  = RoundedCornerShape(14.dp)
+                ) {
+                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Crear cita", fontSize = 15.sp, fontWeight = FontWeight.W600)
                 }
             }
         }
-        Surface(color = Color.White, shadowElevation = 6.dp) {
-            Button(
-                onClick = {
-                    if (calendarViewModel.isReservationFormComplete()) {
 
-                        // ── Construcción de fechas ─────────────────────────────
-                        val startDateTime = selectedDate!!.atTime(selectedTime)
+        // ── Overlay de éxito ──────────────────────────────────────────────────
+        AnimatedVisibility(
+            visible  = showSuccess,
+            modifier = Modifier.align(Alignment.Center),
+            enter    = scaleIn(
+                initialScale  = 0.85f,
+                animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMediumLow)
+            ) + fadeIn(tween(200)),
+            exit     = scaleOut(targetScale = 0.9f, animationSpec = tween(200)) + fadeOut(tween(200))
+        ) {
+            SuccessOverlay()
+        }
 
-                        val endDateTime = startDateTime
-                            .plusMinutes(service!!.durationMinutes.toLong())
-
-                        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-
-                        val request = ReservationCreateRequest(
-                            type = ReservationType.SERVICE,
-                            providerId = 1,
-                            startTime = startDateTime.format(formatter),
-                            endTime = endDateTime.format(formatter),
-                            status = ReservationStatus.PENDING,
-                            staffId = null,
-                            clientId = selectedClientId,
-                            serviceId = selectedServiceId,
-                            classmateId = null,
-                            eventId = null,
-                            meetingId = null,
-                            internalNote = null,
-                            createdBy = "PRUEBA"
-                        )
-
-                        calendarViewModel.createReservation(request)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF111111), contentColor = Color.White),
-                shape    = RoundedCornerShape(14.dp)
-            ) {
-                Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Crear cita", fontSize = 15.sp, fontWeight = FontWeight.W600, modifier = Modifier.padding(vertical = 4.dp))
-            }
+        // Fondo oscuro detrás del overlay
+        AnimatedVisibility(
+            visible  = showSuccess,
+            modifier = Modifier.matchParentSize(),
+            enter    = fadeIn(tween(200)),
+            exit     = fadeOut(tween(200))
+        ) {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.35f))
+            )
         }
     }
 }
 
-// ── Reusables ──────────────────────────────────────────────────────────────────
+// ── Success overlay card ───────────────────────────────────────────────────────
 @Composable
-private fun SummaryCard(content: @Composable ColumnScope.() -> Unit) {
-    Surface(shape = RoundedCornerShape(16.dp), color = Color(0xFFF9F9F9), modifier = Modifier.fillMaxWidth()) {
-        Column(content = content)
-    }
-}
-
-@Composable
-private fun SummaryRow(icon: ImageVector, iconTint: Color, label: String, value: String) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp), Arrangement.spacedBy(12.dp), Alignment.CenterVertically) {
-        Icon(icon, null, modifier = Modifier.size(20.dp), tint = iconTint)
-        Column(Modifier.weight(1f)) {
-            Text(label, fontSize = 12.sp, color = Color(0xFF9E9E9E), fontWeight = FontWeight.W400)
-            if (value.isNotBlank()) Text(value, fontSize = 15.sp, color = Color(0xFF111111), fontWeight = FontWeight.W400)
-        }
-    }
-}
-
-@Composable
-private fun LabelValue(label: String, value: String) {
-    Column {
-        Text(label, fontSize = 12.sp, color = Color(0xFF9E9E9E))
-        Text(value, fontSize = 15.sp, color = Color(0xFF111111), fontWeight = FontWeight.W500)
-    }
-}
-
-@Composable
-private fun EmptyState(label: String) {
+private fun SuccessOverlay() {
     Box(
-        Modifier
+        modifier         = Modifier
+            .padding(horizontal = 40.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White)
+            .padding(horizontal = 32.dp, vertical = 36.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Círculo verde con check
+            Box(
+                modifier         = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF4CAF50).copy(alpha = 0.10f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    tint     = Color(0xFF4CAF50),
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            Text(
+                "¡Cita creada!",
+                fontSize      = 18.sp,
+                fontWeight    = FontWeight.W700,
+                color         = RCBlack,
+                letterSpacing = (-0.3).sp
+            )
+            Text(
+                "Aparecerá en tu calendario",
+                fontSize = 13.sp,
+                color    = RCGray400
+            )
+        }
+    }
+}
+
+// ── Fila plana ────────────────────────────────────────────────────────────────
+@Composable
+private fun ResumeRow(icon: ImageVector, label: String, value: String) {
+    Row(
+        modifier              = Modifier
             .fillMaxWidth()
-            .padding(top = 80.dp), Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(Icons.Outlined.SearchOff, null, tint = Color(0xFFDDDDDD), modifier = Modifier.size(40.dp))
-            Text(label, fontSize = 13.sp, color = Color(0xFFBBBBBB))
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment     = Alignment.Top
+    ) {
+        Icon(icon, null, tint = RCGray400, modifier = Modifier.size(20.dp).offset(y = 2.dp))
+        Column(Modifier.weight(1f)) {
+            Text(label, fontSize = 11.sp, color = RCGray400)
+            if (value.isNotBlank()) {
+                Spacer(Modifier.height(2.dp))
+                Text(value, fontSize = 14.sp, color = RCBlack)
+            }
         }
     }
 }
 
 @Composable
-private fun SuccessSnackbar() {
-    Surface(Modifier.fillMaxWidth(), RoundedCornerShape(14.dp), Color(0xFF111111), shadowElevation = 10.dp) {
-        Row(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), Arrangement.spacedBy(14.dp), Alignment.CenterVertically) {
-            Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(22.dp))
-            Column {
-                Text("Cita creada con éxito", fontSize = 15.sp, fontWeight = FontWeight.W600, color = Color.White)
-                Text("Aparecerá en tu calendario", fontSize = 12.sp, color = Color(0xFF888888))
-            }
-        }
+private fun SubLabelValue(label: String, value: String) {
+    Column {
+        Text(label, fontSize = 11.sp, color = RCGray400)
+        Text(value, fontSize = 14.sp, color = RCBlack, fontWeight = FontWeight.W500)
     }
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-private fun initials(fullName: String): String {
+private fun resumeInitials(fullName: String): String {
     val parts = fullName.trim().split(" ")
     return when {
         parts.isEmpty() -> "?"
         parts.size == 1 -> parts[0].take(2).uppercase()
-        else -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
+        else            -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
     }
 }
 
-private fun avatarColor(id: Int): Color {
+private fun resumeAvatarColor(id: Int): Color {
     val palette = listOf(
         Color(0xFF1A1A1A), Color(0xFF4A6CF7), Color(0xFF7C3AED),
         Color(0xFF059669), Color(0xFFDC2626), Color(0xFFD97706),
