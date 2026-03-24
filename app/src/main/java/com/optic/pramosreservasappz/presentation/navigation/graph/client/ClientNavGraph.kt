@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.optic.pramosreservasappz.presentation.sales.SalesContent
+
 import com.optic.pramosreservasappz.presentation.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
