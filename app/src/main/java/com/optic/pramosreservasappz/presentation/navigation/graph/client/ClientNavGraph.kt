@@ -25,7 +25,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 
-import com.optic.pramosreservasappz.presentation.sales.SalesScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
@@ -51,10 +51,13 @@ fun ClientNavGraph(
     AnimatedNavHost(
         navController = navController,
         route = Graph.CLIENT,
-        startDestination = if (isAuthenticated)
-            ClientScreen.Calendario.route
-        else
-            ClientScreen.Login.route,
+        startDestination =
+        if (isAuthenticated) {
+            ClientScreen.Sales.route
+        }
+        else{
+            ClientScreen.Login.route
+        },
         modifier = Modifier.fillMaxSize()
     ) {
 

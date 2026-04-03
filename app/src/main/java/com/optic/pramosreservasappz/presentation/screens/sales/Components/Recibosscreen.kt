@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -19,6 +19,12 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray200
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
+import com.optic.pramosreservasappz.presentation.sales.Components.SaleStatus
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeSales
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -74,7 +80,8 @@ fun RecibosScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 ) {
                     Column {
                         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(SAccent.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
+                            Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(
+                                SAccent.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
                                 Icon(Icons.Outlined.Receipt, null, tint = SAccent, modifier = Modifier.size(20.dp))
                             }
                             Column(Modifier.weight(1f)) {

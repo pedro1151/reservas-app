@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -18,6 +18,14 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.*
+import com.optic.pramosreservasappz.presentation.sales.Components.ProductItem
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray100
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray200
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray600
+import com.optic.pramosreservasappz.presentation.sales.Components.SRed
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeProducts
 
 private val productColorOptions = listOf(
     Color(0xFF5C6BC0), Color(0xFF26A69A), Color(0xFF7E57C2),
@@ -113,7 +121,9 @@ fun NewProductSheet(
 
             Box(modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 20.dp, vertical = 16.dp)) {
                 Box(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SBlack)
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(
+                        SBlack
+                    )
                         .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
                             if (validate()) {
                                 onSave(ProductItem(id = fakeProducts.size + 1, name = name.trim(), price = price, stock = stock, color = selectedColor))

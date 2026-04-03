@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -21,6 +21,16 @@ import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import com.optic.pramosreservasappz.presentation.sales.Components.ReportEntry
+import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray100
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
+import com.optic.pramosreservasappz.presentation.sales.Components.SRed
+import com.optic.pramosreservasappz.presentation.sales.Components.SaleStatus
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeMonthReport
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeSales
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeWeekReport
 
 @Composable
 fun ReportesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -120,7 +130,9 @@ fun ReportesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                                     Text("Bs ${"%.0f".format(total)}", fontSize = 13.sp, fontWeight = FontWeight.W700, color = SBlack)
                                 }
                                 Spacer(Modifier.height(6.dp))
-                                Box(modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(SGray100)) {
+                                Box(modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(
+                                    SGray100
+                                )) {
                                     val barColor = listOf(SAccent, Color(0xFF5C6BC0), Color(0xFFFF7043), Color(0xFFEC407A), Color(0xFF26A69A))[index % 5]
                                     Box(modifier = Modifier.fillMaxWidth((total / maxVal).toFloat()).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(barColor))
                                 }

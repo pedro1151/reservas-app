@@ -4,6 +4,9 @@ package com.optic.pramosreservasappz.data.dataSource.remote.service
 import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationResponse
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationUpdateRequest
@@ -13,6 +16,14 @@ import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -24,6 +35,145 @@ import retrofit2.http.Query
 
 interface ReservasService {
 /* Se utiliza Response de retrofit, en los archivos de servicios */
+
+    // venta simple
+    @POST("/sales")
+    suspend fun createSale(
+        @Body request: SaleCreateRequest
+    ): Response<SaleResponse>
+
+    // venta con items
+    @POST("/sales/with-items")
+    suspend fun createSaleWithItems(
+        @Body request: CreateSaleWithItemsRequest
+    ): Response<SaleResponse>
+
+     // crear vebta evitando duplicados
+    @POST("/sales/safe")
+    suspend fun createSaleSafe(
+        @Body request: SaleCreateRequest
+    ): Response<SaleResponse>
+
+    // get ventas por owner id (user_id)
+    @GET("/sales")
+    suspend fun getSalesByOwner(
+        @Query("user_id") ownerId: Int
+    ): Response<List<SaleResponse>>
+
+     // get sale por id
+    @GET("/sales/{sale_id}")
+    suspend fun getSaleById(
+        @Path("sale_id") saleId: Int,
+    ): Response<SaleWithItemsResponse>
+
+    // actualizar venta
+    @PUT("/sales/{sale_id}")
+    suspend fun updateSale(
+        @Path("sale_id") saleId: Int,
+        @Body request: SaleUpdateRequest
+    ): Response<SaleResponse>
+
+    // ELIMINAR venta borrado logico
+    @DELETE("/sales/{sale_id}/soft")
+    suspend fun deleteSaleSoft(
+        @Path("sale_id") saleId: Int
+    ): Response<DefaultResponse>
+
+    // ELIMINAR venta borrado definitivo
+    @DELETE("/sales/{sale_id}/hard")
+    suspend fun deleteSaleHard(
+        @Path("sale_id") saleId: Int
+    ): Response<DefaultResponse>
+
+
+
+    //sales items---------------------->
+
+    @POST("/sale-items")
+    suspend fun createSaleItem(
+        @Body request: SaleItemCreateRequest
+    ): Response<SaleItemResponse>
+
+
+    @POST("/sale-items/bulk")
+    suspend fun createSaleItemBulk(
+        @Body request: List<SaleItemCreateRequest>
+    ): Response<List<SaleItemResponse>>
+
+
+    @GET("/sale-items/sale/{sale_id}")
+    suspend fun getItemsBySale(
+        @Path("sale_id") saleId: Int,
+    ): Response<List<SaleItemResponse>>
+
+
+    @GET("/sale-items/{item_id}")
+    suspend fun getSaleItemById(
+        @Path("item_id") itemId: Int,
+    ): Response<SaleItemResponse>
+
+    @PUT("/sale-items/{item_id}")
+    suspend fun updateSaleItem(
+        @Path("item_id") itemId: Int,
+        @Body request: SaleItemUpdateRequest
+    ): Response<SaleItemResponse>
+
+
+    @DELETE("/sale-items/{item_id}/hard")
+    suspend fun deleteSaleItemHard(
+        @Path("item_id") itemId: Int
+    ): Response<DefaultResponse>
+
+
+    @DELETE("/sale-items/{item_id}/soft")
+    suspend fun deleteSaleItemSoft(
+        @Path("item_id") itemId: Int
+    ): Response<DefaultResponse>
+
+
+    // PRODUCTS
+
+
+    @POST("/products")
+    suspend fun createProduct(
+        @Body request: ProductCreateRequest
+    ): Response<ProductResponse>
+
+    @POST("/products/safe")
+    suspend fun createProductSafe(
+        @Body request: ProductCreateRequest
+    ): Response<ProductResponse>
+
+    @GET("/products")
+    suspend fun getProductsByUser(
+        @Query("user_id") ownerId: Int,
+        @Query("name") name: String
+    ): Response<List<ProductResponse>>
+
+    @GET("/products/{product_id}")
+    suspend fun getProductById(
+        @Path("product_id") productId: Int
+    ): Response<ProductResponse>
+
+    @PUT("/products/{product_id}")
+    suspend fun updateProduct(
+        @Path("product_id") productId: Int,
+        @Body request: ProductUpdateRequest
+    ): Response<ProductResponse>
+
+    @DELETE("/products/{product_id}/hard")
+    suspend fun deleteProductHard(
+        @Path("product_id") productId: Int
+    ): Response<DefaultResponse>
+
+
+    @DELETE("/products/{product_id}/soft")
+    suspend fun deleteProductSoft(
+        @Path("product_id") productId: Int
+    ): Response<DefaultResponse>
+
+
+
 
 
     // reservas

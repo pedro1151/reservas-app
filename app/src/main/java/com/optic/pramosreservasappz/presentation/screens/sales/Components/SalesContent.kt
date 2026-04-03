@@ -28,7 +28,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.presentation.sales.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.sales.Components.NewProductSheet
+import com.optic.pramosreservasappz.presentation.screens.sales.Components.RecibosScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.Components.ReportesScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.Components.StockScreen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -36,7 +40,7 @@ import java.time.format.DateTimeFormatter
 fun SalesContent(
     modifier:      Modifier = Modifier,
     paddingValues: PaddingValues,
-    viewModel:     SalesViewModel,
+    viewModel: SalesViewModel,
     navController: NavHostController,
     selectedTab:   Int    = 0,
     onTabChange:   (Int) -> Unit = {}
@@ -127,11 +131,9 @@ fun SalesContent(
             StockScreen(onBack = { showStock = false }, modifier = Modifier.fillMaxSize())
         }
     }
-
+   /*
     if (showRegisterSale) {
-        RegisterSaleSheet(
-            products  = fakeProducts,
-            clients   = fakeClients,
+        RegistrarVentaFicticio(
             onDismiss = { showRegisterSale = false },
             onConfirm = { newSale ->
                 salesList.add(0, newSale)
@@ -139,6 +141,8 @@ fun SalesContent(
             }
         )
     }
+
+    */
 
     if (showNewProduct) {
         NewProductSheet(

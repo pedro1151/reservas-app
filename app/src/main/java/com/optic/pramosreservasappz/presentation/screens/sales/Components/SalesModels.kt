@@ -13,6 +13,8 @@ val SAccent  = Color(0xFF1DB954)
 val SRed     = Color(0xFFEF5350)
 val SAmber   = Color(0xFFD97706)
 
+val Violet  = Color(0xFF7C3AED)
+
 data class SaleItem(
     val id:         Int,
     val clientName: String,

@@ -1,4 +1,5 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.temporalcomponents
+
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -20,10 +21,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import com.optic.pramosreservasappz.presentation.sales.Components.CartItem
+import com.optic.pramosreservasappz.presentation.sales.Components.ProductItem
+import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray100
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray200
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray600
+import com.optic.pramosreservasappz.presentation.sales.Components.SaleItem
+import com.optic.pramosreservasappz.presentation.sales.Components.SaleStatus
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeClients
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeProducts
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeSales
+import java.time.LocalDate
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterSaleSheet(
+fun RegistrarVentaFicticio(
     products:  List<ProductItem> = fakeProducts,
     clients:   List<String>      = fakeClients,
     onDismiss: () -> Unit,
@@ -172,7 +188,9 @@ fun RegisterSaleSheet(
                 Spacer(Modifier.height(8.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(SGray100).padding(horizontal = 12.dp, vertical = 10.dp),
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(
+                        SGray100
+                    ).padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -212,7 +230,9 @@ fun RegisterSaleSheet(
                             Text("${cart.sumOf { it.quantity }} ítem${if (cart.sumOf { it.quantity } != 1) "s" else ""}", fontSize = 12.sp, color = SGray400)
                         }
                         Spacer(Modifier.height(8.dp))
-                        Box(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SGray100).padding(16.dp)) {
+                        Box(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(
+                            SGray100
+                        ).padding(16.dp)) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 cart.forEach { item ->
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -244,8 +264,8 @@ fun RegisterSaleSheet(
                                 clientName = selectedClient.ifEmpty { "Cliente sin nombre" },
                                 items      = cart.map { it.product.name },
                                 total      = cartTotal,
-                                time       = java.time.LocalTime.now(),
-                                date       = java.time.LocalDate.now(),
+                                time       = LocalTime.now(),
+                                date       = LocalDate.now(),
                                 status     = SaleStatus.COMPLETED
                             )
                             onConfirm(newSale); onDismiss()

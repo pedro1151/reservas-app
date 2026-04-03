@@ -4,6 +4,9 @@ import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasServi
 import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationResponse
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationUpdateRequest
@@ -13,6 +16,14 @@ import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
 import retrofit2.Response
 
 class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService): ReservasRemoteDataSource {
@@ -70,6 +81,100 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     override suspend fun getServiceById(
         serviceId: Int
     ): Response<ServiceResponse> = reservasService.getServiceById(serviceId)
+
+    //ventas
+
+    override suspend fun createSale(
+        request: SaleCreateRequest
+    ): Response<SaleResponse> = reservasService.createSale(request)
+
+    override suspend fun createSaleWithItems(
+        request: CreateSaleWithItemsRequest
+    ): Response<SaleResponse> = reservasService.createSaleWithItems(request)
+
+    override suspend fun getSalesByOwner(
+        ownerId: Int
+    ): Response<List<SaleResponse>> = reservasService.getSalesByOwner(ownerId)
+
+    override suspend fun getSaleById(
+        saleId: Int
+    ): Response<SaleWithItemsResponse> = reservasService.getSaleById(saleId)
+
+    override suspend fun updateSale(
+        saleId: Int,
+        request: SaleUpdateRequest
+    ): Response<SaleResponse>  = reservasService.updateSale(request = request, saleId = saleId)
+
+    override suspend fun deleteSaleSoft(
+        saleId: Int
+    ): Response<DefaultResponse> = reservasService.deleteSaleSoft(saleId)
+
+    override suspend fun deleteSaleHard(
+        saleId: Int
+    ): Response<DefaultResponse> = reservasService.deleteSaleHard(saleId)
+
+
+    // SALE ITEMS
+    override suspend fun createSaleItem(
+        request: SaleItemCreateRequest
+    ): Response<SaleItemResponse> = reservasService.createSaleItem(request)
+
+    override suspend fun createSaleItemBulk(
+        request: List<SaleItemCreateRequest>
+    ): Response<List<SaleItemResponse>> = reservasService.createSaleItemBulk(request)
+
+    override suspend fun getItemsBySale(
+        saleId: Int
+    ): Response<List<SaleItemResponse>> = reservasService.getItemsBySale(saleId)
+
+    override suspend fun getSaleItemById(
+        itemId: Int
+    ): Response<SaleItemResponse> = reservasService.getSaleItemById(itemId)
+
+    override suspend fun updateSaleItem(
+        itemId: Int,
+        request: SaleItemUpdateRequest
+    ): Response<SaleItemResponse> = reservasService.updateSaleItem(itemId = itemId, request = request)
+
+    override suspend fun deleteSaleItemHard(
+        itemId: Int
+    ): Response<DefaultResponse> = reservasService.deleteSaleItemHard(itemId)
+
+    override suspend fun deleteSaleItemSoft(
+        itemId: Int
+    ): Response<DefaultResponse> = reservasService.deleteSaleItemSoft(itemId)
+
+    // PRODUCTS
+
+    override suspend fun createProduct(
+        request: ProductCreateRequest
+    ): Response<ProductResponse> = reservasService.createProduct(request)
+
+    override suspend fun createProductSafe(
+        request: ProductCreateRequest
+    ): Response<ProductResponse> = reservasService.createProductSafe(request)
+
+    override suspend fun getProductByUser(
+        ownerId: Int,
+        name: String
+    ): Response<List<ProductResponse>> = reservasService.getProductsByUser(ownerId= ownerId, name = name)
+
+    override suspend fun getProductById(
+        productId: Int
+    ): Response<ProductResponse> = reservasService.getProductById(productId)
+
+    override suspend fun updateProduct(
+        productId: Int,
+        request: ProductUpdateRequest
+    ): Response<ProductResponse> = reservasService.updateProduct(productId = productId, request=request)
+
+    override suspend fun deleteProductSoft(productId: Int): Response<DefaultResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteProductHard(
+        productId: Int
+    ): Response<DefaultResponse> = reservasService.deleteProductHard(productId)
 
 
     // reservas

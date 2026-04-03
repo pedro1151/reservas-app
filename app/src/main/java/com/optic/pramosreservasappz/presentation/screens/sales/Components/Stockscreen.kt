@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -18,6 +18,16 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import com.optic.pramosreservasappz.presentation.sales.Components.ProductItem
+import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
+import com.optic.pramosreservasappz.presentation.sales.Components.SAmber
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray100
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray200
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray600
+import com.optic.pramosreservasappz.presentation.sales.Components.SRed
+import com.optic.pramosreservasappz.presentation.sales.Components.fakeProducts
 
 @Composable
 fun StockScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -114,7 +124,9 @@ private fun StockProductRow(product: ProductItem, onAdd: () -> Unit, onRemove: (
                             }, label = "stock_num_${product.id}"
                         ) { qty -> Text("$qty uds", fontSize = 13.sp, fontWeight = FontWeight.W700, color = stockColor) }
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(SGray100)) {
+                    Box(modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(
+                        SGray100
+                    )) {
                         Box(modifier = Modifier.fillMaxWidth((product.stock.toFloat() / maxVisualStock).coerceIn(0f, 1f)).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(stockColor))
                     }
                     if (product.stock == 0) Text("Sin stock", fontSize = 10.sp, fontWeight = FontWeight.W700, color = SRed)

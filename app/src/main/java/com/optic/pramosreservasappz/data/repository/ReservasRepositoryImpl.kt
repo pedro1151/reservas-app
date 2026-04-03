@@ -14,6 +14,9 @@ import com.optic.pramosreservasappz.data.dataSource.remote.ReservasRemoteDataSou
 import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationCreateRequest
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationResponse
 import com.optic.pramosreservasappz.domain.model.reservations.ReservationUpdateRequest
@@ -23,6 +26,14 @@ import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.staff.StaffResponse
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -41,6 +52,181 @@ class ReservasRepositoryImpl(
     private val fixturePredictionDao: FixturePredictionDao
 ): ReservasRepository
 {
+    override suspend fun createSale(
+        request: SaleCreateRequest
+    ): Resource<SaleResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createSale(request)
+        )
+
+
+    override suspend fun createSaleWithItems(
+        request: CreateSaleWithItemsRequest
+    ): Resource<SaleResponse>  =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createSaleWithItems(request)
+        )
+
+
+
+    override fun getSalesByOwner(
+        ownerId: Int
+    ): Flow<Resource<List<SaleResponse>>> = flow {
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.getSalesByOwner(ownerId)
+            )
+        )
+    }
+
+    override suspend fun getSaleById(
+        saleId: Int
+    ): Resource<SaleWithItemsResponse> =
+            ResponseToRequest.send(
+                reservasRemoteDataSource.getSaleById(saleId)
+            )
+
+
+    override suspend fun updateSale(
+        saleId: Int,
+        request: SaleUpdateRequest
+    ): Resource<SaleResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.updateSale(saleId=saleId, request=request)
+        )
+
+
+    override suspend fun deleteSaleSoft(
+        saleId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteSaleSoft(saleId)
+        )
+
+
+    override suspend fun deleteSaleHard(
+        saleId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteSaleHard(saleId)
+        )
+
+
+    // sale items
+    override suspend fun createSaleItem(
+        request: SaleItemCreateRequest
+    ): Resource<SaleItemResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createSaleItem(request)
+    )
+
+    override suspend fun createSaleItemBulk(
+        request: List<SaleItemCreateRequest>
+    ): Resource<List<SaleItemResponse>> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createSaleItemBulk(request)
+        )
+
+    override suspend fun getItemsBySale(
+        saleId: Int
+    ): Flow<Resource<List<SaleItemResponse>>> = flow {
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.getItemsBySale(saleId)
+            )
+        )
+    }
+
+    override suspend fun getSaleItemById(
+        itemId: Int
+    ): Resource<SaleItemResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.getSaleItemById(itemId)
+     )
+
+    override suspend fun updateSaleItem(
+        itemId: Int,
+        request: SaleItemUpdateRequest
+    ): Resource<SaleItemResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.updateSaleItem(
+                itemId =  itemId,
+                request = request
+            )
+        )
+
+    override suspend fun deleteSaleItemHard(
+        itemId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteSaleItemHard(itemId)
+        )
+
+    override suspend fun deleteSaleItemSoft(
+        itemId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteSaleItemSoft(itemId)
+        )
+
+    override suspend fun createProduct(
+        request: ProductCreateRequest
+    ): Resource<ProductResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createProduct(request)
+        )
+
+    override suspend fun createProductSafe(
+        request: ProductCreateRequest
+    ): Resource<ProductResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.createProductSafe(request)
+        )
+
+    override suspend fun getProductByUser(
+        ownerId: Int,
+        name: String
+    ): Flow<Resource<List<ProductResponse>>> = flow {
+    emit(
+        ResponseToRequest.send(
+            reservasRemoteDataSource.getProductByUser(ownerId = ownerId, name = name)
+        )
+    )
+}
+
+    override suspend fun getProductById(
+        productId: Int
+    ): Resource<ProductResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.getProductById(productId)
+        )
+
+    override suspend fun updateProduct(
+        productId: Int,
+        request: ProductUpdateRequest
+    ): Resource<ProductResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.updateProduct(productId=productId, request=request)
+        )
+
+    override suspend fun deleteProductSoft(
+        productId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteProductSoft(productId)
+        )
+
+    override suspend fun deleteProductHard(
+        productId: Int
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            reservasRemoteDataSource.deleteProductHard(productId)
+        )
+
+
+
+
+    // reservas
     override suspend fun createReservation(
         request: ReservationCreateRequest
     ): Flow<Resource<ReservationResponse>> = flow{
