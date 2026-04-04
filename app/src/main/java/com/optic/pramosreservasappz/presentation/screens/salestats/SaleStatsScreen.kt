@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.salestats
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,10 +16,10 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.sales.Components.ReportEntry
 import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
 import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
@@ -33,7 +32,10 @@ import com.optic.pramosreservasappz.presentation.sales.Components.fakeSales
 import com.optic.pramosreservasappz.presentation.sales.Components.fakeWeekReport
 
 @Composable
-fun ReportesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SalesStatsScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
     var selectedPeriod by remember { mutableStateOf(1) }
     val periods = listOf("Hoy", "Semana", "Mes", "Año")
 
@@ -54,16 +56,57 @@ fun ReportesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         .groupBy { it.first }.mapValues { entry -> entry.value.sumOf { it.second } }
         .entries.sortedByDescending { it.value }.take(5)
 
-    Box(modifier = modifier.fillMaxSize().background(Color(0xFFF5F5F5))) {
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 40.dp)) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 40.dp)
+        ) {
             item {
-                Box(modifier = Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Color(0xFF111111), Color(0xFF1A1A1A)))).padding(horizontal = 20.dp).padding(top = 16.dp, bottom = 28.dp)) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .background(Brush.verticalGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                        )
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 16.dp, bottom = 28.dp)
+                ) {
                     Column {
-                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                            Box(modifier = Modifier.size(36.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.08f)).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onBack), contentAlignment = Alignment.Center) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            /*
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                                    .clickable(
+                                        interactionSource = remember {
+                                            MutableInteractionSource() },
+                                        indication = null, onClick = {}),
+                                contentAlignment = Alignment.Center
+                            )
+                            {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(18.dp))
                             }
-                            Text("REPORTES", fontSize = 12.sp, fontWeight = FontWeight.W700, color = SAccent, letterSpacing = 1.5.sp)
+
+                             */
+                            Text(
+                                "TUS ESTADISTICAS",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                                color = MaterialTheme.colorScheme.background,
+                                letterSpacing = 1.5.sp)
                             Spacer(Modifier.size(36.dp))
                         }
                         Spacer(Modifier.height(20.dp))

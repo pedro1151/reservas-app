@@ -118,12 +118,13 @@ class MainActivity : ComponentActivity() {
                     val isAuthenticated by authStateVM.isAuthenticated.collectAsState()
 
                     val bottomBarRoutes = listOf(
-                        ClientScreen.Calendario.route,
-                        ClientScreen.Clientes.route,
+                        ClientScreen.Sales.route,
+                        ClientScreen.Historial.route,
+                        ClientScreen.Estadisticas.route,
                         ClientScreen.Mas.route,
+                        ClientScreen.Productos.route,
                         ClientScreen.Profile.route,
-                        ClientScreen.Servicios.route,
-                        ClientScreen.Sales.route
+                        ClientScreen.Servicios.route
                     )
 
                     val shouldShowBottomBar = currentDestination?.route in bottomBarRoutes
@@ -140,6 +141,16 @@ class MainActivity : ComponentActivity() {
                                         icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar servicio") }
                                     )
                                 }
+
+
+                            if (currentRoute == ClientScreen.Productos.route) {
+                                CustomFloatingActionButton(
+                                    onClick = {
+                                        navController.navigate(ClientScreen.ABMServicio.createRoute())
+                                    },
+                                    icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar producto") }
+                                )
+                            }
 
                             // LAMO A LA PANTALLA DE CREAR CLIENTES
                                 if (currentRoute == ClientScreen.Clientes.route) {

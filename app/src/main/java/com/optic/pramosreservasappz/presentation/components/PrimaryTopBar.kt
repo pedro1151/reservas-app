@@ -13,6 +13,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,79 +27,59 @@ import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 fun PrimaryTopBar(
     title: String = "",
     navController: NavController,
-    onCalendarClick: (() -> Unit)? = null,   // 👈 Agregamos callback opcional
-    showTitle: Boolean = true ,
+    onCalendarClick: (() -> Unit)? = null,
+    showTitle: Boolean = true,
     vm: AuthStateVM = hiltViewModel()
 ) {
     val isAuthenticated by vm.isAuthenticated.collectAsState()
     val userEmail by vm.userEmail.collectAsState()
 
-    TopAppBar(
-        title = {
-            if (showTitle) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 10.dp)
-                        .height(30.dp),
-                    contentAlignment = Alignment.TopStart
-                ) {
+    val gradient = Brush.horizontalGradient(
+        listOf(
+            MaterialTheme.colorScheme.primary, // azul
+            MaterialTheme.colorScheme.secondary, // azul
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(gradient)
+    ) {
+
+        TopAppBar(
+            title = {
+                if (showTitle) {
                     Text(
                         text = title,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        letterSpacing = 1.sp
                     )
                 }
-            }
-        },
-        actions = {
-
-
-            // 👉 ICONO DE CALENDARIO (si el callback existe)
-            if (onCalendarClick != null) {
-                IconButton(
-                    onClick = { onCalendarClick() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Elegir fecha",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+            },
+            actions = {
+                if (onCalendarClick != null) {
+                    IconButton(onClick = { onCalendarClick() }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Elegir fecha",
+                            tint = Color.White
+                        )
+                    }
                 }
-            }
-            /*
-            if (isAuthenticated) {
-                Text(
-                    text = userEmail,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-            } else {
-                Text(
-                    text = "Iniciar sesión",
-                    color = Color(0xFF64B5F6), // Azul claro moderno (similar al de los botones)
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable {
-                            navController.navigate(ClientScreen.Login.route) // 🔹 Ajusta la ruta según tu AuthScreen
-                        }
-                )
-            }
+            },
 
-             */
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = MaterialTheme.colorScheme.background
-        ),
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 4.dp, vertical = 1.dp)
-    )
+            // 🔥 CLAVE: transparente
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White,
+                navigationIconContentColor = Color.White
+            ),
+
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

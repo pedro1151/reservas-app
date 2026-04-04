@@ -24,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.optic.pramosreservasappz.presentation.screens.salestats.SalesStatsScreen
 
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steofour.CreateReservationStepFourScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateResevationStepOneScreen
@@ -36,6 +36,8 @@ import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.st
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
+import com.optic.pramosreservasappz.presentation.screens.historial.HistorialScreen
+import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
 import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
@@ -121,8 +123,10 @@ fun ClientNavGraph(
             ClientPrincipalScreen(navController, isAuthenticated)
         }
 
+
+
         composable(
-            route = ClientScreen.Calendario.route,
+            route = ClientScreen.Sales.route,
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it },
@@ -148,7 +152,159 @@ fun ClientNavGraph(
                 )
             }
         ) {
-            CalendarScreen(navController = navController)
+            SalesScreen( navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.Historial.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            HistorialScreen(navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.Productos.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            ProductScreen(navController, isAuthenticated)
+        }
+
+
+
+        composable(
+            route = ClientScreen.Sales.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            SalesScreen( navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.Historial.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            HistorialScreen(navController, isAuthenticated)
+        }
+
+        composable(
+            route = ClientScreen.Estadisticas.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            SalesStatsScreen(navController = navController)
         }
 
         composable(

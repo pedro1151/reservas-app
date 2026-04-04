@@ -18,16 +18,29 @@ val azulMarino = Color(0xFF1565C0)
 val LightBlack1 =  Color(0xFF1b1b1b)
 val LightWhite1 = Color (0XFFe7e7e7)
 val GrisModerno = Color(0xFF3A3A3A)
+val BorderGray = Color(0xFFE5E7EB)
+val Green  = Color(0xFF1DB954)
 
+val BluePrimary = Color(0xFF1E3A8A)
+val BlueDark = Color(0xFF172554)
+val BlueSoft = Color(0xFFEFF6FF)
 
+val VioletPrimary = Color(0xFF7C3AED)
+val TextPrimary = Color(0xFF111111)
+val TextSecondary = Color(0xFF6B7280)
+
+val BluePrimary2 = Color(0xFF2563EB)
+val VioletAccent = Color(0xFF7C3AED)
+val GradientStart = Color(0xFF2563EB)
+val GradientEnd = Color(0xFF7C3AED)
 
 private val LightColorScheme = lightColorScheme(
-    primary = LightBlack1,
+    primary =BluePrimary2 ,
     onPrimary = LightBlack1,
-    primaryContainer = Color(0xFF7C3AED),
+    primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary = Color.Black,
-    onSecondary =Color.White,
+    secondary =  Color(0xFF7C3AED),
+            onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,
     surface =  GrisModerno ,
@@ -35,11 +48,11 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = LightBlack1,
+    primary = BluePrimary2 ,
     onPrimary = LightBlack1,
-    primaryContainer = Color(0xFF7C3AED),
+    primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary = Color.Black,
+    secondary =  Color(0xFF7C3AED),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,

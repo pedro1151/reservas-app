@@ -18,8 +18,8 @@ sealed class ClientScreen(
 
     object Sales: ClientScreen(
         route = "client/sales",
-        title = "Sales",
-        icon = Icons.Default.Chalet
+        title = "Ventas",
+        icon = Icons.Default.CheckCircle
     )
 
     object CreateReservationStepOne: ClientScreen(
@@ -55,7 +55,13 @@ sealed class ClientScreen(
     object Servicios: ClientScreen(
         route = "client/servicios",
         title = "Servicios",
-        icon = Icons.Default.SpaceDashboard
+        icon = Icons.Default.GifBox
+    )
+
+    object Productos: ClientScreen(
+        route = "client/productos",
+        title = "Productos",
+        icon = Icons.Default.GifBox
     )
 
     object ABMServicio : ClientScreen(
@@ -109,21 +115,17 @@ sealed class ClientScreen(
     )
 
     object Estadisticas: ClientScreen(
-        route = "client/players/estadisticas",
+        route = "client/estadisticas",
         title = "Estadisticas",
-        icon = Icons.Default.Send
+        icon = Icons.Default.BarChart
     )
 
-    object Fixture: ClientScreen(
-        route = "client/players/fixture",
-        title = "Perfil",
-        icon = Icons.Default.Info
-    )
+
 
     object Historial: ClientScreen(
-        route = "client/players/historial",
+        route = "client/historial",
         title = "Historial",
-        icon = Icons.Default.DateRange
+        icon = Icons.Default.History
     )
 
     object Follow: ClientScreen(
@@ -156,15 +158,5 @@ sealed class ClientScreen(
         icon = Icons.Default.SignLanguage
     )
 
-    object ProdeRanking: ClientScreen(
-        route = "client/proderank",
-        title = "Prode Ranking",
-        icon = Icons.Default.SignLanguage
-    )
 
-    object UserPredictionSummary: ClientScreen(
-        route = "client/user_prediction_summary",
-        title = "User prediction summary",
-        icon = Icons.Default.SignLanguage
-    )
 }

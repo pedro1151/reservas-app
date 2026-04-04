@@ -1,15 +1,13 @@
-package com.optic.pramosreservasappz.presentation.sales.Components
+package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
+import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
+import com.optic.pramosreservasappz.presentation.sales.Components.SGray600
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,83 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
-import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
-import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.screens.sales.Components.RegisterSaleSheet
-import com.optic.pramosreservasappz.presentation.screens.sales.Components.SaleCard
-import java.time.LocalDate
 
 @Composable
-fun SalesContent2(
-    modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
-    viewModel: SalesViewModel,
-    navController: NavHostController,
-    selectedTab: Int = 0,
-    onTabChange: (Int) -> Unit = {},
-    sales: List<SaleResponse> // 🔥 NUEVO
-) {
-    var showRegisterSale by remember { mutableStateOf(false) }
-    var balanceHidden by remember { mutableStateOf(false) }
-
-
-    val today = LocalDate.now()
-
-    fun parseDate(date: String): LocalDate {
-        return LocalDate.parse(date.substring(0, 10))
-    }
-
-    val todaySales = sales.filter { parseDate(it.created) == today }
-    val todayTotal = todaySales.sumOf { it.amount }
-    val todayCount = todaySales.size
-
-    val yesterdayTotal = sales
-        .filter { parseDate(it.created) == today.minusDays(1) }
-        .sumOf { it.amount }
-
-    val monthTotal = sales
-        .filter { parseDate(it.created).month == today.month }
-        .sumOf { it.amount }
-
-    Column(
-        modifier = modifier
-            .padding(paddingValues)
-            .fillMaxSize()
-    ) {
-
-        StatsHeader(
-            todayTotal = todayTotal,
-            todayCount = todayCount,
-            yesterdayTotal = yesterdayTotal,
-            monthTotal = monthTotal,
-            balanceHidden = balanceHidden,
-            onToggleHide = { balanceHidden = !balanceHidden },
-            onRegisterSale = { showRegisterSale = true }
-        )
-
-        SalesHomeTab(
-            sales = sales,
-            today = today
-        )
-    }
-
-    // 🔥 REGISTRAR VENTA (SIMPLIFICADO)
-    if (showRegisterSale) {
-        RegisterSaleSheet(
-            onDismiss = { showRegisterSale = false },
-            viewModel = viewModel
-        )
-    }
-}
-
-@Composable
-private fun StatsHeader(
+fun SaleStatsHeader(
     todayTotal:     Double,
     todayCount:     Int,
     yesterdayTotal: Double,
@@ -107,11 +34,18 @@ private fun StatsHeader(
     onToggleHide:   () -> Unit,
     onRegisterSale: () -> Unit
 ) {
+
+    val gradient = Brush.horizontalGradient(
+        listOf(
+            MaterialTheme.colorScheme.primary, // azul
+            MaterialTheme.colorScheme.secondary, // azul
+        )
+    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(horizontal = 5.dp, vertical = 28.dp)
+            .padding(horizontal = 5.dp, vertical = 5.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,7 +59,7 @@ private fun StatsHeader(
                 Text("HOY",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.W600,
-                    color = Violet,
+                    color = MaterialTheme.colorScheme.primary,
                     letterSpacing = 1.5.sp
                 )
                 Spacer(Modifier.width(10.dp))
@@ -177,7 +111,7 @@ private fun StatsHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Violet)
+                    .background(gradient )
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null, onClick = onRegisterSale
@@ -195,9 +129,10 @@ private fun StatsHeader(
                         modifier = Modifier.size(25.dp)
                     )
                     Text("Venta rapida",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W700,
-                        color = Color.White
+                        fontSize = 18.sp,
+                        //fontWeight = FontWeight.W700,
+                        color = Color.White,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Normal
                     )
                 }
             }
@@ -221,69 +156,6 @@ private fun StatPill(
             color = SBlack,
             fontWeight = FontWeight.W600
         )
-    }
-}
-
-
-
-@Composable
-private fun SalesHomeTab(
-    sales: List<SaleResponse>,
-    today: LocalDate
-) {
-
-    fun parseDate(date: String): LocalDate {
-        return LocalDate.parse(date.substring(0, 10))
-    }
-
-    val grouped = sales
-        .sortedByDescending { it.created }
-        .groupBy { parseDate(it.created) }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(bottom = 100.dp)
-    ) {
-
-        grouped.forEach { (date, daySales) ->
-
-            item {
-                val label = when (date) {
-                    today -> "Hoy"
-                    today.minusDays(1) -> "Ayer"
-                    else -> date.toString()
-                }
-
-                val total = daySales.sumOf { it.amount }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(label)
-                    Text("$ ${"%.0f".format(total)}")
-                }
-            }
-
-            items(daySales) { sale ->
-                SaleCard(sale)
-            }
-        }
-
-        if (sales.isEmpty()) {
-            item {
-                Box(
-                    Modifier.fillMaxWidth().padding(top = 80.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Sin ventas aún")
-                }
-            }
-        }
     }
 }
 

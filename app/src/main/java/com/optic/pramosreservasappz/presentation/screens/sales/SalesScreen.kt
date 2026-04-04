@@ -14,7 +14,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.sales.Components.SalesContent
-import com.optic.pramosreservasappz.presentation.sales.Components.SalesContent2
+import com.optic.pramosreservasappz.presentation.screens.sales.menu.PrincipalMenuDrawer
+import com.optic.pramosreservasappz.presentation.screens.sales.menu.topbar.SaleTopBar
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -23,6 +25,10 @@ fun SalesScreen(
     isAuthenticated: Boolean = false
 ) {
     val viewModel: SalesViewModel = hiltViewModel()
+
+    // cerrar abrir menu
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope       = rememberCoroutineScope()
 
     // Estado de la tab activa
     var selectedTab by remember { mutableStateOf(0) }
@@ -35,60 +41,81 @@ fun SalesScreen(
         viewModel.loadSales(ownerId = 1)
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick        = { /* TODO */ },
-                containerColor = Color(0xFF0D0D0D),
-                contentColor   = Color.White,
-                shape          = CircleShape,
-                modifier       = Modifier.size(52.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
-            }
-        },
-        containerColor = Color(0xFFF5F5F5)
-    ) { paddingValues ->
+    ModalNavigationDrawer(
+        drawerState   = drawerState,
+        drawerContent = {
+            PrincipalMenuDrawer(
+                onDrawerClose    = { scope.launch { drawerState.close() } },
+                navController = navController
+            )
+        }
+    ) {
 
-        when (val state = salesState) {
+        Scaffold(
 
-            // 🔄 LOADING
-            is Resource.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            // ❌ ERROR
-            is Resource.Failure -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("No se pudieron cargar las ventas")
-                }
-            }
-
-            // ✅ SUCCESS
-            is Resource.Success -> {
-                SalesContent2(
-                    paddingValues = paddingValues,
-                    viewModel     = viewModel,
-                    navController = navController,
-                    selectedTab   = selectedTab,
-                    onTabChange   = { selectedTab = it },
-                    sales         = state.data // 🔥 PASAMOS DATA REAL
+            topBar = {
+                SaleTopBar(
+                    onMenuClick  = { scope.launch { drawerState.open() } },
                 )
-            }
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { /* TODO */ },
+                    containerColor = Color(0xFF0D0D0D),
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier.size(52.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            },
+            containerColor = Color(0xFFF5F5F5)
+        ) { paddingValues ->
 
-            else -> {}
+            when (val state = salesState) {
+
+                // 🔄 LOADING
+                is Resource.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                // ❌ ERROR
+                is Resource.Failure -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No se pudieron cargar las ventas")
+                    }
+                }
+
+                // ✅ SUCCESS
+                is Resource.Success -> {
+                    SalesContent(
+                        paddingValues = paddingValues,
+                        viewModel = viewModel,
+                        navController = navController,
+                        selectedTab = selectedTab,
+                        onTabChange = { selectedTab = it },
+                        sales = state.data // 🔥 PASAMOS DATA REAL
+                    )
+                }
+
+                else -> {}
+            }
         }
     }
 }

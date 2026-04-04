@@ -19,7 +19,7 @@ fun MasScreen(
         topBar = {
             PrimaryTopBar(
                 navController = navController,
-                title = "Más"
+                title = "MAS"
             )
         }
     ) { paddingValues ->

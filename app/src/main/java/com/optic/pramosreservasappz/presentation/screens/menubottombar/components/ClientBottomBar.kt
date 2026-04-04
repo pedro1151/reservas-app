@@ -13,10 +13,10 @@ import com.optic.pramosreservasappz.presentation.navigation.screen.client.Client
 fun ClientBottomBar(navController: NavHostController) {
 
     val screens = listOf(
-        ClientScreen.Calendario,
-        ClientScreen.Servicios,
-        ClientScreen.Clientes,
         ClientScreen.Sales,
+        ClientScreen.Historial,
+        ClientScreen.Estadisticas,
+        ClientScreen.Productos,
         ClientScreen.Profile
     )
 
