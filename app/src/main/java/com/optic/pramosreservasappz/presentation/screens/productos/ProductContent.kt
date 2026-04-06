@@ -27,6 +27,7 @@ import com.optic.pramosreservasappz.presentation.navigation.screen.client.Client
 import com.optic.pramosreservasappz.presentation.screens.productos.components.PrincipalProducCard
 import com.optic.pramosreservasappz.presentation.screens.services.components.ServiceCard
 import com.optic.pramosreservasappz.presentation.screens.services.components.ServiceSearchBar
+import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -80,7 +81,7 @@ fun ProductContent(
         modifier = modifier
             .padding(paddingValues)
             .fillMaxSize()
-            .background(Color.White)
+            .background(SoftCoolBackground),
     ) {
         if (localProducts.isEmpty() && !hasQuery) {
             EmptyServicesState(
@@ -122,7 +123,10 @@ fun ProductContent(
 
                 // ── Lista ──
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(SoftCoolBackground)
+                    ,
                     contentPadding = PaddingValues(
                         start = 16.dp, end = 16.dp,
                         top = 4.dp, bottom = 80.dp

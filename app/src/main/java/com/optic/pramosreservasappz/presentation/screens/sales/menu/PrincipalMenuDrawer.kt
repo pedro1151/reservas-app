@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewMode
+import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 import com.optic.pramosreservasappz.presentation.ui.theme.Green
 
 @Composable
@@ -96,7 +99,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.Bolt,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -116,7 +119,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.AddTask,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -141,7 +144,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.History,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -162,7 +165,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.BarChart,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -184,7 +187,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.EmojiEmotions,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -204,7 +207,7 @@ fun PrincipalMenuDrawer(
             ) {
                 Icon(Icons.Default.GifBox,
                     null,
-                    tint = MaterialTheme.colorScheme.primaryContainer,
+                    tint = AmarrilloSuave,
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
@@ -222,17 +225,16 @@ private fun ProUpgradeBanner() {
 
     val buttonTextColor = Color.White // para cambiar el color
 
-    val gradient = Brush.horizontalGradient(
-        listOf(
-            MaterialTheme.colorScheme.primary, // azul
-            MaterialTheme.colorScheme.secondary, // azul
-        )
-    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(gradient)
+            .background(GradientBackground)
+            .drawBehind {
+                drawRect(
+                    color = Color.Black.copy(alpha = 0.05f)
+                )
+            }
             .padding(20.dp)
     ) {
         Column(
@@ -288,6 +290,11 @@ private fun ProUpgradeBanner() {
             )
         }
     }
+
+
 }
+
+
+
 
 

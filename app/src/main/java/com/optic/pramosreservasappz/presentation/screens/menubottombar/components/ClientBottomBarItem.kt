@@ -30,7 +30,7 @@ fun RowScope.ClientBottomBarItem(
 
     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
-    val selectedColor =  MaterialTheme.colorScheme.primaryContainer //MaterialTheme.colorScheme.secondary //   Color(0xFFFF4D4D) // rojo fluorescente suave (inspirado en FotMob)
+    val selectedColor =  MaterialTheme.colorScheme.secondary //MaterialTheme.colorScheme.secondary //   Color(0xFFFF4D4D) // rojo fluorescente suave (inspirado en FotMob)
     val unselectedColor = MaterialTheme.colorScheme.surface
 
     var title_traducido =""

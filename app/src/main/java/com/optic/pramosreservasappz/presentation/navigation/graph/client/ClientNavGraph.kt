@@ -38,6 +38,8 @@ import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipal
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
 import com.optic.pramosreservasappz.presentation.screens.historial.HistorialScreen
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.detail.SaleDetailScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.RapidSaleScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
 import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
@@ -213,6 +215,81 @@ fun ClientNavGraph(
             }
         ) {
             ProductScreen(navController, isAuthenticated)
+        }
+
+        // Detalle de una venta
+        composable(
+            route = ClientScreen.SaleDetail.route,
+            arguments = listOf(
+                navArgument("saleId") {
+                    type = NavType.IntType
+                }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) { backStackEntry ->
+            val saleId = backStackEntry.arguments?.getInt("saleId") ?: return@composable
+            SaleDetailScreen(
+                navController = navController,
+               saleId = saleId,
+                isAuthenticated = isAuthenticated
+            )
+        }
+
+
+        composable(
+            route = ClientScreen.RapidSale.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(350)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
+            RapidSaleScreen(
+                navController = navController,
+                isAuthenticated = isAuthenticated
+            )
         }
 
 

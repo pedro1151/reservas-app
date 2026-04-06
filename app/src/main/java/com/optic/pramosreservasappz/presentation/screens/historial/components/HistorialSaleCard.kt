@@ -163,10 +163,10 @@ fun HistorialSaleCard(
                         indication = null
                     ) {
                         if (offsetX == 0f) {
-                            // Ir al DETALLE del cliente
-                            navController.navigate(
-                                ClientScreen.ClientDetail.createRoute(clientId = sale.id)
-                            )
+                            // Ir al DETALLE de la venta
+                                navController.navigate(
+                                    ClientScreen.SaleDetail.createRoute(saleId = sale.id)
+                                )
                         } else {
                             offsetX = 0f
                         }

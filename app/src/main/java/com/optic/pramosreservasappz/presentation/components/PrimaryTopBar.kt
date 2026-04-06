@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,17 +36,16 @@ fun PrimaryTopBar(
     val isAuthenticated by vm.isAuthenticated.collectAsState()
     val userEmail by vm.userEmail.collectAsState()
 
-    val gradient = Brush.horizontalGradient(
-        listOf(
-            MaterialTheme.colorScheme.primary, // azul
-            MaterialTheme.colorScheme.secondary, // azul
-        )
-    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(gradient)
+            .background(GradientBackground)
+            .drawBehind {
+                drawRect(
+                    color = Color.Black.copy(alpha = 0.05f)
+                )
+            }
     ) {
 
         TopAppBar(

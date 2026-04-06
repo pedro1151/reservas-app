@@ -1,8 +1,10 @@
 package com.optic.pramosreservasappz.presentation.screens.sales.Components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -10,13 +12,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.historial.components.getAvatarColor
 import com.optic.pramosreservasappz.presentation.screens.historial.components.getInitials
 
@@ -24,7 +30,8 @@ import com.optic.pramosreservasappz.presentation.screens.historial.components.ge
 fun SaleCard(
     sale: SaleResponse,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    navController: NavHostController
 ) {
     val time = sale.created.substring(11, 16)
 
@@ -38,11 +45,34 @@ fun SaleCard(
     val avatarColor = remember(sale.id) { getAvatarColor(sale.id) }
     val initials = "#"+sale.id.toString()
 
+    var pressed by remember { mutableStateOf(false) }
 
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f
+    )
     Card(
         modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clickable(
+                onClick = {
+                    navController.navigate(
+                    ClientScreen.SaleDetail.createRoute(saleId = sale.id)
+                )},
+                onClickLabel = null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            )
             .fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 6.dp)
+            .shadow(
+                elevation = 14.dp,
+                shape = RoundedCornerShape(14.dp),
+                ambientColor = Color(0xFF000000).copy(alpha = 0.05f),
+                spotColor = Color(0xFF000000).copy(alpha = 0.12f)
+            )
             .then(
                 if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
@@ -51,10 +81,8 @@ fun SaleCard(
             containerColor = Color.White
         ),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, BorderGray),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp // 🔥 casi flat (más elegante)
-        )
+        border = BorderStroke(1.dp, BorderGray.copy(alpha = 0.8f)), // 🔥 más sutil
+        elevation = CardDefaults.cardElevation(0.dp) // ❌ quitamos elevation default
     ) {
         Row(
             modifier = Modifier

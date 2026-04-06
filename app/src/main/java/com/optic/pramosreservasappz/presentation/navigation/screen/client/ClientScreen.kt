@@ -58,6 +58,31 @@ sealed class ClientScreen(
         icon = Icons.Default.GifBox
     )
 
+    object RapidSale: ClientScreen(
+        route = "client/rapid_sale",
+        title = "Venta Rapida",
+        icon = Icons.Default.GifBox
+    )
+
+    object SaleDetail: ClientScreen(
+        route = "client/detail_sale/{saleId}",
+        title = "Detalle Venta",
+        icon = Icons.Default.GifBox
+    )
+    {
+        fun createRoute(saleId: Int): String = "client/detail_sale/$saleId"
+    }
+    // Pantalla de detalle del cliente
+    object ClientDetail : ClientScreen(
+        route = "client/detail/{clientId}",
+        title = "Detalle Cliente",
+        icon = Icons.Default.Person
+    ) {
+        fun createRoute(clientId: Int): String = "client/detail/$clientId"
+    }
+
+
+
     object Productos: ClientScreen(
         route = "client/productos",
         title = "Productos",
@@ -84,14 +109,7 @@ sealed class ClientScreen(
         }
     }
 
-    // Pantalla de detalle del cliente
-    object ClientDetail : ClientScreen(
-        route = "client/detail/{clientId}",
-        title = "Detalle Cliente",
-        icon = Icons.Default.Person
-    ) {
-        fun createRoute(clientId: Int): String = "client/detail/$clientId"
-    }
+
 
     // Pantalla de detalle del servicio
     object ServiceDetail : ClientScreen(

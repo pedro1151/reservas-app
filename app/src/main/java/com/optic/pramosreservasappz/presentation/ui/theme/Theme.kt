@@ -3,6 +3,7 @@ package com.optic.pramosreservasappz.presentation.ui.theme
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 // Define aquí tus colores personalizados como Color de Compose
@@ -19,6 +20,7 @@ val LightBlack1 =  Color(0xFF1b1b1b)
 val LightWhite1 = Color (0XFFe7e7e7)
 val GrisModerno = Color(0xFF3A3A3A)
 val BorderGray = Color(0xFFE5E7EB)
+val GrisSuave = Color(0xFFE5E7EB)
 val Green  = Color(0xFF1DB954)
 
 val BluePrimary = Color(0xFF1E3A8A)
@@ -34,29 +36,78 @@ val VioletAccent = Color(0xFF7C3AED)
 val GradientStart = Color(0xFF2563EB)
 val GradientEnd = Color(0xFF7C3AED)
 
+val AmarrilloSuave =  Color(0xFFFFC857)
+
+val BlueGradient = Brush.horizontalGradient(
+    listOf(
+        Color(0xFF2563EB),
+        Color(0xFF7C3AED),
+      //  Color(0xFFD97706)
+    )
+)
+
+val MoradoClaro = Color(0xFF7C3AED)
+val MoradoOscuro = Color(0xFF5B3EBF)
+val DarkPremiumGradient = Brush.horizontalGradient(
+    listOf(
+        Color(0xFF1F2937), // gris grafito
+        Color(0xFF111827)  // casi negro (pero suave)
+    )
+)
+val GreenGradient = Brush.horizontalGradient(
+    listOf(
+        Color(0xFF1DB954),
+        Color(0xFF1DB954)
+        //  Color(0xFFD97706)
+    )
+)
+
+val SoftCoolBackground = Brush.verticalGradient(
+    listOf(
+        Color(0xFFF9FAFB),
+        Color(0xFFF1F5F9)
+    )
+)
+
+val GradientBackground = Brush.horizontalGradient(
+    listOf(
+        Color(0xFF06B6D4),
+        Color(0xFF0891B2)
+    )
+)
+
+val ButtonBackground = Brush.horizontalGradient(
+    listOf(
+        Color(0xFF0891B2),
+        Color(0xFF06B6D4)
+    )
+)
+
+
 private val LightColorScheme = lightColorScheme(
-    primary =BluePrimary2 ,
+    primary =      Color(0xFF06B6D4),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =  Color(0xFF7C3AED),
-            onSecondary =Color.White,
+    secondary =     Color(0xFF0891B2),
+    onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,
     surface =  GrisModerno ,
     onSurface =  GrisModerno
 )
 
+
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimary2 ,
+    primary =      Color(0xFF06B6D4),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =  Color(0xFF7C3AED),
+    secondary =     Color(0xFF0891B2),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,
-    surface = GrisModerno,
+    surface =  GrisModerno ,
     onSurface =  GrisModerno
 )
 

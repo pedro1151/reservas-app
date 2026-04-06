@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.ventarapida.components
+package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components
 
 
 

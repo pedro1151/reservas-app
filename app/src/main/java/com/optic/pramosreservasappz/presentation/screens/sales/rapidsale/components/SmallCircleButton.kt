@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.ventarapida.components
+package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components
 
 
 import androidx.compose.foundation.*
@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -15,17 +16,18 @@ import androidx.compose.ui.unit.*
 @Composable
 fun SmallCircleButton(
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    backgroundColor: Brush
 ) {
-    val Violet = Color(0xFF7C3AED)
+
     val BorderGray = Color(0xFFE5E7EB)
 
     Box(
         modifier = Modifier
             .size(30.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .border(1.dp, BorderGray, CircleShape)
+            .background(backgroundColor)
+           // .border(1.dp, BorderGray, CircleShape)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {

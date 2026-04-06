@@ -29,9 +29,10 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.historial.components.getAvatarColor
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun PrincipalProducCard(
     product: ProductResponse,
@@ -46,6 +47,8 @@ fun PrincipalProducCard(
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { visible = true }
+    val avatarColor = remember(product.id) { getAvatarColor(product.id) }
+    val initials = "#"+product.id.toString()
 
 
     val maxSwipeDistance = -200f
@@ -180,7 +183,7 @@ fun PrincipalProducCard(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.secondary),
+                                .background(avatarColor),
                             contentAlignment = Alignment.Center
                         ) {
 
@@ -188,7 +191,7 @@ fun PrincipalProducCard(
                                 text = getServiceInitials(product.name),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.background
                             )
                         }
 
@@ -231,28 +234,6 @@ fun PrincipalProducCard(
                         }
                     }
 
-                    // Botón copiar enlace — pequeño, esquina inferior derecha
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        OutlinedButton(
-                            onClick = { /* TODO: copiar enlace */ },
-                            modifier = Modifier.height(26.dp),
-                            shape = RoundedCornerShape(7.dp),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                            border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFDDDDDD)),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF888888))
-                        ) {
-                            Icon(
-                                Icons.Outlined.Link, null,
-                                modifier = Modifier.size(11.dp),
-                                tint = Color(0xFF999999)
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text("Copiar enlace", fontSize = 10.sp, color = Color(0xFF999999))
-                        }
-                    }
                 }
             }
         }
@@ -266,9 +247,12 @@ fun PrincipalProducCard(
             onDismiss = { showOptionsSheet = false },
             onEdit = {
                 showOptionsSheet = false
+                /*
                 navController.navigate(
                     ClientScreen.ABMServicio.createRoute(serviceId = product.id, editable = true)
                 )
+
+                 */
             },
             onPreview = { showOptionsSheet = false },
             onShare = { showOptionsSheet = false },
@@ -358,35 +342,9 @@ private fun ServiceOptionsSheet(
             HorizontalDivider(color = Color(0xFFF5F5F5), thickness = 0.5.dp)
             Spacer(Modifier.height(4.dp))
 
-            OptionRow(icon = Icons.Outlined.Share, label = "Compartir", onClick = onShare)
-
             Spacer(Modifier.height(4.dp))
             HorizontalDivider(color = Color(0xFFF5F5F5), thickness = 0.5.dp)
             Spacer(Modifier.height(4.dp))
-
-            // Oculto con toggle
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Outlined.VisibilityOff, null, tint = Color(0xFF555555), modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(16.dp))
-                Text("Establecer como oculto", fontSize = 15.sp, color = Color.Black, modifier = Modifier.weight(1f))
-                Switch(
-                    checked = isHidden,
-                    onCheckedChange = onToggleHidden,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color.Black,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Color(0xFFCCCCCC)
-                    )
-                )
-            }
-
-            OptionRow(icon = Icons.Outlined.ContentCopy, label = "Duplicado", onClick = onDuplicate)
             OptionRow(icon = Icons.Outlined.DeleteOutline, label = "Borrar", onClick = onDelete, tint = Color(0xFFEF5350))
         }
     }

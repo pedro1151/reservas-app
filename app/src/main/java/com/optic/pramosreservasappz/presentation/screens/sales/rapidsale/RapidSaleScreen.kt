@@ -1,10 +1,10 @@
-package com.optic.pramosreservasappz.presentation.screens.historial
+package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale
+
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,64 +17,49 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 
 @Composable
-fun HistorialScreen(
+fun RapidSaleScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false
 ) {
-    val viewModel: HistorialViewModel = hiltViewModel()
-    val salesResource by viewModel.salesState.collectAsState()
+    val viewModel: SalesViewModel = hiltViewModel()
+    val productsResource by viewModel.productsState.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.loadSales( 1)
+        viewModel.loadProducts(ownerId = 1, name = "")
     }
 
-    LaunchedEffect(salesResource) {
-        if (salesResource !is Resource.Loading) isRefreshing = false
+    LaunchedEffect( productsResource ) {
+        if ( productsResource  !is Resource.Loading) isRefreshing = false
     }
 
     Scaffold(
         topBar = {
-            PrimaryTopBar(
-                title = "HISTORIAL DE VENTAS",
+            BackTopBar(
+                title = "VENTA RAPIDA",
                 navController = navController
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(
-                        ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
-                    )
-                },
-                containerColor = Color.Black,
-                contentColor = Color.White,
-                shape = CircleShape,
-                modifier = Modifier.size(52.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
-            }
-        },
-        containerColor = Color.White
+        }
     ) { paddingValues ->
 
         PullRefreshWrapper(
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
-                viewModel.loadSales(1)
+                viewModel.loadProducts(ownerId = 1, name = "")
             },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (val result = salesResource) {
+            when (val result = productsResource) {
                 is Resource.Loading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(
@@ -84,9 +69,8 @@ fun HistorialScreen(
                     }
                 }
                 is Resource.Success -> {
-                   HistorialContent(
-                        sales = result.data,
-                        paddingValues = PaddingValues(0.dp),
+                    RapidSaleContent(
+                        products = result.data,
                         viewModel = viewModel,
                         navController = navController
                     )

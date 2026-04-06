@@ -30,6 +30,9 @@ import com.optic.pramosreservasappz.presentation.sales.Components.SaleStatus
 import com.optic.pramosreservasappz.presentation.sales.Components.fakeMonthReport
 import com.optic.pramosreservasappz.presentation.sales.Components.fakeSales
 import com.optic.pramosreservasappz.presentation.sales.Components.fakeWeekReport
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.GrisSuave
+import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 
 @Composable
 fun SalesStatsScreen(
@@ -59,7 +62,12 @@ fun SalesStatsScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(SoftCoolBackground)
+            .drawBehind {
+                drawRect(
+                    color = Color.Black.copy(alpha = 0.05f)
+                )
+            }
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -110,10 +118,25 @@ fun SalesStatsScreen(
                             Spacer(Modifier.size(36.dp))
                         }
                         Spacer(Modifier.height(20.dp))
-                        Text("Bs ${"%.2f".format(totalRevenue)}", fontSize = 36.sp, fontWeight = FontWeight.W800, color = Color.White, letterSpacing = (-1).sp)
-                        Text("ingresos · ${periods[selectedPeriod].lowercase()}", fontSize = 13.sp, color = Color(0xFF777777))
+                        Text(
+                            "Bs ${"%.2f".format(totalRevenue)}",
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.W800,
+                            color = Color.White, letterSpacing = (-1).sp
+                        )
+                        Text(
+                            "ingresos · ${periods[selectedPeriod].lowercase()}",
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
                         Spacer(Modifier.height(20.dp))
-                        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.06f)).padding(4.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.White.copy(alpha = 0.06f)
+                                ).padding(4.dp)
+                        ) {
                             periods.forEachIndexed { index, label ->
                                 Box(
                                     modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
@@ -122,7 +145,14 @@ fun SalesStatsScreen(
                                         .padding(vertical = 8.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(label, fontSize = 13.sp, fontWeight = if (selectedPeriod == index) FontWeight.W700 else FontWeight.W400, color = if (selectedPeriod == index) Color.White else Color(0xFF888888))
+                                    Text(
+                                        label, fontSize = 14.sp,
+                                        fontWeight = if (selectedPeriod == index)
+                                            FontWeight.Bold else FontWeight.W400,
+
+                                        color = if (selectedPeriod == index) Color.White
+                                        else GrisSuave
+                                    )
                                 }
                             }
                         }
@@ -131,12 +161,34 @@ fun SalesStatsScreen(
             }
 
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp).clip(RoundedCornerShape(16.dp)).background(Color.White).padding(16.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
                     Column {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text("Ingresos", fontSize = 15.sp, fontWeight = FontWeight.W700, color = SBlack)
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Box(Modifier.size(8.dp).clip(CircleShape).background(SAccent))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically)
+                        {
+                            Text(
+                                "Ingresos", fontSize = 15.sp,
+                                fontWeight = FontWeight.W700,
+                                color = SBlack)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Box(
+                                    Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(SAccent)
+                                )
                                 Text("Completadas", fontSize = 11.sp, color = SGray400)
                             }
                         }

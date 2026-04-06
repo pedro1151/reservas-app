@@ -26,6 +26,7 @@ import com.optic.pramosreservasappz.presentation.navigation.screen.client.Client
 import com.optic.pramosreservasappz.presentation.screens.clients.components.ClientCard
 import com.optic.pramosreservasappz.presentation.screens.clients.components.ClientSearchBar
 import com.optic.pramosreservasappz.presentation.screens.historial.components.HistorialSaleCard
+import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -76,7 +77,7 @@ fun HistorialContent(
         modifier = modifier
             .padding(paddingValues)
             .fillMaxSize()
-            .background(Color.White)
+            .background(SoftCoolBackground),
     ) {
         if (localSales.isEmpty() && !hasQuery) {
             EmptyClientsState(
@@ -118,13 +119,16 @@ fun HistorialContent(
 
                 // Lista
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(SoftCoolBackground),
                     contentPadding = PaddingValues(
                         start = 16.dp,
                         end = 16.dp,
                         top = 4.dp,
                         bottom = 80.dp
                     )
+
                 ) {
                     if (hasQuery && filteredSales.isEmpty()) {
                         item {
