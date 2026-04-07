@@ -24,8 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.optic.pramosreservasappz.presentation.screens.salestats.SalesStatsScreen
-
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
@@ -38,8 +36,10 @@ import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipal
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
 import com.optic.pramosreservasappz.presentation.screens.historial.HistorialScreen
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesStatsScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.detail.SaleDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.RapidSaleScreen
+import com.optic.pramosreservasappz.presentation.screens.salestats.modefire.SalesStatsFireContent
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
 import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
@@ -355,7 +355,7 @@ fun ClientNavGraph(
         }
 
         composable(
-            route = ClientScreen.Estadisticas.route,
+            route = ClientScreen.SaleStats.route,
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it },
@@ -381,8 +381,15 @@ fun ClientNavGraph(
                 )
             }
         ) {
-            SalesStatsScreen(navController = navController)
+            SalesStatsScreen(
+                navController = navController,
+                isAuthenticated = isAuthenticated
+            )
         }
+
+
+
+
 
         composable(
             route = ClientScreen.Servicios.route,

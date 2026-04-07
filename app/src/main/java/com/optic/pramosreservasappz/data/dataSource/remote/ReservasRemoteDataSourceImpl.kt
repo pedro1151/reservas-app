@@ -24,6 +24,7 @@ import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
+import com.optic.pramosreservasappz.domain.model.sales.SalesStatsResponse
 import retrofit2.Response
 
 class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService): ReservasRemoteDataSource {
@@ -112,6 +113,14 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     override suspend fun deleteSaleHard(
         saleId: Int
     ): Response<DefaultResponse> = reservasService.deleteSaleHard(saleId)
+
+
+    // SALE STATS
+
+    override suspend fun getSaleStats(
+        ownerId: Int,
+        year: Int
+    ): Response<SalesStatsResponse> = reservasService.getSalesStats(ownerId = ownerId, year = year)
 
 
     // SALE ITEMS

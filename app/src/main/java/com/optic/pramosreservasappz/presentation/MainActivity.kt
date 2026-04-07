@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
                     val bottomBarRoutes = listOf(
                         ClientScreen.Sales.route,
                         ClientScreen.Historial.route,
-                        ClientScreen.Estadisticas.route,
+                        ClientScreen.SaleStats.route,
                         ClientScreen.Mas.route,
                         ClientScreen.Productos.route,
                         ClientScreen.Profile.route,

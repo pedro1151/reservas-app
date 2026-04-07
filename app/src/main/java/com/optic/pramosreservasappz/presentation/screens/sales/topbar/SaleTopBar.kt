@@ -39,7 +39,7 @@ fun SaleTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackground)
+            .background( Color(0xFF7C3AED),)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)

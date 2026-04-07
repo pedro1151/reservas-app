@@ -15,7 +15,7 @@ fun ClientBottomBar(navController: NavHostController) {
     val screens = listOf(
         ClientScreen.Sales,
         ClientScreen.Historial,
-        ClientScreen.Estadisticas,
+        ClientScreen.SaleStats,
         ClientScreen.Productos,
         ClientScreen.Profile
     )

@@ -24,6 +24,7 @@ import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
+import com.optic.pramosreservasappz.domain.model.sales.SalesStatsResponse
 
 import com.optic.pramosreservasappz.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +63,16 @@ interface ReservasRepository {
     suspend fun deleteSaleHard(
         saleId:Int
     ): Resource<DefaultResponse>
+
+
+
+
+
+    // SALE STATS
+    fun getSaleStats(
+        ownerId: Int,
+        year: Int
+    ): Flow<Resource<SalesStatsResponse>>
 
 
 

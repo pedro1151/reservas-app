@@ -34,6 +34,7 @@ import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
+import com.optic.pramosreservasappz.domain.model.sales.SalesStatsResponse
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -110,6 +111,25 @@ class ReservasRepositoryImpl(
         ResponseToRequest.send(
             reservasRemoteDataSource.deleteSaleHard(saleId)
         )
+
+
+
+
+    // SALE STATS
+
+    override fun getSaleStats(
+        ownerId: Int,
+        year: Int
+    ): Flow<Resource<SalesStatsResponse>> = flow {
+        emit(
+            ResponseToRequest.send(
+                reservasRemoteDataSource.getSaleStats(
+                    ownerId = ownerId,
+                    year    = year
+                )
+            )
+        )
+    }
 
 
     // sale items

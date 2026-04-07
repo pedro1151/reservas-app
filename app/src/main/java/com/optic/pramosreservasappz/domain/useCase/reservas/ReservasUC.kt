@@ -32,6 +32,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.sales.DeleteSaleSoft
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.GetSaleByIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.GetSalesByOwnerUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.UpdateSaleUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.salestats.GetSaleStatsUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorIdUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.GetServicesPorProviderUC
@@ -89,7 +90,12 @@ data class ReservasUC(
     val getProductByIdUC: GetProductByIdUC,
     val getProductsByUserUC: GetProductsByUserUC,
     val deleteProductHardUC: DeleteProductHardUC,
-    val deleteProductSoftUC: DeleteProductSoftUC
+    val deleteProductSoftUC: DeleteProductSoftUC,
+
+
+    // sale stats
+
+    val getSaleStatsUC: GetSaleStatsUC
 
 
 

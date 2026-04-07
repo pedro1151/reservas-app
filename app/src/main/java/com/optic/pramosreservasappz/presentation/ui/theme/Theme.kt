@@ -69,27 +69,30 @@ val SoftCoolBackground = Brush.verticalGradient(
     )
 )
 
-val GradientBackground = Brush.horizontalGradient(
+val GradientBackground =    Brush.verticalGradient(
     listOf(
-        Color(0xFF06B6D4),
-        Color(0xFF0891B2)
+        Color(0xFF7C3AED),
+        Color(0xFF5B3EBF),
+       // Color(0xFF06B6D4)
     )
+
 )
 
 val ButtonBackground = Brush.horizontalGradient(
     listOf(
-        Color(0xFF0891B2),
-        Color(0xFF06B6D4)
+        Color(0xFF03DAC5),
+        Color(0xFF03DAC5),
+        // Color(0xFF06B6D4)
     )
 )
 
 
 private val LightColorScheme = lightColorScheme(
-    primary =      Color(0xFF06B6D4),
+    primary =     Color(0xFF5B3EBF),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =     Color(0xFF0891B2),
+    secondary =    Color(0xFF7C3AED),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,
@@ -99,11 +102,11 @@ private val LightColorScheme = lightColorScheme(
 
 
 private val DarkColorScheme = darkColorScheme(
-    primary =      Color(0xFF06B6D4),
+    primary =     Color(0xFF5B3EBF),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =     Color(0xFF0891B2),
+    secondary =    Color(0xFF7C3AED),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,

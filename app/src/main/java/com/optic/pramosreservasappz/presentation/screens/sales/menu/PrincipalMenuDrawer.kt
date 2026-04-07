@@ -40,16 +40,7 @@ fun PrincipalMenuDrawer(
         ) {
             ProUpgradeBanner()
 
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text = "MIS OPCIONES",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF9E9E9E),
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
-            )
+            Spacer(Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier
@@ -89,133 +80,44 @@ fun PrincipalMenuDrawer(
 
             Spacer(Modifier.height(4.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.Bolt,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Venta Rapida",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.AddTask,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Venta Completa",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.RapidSale.route)},
+                title = "Venta Rapida",
+                icon =  Icons.Default.Bolt
+            )
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate(
-                            ClientScreen.Historial.route
-                        )
-                    }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.History,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Historial de Ventas",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
+            SaleMenuItem(
+                onClick = { },
+                title = "Venta Completa",
+                icon =  Icons.Default.AddTask
+            )
+
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.Historial.route)
+                },
+                title = "Historial de tus Ventas",
+                icon = Icons.Default.History
+            )
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.BarChart,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Mis Estadisticas",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.SaleStats.route)},
+                title = "Mis Estadisticas",
+                icon =  Icons.Default.BarChart
+            )
 
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.Clientes.route) },
+                title = "Mis Clientes",
+                icon =  Icons.Default.EmojiEmotions
+            )
 
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.EmojiEmotions,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Clientes",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Icon(Icons.Default.GifBox,
-                    null,
-                    tint = AmarrilloSuave,
-                    modifier = Modifier.size(25.dp)
-                )
-                Text(
-                    text = "Tus Productos/Servicios",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
-                )
-            }
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.Productos.route) },
+                title = "Tus Productos/Servicios",
+                icon =  Icons.Default.GifBox,
+            )
         }
     }
 }

@@ -132,11 +132,12 @@ sealed class ClientScreen(
         icon = Icons.Default.Menu
     )
 
-    object Estadisticas: ClientScreen(
-        route = "client/estadisticas",
-        title = "Estadisticas",
+    object SaleStats: ClientScreen(
+        route = "client/fire_stats",
+        title = "Estadisticas Fire",
         icon = Icons.Default.BarChart
     )
+
 
 
 
