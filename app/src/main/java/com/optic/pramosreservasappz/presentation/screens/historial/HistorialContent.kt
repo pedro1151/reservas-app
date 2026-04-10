@@ -69,7 +69,7 @@ fun HistorialContent(
     val filteredSales = remember(query, localSales) {
         if (query.isBlank()) localSales
         else localSales.filter { sale ->
-            sale.description?.contains(query, ignoreCase = true)  == true
+            sale.description?.contains(query, ignoreCase = true) == true
         }
     }
 
@@ -90,34 +90,50 @@ fun HistorialContent(
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                // ── Search bar + contador integrado ──
+                // ── Search bar (sin contador al lado) ──
+                ClientSearchBar(
+                    query = query,
+                    onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                )
+
+                // ── Cabecera de sección: etiqueta + contador ──
+                // El contador queda aquí, con más contexto visual y sin romper el searchbar.
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                        .padding(horizontal = 18.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Campo de búsqueda ocupa el espacio disponible
-                    ClientSearchBar(
-                        query = query,
-                        onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                        modifier = Modifier.weight(1f)
+                    Text(
+                        text = if (hasQuery) "Resultados" else "Recientes",
+                        fontSize = 11.sp,
+                        color = Color(0xFFBBBBBB),
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.4.sp
                     )
+                    if (localSales.isNotEmpty()) {
+                        // Muestra total o cuántos coinciden si hay búsqueda activa
+                        val label = if (hasQuery)
+                            "${filteredSales.size} de ${localSales.size}"
+                        else
+                            "${localSales.size} ventas"
 
-                    // Contador sutil a la derecha — solo visible si no hay búsqueda activa
-                    if (!hasQuery && localSales.isNotEmpty()) {
-                        Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "${localSales.size}",
-                            fontSize = 12.sp,
+                            text = label,
+                            fontSize = 11.sp,
                             color = Color(0xFFBBBBBB),
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(end = 4.dp)
+                            fontWeight = FontWeight.Normal
                         )
                     }
                 }
 
-                // Lista
+                Spacer(Modifier.height(4.dp))
+
+                // ── Lista ──
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -128,7 +144,6 @@ fun HistorialContent(
                         top = 4.dp,
                         bottom = 80.dp
                     )
-
                 ) {
                     if (hasQuery && filteredSales.isEmpty()) {
                         item {
@@ -164,7 +179,7 @@ fun HistorialContent(
                             HistorialSaleCard(
                                 sale = sale,
                                 navController = navController,
-                                onDelete = { viewModel.deleteSaleSoft (sale.id) },
+                                onDelete = { viewModel.deleteSaleSoft(sale.id) },
                                 modifier = Modifier.animateItemPlacement(
                                     animationSpec = spring(
                                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -225,7 +240,9 @@ private fun EmptyClientsState(onAddClient: () -> Unit) {
             Spacer(Modifier.height(4.dp))
             Button(
                 onClick = onAddClient,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(25.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
@@ -233,7 +250,9 @@ private fun EmptyClientsState(onAddClient: () -> Unit) {
             }
             OutlinedButton(
                 onClick = { },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(25.dp)
             ) {
                 Text("Importar desde contactos", fontSize = 15.sp, color = Color.Black)

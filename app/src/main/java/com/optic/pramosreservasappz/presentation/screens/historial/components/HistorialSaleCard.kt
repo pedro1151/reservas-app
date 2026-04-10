@@ -1,6 +1,5 @@
 package com.optic.pramosreservasappz.presentation.screens.historial.components
 
-
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -29,7 +28,11 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import kotlinx.coroutines.launch
 import kotlin.math.abs
+
+// Ancho de cada acción — solo ícono + label, sin fondo de color
+private val ACTION_WIDTH = 64.dp
 
 @Composable
 fun HistorialSaleCard(
@@ -38,24 +41,39 @@ fun HistorialSaleCard(
     onDelete: (ClientResponse) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var offsetX by remember { mutableStateOf(0f) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var visible by remember { mutableStateOf(false) }
+    val animatable = remember { Animatable(0f) }
+    val offsetX    = animatable.value
+    val scope      = rememberCoroutineScope()
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var visible          by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
     val avatarColor = remember(sale.id) { getAvatarColor(sale.id) }
-    val initials = "#"+sale.id.toString()
+    val initials    = "#" + sale.id.toString()
 
+    // 64 + 64 = 128dp exacto → sin gap
+    val maxSwipe        = -(ACTION_WIDTH.value * 2)
+    val editThreshold   = -(ACTION_WIDTH.value * 0.8f)
+    val deleteThreshold = -(ACTION_WIDTH.value * 1.5f)
 
-    val maxSwipeDistance = -200f
-    val editThreshold = -60f
-    val deleteThreshold = -140f
+    fun snap(target: Float) {
+        scope.launch {
+            animatable.animateTo(
+                targetValue   = target,
+                animationSpec = spring(
+                    dampingRatio = if (target == 0f) Spring.DampingRatioNoBouncy
+                    else              Spring.DampingRatioMediumBouncy,
+                    stiffness    = Spring.StiffnessMedium
+                )
+            )
+        }
+    }
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(tween(250)) + expandVertically(tween(250)),
-        exit = fadeOut(tween(180)) + shrinkVertically(tween(180))
+        enter   = fadeIn(tween(250)) + expandVertically(tween(250)),
+        exit    = fadeOut(tween(180)) + shrinkVertically(tween(180))
     ) {
         Box(
             modifier = modifier
@@ -63,31 +81,29 @@ fun HistorialSaleCard(
                 .padding(vertical = 3.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    enabled = offsetX != 0f
-                ) { offsetX = 0f }
+                    indication        = null,
+                    enabled           = offsetX < -1f
+                ) { snap(0f) }
         ) {
-            // Fondos de acciones swipe
+
+            // ── Acciones de fondo: fondo blanco, íconos de color ──
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .matchParentSize()
-                    .clip(RoundedCornerShape(14.dp)),
-                horizontalArrangement = Arrangement.End
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color.White),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment     = Alignment.CenterVertically
             ) {
-                // Editar → va directo al form de edición con datos pre-cargados
-                AnimatedVisibility(
-                    visible = offsetX <= editThreshold,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally()
-                ) {
+                // EDITAR — ícono azul
+                if (offsetX <= editThreshold) {
                     Box(
                         modifier = Modifier
-                            .width(80.dp)
+                            .width(ACTION_WIDTH)
                             .fillMaxHeight()
-                            .background(Color(0xFF1A1A1A))
                             .clickable {
-                                offsetX = 0f
+                                snap(0f)
                                 navController.navigate(
                                     ClientScreen.ABMCliente.createRoute(
                                         clientId = sale.id,
@@ -99,90 +115,102 @@ fun HistorialSaleCard(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                Icons.Default.Edit, null,
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint     = Color(0xFF2196F3),
+                                modifier = Modifier.size(22.dp)
                             )
-                            Spacer(Modifier.height(3.dp))
-                            Text("Editar", color = Color.White, fontSize = 11.sp)
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Editar",
+                                fontSize   = 11.sp,
+                                color      = Color(0xFF2196F3),
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }
 
-                // Eliminar
-                AnimatedVisibility(
-                    visible = offsetX <= deleteThreshold,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally()
-                ) {
+                // ELIMINAR — ícono rojo
+                if (offsetX <= deleteThreshold) {
                     Box(
                         modifier = Modifier
-                            .width(80.dp)
+                            .width(ACTION_WIDTH)
                             .fillMaxHeight()
-                            .background(Color(0xFFEF5350))
                             .clickable { showDeleteDialog = true },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                Icons.Default.Delete, null,
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                Icons.Default.Delete,
+                                contentDescription = "Eliminar",
+                                tint     = Color(0xFFE53935),
+                                modifier = Modifier.size(22.dp)
                             )
-                            Spacer(Modifier.height(3.dp))
-                            Text("Eliminar", color = Color.White, fontSize = 11.sp)
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Eliminar",
+                                fontSize   = 11.sp,
+                                color      = Color(0xFFE53935),
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }
             }
 
-            // Card principal — al tocar navega al DETALLE
+            // ── Card principal ──
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(x = offsetX.dp)
                     .graphicsLayer {
-                        scaleY = (1f - abs(offsetX) / 1000f).coerceIn(0.98f, 1f)
+                        scaleY = (1f - abs(offsetX) / 1200f).coerceIn(0.98f, 1f)
                     }
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
                             onDragEnd = {
-                                offsetX = when {
-                                    offsetX <= deleteThreshold -> maxSwipeDistance
-                                    offsetX <= editThreshold -> -80f
-                                    else -> 0f
+                                val target = when {
+                                    animatable.value <= deleteThreshold -> maxSwipe
+                                    animatable.value <= editThreshold   -> -ACTION_WIDTH.value
+                                    else                                -> 0f
                                 }
+                                snap(target)
                             },
                             onHorizontalDrag = { _, drag ->
-                                offsetX = (offsetX + drag).coerceIn(maxSwipeDistance, 0f)
+                                scope.launch {
+                                    animatable.snapTo(
+                                        (animatable.value + drag).coerceIn(maxSwipe, 0f)
+                                    )
+                                }
                             }
                         )
                     }
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
+                        indication        = null
                     ) {
-                        if (offsetX == 0f) {
-                            // Ir al DETALLE de la venta
-                                navController.navigate(
-                                    ClientScreen.SaleDetail.createRoute(saleId = sale.id)
-                                )
-                        } else {
-                            offsetX = 0f
-                        }
+                        if (offsetX > -1f) {
+                            navController.navigate(
+                                ClientScreen.SaleDetail.createRoute(saleId = sale.id)
+                            )
+                        } else snap(0f)
                     },
-                shape = RoundedCornerShape(14.dp),
-                color = Color.White,
+                // Esquinas derechas planas al deslizar → acople perfecto con las acciones
+                shape = if (offsetX < -2f)
+                    RoundedCornerShape(topStart = 14.dp, bottomStart = 14.dp, topEnd = 0.dp, bottomEnd = 0.dp)
+                else
+                    RoundedCornerShape(14.dp),
+                color           = Color.White,
                 shadowElevation = 0.dp,
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEEEEEE))
+                border          = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEEEEEE))
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier          = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Avatar
                     Box(
                         modifier = Modifier
                             .size(44.dp)
@@ -190,45 +218,55 @@ fun HistorialSaleCard(
                             .background(avatarColor),
                         contentAlignment = Alignment.Center
                     ) {
-                        initials?.let {
-                            Text(
-                                text = it,
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White,
-                                letterSpacing = 0.5.sp
-                            )
-                        }
+                        Text(
+                            text          = initials,
+                            fontSize      = 15.sp,
+                            fontWeight    = FontWeight.SemiBold,
+                            color         = Color.White,
+                            letterSpacing = 0.5.sp
+                        )
                     }
 
                     Spacer(Modifier.width(12.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = sale.description?:"Venta",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Black,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            text          = sale.description ?: "Venta",
+                            fontSize      = 14.sp,
+                            fontWeight    = FontWeight.Medium,
+                            color         = Color.Black,
+                            maxLines      = 1,
+                            overflow      = TextOverflow.Ellipsis,
                             letterSpacing = (-0.2).sp
                         )
                         Spacer(Modifier.height(3.dp))
-
+                        Text(
+                            text     = sale.amount.toString(),
+                            fontSize = 12.sp,
+                            color    = Color(0xFFAAAAAA),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(5.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFF0F0F0), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
                             Text(
-                                text = sale.amount.toString(),
-                                fontSize = 12.sp,
-                                color = Color(0xFFAAAAAA),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                text          = "Vendedor",
+                                fontSize      = 10.sp,
+                                color         = Color(0xFF888888),
+                                fontWeight    = FontWeight.Medium,
+                                letterSpacing = 0.2.sp
                             )
-
+                        }
                     }
 
-                    if (offsetX == 0f) {
+                    if (offsetX > -1f) {
                         Icon(
                             Icons.Outlined.ChevronRight, null,
-                            tint = Color(0xFFDDDDDD),
+                            tint     = Color(0xFFDDDDDD),
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -239,34 +277,27 @@ fun HistorialSaleCard(
 
     if (showDeleteDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false; offsetX = 0f },
-            title = {
-                Text("¿Eliminar cliente?", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            },
-            text = {
+            onDismissRequest = { showDeleteDialog = false; snap(0f) },
+            title = { Text("¿Eliminar venta?", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
+            text  = {
                 Text(
-                    "Se eliminará el perfil de ${sale.description}. Esta acción no se puede deshacer.",
-                    fontSize = 14.sp,
-                    color = Color(0xFF555555)
+                    "Se eliminará la venta \"${sale.description}\". Esta acción no se puede deshacer.",
+                    fontSize = 14.sp, color = Color(0xFF555555)
                 )
             },
             confirmButton = {
                 Button(
-                    onClick = {
-                        showDeleteDialog = false
-                        visible = false
-                       // onDelete(sale)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350)),
-                    shape = RoundedCornerShape(10.dp)
+                    onClick = { showDeleteDialog = false; visible = false /* onDelete(sale) */ },
+                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
+                    shape   = RoundedCornerShape(10.dp)
                 ) { Text("Eliminar", color = Color.White) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false; offsetX = 0f }) {
+                TextButton(onClick = { showDeleteDialog = false; snap(0f) }) {
                     Text("Cancelar", color = Color.Black)
                 }
             },
-            shape = RoundedCornerShape(16.dp),
+            shape          = RoundedCornerShape(16.dp),
             containerColor = Color.White
         )
     }
