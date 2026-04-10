@@ -28,15 +28,13 @@ fun SalesScreen(
     val scope = rememberCoroutineScope()
 
 
-    // Estado de la tab activa
-    var selectedTab by remember { mutableStateOf(0) }
 
     // 🔥 OBSERVAR ESTADO REAL
     val salesState by viewModel.salesState.collectAsState()
 
     // 🔥 CARGA INICIAL
     LaunchedEffect(Unit) {
-        viewModel.loadSales(ownerId = 1)
+        viewModel.loadSales(1, 25)
     }
 
     ModalNavigationDrawer(

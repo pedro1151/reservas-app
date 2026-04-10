@@ -110,7 +110,7 @@ class HistorialViewModel @Inject constructor(
     // ---------------------------------------------
     fun loadSales(ownerId: Int) {
         viewModelScope.launch {
-            reservasUC.getSalesByOwnerUC(ownerId)
+            reservasUC.getSalesByOwnerUC(ownerId, 50)
                 .onStart {
                     _salesState.value = Resource.Loading
                 }

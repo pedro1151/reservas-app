@@ -48,7 +48,8 @@ interface ReservasRemoteDataSource {
   ): Response<SaleResponse>
 
   suspend fun getSalesByOwner(
-    ownerId: Int
+    ownerId: Int,
+    limit: Int
   ): Response<List<SaleResponse>>
 
   suspend fun getSaleById(

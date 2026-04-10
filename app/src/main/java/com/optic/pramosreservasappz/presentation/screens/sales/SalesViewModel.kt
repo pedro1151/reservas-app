@@ -84,18 +84,21 @@ class SalesViewModel @Inject constructor(
     val deleteSaleState: State<Resource<DefaultResponse>> =
         _deleteSaleState
 
-    //private val TAG = "DELETE_SALE"
-
-    init {
-        loadSales(ownerId = 1)
-    }
 
     // ---------------------------------------------
     // LOAD SALES (Flow ✅)
     // ---------------------------------------------
-    fun loadSales(ownerId: Int) {
+    fun loadSales(
+        ownerId: Int,
+        limit: Int
+    ) {
+
+        Log.d("loadSales", "🚀 loadRecentSales llamado a loadSales")
         viewModelScope.launch {
-            reservasUC.getSalesByOwnerUC(ownerId)
+            reservasUC.getSalesByOwnerUC(
+                ownerId= ownerId,
+                limit =  limit
+            )
                 .onStart {
                     _salesState.value = Resource.Loading
                 }
@@ -112,6 +115,8 @@ class SalesViewModel @Inject constructor(
                 }
         }
     }
+
+    // VENTAS RECIETES ACORDE A PARAMETRO
 
     // ---------------------------------------------
     // GET BY ID (suspend ✅)
@@ -143,7 +148,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1)
+                    loadSales(ownerId = 1, 25)
                 }
 
             } catch (e: Exception) {
@@ -166,7 +171,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1)
+                    loadSales(ownerId = 1, 25)
                 }
 
             } catch (e: Exception) {
@@ -175,6 +180,8 @@ class SalesViewModel @Inject constructor(
             }
         }
     }
+
+
 
     // ---------------------------------------------
     // UPDATE
@@ -192,7 +199,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1)
+                    loadSales(ownerId = 1,  25)
                 }
 
             } catch (e: Exception) {
@@ -220,7 +227,7 @@ class SalesViewModel @Inject constructor(
                     is Resource.Success -> {
                         _deleteSaleState.value = response
                         delay(800)
-                        loadSales(ownerId = 1)
+                        loadSales(ownerId = 1, 25)
                         _deleteSaleState.value = Resource.Idle
                     }
 
@@ -233,7 +240,7 @@ class SalesViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                loadSales(ownerId = 1)
+                loadSales(ownerId = 1, 25)
                 _deleteSaleState.value =
                     Resource.Failure(e.message ?: "Error al eliminar venta")
             }
@@ -253,7 +260,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1)
+                    loadSales(ownerId = 1, 25)
                 }
 
             } catch (e: Exception) {
@@ -766,4 +773,104 @@ class SalesViewModel @Inject constructor(
     fun resetOneProductState() {
         _oneProductState.value = Resource.Loading
     }
+
+
+    // ---------------------------------------------
+    // STATE: Selected Products (🔥 CARRITO GLOBAL) EN VENTA RAPIDA
+    // ---------------------------------------------
+    private val _selectedProducts =
+        MutableStateFlow<List<Pair<ProductResponse, Int>>>(emptyList())
+    val selectedProducts: StateFlow<List<Pair<ProductResponse, Int>>> =
+        _selectedProducts.asStateFlow()
+
+
+    fun addProduct(product: ProductResponse) {
+
+        val currentList = _selectedProducts.value.toMutableList()
+
+        val index = currentList.indexOfFirst { it.first.id == product.id }
+
+        if (index >= 0) {
+            val current = currentList[index]
+            currentList[index] = current.copy(second = current.second + 1)
+        } else {
+            currentList.add(product to 1)
+        }
+
+        _selectedProducts.value = currentList
+    }
+
+    fun removeProduct(product: ProductResponse) {
+
+        val currentList = _selectedProducts.value.toMutableList()
+
+        val index = currentList.indexOfFirst { it.first.id == product.id }
+
+        if (index >= 0) {
+            val current = currentList[index]
+
+            if (current.second <= 1) {
+                currentList.removeAt(index)
+            } else {
+                currentList[index] = current.copy(second = current.second - 1)
+            }
+        }
+
+        _selectedProducts.value = currentList
+    }
+
+    fun clearSelectedProducts() {
+        _selectedProducts.value = emptyList()
+    }
+
+    fun removeAllOfProduct(product: ProductResponse) {
+        _selectedProducts.value =
+            _selectedProducts.value.filterNot { it.first.id == product.id }
+    }
+
+    fun removeProductCompletely(productId: Int) {
+        _selectedProducts.update { list ->
+            list.filterNot { it.first.id == productId }
+        }
+    }
+
+    // 🔥 Estado global de animación item vuela al carrito
+
+    data class FlyAnimationData(
+        val product: ProductResponse,
+        val startX: Float,
+        val startY: Float
+    )
+
+    private val _flyAnimation = MutableStateFlow<FlyAnimationData?>(null)
+    val flyAnimation: StateFlow<FlyAnimationData?> = _flyAnimation
+
+    fun triggerFlyAnimation(data: FlyAnimationData) {
+        _flyAnimation.value = data
+    }
+
+    fun clearFlyAnimation() {
+        _flyAnimation.value = null
+    }
+
+
+    val total: StateFlow<Double> = selectedProducts
+        .map { list ->
+            list.sumOf { it.first.price * it.second }
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0.0
+        )
+
+    val totalItems: StateFlow<Int> = selectedProducts
+        .map { list ->
+            list.sumOf { it.second } // 🔥 mejor que size (más correcto)
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0
+        )
 }

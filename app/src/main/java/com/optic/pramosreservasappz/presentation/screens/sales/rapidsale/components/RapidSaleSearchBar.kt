@@ -29,7 +29,7 @@ fun RapidSaleSearchBar(
         onValueChange = onQueryChange,
         placeholder = {
             Text(
-                text = "Buscar productos o servicios",
+                text = "Buscar producto/servicio",
                 color = TextSecondary,
                 fontSize = 17.sp
             )

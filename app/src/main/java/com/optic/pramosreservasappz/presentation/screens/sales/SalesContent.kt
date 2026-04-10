@@ -9,12 +9,17 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.presentation.screens.sales.Components.SaleCard
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.sales.Components.SaleResumeList
 import com.optic.pramosreservasappz.presentation.screens.sales.header.SaleFullHeader
@@ -54,17 +59,7 @@ fun SalesContent(
 
     val listState = rememberLazyListState()
 
-    val collapseFraction by remember {
-        derivedStateOf {
-            val offset = listState.firstVisibleItemScrollOffset
-            val index = listState.firstVisibleItemIndex
 
-            if (index > 0) 1f
-            else (offset / 300f).coerceIn(0f, 1f)
-        }
-    }
-
-    val isCollapsed = collapseFraction > 0.6f
     Column(
         modifier = modifier
             .padding(paddingValues)
@@ -72,24 +67,77 @@ fun SalesContent(
             .background(SoftCoolBackground)
     ) {
 
-        SaleFullHeader(
-            todayTotal = todayTotal,
-            todayCount = todayCount,
-            yesterdayTotal = yesterdayTotal,
-            monthTotal = monthTotal,
-            balanceHidden = balanceHidden,
-            onToggleHide = { balanceHidden = !balanceHidden },
-            navController = navController,
-            listState = listState
-        )
 
-        SaleResumeList(
-            sales = sales,
-            today = today,
-            listState = listState,
-            modifier = Modifier.weight(1f),
-            navController =  navController
-        )
+        fun parseDate(date: String): LocalDate {
+            return LocalDate.parse(date.substring(0, 10))
+        }
+
+        val grouped = sales
+            .sortedByDescending { it.created }
+            .groupBy { parseDate(it.created) }
+
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(SoftCoolBackground),
+            contentPadding = PaddingValues(bottom = 100.dp),
+            state = listState
+        ) {
+            item{
+                SaleFullHeader(
+                    todayTotal = todayTotal,
+                    todayCount = todayCount,
+                    yesterdayTotal = yesterdayTotal,
+                    monthTotal = monthTotal,
+                    balanceHidden = balanceHidden,
+                    onToggleHide = { balanceHidden = !balanceHidden },
+                    navController = navController,
+                    listState = listState
+                )
+            }
+
+            grouped.forEach { (date, daySales) ->
+
+                item {
+                    val label = when (date) {
+                        today -> "Hoy"
+                        today.minusDays(1) -> "Ayer"
+                        else -> date.toString()
+                    }
+
+                    val total = daySales.sumOf { it.amount }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(label)
+                        //Text("$ ${"%.0f".format(total)}")
+                    }
+                }
+
+                items(daySales) { sale ->
+                    SaleCard(
+                        sale = sale,
+                        navController = navController
+
+                    )
+                }
+            }
+
+            if (sales.isEmpty()) {
+                item {
+                    Box(
+                        Modifier.fillMaxWidth().padding(top = 80.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Sin ventas aún")
+                    }
+                }
+            }
+        }
     }
 
 

@@ -44,7 +44,8 @@ interface ReservasRepository {
     ): Resource<SaleResponse>
 
     fun getSalesByOwner(
-        ownerId: Int
+        ownerId: Int,
+        limit: Int
     ): Flow<Resource<List<SaleResponse>>>
 
     suspend fun getSaleById(

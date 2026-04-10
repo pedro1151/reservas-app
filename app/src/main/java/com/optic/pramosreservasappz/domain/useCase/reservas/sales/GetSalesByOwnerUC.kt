@@ -8,6 +8,10 @@ import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 
 class GetSalesByOwnerUC constructor(private val repository: ReservasRepository) {
     suspend operator fun invoke(
-        ownerId: Int
-    ) = repository.getSalesByOwner(ownerId)
+        ownerId: Int,
+        limit: Int
+    ) = repository.getSalesByOwner(
+        ownerId = ownerId,
+        limit = limit
+    )
 }

@@ -71,11 +71,16 @@ class ReservasRepositoryImpl(
 
 
     override fun getSalesByOwner(
-        ownerId: Int
+        ownerId: Int,
+        limit:Int
     ): Flow<Resource<List<SaleResponse>>> = flow {
         emit(
             ResponseToRequest.send(
-                reservasRemoteDataSource.getSalesByOwner(ownerId)
+                reservasRemoteDataSource.getSalesByOwner(
+                    ownerId =  ownerId,
+                    limit = limit
+
+                )
             )
         )
     }

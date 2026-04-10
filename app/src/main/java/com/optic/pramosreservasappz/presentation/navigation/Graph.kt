@@ -18,4 +18,5 @@ object Graph {
     const val GUESSPLAYER_WIN   = "guessplayer_win_graph"
     const val USER_PREDICTION = "user_prediction_graph"
     const val CREATE_RESERVATION_GRAPH = "create_reservation_graph"
+    const val CREATE_RAPIDSALE_GRAPH = "create_rapidsale_graph"
 }

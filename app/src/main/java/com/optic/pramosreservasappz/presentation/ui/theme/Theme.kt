@@ -37,6 +37,7 @@ val GradientStart = Color(0xFF2563EB)
 val GradientEnd = Color(0xFF7C3AED)
 
 val AmarrilloSuave =  Color(0xFFFFC857)
+val ButtonGreen    =        Color(0xFF1DB954)
 
 val BlueGradient = Brush.horizontalGradient(
     listOf(
@@ -85,6 +86,17 @@ val ButtonBackground = Brush.horizontalGradient(
         // Color(0xFF06B6D4)
     )
 )
+
+val DiaglogBackground = Brush.verticalGradient(
+    listOf(
+        Color(0xFF22D3EE), // cyan brillante
+        Color(0xFF06B6D4),
+        Color(0xFF0EA5E9)  // toque azul
+    )
+)
+
+val terciary = Color(0xFF6A5AE0)
+
 
 
 private val LightColorScheme = lightColorScheme(

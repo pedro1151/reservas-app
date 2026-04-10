@@ -21,6 +21,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
@@ -37,8 +38,10 @@ import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMC
 import com.optic.pramosreservasappz.presentation.screens.historial.HistorialScreen
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesStatsScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.sales.detail.SaleDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.RapidSaleScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.resumen.RapidSaleResumenScreen
 import com.optic.pramosreservasappz.presentation.screens.salestats.modefire.SalesStatsFireContent
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
@@ -52,6 +55,8 @@ fun ClientNavGraph(
     isAuthenticated: Boolean,
     onShowRewardAd: () -> Unit
 ) {
+    val saleViewModel: SalesViewModel = hiltViewModel() // 🔥 UNA SOLA INSTANCIA
+
     AnimatedNavHost(
         navController = navController,
         route = Graph.CLIENT,
@@ -259,38 +264,76 @@ fun ClientNavGraph(
         }
 
 
-        composable(
-            route = ClientScreen.RapidSale.route,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(350)
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(350)
-                )
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(350)
-                )
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(350)
+            composable(
+                route =  ClientScreen.RapidSale.route,
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                }
+            ) {
+                RapidSaleScreen(
+                    navController = navController,
+                    isAuthenticated = isAuthenticated,
+                    viewModel = saleViewModel
                 )
             }
-        ) {
-            RapidSaleScreen(
-                navController = navController,
-                isAuthenticated = isAuthenticated
-            )
-        }
+
+
+            composable(
+                route = ClientScreen.RapidSaleResumen.route,
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(350)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(350)
+                    )
+                }
+            ) {
+
+                RapidSaleResumenScreen(
+                    navController = navController,
+                    isAuthenticated = isAuthenticated,
+                    viewModel = saleViewModel
+                )
+            }
+
 
 
 

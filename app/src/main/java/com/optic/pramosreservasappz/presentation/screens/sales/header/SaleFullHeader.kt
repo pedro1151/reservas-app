@@ -47,6 +47,8 @@ fun SaleFullHeader(
     listState: LazyListState
 ) {
 
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -186,7 +188,57 @@ fun SaleFullHeader(
                             Spacer(modifier = Modifier.width(6.dp))
 
                             Text(
-                                "Ir a Venta rápida",
+                                "Venta rápida",
+                                fontWeight = FontWeight.W700,
+                                fontSize = 17.sp,
+                                color = MaterialTheme.colorScheme.background.copy(alpha = 0.95f)
+                            )
+                            /*
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                Icons.Default.AddShoppingCart,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.95f),
+                                modifier = Modifier.size(22.dp)
+                            )
+
+                             */
+
+                        }
+                    }
+
+
+                    // 🔥 BOTÓN 2 — Venta completa
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(GradientBackground)
+                            .drawBehind {
+                                drawRect(
+                                    color = Color.Black.copy(alpha = 0.05f)
+                                )
+                            }
+                            .clickable {
+                                navController.navigate(ClientScreen.RapidSale.route)
+                            }
+                            .padding(vertical = 14.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.AddTask,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.95f),
+                                modifier = Modifier.size(22.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
+                            Text(
+                                "Venta completa",
                                 fontWeight = FontWeight.W700,
                                 fontSize = 17.sp,
                                 color = MaterialTheme.colorScheme.background.copy(alpha = 0.95f)

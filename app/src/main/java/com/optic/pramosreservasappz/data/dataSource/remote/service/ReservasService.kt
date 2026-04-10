@@ -58,7 +58,8 @@ interface ReservasService {
     // get ventas por owner id (user_id)
     @GET("/reservas/sales")
     suspend fun getSalesByOwner(
-        @Query("user_id") ownerId: Int
+        @Query("user_id") ownerId: Int,
+        @Query("limit") limit: Int
     ): Response<List<SaleResponse>>
 
      // get sale por id
