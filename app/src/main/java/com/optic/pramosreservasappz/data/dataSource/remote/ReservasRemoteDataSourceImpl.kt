@@ -94,8 +94,12 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     ): Response<SaleResponse> = reservasService.createSaleWithItems(request)
 
     override suspend fun getSalesByOwner(
-        ownerId: Int
-    ): Response<List<SaleResponse>> = reservasService.getSalesByOwner(ownerId)
+        ownerId: Int,
+        limit: Int
+    ): Response<List<SaleResponse>> = reservasService.getSalesByOwner(
+        ownerId= ownerId,
+        limit = limit
+    )
 
     override suspend fun getSaleById(
         saleId: Int

@@ -64,6 +64,12 @@ sealed class ClientScreen(
         icon = Icons.Default.GifBox
     )
 
+    object RapidSaleResumen: ClientScreen(
+        route = "client/rapid_sale_resumen",
+        title = "Venta Rapida Resumen",
+        icon = Icons.Default.GifBox
+    )
+
     object SaleDetail: ClientScreen(
         route = "client/detail_sale/{saleId}",
         title = "Detalle Venta",

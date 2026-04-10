@@ -1,6 +1,7 @@
 package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale
 
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +11,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,13 +24,18 @@ import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.topbar.RapidSaleTopBar
 
 @Composable
 fun RapidSaleScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean = false
+    isAuthenticated: Boolean = false,
+    viewModel: SalesViewModel
 ) {
-    val viewModel: SalesViewModel = hiltViewModel()
+
+    // posicion del carrito
+    var cartPosition by remember { mutableStateOf(Offset.Zero) }
+
     val productsResource by viewModel.productsState.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -39,12 +47,27 @@ fun RapidSaleScreen(
     LaunchedEffect( productsResource ) {
         if ( productsResource  !is Resource.Loading) isRefreshing = false
     }
+    // BORRO PRODUCTOS SELECCIONADOS VIEJOS DEL CARRITO
+   /* LaunchedEffect(Unit) {
+        viewModel.clearSelectedProducts()
+    }
+
+    */
+
+    val total by viewModel.total.collectAsState()
+    val totalItems by viewModel.totalItems.collectAsState()
 
     Scaffold(
         topBar = {
-            BackTopBar(
+            RapidSaleTopBar(
                 title = "VENTA RAPIDA",
-                navController = navController
+                navController = navController,
+                total = total,
+                totalItems = totalItems,
+                onPositioned = { pos ->
+                    cartPosition = pos   // 🔥 AQUÍ LO GUARDAS
+                },
+                modifier = Modifier
             )
         }
     ) { paddingValues ->
@@ -61,22 +84,24 @@ fun RapidSaleScreen(
         ) {
             when (val result = productsResource) {
                 is Resource.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Black, strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
                 }
                 is Resource.Success -> {
                     RapidSaleContent(
                         products = result.data,
                         viewModel = viewModel,
-                        navController = navController
+                        navController = navController,
+                        paddingValues = paddingValues,
+                        modifier = Modifier
                     )
                 }
                 is Resource.Failure -> {
-                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadSales(1) })
+                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadProducts(ownerId = 1, name = "") })
                 }
                 else -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

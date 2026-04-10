@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -60,6 +61,7 @@ fun SaleTopBar(
                 }
             },
             actions = {
+
 
             },
             // 🔥 CLAVE: transparente

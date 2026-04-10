@@ -18,11 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -61,7 +59,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun RapidSaleContent(
+fun RapidSaleContent2(
     products: List<ProductResponse>,
     navController: NavHostController,
     viewModel: SalesViewModel,
@@ -77,6 +75,28 @@ fun RapidSaleContent(
     var isCreating by remember { mutableStateOf(false) }
 
 
+
+
+    // ESCUCHAR EL ESTADO DE LA CREACION DE LA VENTA + ITEMS
+    LaunchedEffect( createWithItemsSaleState ) {
+        when (val state = createWithItemsSaleState) {
+            is Resource.Success -> {
+                navController.navigate(ClientScreen.Sales.route) {
+                    popUpTo(ClientScreen.RapidSale.route) { inclusive = true }
+                }
+                isCreating = false
+            }
+            is Resource.Failure -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Error: ${state.message}", duration = SnackbarDuration.Long)
+                }
+                isCreating = false
+            }
+
+            is Resource.Loading -> isCreating = true
+            else -> isCreating = false
+        }
+    }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val query by viewModel.searchQuery.collectAsState()
@@ -255,64 +275,49 @@ fun RapidSaleContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.White)
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                        .padding(16.dp)
                 ) {
 
-                    val backgroundColor = if (canConfirm)
-                        Color(0xFF6A5AE0)
-                    else
-                        SGray400
+                    // 🟢 BOTÓN PRINCIPAL
+                    Button(
+                        onClick = {
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center // 🔥 centrado real
-                    ) {
-
-                        Row(
-                            modifier = Modifier
-                                .height(58.dp)
-                                .background(
-                                    color = backgroundColor,
-                                    shape = RoundedCornerShape(18.dp) // 🔥 pill moderno
-                                )
-                                .clickable(enabled = canConfirm) {
-                                    navController.navigate(ClientScreen.RapidSaleResumen.route)
+                            val generatedName = "Venta ${getCurrentFormattedDate()}"
+                                val items = selectedProducts.map {
+                                    SaleItemCreateWithoutSaleId(
+                                        productId = it.first.id,
+                                        quantity = it.second,
+                                        price = it.first.price
+                                    )
                                 }
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
 
-                            // 🛒 MINI CART (integrado)
-                            MiniCart(
-                                total = total,
-                                totalItems = totalItems,
-                                onPositioned = { pos ->
-                                    cartPosition = pos
-                                },
-                                modifier = Modifier
-                            )
+                                val totalAmount = selectedProducts.sumOf {
+                                    it.first.price * it.second
+                                }
 
-                            Spacer(Modifier.width(12.dp))
+                                val saleRequest = CreateSaleWithItemsRequest(
+                                    sale = SaleCreateRequest(
+                                        ownerId = 1,
+                                        createdByUserId = 1,
+                                        amount = totalAmount,
+                                        description = generatedName
+                                    ),
+                                    items = items
+                                )
 
-                            // 🔥 divisor sutil (tipo Kyte)
-                            Box(
-                                modifier = Modifier
-                                    .width(1.dp)
-                                    .height(22.dp)
-                                    .background(Color.White.copy(alpha = 0.3f))
-                            )
+                                viewModel.createSaleWithItems(saleRequest)
 
-                            Spacer(Modifier.width(12.dp))
-
-                            // 👉 ICONO
-                            Icon(
-                                imageVector = Icons.Default.KeyboardDoubleArrowRight,
-                                contentDescription = "Continuar",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                        },
+                        enabled = canConfirm,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                        ,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ButtonGreen,
+                            disabledContainerColor = SGray400
+                        )
+                    ) {
+                        Text("GUARDAR VENTA", color = Color.White)
                     }
                 }
             }
