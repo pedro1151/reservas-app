@@ -23,8 +23,6 @@ import com.optic.pramosreservasappz.presentation.screens.sales.Components.SaleCa
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.sales.Components.SaleResumeList
 import com.optic.pramosreservasappz.presentation.screens.sales.header.SaleFullHeader
-import com.optic.pramosreservasappz.presentation.screens.sales.header.SaleHeader
-import com.optic.pramosreservasappz.presentation.screens.sales.header.SaleMiniHeader
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 import java.time.LocalDate
 
@@ -33,7 +31,8 @@ fun SalesContent(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     navController: NavHostController,
-    sales: List<SaleResponse> // 🔥 NUEVO
+    sales: List<SaleResponse> ,
+    onMenuClick: () -> Unit
 ) {
     var showRegisterSale by remember { mutableStateOf(false) }
     var balanceHidden by remember { mutableStateOf(false) }
@@ -64,7 +63,7 @@ fun SalesContent(
         modifier = modifier
             .padding(paddingValues)
             .fillMaxSize()
-            .background(SoftCoolBackground)
+           // .background(SoftCoolBackground)
     ) {
 
 
@@ -92,7 +91,8 @@ fun SalesContent(
                     balanceHidden = balanceHidden,
                     onToggleHide = { balanceHidden = !balanceHidden },
                     navController = navController,
-                    listState = listState
+                    listState = listState,
+                    onMenuClick = onMenuClick
                 )
             }
 

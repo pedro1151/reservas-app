@@ -22,6 +22,24 @@ sealed class ClientScreen(
         icon = Icons.Default.CheckCircle
     )
 
+    object CompleteSaleStepOne: ClientScreen(
+        route = "client/complete_sale_one",
+        title = "Ventas Paso 1",
+        icon = Icons.Default.CheckCircle
+    )
+
+    object CompleteSaleStepTwo: ClientScreen(
+        route = "client/complete_sale_two",
+        title = "Ventas Paso 2",
+        icon = Icons.Default.CheckCircle
+    )
+
+    object CompleteSaleStepTree: ClientScreen(
+        route = "client/complete_sale_tree",
+        title = "Ventas Paso 3",
+        icon = Icons.Default.CheckCircle
+    )
+
     object CreateReservationStepOne: ClientScreen(
         route = "client/create_reservation_step_one",
         title = "Create Reservation step one",
@@ -140,7 +158,7 @@ sealed class ClientScreen(
 
     object SaleStats: ClientScreen(
         route = "client/fire_stats",
-        title = "Estadisticas Fire",
+        title = "Estadisticas",
         icon = Icons.Default.BarChart
     )
 
@@ -162,6 +180,13 @@ sealed class ClientScreen(
     object Mas: ClientScreen(
         route = "client/mas",
         title = "Menu",
+        icon = Icons.Default.Menu
+    )
+
+
+    object Planes: ClientScreen(
+        route = "client/planes",
+        title = "Planes",
         icon = Icons.Default.Menu
     )
 

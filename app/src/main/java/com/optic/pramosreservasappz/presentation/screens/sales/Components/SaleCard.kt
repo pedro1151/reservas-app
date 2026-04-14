@@ -25,157 +25,87 @@ import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.historial.components.getAvatarColor
 import com.optic.pramosreservasappz.presentation.screens.historial.components.getInitials
+import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Cyan
 
 @Composable
 fun SaleCard(
     sale: SaleResponse,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
     navController: NavHostController
 ) {
     val time = sale.created.substring(11, 16)
 
-    val Violet = Color(0xFF7C3AED)
-    val SoftGray = Color(0xFF6B7280)
-    val BorderGray = Color(0xFFE5E7EB)
-    val TextPrimary = Color(0xFF111111)
-    val SalesmanGreen = Color(0xFF059669)
-
+    val TextPrimary = Color(0xFF0D0D0D)
+    val TextSecondary = Color(0xFF6B7280)
+    val Border = Color(0xFFE5E7EB)
+    val Green = Color(0xFF16A34A)
 
     val avatarColor = remember(sale.id) { getAvatarColor(sale.id) }
-    val initials = "#"+sale.id.toString()
+    val initials = "#${sale.id}"
 
-    var pressed by remember { mutableStateOf(false) }
-
-    val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.98f else 1f
-    )
     Card(
         modifier = modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
-            .clickable(
-                onClick = {
-                    navController.navigate(
-                    ClientScreen.SaleDetail.createRoute(saleId = sale.id)
-                )},
-                onClickLabel = null,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            )
             .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-            .shadow(
-                elevation = 14.dp,
-                shape = RoundedCornerShape(14.dp),
-                ambientColor = Color(0xFF000000).copy(alpha = 0.05f),
-                spotColor = Color(0xFF000000).copy(alpha = 0.12f)
-            )
-            .then(
-                if (onClick != null) Modifier.clickable { onClick() }
-                else Modifier
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, BorderGray.copy(alpha = 0.8f)), // 🔥 más sutil
-        elevation = CardDefaults.cardElevation(0.dp) // ❌ quitamos elevation default
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable {
+                navController.navigate(
+                    ClientScreen.SaleDetail.createRoute(saleId = sale.id)
+                )
+            },
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Border),
+        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .padding(16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // 🔹 AVATAR (columna 1)
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(11.dp))
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(avatarColor),
                 contentAlignment = Alignment.Center
             ) {
-                initials?.let {
-                    Text(
-                        text = it,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
-                }
+                Text(initials, color = Color.White)
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(Modifier.width(12.dp))
 
-            // 🔹 INFO (columna 2)
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
 
-                // Descripción
                 Text(
-                    text = sale.description ?: "Venta",
-                    fontSize = 14.sp,
-                    fontWeight =  FontWeight.Normal,
+                    sale.description ?: "Venta",
+                    fontWeight = FontWeight.Medium,
                     color = TextPrimary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 1
                 )
-
-                Spacer(Modifier.height(6.dp))
-
-                // Vendedor
-                Row {
-                    Text(
-                        text = "Vendedor ",
-                        fontSize = 12.sp,
-                        color = SoftGray
-                    )
-                    Text(
-                        text = "Fernando Suarez",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontWeight =  FontWeight.Normal,
-                    )
-                }
 
                 Spacer(Modifier.height(4.dp))
 
-                // Hora
                 Text(
-                    text = time,
+                    "Vendedor Fernando Suarez",
                     fontSize = 12.sp,
-                    color = SoftGray
+                    color = TextSecondary
+                )
+
+                Text(
+                    time,
+                    fontSize = 12.sp,
+                    color = TextSecondary
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // 🔹 MONTO (columna 3 → extremo derecho)
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "$",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                )
-
-                Spacer(modifier = Modifier.width(4.dp))
-
-                Text(
-                    text = "%.0f".format(sale.amount),
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
+            Text(
+                "$ ${"%.0f".format(sale.amount)}",
+                fontWeight = FontWeight.SemiBold,
+                color = Cyan,
+                fontSize = 16.sp
+            )
         }
     }
 }
-

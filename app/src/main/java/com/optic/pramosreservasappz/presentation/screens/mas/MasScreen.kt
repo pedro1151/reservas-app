@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 
 @Composable
@@ -17,9 +18,9 @@ fun MasScreen(
 
     Scaffold(
         topBar = {
-            PrimaryTopBar(
+            BackTopBar(
                 navController = navController,
-                title = "MAS"
+                title = "Configuracion"
             )
         }
     ) { paddingValues ->

@@ -307,14 +307,18 @@ class ReservasRepositoryImpl(
     }
 
     //clients
-    override suspend fun getClientsByProvider(
-        providerId: Int,
+    override suspend fun getClientsByOwner(
+        ownerId: Int,
         fullName: String,
         email:String
     ): Flow<Resource<List<ClientResponse>>> =flow{
     emit(
         ResponseToRequest.send(
-            reservasRemoteDataSource.getClientsByProvider(providerId, fullName, email)
+            reservasRemoteDataSource.getClientsByOwner(
+                ownerId = ownerId,
+                fullName = fullName,
+                email = email
+            )
         )
     )
 }

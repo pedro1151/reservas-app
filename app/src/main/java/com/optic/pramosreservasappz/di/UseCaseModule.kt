@@ -12,7 +12,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.DeleteClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorIdUC
-import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorOwnerUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductSafeUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductUC
@@ -73,7 +73,7 @@ object UseCaseModule {
     fun provideTeamUseCase(reservasRepository: ReservasRepository) = ReservasUC(
 
         //clients
-        getClientPorProviderUC = GetClientPorProviderUC(reservasRepository),
+        getClientPorOwnerUC = GetClientPorOwnerUC(reservasRepository),
         getClientPorIdUC = GetClientPorIdUC(reservasRepository),
         createClientUC = CreateClientUC(reservasRepository),
         updateClientUC = UpdateClientUC(reservasRepository),

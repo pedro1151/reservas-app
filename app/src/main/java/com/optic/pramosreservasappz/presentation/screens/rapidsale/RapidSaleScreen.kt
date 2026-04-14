@@ -1,99 +1,101 @@
-package com.optic.pramosreservasappz.presentation.screens.clients
+package com.optic.pramosreservasappz.presentation.screens.rapidsale
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.topbar.RapidSaleTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClientPrincipalScreen(
+fun RapidSaleScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean = false
+    isAuthenticated: Boolean = false,
+    viewModel: SalesViewModel
 ) {
-    val viewModel: ClientViewModel = hiltViewModel()
-    val clientResource by viewModel.clientsState.collectAsState()
+
+    // posicion del carrito
+    var cartPosition by remember { mutableStateOf(Offset.Zero) }
+
+    val productsResource by viewModel.productsState.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.loadClients("", "", 1)
+        viewModel.loadProducts(ownerId = 1, name = "")
     }
 
-    LaunchedEffect(clientResource) {
-        if (clientResource !is Resource.Loading) isRefreshing = false
+    LaunchedEffect( productsResource ) {
+        if ( productsResource  !is Resource.Loading) isRefreshing = false
     }
+    // BORRO PRODUCTOS SELECCIONADOS VIEJOS DEL CARRITO
+   /* LaunchedEffect(Unit) {
+        viewModel.clearSelectedProducts()
+    }
+
+    */
+
+    val total by viewModel.total.collectAsState()
+    val totalItems by viewModel.totalItems.collectAsState()
 
     Scaffold(
         topBar = {
-            PrimaryTopBar(
-                title = "Clientes",
-                navController = navController
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(
-                        ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
-                    )
+            RapidSaleTopBar(
+                title = "VENTA RAPIDA",
+                navController = navController,
+                total = total,
+                totalItems = totalItems,
+                onPositioned = { pos ->
+                    cartPosition = pos   // 🔥 AQUÍ LO GUARDAS
                 },
-                containerColor = Color.Black,
-                contentColor = Color.White,
-                shape = CircleShape,
-                modifier = Modifier.size(52.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
-            }
-        },
-        containerColor = Color.White
+                modifier = Modifier
+            )
+        }
     ) { paddingValues ->
 
         PullRefreshWrapper(
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
-                viewModel.loadClients("", "", 1)
+                viewModel.loadProducts(ownerId = 1, name = "")
             },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (val result = clientResource) {
+            when (val result = productsResource) {
                 is Resource.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Black, strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
                 }
                 is Resource.Success -> {
-                    ClientContent(
-                        clients = result.data,
-                        paddingValues = PaddingValues(0.dp),
+                    RapidSaleContent(
+                        products = result.data,
                         viewModel = viewModel,
-                        navController = navController
+                        navController = navController,
+                        paddingValues = paddingValues,
+                        modifier = Modifier
                     )
                 }
                 is Resource.Failure -> {
-                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadClients("", "", 1) })
+                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadProducts(ownerId = 1, name = "") })
                 }
                 else -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -181,8 +181,8 @@ interface ReservasRemoteDataSource {
 
 
     // CLIENTS
-    suspend fun getClientsByProvider(
-    providerId: Int,
+    suspend fun getClientsByOwner(
+    ownerId: Int,
     fullName:String,
     email:String
     ): Response<List<ClientResponse>>

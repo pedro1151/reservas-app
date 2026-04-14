@@ -1,7 +1,7 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.topbar
+package com.optic.pramosreservasappz.presentation.screens.rapidsale.topbar
 
 import androidx.compose.ui.geometry.Offset
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.MiniCart
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.MiniCart
 
 
 import androidx.compose.foundation.background

@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.MiniCart
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -40,7 +40,7 @@ fun SaleTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background( Color(0xFF7C3AED),)
+            .background(         Color(0xFF6D28D9))
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)

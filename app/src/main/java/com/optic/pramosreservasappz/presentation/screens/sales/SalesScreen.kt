@@ -10,7 +10,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.sales.Components.SalesContent
-import com.optic.pramosreservasappz.presentation.screens.sales.menu.PrincipalMenuDrawer
+import com.optic.pramosreservasappz.presentation.screens.menu.PrincipalMenuDrawer
+import com.optic.pramosreservasappz.presentation.screens.menu.SalesScreenWithDrawer
 import com.optic.pramosreservasappz.presentation.screens.sales.topbar.SaleTopBar
 import kotlinx.coroutines.launch
 
@@ -37,27 +38,7 @@ fun SalesScreen(
         viewModel.loadSales(1, 25)
     }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            PrincipalMenuDrawer(
-                onDrawerClose = { scope.launch { drawerState.close() } },
-                navController = navController
-            )
-        }
-    ) {
-
         Scaffold(
-            topBar = {
-                SaleTopBar(
-                    onMenuClick = {
-                        scope.launch {
-                            if (drawerState.isClosed) drawerState.open()
-                            else drawerState.close()
-                        }
-                    },
-                )
-            },
             containerColor = Color(0xFFF5F5F5)
         ) { paddingValues ->
 
@@ -81,14 +62,17 @@ fun SalesScreen(
                     }
                 }
                 is Resource.Success -> {
-                    SalesContent(
-                        paddingValues = paddingValues,
-                        navController = navController,
-                        sales = state.data
-                    )
+                    SalesScreenWithDrawer(navController) { onMenuClick ->
+                        SalesContent(
+                            paddingValues = paddingValues,
+                            navController = navController,
+                            sales = state.data,
+                            onMenuClick = onMenuClick
+                        )
+                    }
                 }
                 else -> {}
             }
         }
-    }
+
 }

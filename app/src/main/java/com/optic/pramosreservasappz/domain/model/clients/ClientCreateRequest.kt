@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ClientCreateRequest(
 
-    @SerializedName("provider_id") val providerId: Int,
+    @SerializedName("owner_id") val ownerId: Int,
     @SerializedName("full_name") val fullName: String,
     @SerializedName("email") val email: String? = null,
     @SerializedName("phone") val phone: String? = null,

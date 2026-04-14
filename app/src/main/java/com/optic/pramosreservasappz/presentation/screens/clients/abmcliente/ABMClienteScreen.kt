@@ -87,7 +87,7 @@ fun ABMClienteScreen(
                                         address = state.address,
                                         city = state.city,
                                         state = state.state,
-                                        providerId = 1
+                                        ownerId = 1
                                     )
                                 )
                             }

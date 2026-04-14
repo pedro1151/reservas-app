@@ -37,7 +37,7 @@ fun RowScope.ClientBottomBarItem(
     if (screen.title == "Matches") { title_traducido = localizedContext.getString(R.string.menu_principal_matches)}
     else if (screen.title == "Ligas")  { title_traducido = localizedContext.getString(R.string.menu_principal_leagues)}
     else if (screen.title == "Prode") { title_traducido = localizedContext.getString(R.string.menu_principal_prode)}
-    else if (screen.title == "Menu")  { title_traducido = localizedContext.getString(R.string.menu_principal_mas)}
+    else if (screen.title == "Menu")  { title_traducido = "Config"}
     else if (screen.title == "Siguiendo")  { title_traducido = localizedContext.getString(R.string.menu_principal_follow)}
   //  else { title_traducido = screen.title}
     NavigationBarItem(

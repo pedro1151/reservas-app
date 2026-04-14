@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.menu
+package com.optic.pramosreservasappz.presentation.screens.menu
 
 
 import androidx.compose.foundation.background
@@ -38,7 +38,26 @@ fun PrincipalMenuDrawer(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            ProUpgradeBanner()
+
+            // 🔴 BOTÓN CERRAR
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = onDrawerClose) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
+                }
+            }
+
+            ProUpgradeBanner(
+                navController = navController
+            )
 
             Spacer(Modifier.height(10.dp))
 
@@ -88,7 +107,7 @@ fun PrincipalMenuDrawer(
 
 
             SaleMenuItem(
-                onClick = { },
+                onClick = { navController.navigate(ClientScreen.CompleteSaleStepOne.route)},
                 title = "Venta Completa",
                 icon =  Icons.Default.AddTask
             )
@@ -118,12 +137,20 @@ fun PrincipalMenuDrawer(
                 title = "Tus Productos/Servicios",
                 icon =  Icons.Default.GifBox,
             )
+
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.Mas.route) },
+                title = "Configuracion",
+                icon =  Icons.Default.Brightness7,
+            )
         }
     }
 }
 
 @Composable
-private fun ProUpgradeBanner() {
+private fun ProUpgradeBanner(
+    navController: NavHostController
+) {
 
     val buttonTextColor = Color.White // para cambiar el color
 
@@ -145,7 +172,7 @@ private fun ProUpgradeBanner() {
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "Prueba SalesGow Pro gratis",
+                text = "Prueba SalesGow PRO",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.background,
@@ -153,7 +180,7 @@ private fun ProUpgradeBanner() {
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Obtén mejoradas funcionalidades, diferentes estilos, temas, recoradtorios y más.",
+                text = "Obtén funcionalidades mejoradas, diferentes estilos, temas, estadisticas completas de tus ventas, historiales, añade mas colaboradores y mas.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Center,
@@ -161,7 +188,7 @@ private fun ProUpgradeBanner() {
             )
             Spacer(Modifier.height(16.dp))
             Button(
-                onClick = { },
+                onClick = { navController.navigate(ClientScreen.Planes.route)},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 ),
@@ -176,7 +203,7 @@ private fun ProUpgradeBanner() {
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "Comenzar prueba gratuita",
+                    text = "Prueba PRO",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Medium,
                     color = buttonTextColor
@@ -184,7 +211,7 @@ private fun ProUpgradeBanner() {
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Saber más",
+                text = "SABER MAS",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.background,
                 fontWeight = FontWeight.Medium,
