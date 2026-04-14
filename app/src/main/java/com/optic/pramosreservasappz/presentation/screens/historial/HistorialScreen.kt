@@ -1,17 +1,24 @@
 package com.optic.pramosreservasappz.presentation.screens.historial
 
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.WifiOff
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,6 +27,11 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+
+// ── Colores de la pantalla ──
+private val PrimaryPurple = Color(0xFF6E4FDB)
+private val PrimaryBlue   = Color(0xFF3B78C4)
+private val DeepNavy      = Color(0xFF1A1A2E)
 
 @Composable
 fun HistorialScreen(
@@ -32,7 +44,7 @@ fun HistorialScreen(
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.loadSales( 1)
+        viewModel.loadSales(1)
     }
 
     LaunchedEffect(salesResource) {
@@ -42,26 +54,37 @@ fun HistorialScreen(
     Scaffold(
         topBar = {
             PrimaryTopBar(
-                title = "HISTORIAL DE VENTAS",
+                title         = "HISTORIAL DE VENTAS",
                 navController = navController
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(
-                        ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
+            // FAB con gradiente estilo Tiimo
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(PrimaryPurple, PrimaryBlue)
+                        )
                     )
-                },
-                containerColor = Color.Black,
-                contentColor = Color.White,
-                shape = CircleShape,
-                modifier = Modifier.size(52.dp)
+                    .clickableNoRipple {
+                        navController.navigate(
+                            ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
+                        )
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(22.dp))
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Nueva venta",
+                    tint     = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         },
-        containerColor = Color.White
+        containerColor = Color(0xFFF7F6FA)
     ) { paddingValues ->
 
         PullRefreshWrapper(
@@ -76,18 +99,13 @@ fun HistorialScreen(
         ) {
             when (val result = salesResource) {
                 is Resource.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Black, strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    LoadingState()
                 }
                 is Resource.Success -> {
-                   HistorialContent(
-                        sales = result.data,
+                    HistorialContent(
+                        sales         = result.data,
                         paddingValues = PaddingValues(0.dp),
-                        viewModel = viewModel,
+                        viewModel     = viewModel,
                         navController = navController
                     )
                 }
@@ -95,45 +113,103 @@ fun HistorialScreen(
                     ErrorState(onRetry = { isRefreshing = true; viewModel.loadSales(1) })
                 }
                 else -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Black, strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    LoadingState()
                 }
             }
         }
     }
 }
 
+// ── Loading estilizado ──
+@Composable
+private fun LoadingState() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator(
+                color       = PrimaryPurple,
+                strokeWidth = 3.dp,
+                modifier    = Modifier.size(36.dp)
+            )
+            Text(
+                "Cargando ventas...",
+                fontSize  = 13.sp,
+                color     = Color(0xFFAAAABB),
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+// ── Error state mejorado ──
 @Composable
 private fun ErrorState(onRetry: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(horizontal = 40.dp)
+            modifier            = Modifier.padding(horizontal = 40.dp)
         ) {
-            Surface(
-                modifier = Modifier.size(64.dp),
-                shape = CircleShape,
-                color = Color(0xFFF5F5F5)
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color(0xFFFFF0F0)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Outlined.WifiOff, null, tint = Color(0xFFCCCCCC), modifier = Modifier.size(28.dp))
-                }
+                Icon(
+                    Icons.Outlined.WifiOff,
+                    null,
+                    tint     = Color(0xFFE05C5C),
+                    modifier = Modifier.size(36.dp)
+                )
             }
-            Text("Sin conexión", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-            Text("Jala hacia abajo para reintentar", fontSize = 13.sp, color = Color(0xFFAAAAAA))
+
+            Text(
+                "Sin conexión",
+                fontSize   = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color      = DeepNavy,
+                letterSpacing = (-0.4).sp
+            )
+            Text(
+                "Revisa tu conexión a internet y vuelve a intentarlo.",
+                fontSize  = 14.sp,
+                color     = Color(0xFFAAAABB),
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
+            )
+
+            Spacer(Modifier.height(4.dp))
+
             Button(
-                onClick = onRetry,
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A1A)),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                onClick  = onRetry,
+                shape    = RoundedCornerShape(14.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
-                Text("Reintentar", fontSize = 13.sp, color = Color.White)
+                Icon(
+                    Icons.Outlined.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Reintentar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
 }
+
+// ── Extension: click sin ripple (para el FAB con fondo personalizado) ──
+private fun Modifier.clickableNoRipple(onClick: () -> Unit): Modifier =
+    this.then(
+        androidx.compose.ui.Modifier.clickable(
+            interactionSource = androidx.compose.foundation.interaction.MutableInteractionSource(),
+            indication        = null,
+            onClick           = onClick
+        )
+    )

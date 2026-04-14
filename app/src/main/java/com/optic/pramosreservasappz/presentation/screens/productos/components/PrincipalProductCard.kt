@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -17,6 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -49,36 +52,62 @@ fun PrincipalProducCard(
     var showOptionsSheet by remember { mutableStateOf(false) }
     var isHidden         by remember { mutableStateOf(false) }
     var visible          by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { visible = true }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(20L * (product.id % 10))
+        visible = true
+    }
 
     val avatarColor = remember(product.id) { getAvatarColor(product.id) }
+    val priceText   = remember(product.price) {
+        try { "Bs. %,.0f".format(product.price.toString().toDouble()) }
+        catch (e: Exception) { "Bs. ${product.price}" }
+    }
 
-    val maxSwipe        = -(ACTION_WIDTH.value * 2)
-    val editThreshold   = -(ACTION_WIDTH.value * 0.8f)
-    val deleteThreshold = -(ACTION_WIDTH.value * 1.5f)
+    // Umbrales del swipe
+    val maxSwipe        = -(ACTION_WIDTH.value * 2f)
+    val editThreshold   = -(ACTION_WIDTH.value * 0.7f)
+    val deleteThreshold = -(ACTION_WIDTH.value * 1.4f)
+
+    // Progreso normalizado [0..1]
+    val swipeProgress = (-offsetX / abs(maxSwipe)).coerceIn(0f, 1f)
 
     fun snap(target: Float) {
         scope.launch {
             animatable.animateTo(
                 targetValue   = target,
                 animationSpec = spring(
-                    dampingRatio = if (target == 0f) Spring.DampingRatioNoBouncy
-                    else              Spring.DampingRatioMediumBouncy,
-                    stiffness    = Spring.StiffnessMedium
+                    dampingRatio = when {
+                        target == 0f -> Spring.DampingRatioMediumBouncy
+                        else         -> Spring.DampingRatioLowBouncy
+                    },
+                    stiffness = Spring.StiffnessMediumLow
                 )
             )
         }
     }
 
+    // Escala spring de los íconos de acción
+    val editIconScale by animateFloatAsState(
+        targetValue   = if (offsetX <= editThreshold) 1f else 0f,
+        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium),
+        label         = "editScale"
+    )
+    val deleteIconScale by animateFloatAsState(
+        targetValue   = if (offsetX <= deleteThreshold) 1f else 0f,
+        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium),
+        label         = "deleteScale"
+    )
+
     AnimatedVisibility(
         visible = visible,
-        enter   = fadeIn(tween(250)) + expandVertically(tween(250)),
-        exit    = fadeOut(tween(180)) + shrinkVertically(tween(180))
+        enter   = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 4 },
+        exit    = fadeOut(tween(200)) + shrinkVertically(tween(200))
     ) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 3.dp)
+                .padding(vertical = 4.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication        = null,
@@ -86,23 +115,32 @@ fun PrincipalProducCard(
                 ) { snap(0f) }
         ) {
 
-            // ── Acciones de fondo: fondo blanco, íconos de color ──
+            // ── Fondo de acciones con transición de color ──
+            val bgColor = when {
+                offsetX <= deleteThreshold -> Color(0xFFFFEDED).copy(alpha = 0.5f + swipeProgress * 0.5f)
+                offsetX <= editThreshold   -> Color(0xFFEAF2FF).copy(alpha = 0.5f + swipeProgress * 0.5f)
+                else                       -> Color(0xFFF3F3F3)
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .matchParentSize()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color.White),
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(bgColor),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                // EDITAR — ícono azul
-                if (offsetX <= editThreshold) {
-                    Box(
-                        modifier = Modifier
-                            .width(ACTION_WIDTH)
-                            .fillMaxHeight()
-                            .clickable {
+                // ── Botón EDITAR ──
+                Box(
+                    modifier = Modifier
+                        .width(ACTION_WIDTH)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication        = null
+                        ) {
+                            if (offsetX <= editThreshold) {
                                 snap(0f)
                                 navController.navigate(
                                     ClientScreen.ABMServicio.createRoute(
@@ -110,63 +148,82 @@ fun PrincipalProducCard(
                                         editable  = true
                                     )
                                 )
-                            },
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .graphicsLayer {
+                                scaleX = editIconScale
+                                scaleY = editIconScale
+                                alpha  = editIconScale
+                            }
+                            .clip(CircleShape)
+                            .background(Color(0xFF3B78C4)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Edit,
-                                contentDescription = "Editar",
-                                tint     = Color(0xFF2196F3),
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Editar",
-                                fontSize   = 11.sp,
-                                color      = Color(0xFF2196F3),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint     = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
 
-                // ELIMINAR — ícono rojo
-                if (offsetX <= deleteThreshold) {
+                // ── Botón ELIMINAR ──
+                Box(
+                    modifier = Modifier
+                        .width(ACTION_WIDTH)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication        = null
+                        ) {
+                            if (offsetX <= deleteThreshold) showDeleteDialog = true
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
                     Box(
                         modifier = Modifier
-                            .width(ACTION_WIDTH)
-                            .fillMaxHeight()
-                            .clickable { showDeleteDialog = true },
+                            .size(44.dp)
+                            .graphicsLayer {
+                                scaleX = deleteIconScale
+                                scaleY = deleteIconScale
+                                alpha  = deleteIconScale
+                            }
+                            .clip(CircleShape)
+                            .background(Color(0xFFE05C5C)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Eliminar",
-                                tint     = Color(0xFFE53935),
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Eliminar",
-                                fontSize   = 11.sp,
-                                color      = Color(0xFFE53935),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint     = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
 
-            // ── Card principal ──
+            // ── Card principal con tilt sutil durante drag ──
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(x = offsetX.dp)
                     .graphicsLayer {
-                        scaleY = (1f - abs(offsetX) / 1200f).coerceIn(0.98f, 1f)
+                        rotationZ       = (offsetX * 0.008f).coerceIn(-1.2f, 0f)
+                        scaleY          = (1f - abs(offsetX) / 1600f).coerceIn(0.975f, 1f)
+                        shadowElevation = (4f - swipeProgress * 4f).coerceAtLeast(0f)
                     }
+                    .shadow(
+                        elevation    = if (offsetX > -1f) 2.dp else 0.dp,
+                        shape        = RoundedCornerShape(18.dp),
+                        ambientColor = avatarColor.copy(alpha = 0.12f),
+                        spotColor    = avatarColor.copy(alpha = 0.08f)
+                    )
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
                             onDragEnd = {
@@ -196,71 +253,117 @@ fun PrincipalProducCard(
                             )
                         } else snap(0f)
                     },
-                shape = if (offsetX < -2f)
-                    RoundedCornerShape(topStart = 14.dp, bottomStart = 14.dp, topEnd = 0.dp, bottomEnd = 0.dp)
-                else
-                    RoundedCornerShape(14.dp),
+                shape           = RoundedCornerShape(18.dp),
                 color           = Color.White,
-                shadowElevation = 0.dp,
-                border          = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEEEEEE))
+                shadowElevation = 0.dp
             ) {
                 Row(
-                    modifier          = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 12.dp),
+                    modifier          = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // ── Franja de color izquierda ──
                     Box(
-                        modifier         = Modifier
+                        modifier = Modifier
+                            .width(5.dp)
+                            .height(70.dp)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(avatarColor, avatarColor.copy(alpha = 0.4f))
+                                ),
+                                RoundedCornerShape(topStart = 18.dp, bottomStart = 18.dp)
+                            )
+                    )
+
+                    Spacer(Modifier.width(12.dp))
+
+                    // ── Avatar circular con iniciales ──
+                    Box(
+                        modifier = Modifier
                             .size(42.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(avatarColor),
+                            .clip(CircleShape)
+                            .background(avatarColor.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text          = getServiceInitials(product.name),
-                            fontSize      = 13.sp,
-                            fontWeight    = FontWeight.SemiBold,
-                            color         = Color.White,
-                            letterSpacing = 0.3.sp
+                            text       = getServiceInitials(product.name),
+                            fontSize   = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = avatarColor
                         )
                     }
 
                     Spacer(Modifier.width(12.dp))
 
+                    // ── Contenido central ──
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text          = product.name,
                             fontSize      = 14.sp,
-                            fontWeight    = FontWeight.Medium,
-                            color         = Color.Black,
+                            fontWeight    = FontWeight.SemiBold,
+                            color         = Color(0xFF1A1A2E),
                             maxLines      = 1,
                             overflow      = TextOverflow.Ellipsis,
-                            letterSpacing = (-0.2).sp
+                            letterSpacing = (-0.3).sp
                         )
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            text     = product.price.toString(),
-                            fontSize = 12.sp,
-                            color    = Color(0xFFAAAAAA)
-                        )
+                        Spacer(Modifier.height(4.dp))
+                        Row(
+                            verticalAlignment     = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .background(
+                                        avatarColor.copy(alpha = 0.10f),
+                                        RoundedCornerShape(20.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                                verticalAlignment     = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Category, null,
+                                    tint     = avatarColor,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                                Text(
+                                    "Producto", fontSize = 10.sp, color = avatarColor,
+                                    fontWeight = FontWeight.SemiBold, letterSpacing = 0.3.sp
+                                )
+                            }
+                        }
                     }
 
-                    if (offsetX > -1f) {
-                        Box(
-                            modifier         = Modifier
-                                .size(32.dp)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication        = null
-                                ) { showOptionsSheet = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Outlined.MoreVert, null,
-                                tint     = Color(0xFFBBBBBB),
-                                modifier = Modifier.size(18.dp)
-                            )
+                    Spacer(Modifier.width(8.dp))
+
+                    // ── Precio + MoreVert ──
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier            = Modifier.padding(end = 14.dp)
+                    ) {
+                        Text(
+                            text          = priceText,
+                            fontSize      = 13.sp,
+                            fontWeight    = FontWeight.Bold,
+                            color         = avatarColor,
+                            letterSpacing = (-0.3).sp
+                        )
+                        if (offsetX > -1f) {
+                            Spacer(Modifier.height(2.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication        = null
+                                    ) { showOptionsSheet = true },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Outlined.MoreVert, null,
+                                    tint     = Color(0xFFCCCCCC),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -268,6 +371,7 @@ fun PrincipalProducCard(
         }
     }
 
+    // ── Options Sheet ──
     if (showOptionsSheet) {
         ServiceOptionsSheet(
             serviceName    = product.name,
@@ -282,34 +386,41 @@ fun PrincipalProducCard(
         )
     }
 
+    // ── Diálogo de confirmación eliminación ──
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false; snap(0f) },
-            title = { Text("¿Borrar producto?", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
-            text  = {
+            title = {
+                Text(
+                    "¿Borrar producto?", fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E)
+                )
+            },
+            text = {
                 Text(
                     "Se eliminará \"${product.name}\". Esta acción no se puede deshacer.",
-                    fontSize = 14.sp, color = Color(0xFF555555)
+                    fontSize = 14.sp, color = Color(0xFF555577)
                 )
             },
             confirmButton = {
                 Button(
                     onClick = { showDeleteDialog = false; visible = false; onDelete(product) },
-                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
-                    shape   = RoundedCornerShape(10.dp)
-                ) { Text("Borrar", color = Color.White) }
+                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE05C5C)),
+                    shape   = RoundedCornerShape(12.dp)
+                ) { Text("Borrar", color = Color.White, fontWeight = FontWeight.SemiBold) }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false; snap(0f) }) {
-                    Text("Cancelar", color = Color.Black)
+                    Text("Cancelar", color = Color(0xFF666688))
                 }
             },
-            shape          = RoundedCornerShape(16.dp),
+            shape          = RoundedCornerShape(20.dp),
             containerColor = Color.White
         )
     }
 }
 
+// ── Bottom Sheet de opciones (sin cambios funcionales) ──
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ServiceOptionsSheet(
@@ -345,13 +456,17 @@ private fun ServiceOptionsSheet(
                     text       = serviceName,
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = Color.Black,
+                    color      = Color(0xFF1A1A2E),
                     modifier   = Modifier.weight(1f),
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis
                 )
                 IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Outlined.Close, null, tint = Color(0xFF888888), modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Outlined.Close, null,
+                        tint     = Color(0xFF888888),
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
             HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 0.5.dp)
@@ -359,9 +474,14 @@ private fun ServiceOptionsSheet(
             OptionRow(icon = Icons.Outlined.Edit,          label = "Editar",       onClick = onEdit)
             OptionRow(icon = Icons.Outlined.Launch,        label = "Vista previa", onClick = onPreview)
             Spacer(Modifier.height(4.dp))
-            HorizontalDivider(color = Color(0xFFF5F5F5),   thickness = 0.5.dp)
+            HorizontalDivider(color = Color(0xFFF5F5F5), thickness = 0.5.dp)
             Spacer(Modifier.height(4.dp))
-            OptionRow(icon = Icons.Outlined.DeleteOutline, label = "Borrar",       onClick = onDelete, tint = Color(0xFFE53935))
+            OptionRow(
+                icon    = Icons.Outlined.DeleteOutline,
+                label   = "Borrar",
+                onClick = onDelete,
+                tint    = Color(0xFFE05C5C)
+            )
         }
     }
 }
@@ -386,7 +506,11 @@ private fun OptionRow(
     ) {
         Icon(icon, null, tint = tint, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(16.dp))
-        Text(label, fontSize = 15.sp, color = if (tint == Color(0xFF555555)) Color.Black else tint)
+        Text(
+            label,
+            fontSize = 15.sp,
+            color    = if (tint == Color(0xFF555555)) Color(0xFF1A1A2E) else tint
+        )
     }
 }
 
