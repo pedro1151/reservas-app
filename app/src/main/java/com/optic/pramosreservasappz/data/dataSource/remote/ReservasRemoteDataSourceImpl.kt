@@ -32,11 +32,15 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
 
 
     //clientes
-    override suspend fun getClientsByProvider(
-        providerId: Int,
+    override suspend fun getClientsByOwner(
+        ownerId: Int,
         fullName: String,
         email: String
-    ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(providerId, fullName, email)
+    ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(
+        ownerId = ownerId,
+        fullName = fullName,
+        email = email
+    )
 
     override suspend fun getClientById(
         clientId: Int

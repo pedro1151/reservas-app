@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale
+package com.optic.pramosreservasappz.presentation.screens.rapidsale
 
 
 import androidx.compose.animation.Animatable
@@ -42,11 +42,11 @@ import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
 import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
 import com.optic.pramosreservasappz.presentation.sales.Components.SRed
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.MiniCart
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.NewRapidProduct
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.ProductMiniCard
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.RapidProductCard
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components.RapidSaleSearchBar
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.MiniCart
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.NewRapidProduct
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.ProductMiniCard
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidProductCard
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidSaleSearchBar
 import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Cyan
 import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
 import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
@@ -159,9 +159,10 @@ fun RapidSaleContent(
         Column(
             modifier
                 .fillMaxWidth()
+                .background(SoftCoolBackground)
         ) {
 
-            // 🟢 HEADER VERDE (DIVISIÓN VISUAL)
+            // 🟢 HEADER (DIVISIÓN VISUAL)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -259,7 +260,7 @@ fun RapidSaleContent(
                 ) {
 
                     val backgroundColor = if (canConfirm)
-                        Color(0xFF6A5AE0)
+                        MaterialTheme.colorScheme.primary
                     else
                         SGray400
 

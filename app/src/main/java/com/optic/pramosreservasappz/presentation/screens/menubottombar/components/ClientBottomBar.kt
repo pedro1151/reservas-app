@@ -17,7 +17,7 @@ fun ClientBottomBar(navController: NavHostController) {
         ClientScreen.Historial,
         ClientScreen.SaleStats,
         ClientScreen.Productos,
-        ClientScreen.Profile
+        ClientScreen.Clientes
     )
 
     val navBackEntry by navController.currentBackStackEntryAsState()

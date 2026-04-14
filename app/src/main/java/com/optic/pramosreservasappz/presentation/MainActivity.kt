@@ -123,7 +123,7 @@ class MainActivity : ComponentActivity() {
                         ClientScreen.SaleStats.route,
                         ClientScreen.Mas.route,
                         ClientScreen.Productos.route,
-                        ClientScreen.Profile.route,
+                        ClientScreen.Clientes.route,
                         ClientScreen.Servicios.route
                     )
 

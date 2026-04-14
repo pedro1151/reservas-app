@@ -5,6 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Cyan
+import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Purple
 
 // Define aquí tus colores personalizados como Color de Compose
 val Blue500 = Color(0xFF1565C0) // ejemplo
@@ -70,20 +72,17 @@ val SoftCoolBackground = Brush.verticalGradient(
     )
 )
 
-val GradientBackground =    Brush.verticalGradient(
+val GradientBackground = Brush.verticalGradient(
     listOf(
-        Color(0xFF7C3AED),
-        Color(0xFF5B3EBF),
-       // Color(0xFF06B6D4)
+        Color(0xFF6D28D9),
+        Color(0xFF0891B2)
     )
-
 )
 
-val ButtonBackground = Brush.horizontalGradient(
+val ButtonBackground =     Brush.horizontalGradient(
     listOf(
-        Color(0xFF03DAC5),
-        Color(0xFF03DAC5),
-        // Color(0xFF06B6D4)
+        Color(0xFF22C1C3),
+        Color(0xFF4ADEDE)
     )
 )
 
@@ -100,11 +99,11 @@ val terciary = Color(0xFF6A5AE0)
 
 
 private val LightColorScheme = lightColorScheme(
-    primary =     Color(0xFF5B3EBF),
+    primary =          Color(0xFF0891B2),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =    Color(0xFF7C3AED),
+    secondary =           Color(0xFF0891B2),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,
@@ -114,11 +113,11 @@ private val LightColorScheme = lightColorScheme(
 
 
 private val DarkColorScheme = darkColorScheme(
-    primary =     Color(0xFF5B3EBF),
+    primary =          Color(0xFF0891B2),
     onPrimary = LightBlack1,
     primaryContainer =  BluePrimary2  ,
     onPrimaryContainer =Color.White,
-    secondary =    Color(0xFF7C3AED),
+    secondary =           Color(0xFF0891B2),
     onSecondary =Color.White,
     background = Color.White,
     onBackground = LightBlack1,

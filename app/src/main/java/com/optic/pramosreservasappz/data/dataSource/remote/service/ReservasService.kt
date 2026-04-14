@@ -220,9 +220,9 @@ interface ReservasService {
 
     //clientes
 
-    @GET("/reservas/client/list/byprovider")
+    @GET("/reservas/client/byowner")
     suspend fun getClientsByProvider(
-    @Query("provider_id") providerId: Int,
+    @Query("owner_id") ownerId: Int,
     @Query("full_name") fullName: String,
     @Query("email") email: String,
     ): Response<List<ClientResponse>>

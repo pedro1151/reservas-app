@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.menu
+package com.optic.pramosreservasappz.presentation.screens.menu
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.clickable

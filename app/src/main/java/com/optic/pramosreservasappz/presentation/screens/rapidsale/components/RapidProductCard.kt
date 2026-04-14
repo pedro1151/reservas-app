@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components
+package com.optic.pramosreservasappz.presentation.screens.rapidsale.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -8,14 +8,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -47,12 +52,18 @@ fun RapidProductCard(
 
     val quantity = inCart?.second ?: 0
 
-    // 🔥 posición para animación fly
+    // 🎨 NUEVA PALETA
+    val Cyan = Color(0xFF22C1C3)
+    val CyanSoft = Color(0xFF22C1C3).copy(alpha = 0.12f)
+
+    val TextPrimary = Color(0xFF111827)
+    val TextSecondary = Color(0xFF6B7280)
+    val BorderSoft = Color(0xFFE5E7EB)
+
     var position by remember { mutableStateOf(Offset.Zero) }
 
-    // 🔥 animación SOLO horizontal (sin afectar altura)
     val offsetX by animateDpAsState(
-        targetValue = if (quantity > 0) 10.dp else 0.dp,
+        targetValue = if (quantity > 0) 0.dp else 0.dp,
         animationSpec = tween(190)
     )
 
@@ -61,7 +72,6 @@ fun RapidProductCard(
         animationSpec = tween(250)
     )
 
-    // 🔤 nombre abreviado
     val shortName = remember(product.name) {
         product.name.take(6).uppercase()
     }
@@ -69,7 +79,7 @@ fun RapidProductCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp) // 🔥 altura FIJA (evita saltos)
+            .height(80.dp)
             .onGloballyPositioned {
                 position = it.localToRoot(Offset.Zero)
             }
@@ -85,12 +95,12 @@ fun RapidProductCard(
                 )
             },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF4F5F7) // gris moderno tipo Kyte
+            containerColor = Color(0xFFF9FAFB) // 🔥 más limpio
         ),
         shape = RoundedCornerShape(0.dp),
         border = BorderStroke(
             width = 0.6.dp,
-            color = Color(0xFFE5E7EB) // 🔥 borde inferior sutil
+            color = BorderSoft
         ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -102,39 +112,40 @@ fun RapidProductCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // 🔥 BLOQUE IZQUIERDO (caja + nombre)
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .offset(x = offsetX), // 🔥 SOLO se mueve horizontal
+                    .offset(x = offsetX),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                // 🟪 CAJA ABREVIADA
+                // 🟪 CAJA
                 Box(
-                    modifier = Modifier
-                        .size(60.dp),
+                    modifier = Modifier.size(60.dp),
                     contentAlignment = Alignment.Center
                 ) {
 
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .background(
-                                color = Grafito,
-                                shape = RoundedCornerShape(10.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.Transparent)
+                            .border(
+                                1.dp,
+                                if (quantity > 0) Cyan else BorderSoft,
+                                RoundedCornerShape(12.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = shortName,
-                            color = GrisSuave,
+                            color = if (quantity > 0) Cyan else TextSecondary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    // 🔥 BADGE (cantidad)
+                    // 🔥 BADGE
                     if (quantity > 0) {
                         Box(
                             modifier = Modifier
@@ -145,15 +156,20 @@ fun RapidProductCard(
                                     scaleY = badgeScale
                                 }
                                 .background(
-                                    color = ButtonGreen.copy(0.95F),
-                                    shape = RoundedCornerShape(4.dp)
+                                    brush = Brush.linearGradient(
+                                        listOf(
+                                            Color(0xFF22C1C3),
+                                            Color(0xFF4ADEDE)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(6.dp)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = quantity.toString(),
                                 color = Color.White,
-                                fontSize = 13.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -162,43 +178,65 @@ fun RapidProductCard(
 
                 Spacer(Modifier.width(12.dp))
 
-                // 📝 NOMBRE COMPLETO
                 Text(
                     text = product.name,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
-                    color = Color(0xFF111827)
+                    color = TextPrimary
                 )
             }
 
-            // 💰 PRECIO (FIJO a la derecha)
+            // 💰 PRECIO
             Text(
                 text = "$ ${product.price}",
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
-                color = Color(0xFF111827)
+                color = TextPrimary
             )
 
-            // ❌ BOTÓN BORRAR TODO
-            if (quantity > 0) {
+            // ❌ REMOVE
+            // ❌ REMOVE (con animación)
+            AnimatedVisibility(
+                visible = quantity > 0,
+                enter = fadeIn(tween(180)) + scaleIn(
+                    initialScale = 0.8f,
+                    animationSpec = tween(200)
+                ),
+                exit = fadeOut(tween(120)) + scaleOut(
+                    targetScale = 0.8f,
+                    animationSpec = tween(150)
+                )
+            ) {
                 Spacer(Modifier.width(10.dp))
+
+                val interaction = remember { MutableInteractionSource() }
+                val pressed by interaction.collectIsPressedAsState()
+
+                val scale by animateFloatAsState(
+                    targetValue = if (pressed) 0.85f else 1f,
+                    label = ""
+                )
 
                 Box(
                     modifier = Modifier
-                        .size(28.dp)
-                        .background(
-                            color = Color(0xFFF87171).copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clickable {
+                        .size(32.dp)
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interaction,
+                            indication = null
+                        ) {
                             repeat(quantity) { removeProduct() }
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "×",
-                        color = Color(0xFFEF4444),
-                        fontWeight = FontWeight.Bold
+                    Icon(
+                        Icons.Default.Remove,
+                        contentDescription = "Quitar",
+                        tint = Color(0xFFDC2626),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

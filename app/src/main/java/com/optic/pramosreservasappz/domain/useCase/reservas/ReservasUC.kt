@@ -4,7 +4,7 @@ import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.DeleteClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorIdUC
-import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorProviderUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorOwnerUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductSafeUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductUC
@@ -42,7 +42,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.staff.GetStaffTotale
 data class ReservasUC(
 
     //clientes
-    val getClientPorProviderUC: GetClientPorProviderUC,
+    val getClientPorOwnerUC: GetClientPorOwnerUC,
     val getClientPorIdUC: GetClientPorIdUC,
     val createClientUC: CreateClientUC,
     val updateClientUC: UpdateClientUC,

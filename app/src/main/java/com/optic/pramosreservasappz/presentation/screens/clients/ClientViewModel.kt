@@ -70,7 +70,7 @@ class ClientViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     init {
-        loadClients(fullName = "", email = "", providerId = 1)
+        loadClients(fullName = "", email = "", ownerId = 1)
     }
 
     // ---------------------------------------------
@@ -79,11 +79,11 @@ class ClientViewModel @Inject constructor(
     fun loadClients(
         fullName: String = "",
         email: String = "",
-        providerId: Int = 1
+        ownerId: Int = 1
     ) {
         viewModelScope.launch {
-            reservasUC.getClientPorProviderUC(
-                providerId = providerId,
+            reservasUC.getClientPorOwnerUC(
+                ownerId = ownerId,
                 fullName = fullName,
                 email = email
             )
@@ -160,7 +160,7 @@ class ClientViewModel @Inject constructor(
 
                     if (result is Resource.Success) {
                         delay(500)
-                        loadClients(fullName = "", email = "", providerId = 1)
+                        loadClients(fullName = "", email = "", ownerId = 1)
                     }
                 }
         }
@@ -183,7 +183,7 @@ class ClientViewModel @Inject constructor(
 
                     if (result is Resource.Success) {
                         delay(500)
-                        loadClients(fullName = "", email = "", providerId = 1)
+                        loadClients(fullName = "", email = "", ownerId = 1)
                     }
                 }
         }
@@ -231,7 +231,7 @@ class ClientViewModel @Inject constructor(
                         delay(1000)
 
                         Log.d(TAG, "🔄 Recargando clientes desde backend")
-                        loadClients(fullName = "", email = "", providerId = 1)
+                        loadClients(fullName = "", email = "", ownerId= 1)
 
                         delay(300)
                         _deleteClientState.value = Resource.Idle
@@ -262,7 +262,7 @@ class ClientViewModel @Inject constructor(
                 Log.e(TAG, "💥 EXCEPCIÓN en deleteClient", e)
 
                 Log.d(TAG, "↩️ Recargando clientes por error")
-                loadClients(fullName = "", email = "", providerId = 1)
+                loadClients(fullName = "", email = "", ownerId = 1)
 
                 _deleteClientState.value = Resource.Failure(
                     e.localizedMessage ?: "Error al eliminar cliente"

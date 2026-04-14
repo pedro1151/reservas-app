@@ -2,7 +2,9 @@ package com.optic.pramosreservasappz.presentation.screens.sales
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
@@ -873,4 +875,20 @@ class SalesViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000),
             0
         )
+
+
+    // 🔥 STEP 1 STATE
+    var saleName by mutableStateOf("")
+        private set
+
+    var paymentMethod by mutableStateOf<String?>(null)
+        private set
+
+    fun onSaleNameChange(value: String) {
+        saleName = value
+    }
+
+    fun onPaymentMethodSelected(method: String) {
+        paymentMethod = method
+    }
 }

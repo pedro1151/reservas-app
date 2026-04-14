@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.components
+package com.optic.pramosreservasappz.presentation.screens.rapidsale.components
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*

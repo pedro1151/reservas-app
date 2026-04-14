@@ -1,7 +1,8 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale
+package com.optic.pramosreservasappz.presentation.screens.salecomplete.steptwo
+
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.RapidSaleContent
 
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,21 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.components.BackTopBar
-import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.topbar.RapidSaleTopBar
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.topbar.RapidSaleTopBar
 
 @Composable
-fun RapidSaleScreen(
+fun CompleteSaleStepTwoScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
     viewModel: SalesViewModel
@@ -48,11 +45,11 @@ fun RapidSaleScreen(
         if ( productsResource  !is Resource.Loading) isRefreshing = false
     }
     // BORRO PRODUCTOS SELECCIONADOS VIEJOS DEL CARRITO
-   /* LaunchedEffect(Unit) {
-        viewModel.clearSelectedProducts()
-    }
+    /* LaunchedEffect(Unit) {
+         viewModel.clearSelectedProducts()
+     }
 
-    */
+     */
 
     val total by viewModel.total.collectAsState()
     val totalItems by viewModel.totalItems.collectAsState()
@@ -60,7 +57,7 @@ fun RapidSaleScreen(
     Scaffold(
         topBar = {
             RapidSaleTopBar(
-                title = "VENTA RAPIDA",
+                title = "Selecciona los items",
                 navController = navController,
                 total = total,
                 totalItems = totalItems,
@@ -92,7 +89,7 @@ fun RapidSaleScreen(
                     ) { CircularProgressIndicator() }
                 }
                 is Resource.Success -> {
-                    RapidSaleContent(
+                    CompleteSaleStepTwoContent(
                         products = result.data,
                         viewModel = viewModel,
                         navController = navController,

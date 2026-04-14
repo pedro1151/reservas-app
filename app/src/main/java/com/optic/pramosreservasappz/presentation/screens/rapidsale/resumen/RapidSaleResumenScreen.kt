@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.sales.rapidsale.resumen
+package com.optic.pramosreservasappz.presentation.screens.rapidsale.resumen
 
 import androidx.activity.ComponentActivity
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
@@ -140,7 +140,7 @@ fun RapidSaleResumenScreen(
                     enabled = !isCreating,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ButtonGreen,
+                        containerColor = MaterialTheme.colorScheme.primary,
                         disabledContainerColor = SGray400
                     )
                 ) {
