@@ -7,16 +7,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -31,8 +35,29 @@ import com.optic.pramosreservasappz.presentation.navigation.screen.client.Client
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-// Ancho de cada acción — solo ícono + label, sin fondo de color
 private val ACTION_WIDTH = 64.dp
+
+private val SALE_PALETTE = listOf(
+    Color(0xFF6E4FDB), Color(0xFF3B78C4), Color(0xFF10A37F),
+    Color(0xFFE05C5C), Color(0xFFD97706), Color(0xFF7C3AED),
+    Color(0xFF0891B2), Color(0xFFDB2777), Color(0xFF16A34A),
+    Color(0xFF9333EA), Color(0xFF2563EB), Color(0xFFDC6B19),
+)
+
+fun getAvatarColor(id: Int): Color = SALE_PALETTE[id % SALE_PALETTE.size]
+
+private fun formatAmount(raw: Any?): String = try {
+    "Bs. %,.0f".format(raw.toString().toDouble())
+} catch (e: Exception) { "Bs. $raw" }
+
+fun getInitials(fullName: String): String {
+    val parts = fullName.trim().split(" ")
+    return when {
+        parts.isEmpty() -> "?"
+        parts.size == 1 -> parts[0].take(2).uppercase()
+        else -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
+    }
+}
 
 @Composable
 fun HistorialSaleCard(
@@ -47,38 +72,60 @@ fun HistorialSaleCard(
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var visible          by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { visible = true }
 
-    val avatarColor = remember(sale.id) { getAvatarColor(sale.id) }
-    val initials    = "#" + sale.id.toString()
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(20L * (sale.id % 10))
+        visible = true
+    }
 
-    // 64 + 64 = 128dp exacto → sin gap
-    val maxSwipe        = -(ACTION_WIDTH.value * 2)
-    val editThreshold   = -(ACTION_WIDTH.value * 0.8f)
-    val deleteThreshold = -(ACTION_WIDTH.value * 1.5f)
+    val accentColor = remember(sale.id) { getAvatarColor(sale.id) }
+    val amountText  = remember(sale.amount) { formatAmount(sale.amount) }
+
+    // Umbrales del swipe
+    val maxSwipe        = -(ACTION_WIDTH.value * 2f)
+    val editThreshold   = -(ACTION_WIDTH.value * 0.7f)
+    val deleteThreshold = -(ACTION_WIDTH.value * 1.4f)
+
+    // Progreso normalizado del swipe [0..1] para animar el fondo
+    val swipeProgress = (-offsetX / abs(maxSwipe)).coerceIn(0f, 1f)
 
     fun snap(target: Float) {
         scope.launch {
             animatable.animateTo(
                 targetValue   = target,
                 animationSpec = spring(
-                    dampingRatio = if (target == 0f) Spring.DampingRatioNoBouncy
-                    else              Spring.DampingRatioMediumBouncy,
-                    stiffness    = Spring.StiffnessMedium
+                    dampingRatio = when {
+                        target == 0f -> Spring.DampingRatioMediumBouncy
+                        else         -> Spring.DampingRatioLowBouncy   // más rebote al abrir
+                    },
+                    stiffness = Spring.StiffnessMediumLow
                 )
             )
         }
     }
 
+    // Escala animada del ícono editar
+    val editIconScale by animateFloatAsState(
+        targetValue   = if (offsetX <= editThreshold) 1f else 0f,
+        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium),
+        label         = "editScale"
+    )
+    // Escala animada del ícono eliminar
+    val deleteIconScale by animateFloatAsState(
+        targetValue   = if (offsetX <= deleteThreshold) 1f else 0f,
+        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium),
+        label         = "deleteScale"
+    )
+
     AnimatedVisibility(
         visible = visible,
-        enter   = fadeIn(tween(250)) + expandVertically(tween(250)),
-        exit    = fadeOut(tween(180)) + shrinkVertically(tween(180))
+        enter   = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 4 },
+        exit    = fadeOut(tween(200)) + shrinkVertically(tween(200))
     ) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 3.dp)
+                .padding(vertical = 4.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication        = null,
@@ -86,87 +133,116 @@ fun HistorialSaleCard(
                 ) { snap(0f) }
         ) {
 
-            // ── Acciones de fondo: fondo blanco, íconos de color ──
+            // ── Fondo de acciones ──
+            // Color del fondo transiciona de blanco → azul (edit) → rojo (delete)
+            val bgColor = when {
+                offsetX <= deleteThreshold -> Color(0xFFFFEDED).copy(alpha = 0.5f + swipeProgress * 0.5f)
+                offsetX <= editThreshold   -> Color(0xFFEAF2FF).copy(alpha = 0.5f + swipeProgress * 0.5f)
+                else                       -> Color(0xFFF3F3F3)
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .matchParentSize()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color.White),
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(bgColor),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                // EDITAR — ícono azul
-                if (offsetX <= editThreshold) {
-                    Box(
-                        modifier = Modifier
-                            .width(ACTION_WIDTH)
-                            .fillMaxHeight()
-                            .clickable {
+                // ── Botón EDITAR (solo ícono, con escala spring) ──
+                Box(
+                    modifier = Modifier
+                        .width(ACTION_WIDTH)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication        = null
+                        ) {
+                            if (offsetX <= editThreshold) {
                                 snap(0f)
                                 navController.navigate(
-                                    ClientScreen.ABMCliente.createRoute(
-                                        clientId = sale.id,
-                                        editable = true
-                                    )
+                                    ClientScreen.ABMCliente.createRoute(clientId = sale.id, editable = true)
                                 )
-                            },
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .graphicsLayer {
+                                scaleX = editIconScale
+                                scaleY = editIconScale
+                                alpha  = editIconScale
+                            }
+                            .clip(CircleShape)
+                            .background(Color(0xFF3B78C4)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Edit,
-                                contentDescription = "Editar",
-                                tint     = Color(0xFF2196F3),
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Editar",
-                                fontSize   = 11.sp,
-                                color      = Color(0xFF2196F3),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint     = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
 
-                // ELIMINAR — ícono rojo
-                if (offsetX <= deleteThreshold) {
+                // ── Botón ELIMINAR (solo ícono, con escala spring) ──
+                Box(
+                    modifier = Modifier
+                        .width(ACTION_WIDTH)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication        = null
+                        ) {
+                            if (offsetX <= deleteThreshold) showDeleteDialog = true
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
                     Box(
                         modifier = Modifier
-                            .width(ACTION_WIDTH)
-                            .fillMaxHeight()
-                            .clickable { showDeleteDialog = true },
+                            .size(44.dp)
+                            .graphicsLayer {
+                                scaleX = deleteIconScale
+                                scaleY = deleteIconScale
+                                alpha  = deleteIconScale
+                            }
+                            .clip(CircleShape)
+                            .background(Color(0xFFE05C5C)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Eliminar",
-                                tint     = Color(0xFFE53935),
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Eliminar",
-                                fontSize   = 11.sp,
-                                color      = Color(0xFFE53935),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint     = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
 
-            // ── Card principal ──
+            // ── Card principal con tilt sutil durante drag ──
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(x = offsetX.dp)
                     .graphicsLayer {
-                        scaleY = (1f - abs(offsetX) / 1200f).coerceIn(0.98f, 1f)
+                        // Leve tilt durante el deslizamiento
+                        rotationZ = (offsetX * 0.008f).coerceIn(-1.2f, 0f)
+                        // Escala vertical sutil
+                        scaleY = (1f - abs(offsetX) / 1600f).coerceIn(0.975f, 1f)
+                        // Sombra se reduce al abrir
+                        shadowElevation = (4f - swipeProgress * 4f).coerceAtLeast(0f)
                     }
+                    .shadow(
+                        elevation    = if (offsetX > -1f) 2.dp else 0.dp,
+                        shape        = RoundedCornerShape(18.dp),
+                        ambientColor = accentColor.copy(alpha = 0.12f),
+                        spotColor    = accentColor.copy(alpha = 0.08f)
+                    )
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
                             onDragEnd = {
@@ -191,133 +267,136 @@ fun HistorialSaleCard(
                         indication        = null
                     ) {
                         if (offsetX > -1f) {
-                            navController.navigate(
-                                ClientScreen.SaleDetail.createRoute(saleId = sale.id)
-                            )
+                            navController.navigate(ClientScreen.SaleDetail.createRoute(saleId = sale.id))
                         } else snap(0f)
                     },
-                // Esquinas derechas planas al deslizar → acople perfecto con las acciones
-                shape = if (offsetX < -2f)
-                    RoundedCornerShape(topStart = 14.dp, bottomStart = 14.dp, topEnd = 0.dp, bottomEnd = 0.dp)
-                else
-                    RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(18.dp),
                 color           = Color.White,
-                shadowElevation = 0.dp,
-                border          = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEEEEEE))
+                shadowElevation = 0.dp
             ) {
                 Row(
-                    modifier          = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    modifier          = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Franja de color izquierda
                     Box(
                         modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(11.dp))
-                            .background(avatarColor),
+                            .width(5.dp)
+                            .height(70.dp)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(accentColor, accentColor.copy(alpha = 0.4f))
+                                ),
+                                RoundedCornerShape(topStart = 18.dp, bottomStart = 18.dp)
+                            )
+                    )
+
+                    Spacer(Modifier.width(12.dp))
+
+                    // Avatar circular
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(accentColor.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text          = initials,
-                            fontSize      = 15.sp,
-                            fontWeight    = FontWeight.SemiBold,
-                            color         = Color.White,
-                            letterSpacing = 0.5.sp
+                            text       = "#${sale.id}".take(5),
+                            fontSize   = if (sale.id > 99) 10.sp else 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = accentColor
                         )
                     }
 
                     Spacer(Modifier.width(12.dp))
 
+                    // Contenido central
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text          = sale.description ?: "Venta",
+                            text          = sale.description ?: "Venta #${sale.id}",
                             fontSize      = 14.sp,
-                            fontWeight    = FontWeight.Medium,
-                            color         = Color.Black,
+                            fontWeight    = FontWeight.SemiBold,
+                            color         = Color(0xFF1A1A2E),
                             maxLines      = 1,
                             overflow      = TextOverflow.Ellipsis,
-                            letterSpacing = (-0.2).sp
+                            letterSpacing = (-0.3).sp
                         )
-                        Spacer(Modifier.height(3.dp))
-                        Text(
-                            text     = sale.amount.toString(),
-                            fontSize = 12.sp,
-                            color    = Color(0xFFAAAAAA),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(Modifier.height(5.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFFF0F0F0), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        Spacer(Modifier.height(4.dp))
+                        Row(
+                            verticalAlignment     = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Text(
-                                text          = "Vendedor",
-                                fontSize      = 10.sp,
-                                color         = Color(0xFF888888),
-                                fontWeight    = FontWeight.Medium,
-                                letterSpacing = 0.2.sp
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .background(accentColor.copy(alpha = 0.10f), RoundedCornerShape(20.dp))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                                verticalAlignment     = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Icon(Icons.Outlined.ShoppingBag, null,
+                                    tint     = accentColor,
+                                    modifier = Modifier.size(10.dp))
+                                Text("Vendedor", fontSize = 10.sp, color = accentColor,
+                                    fontWeight = FontWeight.SemiBold, letterSpacing = 0.3.sp)
+                            }
                         }
                     }
 
-                    if (offsetX > -1f) {
-                        Icon(
-                            Icons.Outlined.ChevronRight, null,
-                            tint     = Color(0xFFDDDDDD),
-                            modifier = Modifier.size(18.dp)
+                    Spacer(Modifier.width(8.dp))
+
+                    // Monto + chevron
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier            = Modifier.padding(end = 14.dp)
+                    ) {
+                        Text(
+                            text          = amountText,
+                            fontSize      = 13.sp,
+                            fontWeight    = FontWeight.Bold,
+                            color         = accentColor,
+                            letterSpacing = (-0.3).sp
                         )
+                        if (offsetX > -1f) {
+                            Spacer(Modifier.height(2.dp))
+                            Icon(Icons.Outlined.ChevronRight, null,
+                                tint     = Color(0xFFCCCCCC),
+                                modifier = Modifier.size(16.dp))
+                        }
                     }
                 }
             }
         }
     }
 
+    // ── Diálogo de confirmación ──
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false; snap(0f) },
-            title = { Text("¿Eliminar venta?", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
-            text  = {
+            title = {
+                Text("¿Eliminar venta?", fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+            },
+            text = {
                 Text(
-                    "Se eliminará la venta \"${sale.description}\". Esta acción no se puede deshacer.",
-                    fontSize = 14.sp, color = Color(0xFF555555)
+                    "Se eliminará \"${sale.description}\". Esta acción no se puede deshacer.",
+                    fontSize = 14.sp, color = Color(0xFF555577)
                 )
             },
             confirmButton = {
                 Button(
-                    onClick = { showDeleteDialog = false; visible = false /* onDelete(sale) */ },
-                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
-                    shape   = RoundedCornerShape(10.dp)
-                ) { Text("Eliminar", color = Color.White) }
+                    onClick = { showDeleteDialog = false; visible = false },
+                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE05C5C)),
+                    shape   = RoundedCornerShape(12.dp)
+                ) { Text("Eliminar", color = Color.White, fontWeight = FontWeight.SemiBold) }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false; snap(0f) }) {
-                    Text("Cancelar", color = Color.Black)
+                    Text("Cancelar", color = Color(0xFF666688))
                 }
             },
-            shape          = RoundedCornerShape(16.dp),
+            shape          = RoundedCornerShape(20.dp),
             containerColor = Color.White
         )
-    }
-}
-
-fun getAvatarColor(id: Int): Color {
-    val colors = listOf(
-        Color(0xFF1A1A1A), Color(0xFF555555), Color(0xFF888888),
-        Color(0xFF4A6CF7), Color(0xFF7C3AED), Color(0xFF059669),
-        Color(0xFFDC2626), Color(0xFFD97706), Color(0xFF0891B2),
-        Color(0xFFDB2777), Color(0xFF65A30D), Color(0xFF9333EA)
-    )
-    return colors[id % colors.size]
-}
-
-fun getInitials(fullName: String): String {
-    val parts = fullName.trim().split(" ")
-    return when {
-        parts.isEmpty() -> "?"
-        parts.size == 1 -> parts[0].take(2).uppercase()
-        else -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
     }
 }
