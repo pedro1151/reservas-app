@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
@@ -890,5 +891,69 @@ class SalesViewModel @Inject constructor(
 
     fun onPaymentMethodSelected(method: String) {
         paymentMethod = method
+    }
+
+
+    // ---------------------------------------------
+    // STATE: Lista de clientes
+    // ---------------------------------------------
+    private val _clientsState = MutableStateFlow<Resource<List<ClientResponse>>>(Resource.Loading)
+    val clientsState: StateFlow<Resource<List<ClientResponse>>> = _clientsState.asStateFlow()
+
+    // 🔹 NUEVO: Lista mutable para control local
+    private val _localClientsList = MutableStateFlow<List<ClientResponse>>(emptyList())
+    val localClientsList: StateFlow<List<ClientResponse>> = _localClientsList.asStateFlow()
+
+    // ---------------------------------------------
+    // FUNCIÓN: Cargar lista de clientes
+    // ---------------------------------------------
+    fun loadClients(
+        fullName: String = "",
+        email: String = "",
+        ownerId: Int = 1
+    ) {
+        viewModelScope.launch {
+            reservasUC.getClientPorOwnerUC(
+                ownerId = ownerId,
+                fullName = fullName,
+                email = email
+            )
+                .onStart {
+                    _clientsState.value = Resource.Loading
+                }
+                .catch { e ->
+                    _clientsState.value = Resource.Failure(e.message ?: "Error al cargar clientes")
+                }
+                .collectLatest { result ->
+                    _clientsState.value = result
+
+                    // 🔹 Actualizar lista local cuando llegan datos
+                    if (result is Resource.Success) {
+                        _localClientsList.value = result.data
+                    }
+                }
+        }
+    }
+
+
+    // 🔥 CLIENTE SELECCIONADO
+    var selectedClientId by mutableStateOf<Int?>(null)
+        private set
+
+    var selectedClientName by mutableStateOf<String?>(null)
+        private set
+
+    var selectedClientEmail by mutableStateOf<String?>(null)
+        private set
+
+    var selectedClientPhone by mutableStateOf<String?>(null)
+        private set
+
+    // 🔥 FUNCIÓN
+    fun selectClient(client: ClientResponse) {
+        selectedClientId = client.id
+        selectedClientName = client.fullName
+        selectedClientEmail = client.email
+        selectedClientPhone = client.phone
     }
 }

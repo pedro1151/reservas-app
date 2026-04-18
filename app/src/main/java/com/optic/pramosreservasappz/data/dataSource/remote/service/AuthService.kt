@@ -1,15 +1,22 @@
 package com.optic.pramosreservasappz.data.dataSource.remote.service
 
 import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.BasicUserResponse
 import com.optic.pramosreservasappz.domain.model.auth.LoginRequest
 import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginPlessRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
+import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.sales.SalesStatsResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface AuthService {
 
@@ -33,6 +40,8 @@ interface AuthService {
         @Body() user: User,
     ): Response<AuthResponse>
 
+
+
     // refresh token
     @POST("auth-reservas/refresh")
     suspend fun refresToken(
@@ -50,5 +59,31 @@ interface AuthService {
     suspend fun loginPless(
         @Body loginPlessRequest: LoginPlessRequest
     ): Response<AuthResponse>
+
+    //business
+
+    // pare crear un colaborador
+    @POST("auth-reservas/register/collab")
+    suspend fun register_collab(
+        @Body() user: UserCollabCreateRequest,
+    ): Response<BasicUserResponse>
+
+    // RECUPERA lista de colaboradores o memebers
+    @GET("/auth-reservas/members")
+    suspend fun getBusinessMembers(
+        @Query("business_id") businessId: Int,
+        @Query("email") email: String,
+        @Query("username") username: String
+    ): Response<List<UserMemberResponse>>
+
+    // Recuperar Business
+    @GET("/auth-reservas/business")
+    suspend fun getBusinessById(
+        @Query("business_id") businessId: Int,
+        @Query("user_id") userId: Int
+    ): Response<BusinessCompleteResponse>
+
+
+
 
 }

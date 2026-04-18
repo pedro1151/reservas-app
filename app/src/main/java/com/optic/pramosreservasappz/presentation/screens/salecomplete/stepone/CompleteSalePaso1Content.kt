@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
+import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 
 @Composable
 fun CompleteSalePaso1Content(
@@ -49,7 +50,6 @@ fun CompleteSalePaso1Content(
     val TextPrimary = Color(0xFF0F172A)
     val TextSecondary = Color(0xFF475569)
     val BorderSoft = Color(0xFFE2E8F0)
-    val BackgroundSoft = Color(0xFFF8FAFC)
 
     val saleName = viewModel.saleName
     val selectedMethod = viewModel.paymentMethod
@@ -66,7 +66,7 @@ fun CompleteSalePaso1Content(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundSoft)
+            .background(SoftCoolBackground)
             .padding(vertical = 70.dp)
     ) {
 

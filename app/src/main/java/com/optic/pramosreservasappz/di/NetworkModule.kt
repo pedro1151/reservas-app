@@ -6,6 +6,7 @@ import com.optic.pramosreservasappz.data.dataSource.remote.interceptor.AppApiKey
 import com.optic.pramosreservasappz.data.dataSource.remote.service.AuthService
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ExternalService
 import com.optic.pramosreservasappz.data.dataSource.remote.service.ReservasService
+import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,6 @@ import javax.inject.Named
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-
     /** OkHttpClient principal con interceptor que refresca token automáticamente */
     @Provides
     @Singleton
@@ -31,62 +31,85 @@ object NetworkModule {
         appApiKeyInterceptor: AppApiKeyInterceptor
     ): OkHttpClient {
 
-        // Retrofit temporal solo para refresh token (sin ciclo)
+        // 🔹 Cliente SOLO para refresh (con API KEY, sin JWT)
+        val okHttpRefresh = OkHttpClient.Builder()
+            .addInterceptor(appApiKeyInterceptor)
+            .build()
+
         val retrofitTemp = Retrofit.Builder()
             .baseUrl(Config.BASE_URL)
+            .client(okHttpRefresh)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val authServiceTemp = retrofitTemp.create(AuthService::class.java)
 
         return OkHttpClient.Builder()
-            .addInterceptor(appApiKeyInterceptor) // 👈 PRIMERO API KEY
-            .addInterceptor { chain ->   // 👈 DESPUÉS JWT
-            val originalRequest = chain.request()
+            .addInterceptor(appApiKeyInterceptor) // ✅ API KEY SIEMPRE
+            .addInterceptor { chain ->
 
-            var authResponse = runBlocking { datastore.getData().first() }
-            var token = authResponse.token
+                val originalRequest = chain.request()
 
-            // Request original con token
-            var requestWithToken = originalRequest.newBuilder()
-                .addHeader("Authorization", token ?: "")
-                .build()
+                val authResponse = runBlocking { datastore.getData().first() }
+                var token = authResponse.token
 
-            var response = chain.proceed(requestWithToken)
+                val isRefreshCall =
+                    originalRequest.url.encodedPath.contains("refresh")
 
-            // Si expira, intentamos refresh
-            if (response.code == 401) {
-                response.close()
-                val refreshToken = authResponse.refresh_token
-                if (!refreshToken.isNullOrBlank()) {
-                    try {
-                        val newAuthResponse = runBlocking {
-                            authServiceTemp.refresToken(
-                                com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest(
-                                    refreshToken
-                                )
-                            ).body()
+                // 🔹 Construcción segura del request
+                val requestBuilder = originalRequest.newBuilder()
+
+                if (!isRefreshCall && !token.isNullOrBlank()) {
+                    requestBuilder.addHeader("Authorization", "Bearer $token")
+                }
+
+                val requestWithToken = requestBuilder.build()
+
+                var response = chain.proceed(requestWithToken)
+
+                // 🔁 Intentar refresh si el token expiró
+                if (response.code == 401 && !isRefreshCall) {
+                    response.close()
+
+                    val refreshToken = authResponse.refreshToken
+
+                    if (!refreshToken.isNullOrBlank()) {
+                        try {
+                            val newAuthResponse = runBlocking {
+                                authServiceTemp.refresToken(
+                                    RefreshTokenRequest(refreshToken)
+                                ).body()
+                            }
+
+                            if (newAuthResponse != null && !newAuthResponse.token.isNullOrBlank()) {
+
+                                runBlocking { datastore.save(newAuthResponse) }
+
+                                val retryRequest = originalRequest.newBuilder()
+                                    .addHeader("Authorization", "Bearer ${newAuthResponse.token}")
+                                    .build()
+
+                                return@addInterceptor chain.proceed(retryRequest)
+                            } else {
+                                // ❌ REFRESH FALLÓ → LOGOUT
+                                runBlocking { datastore.delete() }
+                            }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                            // ❌ ERROR EN REFRESH → LOGOUT
+                            runBlocking { datastore.delete() }
                         }
-
-                        if (newAuthResponse != null && !newAuthResponse.token.isNullOrBlank()) {
-                            runBlocking { datastore.save(newAuthResponse) }
-                            token = newAuthResponse.token
-
-                            // Reintentamos request original con nuevo token
-                            val retryRequest = originalRequest.newBuilder()
-                                .addHeader("Authorization", token)
-                                .build()
-
-                            response = chain.proceed(retryRequest)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    } else {
+                        // ❌ NO HAY REFRESH TOKEN → LOGOUT
+                        runBlocking { datastore.delete() }
                     }
                 }
-            }
 
-            response
-        }.build()
+                response
+            }
+            .build()
     }
 
 

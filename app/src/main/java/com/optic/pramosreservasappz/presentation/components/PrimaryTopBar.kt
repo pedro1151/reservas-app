@@ -53,9 +53,9 @@ fun PrimaryTopBar(
                 if (showTitle) {
                     Text(
                         text = title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White.copy(alpha = 0.85f),
                         letterSpacing = 1.sp
                     )
                 }

@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.optic.pramosreservasappz.core.Config
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.DefaultTextField
 import com.optic.pramosreservasappz.presentation.components.inputs.EmailBox
@@ -55,7 +56,7 @@ fun BasicLoginScreen(
 
     LaunchedEffect(navigateToHome) {
         if (navigateToHome) {
-            navController.navigate(ClientScreen.Clientes.route) {
+            navController.navigate(ClientScreen.Sales.route) {
                 popUpTo(ClientScreen.BasicLogin.route) { inclusive = true }
             }
         }
@@ -105,7 +106,7 @@ fun BasicLoginScreen(
         ) {
             // 🖼 Logo centrado
             Text(
-                text = "Reserly",
+                text = Config.APP_NAME,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.8.sp,
@@ -220,7 +221,7 @@ fun BasicLoginScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "APP RESERVAS",
+                                text = Config.APP_NAME,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp

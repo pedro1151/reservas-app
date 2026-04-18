@@ -27,10 +27,12 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
+import com.optic.pramosreservasappz.presentation.screens.business.abmmember.ABMbusinessMemberScreen
+import com.optic.pramosreservasappz.presentation.screens.business.members.BusinessMembersScreen
+import com.optic.pramosreservasappz.presentation.screens.business.mybusiness.MyBusinessScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steofour.CreateReservationStepFourScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateResevationStepOneScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptree.CreateCalendarStepThreeScreen
 import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptwo.CreateReservationStepTwoScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
@@ -43,6 +45,7 @@ import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.sales.detail.SaleDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.RapidSaleScreen
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.resumen.RapidSaleResumenScreen
+import com.optic.pramosreservasappz.presentation.screens.salecomplete.selecclient.SelectClientScreen
 import com.optic.pramosreservasappz.presentation.screens.salecomplete.stepone.CompleteSaleStepOneScreen
 import com.optic.pramosreservasappz.presentation.screens.salecomplete.steptree.CompleteSaleStepTreeScreen
 import com.optic.pramosreservasappz.presentation.screens.salecomplete.steptwo.CompleteSaleStepTwoScreen
@@ -59,7 +62,7 @@ fun ClientNavGraph(
     isAuthenticated: Boolean,
     onShowRewardAd: () -> Unit
 ) {
-    val saleViewModel: SalesViewModel = hiltViewModel() // 🔥 UNA SOLA INSTANCIA
+    val saleViewModel1: SalesViewModel = hiltViewModel() // 🔥 UNA SOLA INSTANCIA
 
     AnimatedNavHost(
         navController = navController,
@@ -147,7 +150,7 @@ fun ClientNavGraph(
                 RapidSaleScreen(
                     navController = navController,
                     isAuthenticated = isAuthenticated,
-                    viewModel = saleViewModel
+                    viewModel = saleViewModel1
                 )
             }
 
@@ -159,7 +162,7 @@ fun ClientNavGraph(
                 RapidSaleResumenScreen(
                     navController = navController,
                     isAuthenticated = isAuthenticated,
-                    viewModel = saleViewModel
+                    viewModel = saleViewModel1
                 )
             }
 
@@ -170,7 +173,7 @@ fun ClientNavGraph(
             CompleteSaleStepOneScreen(
                 navController = navController,
                 isAuthenticated = isAuthenticated,
-                viewModel = saleViewModel
+                viewModel = saleViewModel1
             )
         }
 
@@ -180,7 +183,7 @@ fun ClientNavGraph(
             CompleteSaleStepTreeScreen(
                 navController = navController,
                 isAuthenticated = isAuthenticated,
-                viewModel = saleViewModel
+                viewModel = saleViewModel1
             )
         }
 
@@ -191,7 +194,7 @@ fun ClientNavGraph(
             CompleteSaleStepTwoScreen(
                 navController = navController,
                 isAuthenticated = isAuthenticated,
-                viewModel = saleViewModel
+                viewModel = saleViewModel1
             )
         }
 
@@ -216,6 +219,15 @@ fun ClientNavGraph(
             SalesStatsScreen(
                 navController = navController,
                 isAuthenticated = isAuthenticated
+            )
+        }
+
+        composable(
+            route = ClientScreen.SelecClient.route
+        ) {
+            SelectClientScreen(
+                navController = navController,
+                viewModel = saleViewModel1
             )
         }
 
@@ -265,21 +277,7 @@ fun ClientNavGraph(
                 )
             }
 
-            composable(
-                route = ClientScreen.CreateReservationStepThree.route
-            ) { backStackEntry ->
 
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
-                }
-
-                val viewModel: CalendarViewModel = hiltViewModel(parentEntry)
-
-                CreateCalendarStepThreeScreen(
-                    navController,
-                    viewModel
-                )
-            }
 
             composable(
                 route = ClientScreen.CreateReservationStepFour.route
@@ -415,6 +413,32 @@ fun ClientNavGraph(
                 navController = navController
             )
 
+        }
+
+        // busines
+
+        composable(
+            route = ClientScreen.BusinessMembers.route
+        ) {
+            BusinessMembersScreen(
+                navController
+            )
+        }
+
+        composable(
+            route = ClientScreen.ABMBusinessMember.route
+        ) {
+            ABMbusinessMemberScreen(
+                navController
+            )
+        }
+
+        composable(
+            route = ClientScreen.MyBusiness.route
+        ) {
+            MyBusinessScreen(
+                navController
+            )
         }
 
         ProfileNavGraph(navController)

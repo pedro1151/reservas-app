@@ -6,6 +6,9 @@ import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 import com.optic.pramosreservasappz.domain.useCase.auth.*
 import com.optic.pramosreservasappz.domain.useCase.auth.loginpless.LoginPlessUC
 import com.optic.pramosreservasappz.domain.useCase.auth.loginpless.LoginSendCodeUC
+import com.optic.pramosreservasappz.domain.useCase.business.CreateColaboradorUC
+import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessByIdUC
+import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessMembersUC
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
@@ -63,7 +66,12 @@ object UseCaseModule {
         getSessionData = GetSessionDataUseCase(authRepository),
         logout = LogoutUseCase(authRepository),
         loginPlessUC = LoginPlessUC(authRepository),
-        loginSendCodeUC = LoginSendCodeUC(authRepository)
+        loginSendCodeUC = LoginSendCodeUC(authRepository),
+
+        //buesiness
+        createColaboradorUC = CreateColaboradorUC(authRepository),
+        getBusinessMembersUC = GetBusinessMembersUC(authRepository),
+        getBusinessByIdUC = GetBusinessByIdUC(authRepository)
 
     )
 

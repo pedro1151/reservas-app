@@ -38,7 +38,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateCalendarStepThreeScreen(
+fun CreateCalendarStepThreeScreenReservas(
     navController: NavHostController,
     calendarViewModel: CalendarViewModel
 ){
@@ -94,7 +94,7 @@ containerColor = Color.White
             }
 
             is Resource.Success -> {
-                SelectClientContent(
+                SelectClientContentReservas(
                     clients = result.data,
                     paddingValues = paddingValues,
                     viewModel = viewModel,
