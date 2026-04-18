@@ -35,14 +35,24 @@ import com.optic.pramosreservasappz.presentation.screens.historial.components.ge
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+// ─── Design Tokens ──────────────────────────────────────────────────────────────
+private val Blue600  = Color(0xFF2563EB)
+private val Blue500  = Color(0xFF3B82F6)
+private val Blue50   = Color(0xFFEFF6FF)
+private val Slate900 = Color(0xFF0F172A)
+private val Slate500 = Color(0xFF64748B)
+private val Slate200 = Color(0xFFE2E8F0)
+private val Red500   = Color(0xFFEF4444)
+
 private val ACTION_WIDTH = 64.dp
 
+// ─── Main Card ──────────────────────────────────────────────────────────────────
 @Composable
 fun PrincipalProducCard(
-    product: ProductResponse,
-    navController: NavHostController,
-    onDelete: (ProductResponse) -> Unit,
-    modifier: Modifier = Modifier
+    product       : ProductResponse,
+    navController : NavHostController,
+    onDelete      : (ProductResponse) -> Unit,
+    modifier      : Modifier = Modifier
 ) {
     val animatable = remember { Animatable(0f) }
     val offsetX    = animatable.value
@@ -64,30 +74,25 @@ fun PrincipalProducCard(
         catch (e: Exception) { "Bs. ${product.price}" }
     }
 
-    // Umbrales del swipe
+    // ── Swipe thresholds (unchanged) ──
     val maxSwipe        = -(ACTION_WIDTH.value * 2f)
     val editThreshold   = -(ACTION_WIDTH.value * 0.7f)
     val deleteThreshold = -(ACTION_WIDTH.value * 1.4f)
-
-    // Progreso normalizado [0..1]
-    val swipeProgress = (-offsetX / abs(maxSwipe)).coerceIn(0f, 1f)
+    val swipeProgress   = (-offsetX / abs(maxSwipe)).coerceIn(0f, 1f)
 
     fun snap(target: Float) {
         scope.launch {
             animatable.animateTo(
                 targetValue   = target,
                 animationSpec = spring(
-                    dampingRatio = when {
-                        target == 0f -> Spring.DampingRatioMediumBouncy
-                        else         -> Spring.DampingRatioLowBouncy
-                    },
-                    stiffness = Spring.StiffnessMediumLow
+                    dampingRatio = if (target == 0f) Spring.DampingRatioMediumBouncy
+                    else Spring.DampingRatioLowBouncy,
+                    stiffness    = Spring.StiffnessMediumLow
                 )
             )
         }
     }
 
-    // Escala spring de los íconos de acción
     val editIconScale by animateFloatAsState(
         targetValue   = if (offsetX <= editThreshold) 1f else 0f,
         animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium),
@@ -107,7 +112,7 @@ fun PrincipalProducCard(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp)
+                .padding(vertical = 5.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication        = null,
@@ -115,23 +120,23 @@ fun PrincipalProducCard(
                 ) { snap(0f) }
         ) {
 
-            // ── Fondo de acciones con transición de color ──
+            // ── Action background (blue/red tinted) ──
             val bgColor = when {
-                offsetX <= deleteThreshold -> Color(0xFFFFEDED).copy(alpha = 0.5f + swipeProgress * 0.5f)
-                offsetX <= editThreshold   -> Color(0xFFEAF2FF).copy(alpha = 0.5f + swipeProgress * 0.5f)
-                else                       -> Color(0xFFF3F3F3)
+                offsetX <= deleteThreshold -> Color(0xFFFEF2F2).copy(alpha = 0.6f + swipeProgress * 0.4f)
+                offsetX <= editThreshold   -> Blue50.copy(alpha = 0.6f + swipeProgress * 0.4f)
+                else                       -> Color(0xFFF1F5F9)
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .matchParentSize()
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(bgColor),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                // ── Botón EDITAR ──
+                // ── Edit action ──
                 Box(
                     modifier = Modifier
                         .width(ACTION_WIDTH)
@@ -160,20 +165,22 @@ fun PrincipalProducCard(
                                 scaleY = editIconScale
                                 alpha  = editIconScale
                             }
-                            .clip(CircleShape)
-                            .background(Color(0xFF3B78C4)),
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                Brush.linearGradient(listOf(Blue600, Blue500))
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = "Editar",
                             tint     = Color.White,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
-                // ── Botón ELIMINAR ──
+                // ── Delete action ──
                 Box(
                     modifier = Modifier
                         .width(ACTION_WIDTH)
@@ -194,21 +201,21 @@ fun PrincipalProducCard(
                                 scaleY = deleteIconScale
                                 alpha  = deleteIconScale
                             }
-                            .clip(CircleShape)
-                            .background(Color(0xFFE05C5C)),
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Red500),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Eliminar",
                             tint     = Color.White,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
             }
 
-            // ── Card principal con tilt sutil durante drag ──
+            // ── Main card surface ──
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -219,10 +226,10 @@ fun PrincipalProducCard(
                         shadowElevation = (4f - swipeProgress * 4f).coerceAtLeast(0f)
                     }
                     .shadow(
-                        elevation    = if (offsetX > -1f) 2.dp else 0.dp,
-                        shape        = RoundedCornerShape(18.dp),
-                        ambientColor = avatarColor.copy(alpha = 0.12f),
-                        spotColor    = avatarColor.copy(alpha = 0.08f)
+                        elevation    = if (offsetX > -1f) 4.dp else 0.dp,
+                        shape        = RoundedCornerShape(20.dp),
+                        ambientColor = Blue500.copy(alpha = 0.07f),
+                        spotColor    = Blue600.copy(alpha = 0.11f)
                     )
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
@@ -253,105 +260,101 @@ fun PrincipalProducCard(
                             )
                         } else snap(0f)
                     },
-                shape           = RoundedCornerShape(18.dp),
+                shape           = RoundedCornerShape(20.dp),
                 color           = Color.White,
                 shadowElevation = 0.dp
             ) {
                 Row(
-                    modifier          = Modifier.fillMaxWidth(),
+                    modifier          = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 13.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // ── Franja de color izquierda ──
+                    // ── Gradient square avatar ──
                     Box(
                         modifier = Modifier
-                            .width(5.dp)
-                            .height(70.dp)
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
                             .background(
-                                Brush.verticalGradient(
-                                    listOf(avatarColor, avatarColor.copy(alpha = 0.4f))
-                                ),
-                                RoundedCornerShape(topStart = 18.dp, bottomStart = 18.dp)
-                            )
-                    )
-
-                    Spacer(Modifier.width(12.dp))
-
-                    // ── Avatar circular con iniciales ──
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .background(avatarColor.copy(alpha = 0.12f)),
+                                Brush.linearGradient(
+                                    listOf(avatarColor, avatarColor.copy(alpha = 0.55f))
+                                )
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text       = getServiceInitials(product.name),
-                            fontSize   = 13.sp,
+                            fontSize   = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = avatarColor
+                            color      = Color.White,
+                            letterSpacing = (-0.3).sp
                         )
                     }
 
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(14.dp))
 
-                    // ── Contenido central ──
+                    // ── Content ──
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text          = product.name,
-                            fontSize      = 14.sp,
+                            fontSize      = 15.sp,
                             fontWeight    = FontWeight.SemiBold,
-                            color         = Color(0xFF1A1A2E),
+                            color         = Slate900,
                             maxLines      = 1,
                             overflow      = TextOverflow.Ellipsis,
-                            letterSpacing = (-0.3).sp
+                            letterSpacing = (-0.2).sp
                         )
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(5.dp))
                         Row(
                             verticalAlignment     = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Row(
+                            Box(
                                 modifier = Modifier
-                                    .background(
-                                        avatarColor.copy(alpha = 0.10f),
-                                        RoundedCornerShape(20.dp)
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 3.dp),
-                                verticalAlignment     = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                    .background(Blue50, RoundedCornerShape(7.dp))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
                             ) {
-                                Icon(
-                                    Icons.Outlined.Category, null,
-                                    tint     = avatarColor,
-                                    modifier = Modifier.size(10.dp)
-                                )
-                                Text(
-                                    "Producto", fontSize = 10.sp, color = avatarColor,
-                                    fontWeight = FontWeight.SemiBold, letterSpacing = 0.3.sp
-                                )
+                                Row(
+                                    verticalAlignment     = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.Category, null,
+                                        tint     = Blue600,
+                                        modifier = Modifier.size(9.dp)
+                                    )
+                                    Text(
+                                        "Producto",
+                                        fontSize      = 10.sp,
+                                        color         = Blue600,
+                                        fontWeight    = FontWeight.SemiBold,
+                                        letterSpacing = 0.2.sp
+                                    )
+                                }
                             }
                         }
                     }
 
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(10.dp))
 
-                    // ── Precio + MoreVert ──
+                    // ── Price + MoreVert ──
                     Column(
                         horizontalAlignment = Alignment.End,
-                        modifier            = Modifier.padding(end = 14.dp)
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text          = priceText,
-                            fontSize      = 13.sp,
+                            fontSize      = 16.sp,
                             fontWeight    = FontWeight.Bold,
-                            color         = avatarColor,
-                            letterSpacing = (-0.3).sp
+                            color         = Blue600,
+                            letterSpacing = (-0.4).sp
                         )
                         if (offsetX > -1f) {
-                            Spacer(Modifier.height(2.dp))
+                            Spacer(Modifier.height(5.dp))
                             Box(
                                 modifier = Modifier
-                                    .size(20.dp)
+                                    .size(26.dp)
+                                    .clip(CircleShape)
                                     .clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication        = null
@@ -360,7 +363,7 @@ fun PrincipalProducCard(
                             ) {
                                 Icon(
                                     Icons.Outlined.MoreVert, null,
-                                    tint     = Color(0xFFCCCCCC),
+                                    tint     = Slate200,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -386,41 +389,68 @@ fun PrincipalProducCard(
         )
     }
 
-    // ── Diálogo de confirmación eliminación ──
+    // ── Delete Confirmation Dialog ──
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false; snap(0f) },
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFFEF2F2)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        tint     = Red500,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            },
             title = {
                 Text(
-                    "¿Borrar producto?", fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E)
+                    "¿Borrar producto?",
+                    fontSize      = 17.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = Slate900,
+                    letterSpacing = (-0.3).sp
                 )
             },
             text = {
                 Text(
                     "Se eliminará \"${product.name}\". Esta acción no se puede deshacer.",
-                    fontSize = 14.sp, color = Color(0xFF555577)
+                    fontSize   = 14.sp,
+                    color      = Slate500,
+                    lineHeight = 20.sp
                 )
             },
             confirmButton = {
                 Button(
                     onClick = { showDeleteDialog = false; visible = false; onDelete(product) },
-                    colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFFE05C5C)),
-                    shape   = RoundedCornerShape(12.dp)
-                ) { Text("Borrar", color = Color.White, fontWeight = FontWeight.SemiBold) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false; snap(0f) }) {
-                    Text("Cancelar", color = Color(0xFF666688))
+                    colors  = ButtonDefaults.buttonColors(containerColor = Red500),
+                    shape   = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Borrar producto", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
             },
-            shape          = RoundedCornerShape(20.dp),
+            dismissButton = {
+                TextButton(
+                    onClick  = { showDeleteDialog = false; snap(0f) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancelar", color = Slate500, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape          = RoundedCornerShape(24.dp),
             containerColor = Color.White
         )
     }
 }
 
-// ── Bottom Sheet de opciones (sin cambios funcionales) ──
+// ─── Bottom Sheet de opciones ────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ServiceOptionsSheet(
@@ -437,50 +467,84 @@ private fun ServiceOptionsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor   = Color.White,
-        shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        dragHandle       = null
+        shape            = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        dragHandle       = {
+            // Custom drag handle
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 14.dp, bottom = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Slate200)
+                )
+            }
+        }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp)
+                .padding(bottom = 36.dp)
         ) {
+            // Header
             Row(
-                modifier              = Modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                Text(
-                    text       = serviceName,
-                    fontSize   = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = Color(0xFF1A1A2E),
-                    modifier   = Modifier.weight(1f),
-                    maxLines   = 1,
-                    overflow   = TextOverflow.Ellipsis
-                )
-                IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                    Icon(
-                        Icons.Outlined.Close, null,
-                        tint     = Color(0xFF888888),
-                        modifier = Modifier.size(20.dp)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text     = "Opciones",
+                        fontSize = 11.sp,
+                        color    = Slate500,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.5.sp
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text       = serviceName,
+                        fontSize   = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = Slate900,
+                        maxLines   = 1,
+                        overflow   = TextOverflow.Ellipsis,
+                        letterSpacing = (-0.3).sp
                     )
                 }
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF1F5F9))
+                        .clickable(remember { MutableInteractionSource() }, null) { onDismiss() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Outlined.Close, null, tint = Slate500, modifier = Modifier.size(16.dp))
+                }
             }
-            HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 0.5.dp)
-            Spacer(Modifier.height(4.dp))
-            OptionRow(icon = Icons.Outlined.Edit,          label = "Editar",       onClick = onEdit)
-            OptionRow(icon = Icons.Outlined.Launch,        label = "Vista previa", onClick = onPreview)
-            Spacer(Modifier.height(4.dp))
-            HorizontalDivider(color = Color(0xFFF5F5F5), thickness = 0.5.dp)
-            Spacer(Modifier.height(4.dp))
+
+            HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
+            Spacer(Modifier.height(6.dp))
+
+            OptionRow(icon = Icons.Outlined.Edit,         label = "Editar producto",  onClick = onEdit)
+            OptionRow(icon = Icons.Outlined.Launch,       label = "Vista previa",     onClick = onPreview)
+
+            Spacer(Modifier.height(6.dp))
+            HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
+            Spacer(Modifier.height(6.dp))
+
             OptionRow(
                 icon    = Icons.Outlined.DeleteOutline,
-                label   = "Borrar",
+                label   = "Borrar producto",
                 onClick = onDelete,
-                tint    = Color(0xFFE05C5C)
+                tint    = Red500
             )
         }
     }
@@ -491,34 +555,48 @@ private fun OptionRow(
     icon    : ImageVector,
     label   : String,
     onClick : () -> Unit,
-    tint    : Color = Color(0xFF555555)
+    tint    : Color = Color(0xFF334155)
 ) {
+    val isDestructive = tint == Red500
+
     Row(
-        modifier          = Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication        = null,
                 onClick           = onClick
             )
-            .padding(horizontal = 20.dp, vertical = 15.dp),
+            .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = tint, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(16.dp))
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    if (isDestructive) Color(0xFFFEF2F2) else Color(0xFFF1F5F9)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp))
+        }
+        Spacer(Modifier.width(14.dp))
         Text(
             label,
-            fontSize = 15.sp,
-            color    = if (tint == Color(0xFF555555)) Color(0xFF1A1A2E) else tint
+            fontSize   = 15.sp,
+            color      = if (isDestructive) tint else Slate900,
+            fontWeight = FontWeight.Medium
         )
     }
 }
 
-private fun getServiceInitials(name: String): String {
+// ─── Helpers ────────────────────────────────────────────────────────────────────
+fun getServiceInitials(name: String): String {
     val parts = name.trim().split(" ")
     return when {
         parts.isEmpty() -> "?"
         parts.size == 1 -> parts[0].take(2).uppercase()
-        else -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
+        else            -> "${parts.first().firstOrNull()?.uppercase() ?: ""}${parts.last().firstOrNull()?.uppercase() ?: ""}"
     }
 }

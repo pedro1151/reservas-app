@@ -30,8 +30,6 @@ val BlueDark = Color(0xFF172554)
 val BlueSoft = Color(0xFFEFF6FF)
 
 val VioletPrimary = Color(0xFF7C3AED)
-val TextPrimary = Color(0xFF111111)
-val TextSecondary = Color(0xFF6B7280)
 
 val BluePrimary2 = Color(0xFF2563EB)
 val VioletAccent = Color(0xFF7C3AED)
@@ -40,6 +38,13 @@ val GradientEnd = Color(0xFF7C3AED)
 
 val AmarrilloSuave =  Color(0xFFFFC857)
 val ButtonGreen    =        Color(0xFF1DB954)
+val Cyan = Color(0xFF22C1C3)
+val CyanSoft = Color(0xFF22C1C3).copy(alpha = 0.12f)
+
+val TextPrimary = Color(0xFF0F172A)
+val TextSecondary = Color(0xFF475569)
+val BorderSoft = Color(0xFFE2E8F0)
+val BackgroundSoft = Color(0xFFF8FAFC)
 
 val BlueGradient = Brush.horizontalGradient(
     listOf(

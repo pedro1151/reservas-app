@@ -1,5 +1,7 @@
 package com.optic.pramosreservasappz.presentation.screens.productos
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,9 +32,14 @@ import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedContext
 
-private val PrimaryPurple = Color(0xFF6E4FDB)
-private val PrimaryBlue   = Color(0xFF3B78C4)
-private val DeepNavy      = Color(0xFF1A1A2E)
+// ─── Design Tokens ─────────────────────────────────────────────────────────────
+private val Blue700   = Color(0xFF1D4ED8)
+private val Blue600   = Color(0xFF2563EB)
+private val Blue500   = Color(0xFF3B82F6)
+private val Blue50    = Color(0xFFEFF6FF)
+private val Slate900  = Color(0xFF0F172A)
+private val Slate400  = Color(0xFF94A3B8)
+private val PageBg    = Color(0xFFF8FAFC)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,15 +69,18 @@ fun ProductScreen(
             )
         },
         floatingActionButton = {
-            // FAB con gradiente estilo Historial
+            // ── Gradient Extended FAB ──
             Box(
                 modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
+                    .shadow(
+                        elevation    = 12.dp,
+                        shape        = RoundedCornerShape(20.dp),
+                        ambientColor = Blue600.copy(alpha = 0.25f),
+                        spotColor    = Blue700.copy(alpha = 0.35f)
+                    )
+                    .clip(RoundedCornerShape(20.dp))
                     .background(
-                        Brush.linearGradient(
-                            colors = listOf(PrimaryPurple, PrimaryBlue)
-                        )
+                        Brush.linearGradient(listOf(Blue600, Blue500))
                     )
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -78,18 +89,39 @@ fun ProductScreen(
                         navController.navigate(
                             ClientScreen.ABMServicio.createRoute(serviceId = null, editable = false)
                         )
-                    },
+                    }
+                    .padding(horizontal = 22.dp, vertical = 15.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Nuevo producto",
-                    tint     = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
+                Row(
+                    verticalAlignment     = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(9.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.22f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            tint     = Color.White,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                    Text(
+                        "Nuevo producto",
+                        color      = Color.White,
+                        fontSize   = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.1.sp
+                    )
+                }
             }
         },
-        containerColor = Color(0xFFF7F6FA)
+        containerColor = PageBg
     ) { paddingValues ->
 
         PullRefreshWrapper(
@@ -103,9 +135,7 @@ fun ProductScreen(
                 .padding(paddingValues)
         ) {
             when (val result = productResource) {
-                is Resource.Loading -> {
-                    ProductLoadingState()
-                }
+                is Resource.Loading -> ProductLoadingState()
                 is Resource.Success -> {
                     ProductContent(
                         products         = result.data,
@@ -118,41 +148,92 @@ fun ProductScreen(
                 }
                 is Resource.Failure -> {
                     ProductErrorState(
-                        onRetry = { isRefreshing = true; viewModel.loadProducts(ownerId = 1, name = "") }
+                        onRetry = {
+                            isRefreshing = true
+                            viewModel.loadProducts(ownerId = 1, name = "")
+                        }
                     )
                 }
-                else -> {
-                    ProductLoadingState()
+                else -> ProductLoadingState()
+            }
+        }
+    }
+}
+
+// ── Polished Loading State ──────────────────────────────────────────────────────
+@Composable
+private fun ProductLoadingState() {
+    val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
+    val shimmerAlpha by infiniteTransition.animateFloat(
+        initialValue   = 0.4f,
+        targetValue    = 1f,
+        animationSpec  = infiniteRepeatable(
+            animation  = tween(900, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "shimmerAlpha"
+    )
+
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier            = Modifier.padding(horizontal = 40.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(76.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(
+                        Brush.radialGradient(
+                            listOf(Blue50, Color(0xFFDBEAFE))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color       = Blue600.copy(alpha = shimmerAlpha),
+                    strokeWidth = 2.5.dp,
+                    modifier    = Modifier.size(30.dp)
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    "Cargando catálogo",
+                    fontSize      = 17.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = Slate900,
+                    letterSpacing = (-0.3).sp
+                )
+                Text(
+                    "Obteniendo tus productos...",
+                    fontSize = 13.sp,
+                    color    = Slate400
+                )
+            }
+            // Skeleton bars
+            Column(
+                modifier            = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                repeat(3) { i ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(if (i == 2) 0.6f else 1f)
+                            .height(56.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFFE2E8F0).copy(alpha = shimmerAlpha))
+                    )
                 }
             }
         }
     }
 }
 
-// ── Loading estilizado ──
-@Composable
-private fun ProductLoadingState() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CircularProgressIndicator(
-                color       = PrimaryPurple,
-                strokeWidth = 3.dp,
-                modifier    = Modifier.size(36.dp)
-            )
-            Text(
-                "Cargando productos...",
-                fontSize   = 13.sp,
-                color      = Color(0xFFAAAABB),
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
-
-// ── Error state estilizado ──
+// ── Error State ─────────────────────────────────────────────────────────────────
 @Composable
 private fun ProductErrorState(onRetry: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -163,49 +244,41 @@ private fun ProductErrorState(onRetry: () -> Unit) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0xFFFFF0F0)),
+                    .size(84.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color(0xFFFEF2F2)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Outlined.WifiOff, null,
-                    tint     = Color(0xFFE05C5C),
-                    modifier = Modifier.size(36.dp)
+                    tint     = Color(0xFFEF4444),
+                    modifier = Modifier.size(38.dp)
                 )
             }
-
             Text(
                 "Sin conexión",
                 fontSize      = 20.sp,
                 fontWeight    = FontWeight.Bold,
-                color         = DeepNavy,
+                color         = Slate900,
                 letterSpacing = (-0.4).sp
             )
             Text(
                 "Revisa tu conexión a internet y vuelve a intentarlo.",
                 fontSize   = 14.sp,
-                color      = Color(0xFFAAAABB),
+                color      = Slate400,
                 textAlign  = TextAlign.Center,
-                lineHeight = 20.sp
+                lineHeight = 21.sp
             )
-
             Spacer(Modifier.height(4.dp))
-
             Button(
                 onClick  = onRetry,
                 shape    = RoundedCornerShape(14.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                colors   = ButtonDefaults.buttonColors(containerColor = Blue600),
+                modifier = Modifier.fillMaxWidth().height(52.dp)
             ) {
-                Icon(
-                    Icons.Outlined.Refresh, null,
-                    modifier = Modifier.size(16.dp)
-                )
+                Icon(Icons.Outlined.Refresh, null, modifier = Modifier.size(17.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Reintentar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text("Reintentar", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
