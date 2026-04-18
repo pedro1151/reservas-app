@@ -2,42 +2,50 @@ package com.optic.pramosreservasappz.presentation.screens.menu
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewMode
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
+import com.optic.pramosreservasappz.presentation.screens.menu.components.ProUpgradeBanner
+import com.optic.pramosreservasappz.presentation.screens.menu.components.SaleMenuItem
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.Green
+import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
+import com.optic.pramosreservasappz.presentation.util.getInitials
 
 @Composable
 fun PrincipalMenuDrawer(
     onDrawerClose: () -> Unit,
     navController: NavHostController
 ) {
+
+    val authStateVM: AuthStateVM = hiltViewModel()
+    val userEmail   by authStateVM.userEmail.collectAsState()
     ModalDrawerSheet(
         drawerContainerColor = Color.White,
         modifier = Modifier.fillMaxWidth(0.82f)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SoftCoolBackground)
         ) {
+
 
             // 🔴 BOTÓN CERRAR
             Row(
@@ -59,7 +67,7 @@ fun PrincipalMenuDrawer(
                 navController = navController
             )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(5.dp))
 
             Row(
                 modifier = Modifier
@@ -71,7 +79,7 @@ fun PrincipalMenuDrawer(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
                     .padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Surface(
                     modifier = Modifier.size(38.dp),
@@ -80,7 +88,7 @@ fun PrincipalMenuDrawer(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
-                            text = "PR",
+                            text = getInitials(userEmail),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF424242)
@@ -88,7 +96,7 @@ fun PrincipalMenuDrawer(
                     }
                 }
                 Text(
-                    text = "Pedro Ramos",
+                    text = userEmail,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black,
                     modifier = Modifier
@@ -97,7 +105,12 @@ fun PrincipalMenuDrawer(
                 )
             }
 
-            Spacer(Modifier.height(4.dp))
+         //   Spacer(Modifier.height(0.dp))
+            SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.MyBusiness.route)},
+                title = "Mi Negocio",
+                icon =  Icons.Default.Favorite
+            )
 
             SaleMenuItem(
                 onClick = { navController.navigate(ClientScreen.RapidSale.route)},
@@ -113,9 +126,15 @@ fun PrincipalMenuDrawer(
             )
 
             SaleMenuItem(
+                onClick = { navController.navigate(ClientScreen.BusinessMembers.route) },
+                title = "Tus Colaboradores",
+                icon =  Icons.Default.Person,
+            )
+
+            SaleMenuItem(
                 onClick = { navController.navigate(ClientScreen.Historial.route)
                 },
-                title = "Historial de tus Ventas",
+                title = "Transacciones",
                 icon = Icons.Default.History
             )
 
@@ -138,6 +157,7 @@ fun PrincipalMenuDrawer(
                 icon =  Icons.Default.GifBox,
             )
 
+
             SaleMenuItem(
                 onClick = { navController.navigate(ClientScreen.Mas.route) },
                 title = "Configuracion",
@@ -145,84 +165,9 @@ fun PrincipalMenuDrawer(
             )
         }
     }
-}
-
-@Composable
-private fun ProUpgradeBanner(
-    navController: NavHostController
-) {
-
-    val buttonTextColor = Color.White // para cambiar el color
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(GradientBackground)
-            .drawBehind {
-                drawRect(
-                    color = Color.Black.copy(alpha = 0.05f)
-                )
-            }
-            .padding(20.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "Prueba SalesGow PRO",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.background,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = "Obtén funcionalidades mejoradas, diferentes estilos, temas, estadisticas completas de tus ventas, historiales, añade mas colaboradores y mas.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.background,
-                textAlign = TextAlign.Center,
-                lineHeight = 18.sp
-            )
-            Spacer(Modifier.height(16.dp))
-            Button(
-                onClick = { navController.navigate(ClientScreen.Planes.route)},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ),
-                shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    Icons.Default.FlightTakeoff,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = buttonTextColor
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Prueba PRO",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = buttonTextColor
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "SABER MAS",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.background,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { }
-            )
-        }
-    }
 
 
 }
-
 
 
 

@@ -1,18 +1,16 @@
-package com.optic.pramosreservasappz.presentation.screens.menu
+package com.optic.pramosreservasappz.presentation.screens.menu.components
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
 
 @Composable
 fun SaleMenuItem(
@@ -26,20 +24,23 @@ fun SaleMenuItem(
         modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onClick() }
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
         Icon(
             icon,
             null,
-            tint = AmarrilloSuave,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(25.dp)
         )
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF424242),
+            color = TextPrimary,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 7.dp)
         )
     }
 }

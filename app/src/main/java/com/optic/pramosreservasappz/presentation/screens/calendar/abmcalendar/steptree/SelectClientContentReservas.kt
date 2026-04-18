@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SelectClientContent(
+fun SelectClientContentReservas(
     modifier: Modifier = Modifier,
     clients: List<ClientResponse>,
     paddingValues: PaddingValues,   // ← mantenido para no romper el caller

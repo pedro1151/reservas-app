@@ -11,6 +11,7 @@ import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.screens.auth.login.components.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

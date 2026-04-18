@@ -163,6 +163,17 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
+                            // LAMO A LA PANTALLA DE CREAR COLABORADORES
+                            if (currentRoute == ClientScreen.BusinessMembers.route) {
+                                CustomFloatingActionButton(
+                                    onClick = {
+                                        // crear un colaborador
+                                        navController.navigate(ClientScreen.ABMBusinessMember.route)
+                                    },
+                                    icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar cliente") }
+                                )
+                            }
+
                         },
                         bottomBar = {
                             if (shouldShowBottomBar) {

@@ -18,8 +18,8 @@ sealed class ClientScreen(
 
     object Sales: ClientScreen(
         route = "client/sales",
-        title = "Ventas",
-        icon = Icons.Default.CheckCircle
+        title = "Principal",
+        icon = Icons.Default.Home
     )
 
     object CompleteSaleStepOne: ClientScreen(
@@ -162,13 +162,39 @@ sealed class ClientScreen(
         icon = Icons.Default.BarChart
     )
 
+    object SelecClient: ClientScreen(
+        route = "client/select_client",
+        title = "Seleccionar Cliente",
+        icon = Icons.Default.BarChart
+    )
+
+    object BusinessMembers: ClientScreen(
+        route = "client/business_members",
+        title = "Colaboradores",
+        icon = Icons.Default.BarChart
+    )
+
+    object ABMBusinessMember: ClientScreen(
+        route = "client/create_business_member",
+        title = "Crear colaborador",
+        icon = Icons.Default.BarChart
+    )
+
+    object MyBusiness: ClientScreen(
+        route = "client/mybusiness",
+        title = "Mi Negocio",
+        icon = Icons.Default.BarChart
+    )
+
+
+
 
 
 
     object Historial: ClientScreen(
         route = "client/historial",
-        title = "Historial",
-        icon = Icons.Default.History
+        title = "Tus Ventas",
+        icon = Icons.Default.CheckCircle
     )
 
     object Follow: ClientScreen(

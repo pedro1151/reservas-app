@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.optic.pramosreservasappz.presentation.screens.auth.login.components.LoginContent
 import com.optic.pramosreservasappz.presentation.ui.theme.EcommerceAppMVVMTheme
 
 /* Google Auth */

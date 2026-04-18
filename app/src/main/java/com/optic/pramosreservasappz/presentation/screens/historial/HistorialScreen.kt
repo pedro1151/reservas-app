@@ -54,7 +54,7 @@ fun HistorialScreen(
     Scaffold(
         topBar = {
             PrimaryTopBar(
-                title         = "HISTORIAL DE VENTAS",
+                title         = "Tus ventas",
                 navController = navController
             )
         },

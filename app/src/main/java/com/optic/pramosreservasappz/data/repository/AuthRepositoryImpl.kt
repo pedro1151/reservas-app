@@ -3,13 +3,19 @@ package com.optic.pramosreservasappz.data.repository
 import com.optic.pramosreservasappz.data.dataSource.local.AuthLocalDataSource
 import com.optic.pramosreservasappz.data.dataSource.remote.AuthRemoteDataSource
 import com.optic.pramosreservasappz.domain.model.auth.AuthResponse
+import com.optic.pramosreservasappz.domain.model.auth.BasicUserResponse
 import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
+import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
 import com.optic.pramosreservasappz.domain.repository.AuthRepository
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.domain.util.ResponseToRequest
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 class AuthRepositoryImpl(
     private val authRemoteDataSource: AuthRemoteDataSource,
@@ -53,6 +59,44 @@ class AuthRepositoryImpl(
         authRemoteDataSource.refreshToken(request)
     )
 
+
+    // business
+
+    override suspend fun register_collab(
+        user: UserCollabCreateRequest
+    ): Resource<BasicUserResponse> = ResponseToRequest.send(
+        authRemoteDataSource.register_collab(user)
+    )
+
+    override suspend fun getBusinessMembers(
+        businessId: Int,
+        email: String,
+        username: String
+    ): Flow<Resource<List<UserMemberResponse>>> = flow {
+        emit(
+            ResponseToRequest.send(
+                authRemoteDataSource.getBusinessMembers(
+                    businessId =  businessId,
+                    email =  email,
+                    username = username
+
+                )
+
+
+            )
+        )
+    }
+
+    override suspend fun getBusinessById(
+        businessId: Int,
+        userId: Int
+    ): Resource<BusinessCompleteResponse> =
+        ResponseToRequest.send(
+        authRemoteDataSource.getBusinessById(
+            businessId = businessId,
+            userId = userId
+        )
+    )
 
 
 }

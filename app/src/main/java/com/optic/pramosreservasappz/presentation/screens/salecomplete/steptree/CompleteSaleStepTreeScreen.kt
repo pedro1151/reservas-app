@@ -86,8 +86,11 @@ fun CompleteSaleStepTreeScreen(
     Scaffold(
         topBar = {
             BackTopBar(
-                title = "Volver al carrito",
-                navController = navController
+                title = "Resumen",
+                navController = navController,
+                onClientClick = {
+                    navController.navigate(ClientScreen.SelecClient.route)
+                }
             )
         },
         bottomBar = {
@@ -122,7 +125,8 @@ fun CompleteSaleStepTreeScreen(
                                 createdByUserId = 1,
                                 amount = totalAmount,
                                 description = if ( viewModel.saleName != null) viewModel.saleName else generatedName,
-                                paymentMethod = viewModel.paymentMethod
+                                paymentMethod = viewModel.paymentMethod,
+                                clientId = viewModel.selectedClientId
                             ),
                             items = items
                         )
@@ -149,7 +153,8 @@ fun CompleteSaleStepTreeScreen(
             paddingValues  = paddingValues,
             total = total,
             totalItems = totalItems,
-            viewModel = viewModel
+            viewModel = viewModel,
+            navController = navController
         )
     }
 
@@ -186,5 +191,4 @@ fun CompleteSaleStepTreeScreen(
         }
     }
 }
-
 

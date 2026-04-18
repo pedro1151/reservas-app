@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
@@ -22,7 +24,8 @@ import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 fun BackTopBar(
     title: String = "",
     navController: NavController,
-    showTitle: Boolean = true
+    showTitle: Boolean = true,
+    onClientClick: (() -> Unit)? = null,
 ) {
 
 
@@ -42,9 +45,9 @@ fun BackTopBar(
                 if (showTitle) {
                     Text(
                         text = title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White.copy(alpha = 0.85f),
                         letterSpacing = 1.sp
                     )
                 }
@@ -56,6 +59,17 @@ fun BackTopBar(
                         contentDescription = "Volver",
                         // tint = MaterialTheme.colorScheme.getGreenLima // MaterialTheme.colorScheme.onPrimary // Ícono blanco si fondo es primario
                     )
+                }
+            },
+            actions = {
+                if (onClientClick != null) {
+                    IconButton(onClick = { onClientClick() }) {
+                        Icon(
+                            imageVector = Icons.Default.PersonAdd,
+                            contentDescription = "Elegir Client",
+                            tint = Color.White
+                        )
+                    }
                 }
             },
             // 🔥 CLAVE: transparente
