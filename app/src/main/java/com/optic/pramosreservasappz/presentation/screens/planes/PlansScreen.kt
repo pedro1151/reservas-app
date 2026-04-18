@@ -1,135 +1,132 @@
 package com.optic.pramosreservasappz.presentation.screens.planes
 
-
-import com.optic.pramosreservasappz.presentation.sales.Components.SBlack
-import com.optic.pramosreservasappz.presentation.sales.Components.SGray600
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
-import com.optic.pramosreservasappz.presentation.ui.theme.ButtonBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.GrisModerno
+
+private val PageBackground = Color(0xFFF0F2F5)
+private val TextPrimary    = Color(0xFF0D1B2A)
+private val TextMuted      = Color(0xFF64748B)
+private val LabelMuted     = Color(0xFF94A3B8)
 
 @Composable
-fun PlansScreen(
-    navController: NavHostController
-) {
+fun PlansScreen(navController: NavHostController) {
 
-    val Cyan = Color(0xFF22C1C3)
-    val CyanSoft = Cyan.copy(alpha = 0.12f)
-    val Gold = Color(0xFFFFC857)
-
-    val Background = Color(0xFFF8FAFC)
-    val TextPrimary = Color(0xFF0F172A)
-    val TextSecondary = Color(0xFF64748B)
-    val BorderSoft = Color(0xFFE2E8F0)
-
-    LazyColumn (
+    LazyColumn(
+        state = rememberLazyListState(),
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
-            .padding(horizontal = 20.dp),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .background(PageBackground),
+        contentPadding = PaddingValues(bottom = 60.dp)
     ) {
 
+        // ── Back ──────────────────────────────────────────────────────────
         item {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, start = 8.dp)) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver", tint = TextPrimary)
+                }
+            }
+        }
 
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver",
-                    // tint = MaterialTheme.colorScheme.getGreenLima // MaterialTheme.colorScheme.onPrimary // Ícono blanco si fondo es primario
+        // ── Headline ──────────────────────────────────────────────────────
+        item {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 26.dp)) {
+                Spacer(Modifier.height(4.dp))
+                Text("Planes", fontSize = 34.sp, fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary, letterSpacing = (-0.8).sp)
+                Spacer(Modifier.height(6.dp))
+                Text("Escoge el plan que mejor\nse adapta a tu negocio.",
+                    fontSize = 15.sp, color = TextMuted, lineHeight = 22.sp)
+                Spacer(Modifier.height(30.dp))
+            }
+        }
+
+        // ── Estándar (featured) ───────────────────────────────────────────
+        item {
+            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                FeaturedPlanCard(
+                    title    = "Estándar",
+                    subtitle = "Todo lo que tu negocio necesita para arrancar.",
+                    price    = "$8",
+                    period   = "usd / mes",
+                    features = listOf(
+                        "Estadísticas completas",
+                        "Comparar meses, años y semanas",
+                        "Hasta 5 colaboradores",
+                        "Recibos personalizados con tu marca",
+                        "Exportar a Excel y PDF",
+                        "Historial ilimitado",
+                        "Filtros por cliente y producto"
+                    )
                 )
             }
+            Spacer(Modifier.height(14.dp))
+        }
+
+        // ── Section label ─────────────────────────────────────────────────
+        item {
             Text(
-                "Elige tu plan segun tus necesidades",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                "Más opciones",
+                fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                color = LabelMuted, letterSpacing = 1.sp,
+                modifier = Modifier.padding(start = 26.dp, top = 8.dp, bottom = 14.dp)
             )
         }
 
+        // ── Pro ───────────────────────────────────────────────────────────
         item {
-            PlanCard(
-                title = "Estándar",
-                price = "$ 8 usd / mes",
-                highlight = true,
-                badge = "RECOMENDADO",
-                color = Cyan,
-                features = listOf(
-                    "Estadísticas completas",
-                    "Comparar meses / años / semanas",
-                    "Hasta 5 colaboradores",
-                    "Recibos personalizados con tu marca",
-                    "Exportar a Excel / PDF",
-                    "Historial ilimitado",
-                    "Filtros por cliente y producto"
+            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                ProPlanCard(
+                    title    = "Pro",
+                    tagline  = "Para equipos que quieren crecer más rápido.",
+                    price    = "$15",
+                    period   = "usd/mes",
+                    features = listOf(
+                        "Todo en Estándar",
+                        "Dashboard avanzado y top clientes",
+                        "Hasta 10 colaboradores",
+                        "Recibos por WhatsApp",
+                        "Recordatorios automáticos"
+                    )
                 )
-            )
+            }
+            Spacer(Modifier.height(12.dp))
         }
 
+        // ── Gold ──────────────────────────────────────────────────────────
         item {
-            PlanCard(
-                title = "Pro",
-                price = "$ 15 usd / mes",
-                highlight = false,
-                color = Cyan,
-                features = listOf(
-                    "Todo en Estándar",
-                    "Dashboard avanzado",
-                    "Top productos y clientes",
-                    "Más estilos de recibos",
-                    "Hasta 10 colaboradores",
-                    "Envío de recibos por WhatsApp",
-                    "Recordatorios automáticos"
+            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                GoldPlanCard(
+                    title    = "Gold",
+                    tagline  = "Escala sin límites. Pensado para negocios grandes.",
+                    price    = "$35",
+                    period   = "usd/mes",
+                    features = listOf(
+                        "Todo en Pro",
+                        "Estadísticas profesionales y Analytics",
+                        "Hasta 20 colaboradores",
+                        "Backup automático",
+                        "Multi negocio y reportes inteligentes"
+                    )
                 )
-            )
+            }
         }
-
-        item {
-            PlanCard(
-                title = "Gold",
-                price = "$ 35 usd / mes",
-                highlight = false,
-                color = Gold,
-                features = listOf(
-                    "Todo en Pro",
-                    "Estadísticas profesionales",
-                    "Modos Fire / Fintech / Analytics",
-                    "Hasta 20 colaboradores",
-                    "Backup automático",
-                    "Multi negocio",
-                    "Reportes inteligentes"
-                )
-            )
-        }
-
-        item { Spacer(Modifier.height(40.dp)) }
     }
 }
