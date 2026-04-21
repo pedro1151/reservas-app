@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -15,10 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
-private val PageBackground = Color(0xFFF0F2F5)
-private val TextPrimary    = Color(0xFF0D1B2A)
-private val TextMuted      = Color(0xFF64748B)
-private val LabelMuted     = Color(0xFF94A3B8)
+private val PageBg      = Color(0xFF0A0F1A)   // fondo oscuro unificado con las cards
+private val TextPrimary = Color(0xFFE2E8F0)
+private val TextMuted   = Color(0xFF64748B)
 
 @Composable
 fun PlansScreen(navController: NavHostController) {
@@ -27,15 +26,16 @@ fun PlansScreen(navController: NavHostController) {
         state = rememberLazyListState(),
         modifier = Modifier
             .fillMaxSize()
-            .background(PageBackground),
-        contentPadding = PaddingValues(bottom = 60.dp)
+            .background(PageBg),
+        contentPadding = PaddingValues(bottom = 64.dp)
     ) {
 
         // ── Back ──────────────────────────────────────────────────────────
         item {
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp, start = 8.dp)) {
+                .padding(top = 12.dp, start = 8.dp)
+            ) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Volver", tint = TextPrimary)
@@ -47,25 +47,37 @@ fun PlansScreen(navController: NavHostController) {
         item {
             Column(modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 26.dp)) {
+                .padding(horizontal = 26.dp)
+            ) {
                 Spacer(Modifier.height(4.dp))
-                Text("Planes", fontSize = 34.sp, fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary, letterSpacing = (-0.8).sp)
+                Text(
+                    "Planes",
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary,
+                    letterSpacing = (-0.8).sp
+                )
                 Spacer(Modifier.height(6.dp))
-                Text("Escoge el plan que mejor\nse adapta a tu negocio.",
-                    fontSize = 15.sp, color = TextMuted, lineHeight = 22.sp)
-                Spacer(Modifier.height(30.dp))
+                Text(
+                    "Elige el plan perfecto\npara tu negocio.",
+                    fontSize = 15.sp,
+                    color = TextMuted,
+                    lineHeight = 22.sp
+                )
+                Spacer(Modifier.height(32.dp))
             }
         }
 
-        // ── Estándar (featured) ───────────────────────────────────────────
+        // ── Estándar ──────────────────────────────────────────────────────
         item {
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                FeaturedPlanCard(
+                StandardPlanCard(
                     title    = "Estándar",
-                    subtitle = "Todo lo que tu negocio necesita para arrancar.",
+                    tagline  = "Todo lo que tu negocio necesita para arrancar fuerte.",
                     price    = "$8",
                     period   = "usd / mes",
+                    label    = "✦ Más popular",
+                    badge    = "Mejor relación calidad-precio",
                     features = listOf(
                         "Estadísticas completas",
                         "Comparar meses, años y semanas",
@@ -77,17 +89,7 @@ fun PlansScreen(navController: NavHostController) {
                     )
                 )
             }
-            Spacer(Modifier.height(14.dp))
-        }
-
-        // ── Section label ─────────────────────────────────────────────────
-        item {
-            Text(
-                "Más opciones",
-                fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
-                color = LabelMuted, letterSpacing = 1.sp,
-                modifier = Modifier.padding(start = 26.dp, top = 8.dp, bottom = 14.dp)
-            )
+            Spacer(Modifier.height(16.dp))
         }
 
         // ── Pro ───────────────────────────────────────────────────────────
@@ -95,19 +97,23 @@ fun PlansScreen(navController: NavHostController) {
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                 ProPlanCard(
                     title    = "Pro",
-                    tagline  = "Para equipos que quieren crecer más rápido.",
+                    tagline  = "Más poder para crecer sin límites de equipo.",
                     price    = "$15",
-                    period   = "usd/mes",
+                    period   = "usd / mes",
+                    label    = "⚡ Para equipos",
+                    badge    = "Ideal para negocios en crecimiento",
                     features = listOf(
                         "Todo en Estándar",
                         "Dashboard avanzado y top clientes",
                         "Hasta 10 colaboradores",
-                        "Recibos por WhatsApp",
-                        "Recordatorios automáticos"
+                        "Envío de recibos por WhatsApp",
+                        "Recordatorios automáticos",
+                        "Más estilos de recibos",
+                        "Soporte prioritario"
                     )
                 )
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
         }
 
         // ── Gold ──────────────────────────────────────────────────────────
@@ -115,15 +121,19 @@ fun PlansScreen(navController: NavHostController) {
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                 GoldPlanCard(
                     title    = "Gold",
-                    tagline  = "Escala sin límites. Pensado para negocios grandes.",
+                    tagline  = "Escala sin límites. Para negocios grandes y ambiciosos.",
                     price    = "$35",
-                    period   = "usd/mes",
+                    period   = "usd / mes",
+                    label    = "♛ Premium",
+                    badge    = "Multi negocio · Sin restricciones",
                     features = listOf(
                         "Todo en Pro",
                         "Estadísticas profesionales y Analytics",
                         "Hasta 20 colaboradores",
-                        "Backup automático",
-                        "Multi negocio y reportes inteligentes"
+                        "Backup automático en la nube",
+                        "Multi negocio desde una cuenta",
+                        "Reportes inteligentes con IA",
+                        "Modos Fire / Fintech / Analytics"
                     )
                 )
             }

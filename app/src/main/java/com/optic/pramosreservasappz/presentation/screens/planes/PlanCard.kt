@@ -19,100 +19,153 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// ── Shared tokens ─────────────────────────────────────────────────────────────
-val PlanNavyStart  = Color(0xFF0D1B2A)
-val PlanNavyEnd    = Color(0xFF163352)
-val PlanMintAccent = Color(0xFF2DD4A0)
+// ── Standard – Navy / Mint ────────────────────────────────────────────────────
+private val StdNavyStart  = Color(0xFF0D1B2A)
+private val StdNavyEnd    = Color(0xFF183554)
+private val StdMint       = Color(0xFF2DD4A0)
+private val StdMintDim    = Color(0x302DD4A0)
+private val StdTextDim    = Color(0x82FFFFFF)
+private val StdTextSoft   = Color(0xD1FFFFFF)
 
-// Pro – indigo
-private val ProBorder     = Color(0xFFC7D2FE)
-private val ProBackground = Color(0xFFFFFFFF)
-private val ProTitleColor = Color(0xFF3730A3)
-private val ProAccent     = Color(0xFF6366F1)
-private val ProSurface    = Color(0xFFEEF2FF)
-private val ProTextColor  = Color(0xFF4338CA)
+// ── Pro – Deep Indigo ─────────────────────────────────────────────────────────
+private val ProBg         = Color(0xFF1A1040)
+private val ProBorder     = Color(0xFF4338CA)
+private val ProAccent     = Color(0xFF818CF8)
+private val ProAccentDim  = Color(0x30818CF8)
+private val ProTitle      = Color(0xFFE0E7FF)
+private val ProTextDim    = Color(0xB3A5B4FC)
+private val ProTextSoft   = Color(0xD9C7D2FE)
+private val ProButton     = Color(0xFF3730A3)
+private val ProButtonBorder = Color(0xFF4338CA)
 
-// Gold – amber
-private val GoldBorder     = Color(0xFFFDE68A)
-private val GoldBackground = Color(0xFFFFFBF0)
-private val GoldTitleColor = Color(0xFF92400E)
-private val GoldAccent     = Color(0xFFF59E0B)
-private val GoldAccentEnd  = Color(0xFFFBBF24)
-private val GoldSurface    = Color(0xFFFEF3C7)
-private val GoldTextColor  = Color(0xFF92400E)
-private val GoldPriceColor = Color(0xFFB45309)
+// ── Gold – Deep Amber ─────────────────────────────────────────────────────────
+private val GoldBg        = Color(0xFF1A1200)
+private val GoldBorder    = Color(0xFFD97706)
+private val GoldAccent    = Color(0xFFFCD34D)
+private val GoldAccentDim = Color(0x26F59E0B)
+private val GoldTitle     = Color(0xFFFEF3C7)
+private val GoldTextDim   = Color(0x99FCD34D)
+private val GoldTextSoft  = Color(0xD9FDE68A)
+private val GoldCTAStart  = Color(0xFFD97706)
+private val GoldCTAEnd    = Color(0xFFF59E0B)
+private val GoldCTAText   = Color(0xFF1A1200)
+private val GoldBadgeColor = Color(0xFFFCD34D)
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Featured  ·  Estándar
+//  Shared composable – feature row (reused by all three cards)
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
-fun FeaturedPlanCard(
+private fun FeatureRow(text: String, checkColor: Color, bubbleColor: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 4.5.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(20.dp)
+                .background(bubbleColor, CircleShape)
+        ) {
+            Icon(
+                imageVector        = Icons.Default.Check,
+                contentDescription = null,
+                tint               = checkColor,
+                modifier           = Modifier.size(11.dp)
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(text, fontSize = 13.sp, color = Color.White.copy(alpha = 0.82f), lineHeight = 20.sp)
+    }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  STANDARD  –  hero card
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun StandardPlanCard(
     title: String,
-    subtitle: String,
+    tagline: String,
     price: String,
     period: String,
-    features: List<String>
+    badge: String,
+    label: String,
+    features: List<String>,
+    onSelect: () -> Unit = {}
 ) {
     val gradient = Brush.linearGradient(
-        colorStops = arrayOf(0.0f to PlanNavyStart, 1.0f to PlanNavyEnd)
+        colorStops = arrayOf(0f to StdNavyStart, 1f to StdNavyEnd)
     )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(28.dp, RoundedCornerShape(26.dp),
-                spotColor = PlanNavyStart.copy(alpha = 0.35f),
-                ambientColor = PlanNavyStart.copy(alpha = 0.12f))
+            .shadow(
+                elevation    = 32.dp,
+                shape        = RoundedCornerShape(26.dp),
+                spotColor    = StdNavyStart.copy(alpha = 0.4f),
+                ambientColor = StdNavyStart.copy(alpha = 0.15f)
+            )
             .clip(RoundedCornerShape(26.dp))
-            .background(brush = gradient)
-            .padding(horizontal = 26.dp, vertical = 28.dp)
+            .background(gradient)
+            .padding(horizontal = 26.dp, vertical = 26.dp)
     ) {
         Column {
-            Text(title,    fontSize = 22.sp, fontWeight = FontWeight.Bold,  color = Color.White, letterSpacing = (-0.3).sp)
-            Spacer(Modifier.height(4.dp))
-            Text(subtitle, fontSize = 13.sp, color = Color.White.copy(alpha = 0.55f), lineHeight = 18.sp)
-            Spacer(Modifier.height(26.dp))
+            // Label
+            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                color = StdMint, letterSpacing = 1.2.sp)
+            Spacer(Modifier.height(10.dp))
 
+            // Title + tagline
+            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
+                color = Color.White, letterSpacing = (-0.5).sp)
+            Spacer(Modifier.height(4.dp))
+            Text(tagline, fontSize = 12.sp, color = StdTextDim, lineHeight = 17.sp)
+            Spacer(Modifier.height(22.dp))
+
+            // Price
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.ExtraBold,
-                    color = Color.White, letterSpacing = (-2).sp, lineHeight = 52.sp)
+                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
+                    color = Color.White, letterSpacing = (-3).sp, lineHeight = 52.sp)
                 Spacer(Modifier.width(6.dp))
-                Text(period, fontSize = 14.sp, color = Color.White.copy(alpha = 0.55f),
+                Text(period, fontSize = 13.sp, color = StdTextDim,
                     modifier = Modifier.padding(bottom = 8.dp))
             }
 
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.12f), thickness = 1.dp)
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(8.dp))
 
-            features.forEach { feature ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 5.dp)) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(PlanMintAccent.copy(alpha = 0.18f), CircleShape)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = null,
-                            tint = PlanMintAccent, modifier = Modifier.size(12.dp))
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Text(feature, fontSize = 14.sp, color = Color.White.copy(alpha = 0.82f), lineHeight = 20.sp)
-                }
+            // Badge pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(StdMintDim)
+                    .border(1.dp, StdMint.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = StdMint)
             }
 
-            Spacer(Modifier.height(30.dp))
+            Spacer(Modifier.height(22.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+            Spacer(Modifier.height(18.dp))
+
+            // Features
+            features.forEach {
+                FeatureRow(text = it, checkColor = StdMint, bubbleColor = StdMintDim)
+            }
+
+            Spacer(Modifier.height(28.dp))
 
             Button(
-                onClick   = { },
+                onClick   = onSelect,
                 modifier  = Modifier.fillMaxWidth().height(54.dp),
                 shape     = RoundedCornerShape(17.dp),
-                colors    = ButtonDefaults.buttonColors(containerColor = PlanMintAccent),
+                colors    = ButtonDefaults.buttonColors(containerColor = StdMint),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {
-                Text("Comenzar ahora", color = PlanNavyStart, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text("Comenzar ahora", color = StdNavyStart,
+                    fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
             }
         }
     }
@@ -120,7 +173,7 @@ fun FeaturedPlanCard(
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Pro Plan Card
+//  PRO  –  indigo dark card
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun ProPlanCard(
@@ -128,63 +181,75 @@ fun ProPlanCard(
     tagline: String,
     price: String,
     period: String,
-    features: List<String>
+    badge: String,
+    label: String,
+    features: List<String>,
+    onSelect: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(6.dp, RoundedCornerShape(22.dp), spotColor = ProAccent.copy(alpha = 0.1f))
-            .clip(RoundedCornerShape(22.dp))
-            .background(ProBackground)
-            .border(1.5.dp, ProBorder, RoundedCornerShape(22.dp))
-            .padding(horizontal = 22.dp, vertical = 20.dp)
+            .shadow(
+                elevation    = 18.dp,
+                shape        = RoundedCornerShape(26.dp),
+                spotColor    = ProAccent.copy(alpha = 0.18f),
+                ambientColor = ProAccent.copy(alpha = 0.08f)
+            )
+            .clip(RoundedCornerShape(26.dp))
+            .background(ProBg)
+            .border(1.5.dp, ProBorder, RoundedCornerShape(26.dp))
+            .padding(horizontal = 26.dp, vertical = 26.dp)
     ) {
         Column {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(title, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = ProTitleColor)
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(price,  fontSize = 20.sp, fontWeight = FontWeight.Bold,
-                        color = ProTitleColor, letterSpacing = (-0.4).sp)
-                    Text(" $period", fontSize = 11.sp, color = Color(0xFF94A3B8),
-                        modifier = Modifier.padding(bottom = 2.dp))
-                }
-            }
+            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                color = ProAccent, letterSpacing = 1.2.sp)
+            Spacer(Modifier.height(10.dp))
 
+            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
+                color = ProTitle, letterSpacing = (-0.5).sp)
             Spacer(Modifier.height(4.dp))
-            Text(tagline, fontSize = 12.sp, color = ProAccent, lineHeight = 17.sp)
-            Spacer(Modifier.height(14.dp))
-            HorizontalDivider(color = ProSurface, thickness = 1.dp)
-            Spacer(Modifier.height(12.dp))
+            Text(tagline, fontSize = 12.sp, color = ProTextDim, lineHeight = 17.sp)
+            Spacer(Modifier.height(22.dp))
 
-            features.forEach { feature ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 3.5.dp)) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .background(ProAccent.copy(alpha = 0.12f), CircleShape)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = null,
-                            tint = ProAccent, modifier = Modifier.size(9.dp))
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Text(feature, fontSize = 12.5.sp, color = ProTextColor, lineHeight = 18.sp)
-                }
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
+                    color = ProTextSoft, letterSpacing = (-3).sp, lineHeight = 52.sp)
+                Spacer(Modifier.width(6.dp))
+                Text(period, fontSize = 13.sp, color = ProTextDim,
+                    modifier = Modifier.padding(bottom = 8.dp))
             }
 
+            Spacer(Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(ProAccentDim)
+                    .border(1.dp, ProAccent.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ProAccent)
+            }
+
+            Spacer(Modifier.height(22.dp))
+            HorizontalDivider(color = ProAccent.copy(alpha = 0.15f), thickness = 1.dp)
             Spacer(Modifier.height(18.dp))
 
+            features.forEach {
+                FeatureRow(text = it, checkColor = ProAccent, bubbleColor = ProAccentDim)
+            }
+
+            Spacer(Modifier.height(28.dp))
+
             Button(
-                onClick   = { },
-                modifier  = Modifier.fillMaxWidth().height(44.dp),
-                shape     = RoundedCornerShape(13.dp),
-                colors    = ButtonDefaults.buttonColors(containerColor = ProSurface),
+                onClick   = onSelect,
+                modifier  = Modifier.fillMaxWidth().height(52.dp),
+                shape     = RoundedCornerShape(17.dp),
+                colors    = ButtonDefaults.buttonColors(containerColor = ProButton),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {
-                Text("Elegir Pro", color = ProTextColor, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("Elegir Pro", color = ProTitle,
+                    fontWeight = FontWeight.Bold, fontSize = 15.sp)
             }
         }
     }
@@ -192,7 +257,7 @@ fun ProPlanCard(
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Gold Plan Card
+//  GOLD  –  amber dark card
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun GoldPlanCard(
@@ -200,87 +265,86 @@ fun GoldPlanCard(
     tagline: String,
     price: String,
     period: String,
-    features: List<String>
+    badge: String,
+    label: String,
+    features: List<String>,
+    onSelect: () -> Unit = {}
 ) {
-    val goldGradient = Brush.horizontalGradient(listOf(GoldAccent, GoldAccentEnd))
+    val ctaGradient = Brush.horizontalGradient(listOf(GoldCTAStart, GoldCTAEnd))
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(8.dp, RoundedCornerShape(22.dp), spotColor = GoldAccent.copy(alpha = 0.18f))
-            .clip(RoundedCornerShape(22.dp))
-            .background(GoldBackground)
-            .border(1.5.dp, GoldBorder, RoundedCornerShape(22.dp))
-            .padding(horizontal = 22.dp, vertical = 20.dp)
+            .shadow(
+                elevation    = 18.dp,
+                shape        = RoundedCornerShape(26.dp),
+                spotColor    = GoldAccent.copy(alpha = 0.2f),
+                ambientColor = GoldAccent.copy(alpha = 0.08f)
+            )
+            .clip(RoundedCornerShape(26.dp))
+            .background(GoldBg)
+            .border(1.5.dp, GoldBorder, RoundedCornerShape(26.dp))
+            .padding(horizontal = 26.dp, vertical = 26.dp)
     ) {
         Column {
-            // Gold badge
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(7.dp))
-                    .background(brush = goldGradient)
-                    .padding(horizontal = 10.dp, vertical = 3.dp)
-            ) {
-                Text("✦ GOLD", fontSize = 10.sp, fontWeight = FontWeight.Bold,
-                    color = Color.White, letterSpacing = 0.5.sp)
-            }
-
+            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                color = GoldBadgeColor, letterSpacing = 1.2.sp)
             Spacer(Modifier.height(10.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(title, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = GoldTitleColor)
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(price,  fontSize = 20.sp, fontWeight = FontWeight.Bold,
-                        color = GoldPriceColor, letterSpacing = (-0.4).sp)
-                    Text(" $period", fontSize = 11.sp, color = Color(0xFF94A3B8),
-                        modifier = Modifier.padding(bottom = 2.dp))
-                }
-            }
-
+            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
+                color = GoldTitle, letterSpacing = (-0.5).sp)
             Spacer(Modifier.height(4.dp))
-            Text(tagline, fontSize = 12.sp, color = GoldAccent, lineHeight = 17.sp)
-            Spacer(Modifier.height(14.dp))
-            HorizontalDivider(color = GoldSurface, thickness = 1.dp)
-            Spacer(Modifier.height(12.dp))
+            Text(tagline, fontSize = 12.sp, color = GoldTextDim, lineHeight = 17.sp)
+            Spacer(Modifier.height(22.dp))
 
-            features.forEach { feature ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 3.5.dp)) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .background(GoldAccent.copy(alpha = 0.15f), CircleShape)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = null,
-                            tint = GoldAccent, modifier = Modifier.size(9.dp))
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Text(feature, fontSize = 12.5.sp, color = GoldTextColor, lineHeight = 18.sp)
-                }
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
+                    color = GoldTextSoft, letterSpacing = (-3).sp, lineHeight = 52.sp)
+                Spacer(Modifier.width(6.dp))
+                Text(period, fontSize = 13.sp, color = GoldTextDim,
+                    modifier = Modifier.padding(bottom = 8.dp))
             }
 
+            Spacer(Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(GoldAccentDim)
+                    .border(1.dp, GoldAccent.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = GoldBadgeColor)
+            }
+
+            Spacer(Modifier.height(22.dp))
+            HorizontalDivider(color = GoldAccent.copy(alpha = 0.15f), thickness = 1.dp)
             Spacer(Modifier.height(18.dp))
 
-            // Gradient CTA button
+            features.forEach {
+                FeatureRow(text = it, checkColor = GoldBadgeColor, bubbleColor = GoldAccentDim)
+            }
+
+            Spacer(Modifier.height(28.dp))
+
+            // Gradient CTA
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
-                    .clip(RoundedCornerShape(13.dp))
-                    .background(brush = goldGradient),
+                    .height(52.dp)
+                    .clip(RoundedCornerShape(17.dp))
+                    .background(brush = ctaGradient),
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick   = { },
+                    onClick   = onSelect,
                     modifier  = Modifier.fillMaxSize(),
-                    shape     = RoundedCornerShape(13.dp),
+                    shape     = RoundedCornerShape(17.dp),
                     colors    = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     elevation = ButtonDefaults.buttonElevation(0.dp)
                 ) {
-                    Text("Elegir Gold", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    Text("Elegir Gold", color = GoldCTAText,
+                        fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
                 }
             }
         }
