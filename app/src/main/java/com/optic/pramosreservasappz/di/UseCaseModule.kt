@@ -9,6 +9,8 @@ import com.optic.pramosreservasappz.domain.useCase.auth.loginpless.LoginSendCode
 import com.optic.pramosreservasappz.domain.useCase.business.CreateColaboradorUC
 import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessByIdUC
 import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessMembersUC
+import com.optic.pramosreservasappz.domain.useCase.business.GetMemberUC
+import com.optic.pramosreservasappz.domain.useCase.business.UpdateColaboradorUC
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
@@ -71,7 +73,9 @@ object UseCaseModule {
         //buesiness
         createColaboradorUC = CreateColaboradorUC(authRepository),
         getBusinessMembersUC = GetBusinessMembersUC(authRepository),
-        getBusinessByIdUC = GetBusinessByIdUC(authRepository)
+        getBusinessByIdUC = GetBusinessByIdUC(authRepository),
+        updateColaboradorUC = UpdateColaboradorUC(authRepository),
+        getMemberUC = GetMemberUC(authRepository)
 
     )
 

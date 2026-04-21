@@ -8,8 +8,10 @@ import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabUpdateRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
 import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.repository.AuthRepository
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.domain.util.ResponseToRequest
@@ -97,6 +99,24 @@ class AuthRepositoryImpl(
             userId = userId
         )
     )
+
+    override suspend fun updateBusinessMember(
+        request: UserCollabUpdateRequest
+    ): Resource<DefaultResponse> =
+        ResponseToRequest.send(
+            authRemoteDataSource.updateBusinessMember(
+            request = request
+            )
+        )
+
+    override suspend fun getUser(
+        userId: Int
+    ): Resource<UserMemberResponse> =
+        ResponseToRequest.send(
+            authRemoteDataSource.getUser(
+                userId = userId
+            )
+        )
 
 
 }

@@ -1,4 +1,5 @@
-package com.optic.pramosreservasappz.presentation.screens.business.mybusiness
+package com.optic.pramosreservasappz.presentation.screens.business.updatemember
+
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,8 +10,9 @@ import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.screens.business.BusinessViewModel
 
 @Composable
-fun MyBusinessScreen(
-    navController: NavHostController
+fun UpdateMemberScreen(
+    navController: NavHostController,
+    userId: Int
 ){
 
     val viewModel        : BusinessViewModel = hiltViewModel()
@@ -19,7 +21,7 @@ fun MyBusinessScreen(
         topBar = {
             BackTopBar(
                 navController = navController,
-                title = "Mi Negocio"
+                title = "Actualizar Colaborador"
             )
         },
 
@@ -27,10 +29,11 @@ fun MyBusinessScreen(
     ) { paddingValues ->
 
 
-        MyBusinessContent(
+        UpdateMemberContent(
             paddingValues = paddingValues,
             viewModel = viewModel,
-            navController =  navController
+            navController = navController,
+            userId = userId
         )
 
 

@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.business.abmmember.components
+package com.optic.pramosreservasappz.presentation.screens.business.createmember.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

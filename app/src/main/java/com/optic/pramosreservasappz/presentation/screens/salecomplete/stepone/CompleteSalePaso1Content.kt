@@ -306,7 +306,7 @@ fun CompleteSalePaso1Content(
         ) {
             Button(
                 onClick = {
-                    navController.navigate(ClientScreen.CompleteSaleStepTwo.route) // 🔥 ajusta tu ruta
+                    navController.navigate(ClientScreen.RapidSale.route) // 🔥 ajusta tu ruta
                 },
                 enabled = isEnabled,
                 modifier = Modifier

@@ -6,8 +6,10 @@ import com.optic.pramosreservasappz.domain.model.auth.User
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabUpdateRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
 import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import retrofit2.Response
 
 interface AuthRemoteDataSource {
@@ -41,5 +43,13 @@ interface AuthRemoteDataSource {
         businessId: Int,
         userId: Int
     ): Response<BusinessCompleteResponse>
+
+    suspend fun updateBusinessMember(
+        request: UserCollabUpdateRequest
+    ): Response<DefaultResponse>
+
+    suspend fun getUser(
+        userId: Int
+    ): Response<UserMemberResponse>
 
 }

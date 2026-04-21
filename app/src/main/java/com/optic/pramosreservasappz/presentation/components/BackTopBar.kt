@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackgroundPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +34,7 @@ fun BackTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackground)
+            .background(GradientBackgroundPrimary)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)

@@ -1,9 +1,9 @@
 package com.optic.pramosreservasappz.presentation.screens.rapidsale
 
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,46 +16,32 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
-import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
-import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
-import com.optic.pramosreservasappz.domain.model.sales.SaleItemCreateWithoutSaleId
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.sales.Components.SAccent
 import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
 import com.optic.pramosreservasappz.presentation.sales.Components.SRed
+import com.optic.pramosreservasappz.presentation.screens.productos.ProductViewType
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.NewRapidProduct
-import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.ProductMiniCard
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidProductCard
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidProductGridCard
 import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidSaleSearchBar
-import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Cyan
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
-import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
-import com.optic.pramosreservasappz.presentation.ui.theme.ButtonGreen
-import com.optic.pramosreservasappz.presentation.ui.theme.GreenGradient
-import com.optic.pramosreservasappz.presentation.ui.theme.GrisSuave
+import com.optic.pramosreservasappz.presentation.screens.rapidsale.components.RapidSaleSearchToolbar
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
-import com.optic.pramosreservasappz.presentation.util.getCurrentFormattedDate
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -148,6 +134,11 @@ fun RapidSaleContent(
     // animacion de card de new prodict
     var showCreateAnimated by remember { mutableStateOf(false) }
 
+// dentro de RapidSaleContent()
+
+    var viewType          by remember { mutableStateOf(ProductViewType.GRID) }
+    var showCreateSheet by remember { mutableStateOf(false) }
+
     LaunchedEffect(hasQuery, filteredProducts) {
         showCreateAnimated = false
         if (hasQuery && filteredProducts.isEmpty()) {
@@ -167,15 +158,20 @@ fun RapidSaleContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(SoftCoolBackground)
-                    .padding(5.dp)
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
-                // header titulo + boton cerrar
 
-                // Campo de búsqueda ocupa el espacio disponible
-                RapidSaleSearchBar(
-                    query = query,
-                    onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                    modifier =  Modifier.fillMaxWidth()
+                RapidSaleSearchToolbar(
+                    query            = query,
+                    onQueryChange    = { viewModel.onSearchQueryChanged(it) },
+                    hasQuery         = hasQuery,
+                    totalCount       = localProducts.size,
+                    filteredCount    = filteredProducts.size,
+                    viewType         = viewType,
+                    onViewTypeChange = { viewType = it },
+                    onAddClick = {
+                        showCreateSheet = true   // 🔥 SOLO ABRIR
+                    }
                 )
             }
 
@@ -205,44 +201,153 @@ fun RapidSaleContent(
                         )
                     }
 
+
                     is Resource.Success -> {
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f) // 🔥 CLAVE
-                                .padding(horizontal = 4.dp, vertical = 1.dp),
-                            contentPadding = PaddingValues(bottom = 2.dp)
-                        ) {
-                                // lista de productos
-                                items(
-                                    items = filteredProducts,
-                                    key = { it.id }
-                                ) { product ->
+                        when (viewType) {
 
-                                    val inCart =
-                                        selectedProducts.find { it.first.id == product.id }
-                                    // card de producto animadamente
+                            // ─────────────────────────────────────────────
+                            // LIST MODE
+                            // ─────────────────────────────────────────────
+                            ProductViewType.LIST -> {
 
-                                    var visible by remember { mutableStateOf(false) }
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(
+                                        start = 10.dp,
+                                        end = 10.dp,
+                                        bottom = 8.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
 
-                                    LaunchedEffect(Unit) {
-                                        visible = true
-                                    }
+                                    items(
+                                        items = filteredProducts,
+                                        key = { it.id }
+                                    ) { product ->
 
-                                    AnimatedVisibility(
-                                        visible = visible,
-                                        enter = fadeIn(tween(250)) + slideInVertically { it / 3 }
-                                    ) {
-                                        RapidProductCard(
-                                            product = product,
-                                            inCart = inCart,
-                                            addProduct = { viewModel.addProduct(product) },
-                                            removeProduct = { viewModel.removeProduct(product) },
-                                            modifier = Modifier.animateItemPlacement(),
-                                            viewModel = viewModel
-                                        )
+                                        val inCart =
+                                            selectedProducts.find { it.first.id == product.id }
+
+                                        var visible by remember { mutableStateOf(false) }
+
+                                        LaunchedEffect(Unit) {
+                                            visible = true
+                                        }
+
+                                        AnimatedVisibility(
+                                            visible = visible,
+                                            enter = fadeIn(tween(220)) +
+                                                    slideInVertically(
+                                                        animationSpec = tween(220)
+                                                    ) { it / 4 }
+                                        ) {
+
+                                            RapidProductCard(
+                                                product = product,
+                                                inCart = inCart,
+                                                addProduct = { viewModel.addProduct(product) },
+                                                removeProduct = { viewModel.removeProduct(product) },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .animateItemPlacement(
+                                                        spring(
+                                                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                            stiffness = Spring.StiffnessLow
+                                                        )
+                                                    ),
+                                                viewModel = viewModel
+                                            )
+                                        }
                                     }
                                 }
+                            }
+
+                            // ─────────────────────────────────────────────
+                            // GRID MODE (2 por fila REAL)
+                            // ─────────────────────────────────────────────
+                            ProductViewType.GRID -> {
+
+                                val rows = filteredProducts.chunked(3)
+
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(SoftCoolBackground)
+                                    ,
+                                    contentPadding = PaddingValues(
+                                        start = 5.dp,
+                                        end = 5.dp,
+                                        bottom = 5.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+
+                                    items(
+                                        items = rows,
+                                        key = { row -> row.first().id }
+                                    ) { pair ->
+
+                                        var visible by remember { mutableStateOf(false) }
+
+                                        LaunchedEffect(Unit) {
+                                            visible = true
+                                        }
+
+                                        AnimatedVisibility(
+                                            visible = visible,
+                                            enter = fadeIn(tween(220)) +
+                                                    slideInVertically(
+                                                        animationSpec = tween(220)
+                                                    ) { it / 5 }
+                                        ) {
+
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                            ) {
+
+                                                pair.forEach { product ->
+
+                                                    val inCart =
+                                                        selectedProducts.find {
+                                                            it.first.id == product.id
+                                                        }
+
+                                                    RapidProductGridCard(
+                                                        product = product,
+                                                        inCart = inCart,
+                                                        addProduct = {
+                                                            viewModel.addProduct(product)
+                                                        },
+                                                        removeProduct = {
+                                                            viewModel.removeProduct(product)
+                                                        },
+                                                        modifier = Modifier
+                                                            .weight(1f)
+                                                            .animateItemPlacement(
+                                                                spring(
+                                                                    dampingRatio =
+                                                                    Spring.DampingRatioMediumBouncy,
+                                                                    stiffness =
+                                                                    Spring.StiffnessLow
+                                                                )
+                                                            ),
+                                                        viewModel = viewModel
+                                                    )
+                                                }
+
+                                                // si queda impar
+                                                if (pair.size == 1) {
+                                                    Spacer(
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -278,7 +383,7 @@ fun RapidSaleContent(
                                     shape = RoundedCornerShape(18.dp) // 🔥 pill moderno
                                 )
                                 .clickable(enabled = canConfirm) {
-                                    navController.navigate(ClientScreen.RapidSaleResumen.route)
+                                    navController.navigate(ClientScreen.CompleteSaleStepTree.route)
                                 }
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -319,11 +424,13 @@ fun RapidSaleContent(
             }
         }
 
-    // 🔥 OVERLAY ENCIMA CUANDO NO HAY PRODUCTOS EXISTENTES
-    if (hasQuery && filteredProducts.isEmpty()) {
+    val shouldShowCreateOverlay =
+        (hasQuery && filteredProducts.isEmpty()) || showCreateSheet
+
+    if (shouldShowCreateOverlay) {
 
         AnimatedVisibility(
-            visible = showCreateAnimated,
+            visible = shouldShowCreateOverlay,
             enter = fadeIn(tween(200)) +
                     scaleIn(
                         initialScale = 0.85f,
@@ -354,7 +461,7 @@ fun RapidSaleContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.4f))
-                    .clickable { /* opcional: cerrar */ },
+                    .clickable {  },
                 contentAlignment = Alignment.Center
             ) {
 
@@ -404,13 +511,12 @@ fun RapidSaleContent(
                                 shape = RoundedCornerShape(50)
                             )
                             .clickable {
-                                // 🔥 cerrar popup
+
+                                showCreateSheet = false
                                 showCreateAnimated = false
 
-                                // 🔥 limpiar búsqueda
                                 viewModel.onSearchQueryChanged("")
 
-                                // 🔥 limpiar inputs
                                 productName = ""
                                 priceText = ""
                                 cantidad = ""
@@ -453,78 +559,5 @@ fun RapidSaleContent(
         )
     }
 
-
-
-    // ANIMACION DE PRODUCTO QUE VUELA AL CARRITO AL AGREGARLO
-    val flyData by viewModel.flyAnimation.collectAsState()
-  /*  NO SE USA DE MOMENTO
-    flyData?.let { data ->
-
-        val animX = remember { Animatable(data.startX) }
-        val animY = remember { Animatable(data.startY) }
-        val scale = remember { Animatable(1f) }
-
-        LaunchedEffect(data) {
-
-            launch {
-                animX.animateTo(
-                    targetValue = cartPosition.x,
-                    animationSpec = tween(600)
-                )
-            }
-
-            launch {
-                animY.animateTo(
-                    targetValue = cartPosition.y,
-                    animationSpec = tween(600)
-                )
-            }
-
-            launch {
-                scale.animateTo(
-                    0.3f,
-                    animationSpec = tween(600)
-                )
-            }
-
-            delay(600)
-            viewModel.clearFlyAnimation()
-        }
-
-        Box(
-            modifier =modifier
-                .fillMaxSize()
-        ) {
-
-            // 🔥 ELEMENTO VOLANDO
-            Box(
-                modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            animX.value.toInt(),
-                            animY.value.toInt()
-                        )
-                    }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                        alpha = 0.9f
-                    }
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
-                    .padding(8.dp)
-            ) {
-
-                //data.product.name,
-                  //  "$ ${data.product.price}",
-                ProductMiniCard(
-                    name = data.product.name,
-                    price = "$ ${data.product.price}",
-                    modifier =  Modifier
-                )
-            }
-        }
-    }
-
-   */
 
 }

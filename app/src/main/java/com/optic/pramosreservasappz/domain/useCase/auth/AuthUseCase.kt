@@ -6,6 +6,8 @@ import com.optic.pramosreservasappz.domain.useCase.auth.loginpless.LoginSendCode
 import com.optic.pramosreservasappz.domain.useCase.business.CreateColaboradorUC
 import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessByIdUC
 import com.optic.pramosreservasappz.domain.useCase.business.GetBusinessMembersUC
+import com.optic.pramosreservasappz.domain.useCase.business.GetMemberUC
+import com.optic.pramosreservasappz.domain.useCase.business.UpdateColaboradorUC
 
 data class AuthUseCase(
     val login: LoginUseCase,
@@ -20,5 +22,7 @@ data class AuthUseCase(
 
     val createColaboradorUC: CreateColaboradorUC,
     val getBusinessMembersUC: GetBusinessMembersUC,
-    val getBusinessByIdUC: GetBusinessByIdUC
+    val getBusinessByIdUC: GetBusinessByIdUC,
+    val updateColaboradorUC: UpdateColaboradorUC,
+    val getMemberUC: GetMemberUC
 )

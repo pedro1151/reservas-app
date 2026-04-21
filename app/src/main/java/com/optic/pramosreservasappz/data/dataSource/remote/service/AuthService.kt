@@ -9,13 +9,17 @@ import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabUpdateRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
 import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.model.sales.SalesStatsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthService {
@@ -82,6 +86,20 @@ interface AuthService {
         @Query("business_id") businessId: Int,
         @Query("user_id") userId: Int
     ): Response<BusinessCompleteResponse>
+
+
+    // update member
+    @PUT("/auth-reservas/member")
+    suspend fun updateBusinessMember(
+        @Body() request: UserCollabUpdateRequest,
+    ): Response<DefaultResponse>
+
+
+    @GET("/auth-reservas/user/{user_id}")
+    suspend fun getUser(
+        @Path("user_id") userId: Int,
+    ): Response<UserMemberResponse>
+
 
 
 

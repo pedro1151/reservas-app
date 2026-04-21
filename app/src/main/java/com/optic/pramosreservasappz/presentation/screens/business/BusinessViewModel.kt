@@ -15,10 +15,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.optic.pramosreservasappz.domain.model.auth.BasicUserResponse
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabUpdateRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
 import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
-
+import kotlinx.coroutines.delay
+import android.util.Log
 @HiltViewModel
 class BusinessViewModel @Inject constructor(
     private val reservasUC: ReservasUC,
@@ -43,6 +49,18 @@ class BusinessViewModel @Inject constructor(
     private val _businessState = mutableStateOf<Resource<BusinessCompleteResponse>>(Resource.Idle)
     val businessState: State<Resource<BusinessCompleteResponse>> = _businessState
 
+    private val _oneMemberState = mutableStateOf<Resource<UserMemberResponse>>(Resource.Idle)
+    val oneMemberState: State<Resource<UserMemberResponse>> = _oneMemberState
+
+
+    // ---------------------------------------------
+    // FUNCIÓN: Actualizar cliente
+    // ---------------------------------------------
+    private val _updateMemberState =
+        mutableStateOf<Resource<DefaultResponse>>(Resource.Idle)
+
+    val updateMemberState: State<Resource<DefaultResponse>> =
+        _updateMemberState
     // ---------------------------------------------
     // STATE: Search
     // ---------------------------------------------
@@ -121,6 +139,7 @@ class BusinessViewModel @Inject constructor(
     }
 
 
+
     // ---------------------------------------------
     // CREATE PRODUCT
     // ---------------------------------------------
@@ -146,6 +165,73 @@ class BusinessViewModel @Inject constructor(
                     _businessState.value = result
                 }
 
+                else -> {}
+            }
+        }
+    }
+
+
+
+
+    fun getMember(userId: Int) {
+
+        viewModelScope.launch {
+
+            Log.d("BusinessVM", "getMember() iniciado")
+            Log.d("BusinessVM", "userId recibido: $userId")
+
+            _oneMemberState.value = Resource.Loading
+            try {
+                Log.d("BusinessVM", "Llamando authUseCase.getMemberUC(...)")
+                when (val result = authUseCase.getMemberUC(
+                    userId = userId
+                )) {
+                    is Resource.Success -> {
+
+                        Log.d("BusinessVM", "SUCCESS getMember(): ${result.data}")
+                        _oneMemberState.value = result
+                    }
+                    is Resource.Failure -> {
+
+                        Log.e("BusinessVM", "FAILURE getMember(): ${result.message}")
+                        _oneMemberState.value = result
+                    }
+                    is Resource.Loading -> {
+                        Log.d("BusinessVM", "Estado Loading retornado")
+                    }
+
+                    is Resource.Idle -> {
+                        Log.d("BusinessVM", "Estado Idle retornado")
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("BusinessVM", "EXCEPTION getMember(): ${e.message}", e)
+
+                _oneMemberState.value =
+                    Resource.Failure(
+                        e.message ?: "Error inesperado al obtener member"
+                    )
+            }
+        }
+    }
+
+
+
+    fun updateMember(
+        request: UserCollabUpdateRequest
+    ) {
+        viewModelScope.launch {
+            _updateMemberState.value = Resource.Loading
+            when (val result = authUseCase.updateColaboradorUC(
+                request = request
+            )) {
+                is Resource.Success -> {
+                    _updateMemberState.value = result
+                }
+                is Resource.Failure -> {
+                    _updateMemberState.value = result
+                }
                 else -> {}
             }
         }
