@@ -33,6 +33,8 @@ class SalesViewModel @Inject constructor(
     private val reservasUC: ReservasUC
 ) : ViewModel() {
 
+    enum class RapidSaleViewType { LIST, GRID }
+
     // ---------------------------------------------
     // STATE: Lista de ventas
     // ---------------------------------------------

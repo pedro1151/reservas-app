@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.business.BusinessViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
 import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
@@ -55,7 +56,9 @@ fun BusinessMemberCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-
+                    navController.navigate(
+                        ClientScreen.UpdateBusinessMember.createRoute(userId = member.user.id)
+                    )
                 }
                 .shadow(
                     elevation = 12.dp,
@@ -122,7 +125,15 @@ fun BusinessMemberCard(
 
                         Spacer(Modifier.height(2.dp))
                         Text(
-                            text = member.role,
+                            text = member.businessMember.roleLabel,
+                            fontSize = 14.sp, // 🔥 más moderno
+                            color = TextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = member.businessMember.statusLabel,
                             fontSize = 14.sp, // 🔥 más moderno
                             color = TextSecondary,
                             maxLines = 1,

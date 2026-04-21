@@ -4,8 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,11 +27,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.ui.theme.GrisModerno
 
 @Composable
 fun CompleteSaleStepTreeContent(
@@ -160,42 +155,43 @@ fun CompleteSaleStepTreeContent(
 
         // 🔥 NOMBRE DE LA VENTA
         item {
+            if (viewModel.saleName != null) {
 
-            Text(
-                text = "Nombre de la Venta",
-                fontSize = 16.sp,
-                color = TextSecondary
-            )
+                Text(
+                    text = "Nombre de la Venta",
+                    fontSize = 16.sp,
+                    color = TextSecondary
+                )
 
-            Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(6.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 12.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = Color.Black.copy(alpha = 0.05f),
-                        spotColor = Color.Black.copy(alpha = 0.08f)
-                    )
-            ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp)) // 🔥 FIX
-                        .background(Color.White)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                        .shadow(
+                            elevation = 12.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            ambientColor = Color.Black.copy(alpha = 0.05f),
+                            spotColor = Color.Black.copy(alpha = 0.08f)
+                        )
                 ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp)) // 🔥 FIX
+                            .background(Color.White)
+                            .padding(horizontal = 20.dp, vertical = 16.dp),
+                    ) {
 
-                    Text(
-                        viewModel.saleName,
-                        fontSize = 16.sp,
-                        color = TextSecondary
-                    )
+                        Text(
+                            viewModel.saleName,
+                            fontSize = 16.sp,
+                            color = TextSecondary
+                        )
+                    }
                 }
             }
         }
-
         item { Spacer(Modifier.height(10.dp)) }
 
         // 🔥 CLIENTE SELECCIONADO
@@ -356,109 +352,111 @@ fun CompleteSaleStepTreeContent(
         item { Spacer(Modifier.height(10.dp)) }
         // 🔥 METODO DE PAGO
         item {
+            if (viewModel.paymentMethod != null) {
 
-            Text(
-                text = "Metodo de Pago",
-                fontSize = 16.sp,
-                color = TextSecondary
-            )
+                Text(
+                    text = "Metodo de Pago",
+                    fontSize = 16.sp,
+                    color = TextSecondary
+                )
 
-            Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(6.dp))
 
-            val scale by animateFloatAsState(
-                targetValue = 1.05f,
-                animationSpec = tween(180),
-                label = ""
-            )
+                val scale by animateFloatAsState(
+                    targetValue = 1.05f,
+                    animationSpec = tween(180),
+                    label = ""
+                )
 
-            val checkScale by animateFloatAsState(
-                targetValue = 1f,
-                animationSpec = tween(220),
-                label = ""
-            )
+                val checkScale by animateFloatAsState(
+                    targetValue = 1f,
+                    animationSpec = tween(220),
+                    label = ""
+                )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 12.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = Color.Black.copy(alpha = 0.05f),
-                        spotColor = Color.Black.copy(alpha = 0.08f)
-                    )
-            ) {
-
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp)) // 🔥 FIX CLAVE
-                        .background(Color.White)
-                        .padding(horizontal = 100.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                        .shadow(
+                            elevation = 12.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            ambientColor = Color.Black.copy(alpha = 0.05f),
+                            spotColor = Color.Black.copy(alpha = 0.08f)
+                        )
                 ) {
 
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(CyanSoft)
-                            .border(1.4.dp, Cyan, RoundedCornerShape(14.dp))
-                            .padding(horizontal = 20.dp, vertical = 14.dp),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp)) // 🔥 FIX CLAVE
+                            .background(Color.White)
+                            .padding(horizontal = 100.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Box(Modifier.fillMaxSize()) {
+                        Box(
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(CyanSoft)
+                                .border(1.4.dp, Cyan, RoundedCornerShape(14.dp))
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
 
-                            Column(
-                                modifier = Modifier.align(Alignment.Center),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
+                            Box(Modifier.fillMaxSize()) {
 
-                                Icon(
-                                    imageVector = when (viewModel.paymentMethod) {
-                                        "Efectivo" -> Icons.Default.AttachMoney
-                                        "Tarjeta Débito" -> Icons.Default.CreditCard
-                                        "Tarjeta Crédito" -> Icons.Default.CreditScore
-                                        "Mercado Pago" -> Icons.Default.Memory
-                                        "Transferencia" -> Icons.Default.AccountBalance
-                                        else -> Icons.Default.AccountBalance
-                                    },
-                                    contentDescription = null,
-                                    tint = Cyan
-                                )
+                                Column(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
 
-                                Spacer(Modifier.height(6.dp))
+                                    Icon(
+                                        imageVector = when (viewModel.paymentMethod) {
+                                            "Efectivo" -> Icons.Default.AttachMoney
+                                            "Tarjeta Débito" -> Icons.Default.CreditCard
+                                            "Tarjeta Crédito" -> Icons.Default.CreditScore
+                                            "Mercado Pago" -> Icons.Default.Memory
+                                            "Transferencia" -> Icons.Default.AccountBalance
+                                            else -> Icons.Default.AccountBalance
+                                        },
+                                        contentDescription = null,
+                                        tint = Cyan
+                                    )
 
-                                Text(
-                                    viewModel.paymentMethod ?: "No seleccionado",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Cyan
-                                )
-                            }
+                                    Spacer(Modifier.height(6.dp))
 
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 6.dp, y = (-6).dp)
-                                    .size(18.dp)
-                                    .graphicsLayer {
-                                        scaleX = checkScale
-                                        scaleY = checkScale
-                                    }
-                                    .background(Cyan, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(11.dp)
-                                )
+                                    Text(
+                                        viewModel.paymentMethod ?: "No seleccionado",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Cyan
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 6.dp, y = (-6).dp)
+                                        .size(18.dp)
+                                        .graphicsLayer {
+                                            scaleX = checkScale
+                                            scaleY = checkScale
+                                        }
+                                        .background(Cyan, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(11.dp)
+                                    )
+                                }
                             }
                         }
                     }

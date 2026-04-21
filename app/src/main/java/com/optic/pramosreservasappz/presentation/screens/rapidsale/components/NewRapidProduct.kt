@@ -46,6 +46,7 @@ import com.optic.pramosreservasappz.presentation.ui.theme.BluePrimary2
 import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
 import com.optic.pramosreservasappz.presentation.ui.theme.DiaglogBackground
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.Grafito
 import com.optic.pramosreservasappz.presentation.ui.theme.GrisModerno
 import com.optic.pramosreservasappz.presentation.ui.theme.GrisSuave
 import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
@@ -88,7 +89,7 @@ fun NewRapidProduct(
             )
 
             Text(
-                "Crea el nuevo producto⚡",
+                "Crea el nuevo producto ⚡",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 color = CyanEnd,
@@ -166,7 +167,7 @@ fun NewRapidProduct(
                                 },
                             shape = RoundedCornerShape(14.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Cyan,
+                                containerColor = Grafito,
                                 contentColor = contentColor,
                                 disabledContainerColor = GrisSuave,
                                 disabledContentColor = GrisSuave

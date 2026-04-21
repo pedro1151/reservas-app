@@ -180,11 +180,27 @@ sealed class ClientScreen(
         icon = Icons.Default.BarChart
     )
 
+    object UpdateBusinessMember: ClientScreen(
+            route = "client/update_business_member/{userId}",
+            title = "Actualizar colaborador",
+            icon = Icons.Default.SpaceDashboard
+        ) {
+            fun createRoute(userId: Int): String = "client/update_business_member/$userId"
+        }
+
     object MyBusiness: ClientScreen(
         route = "client/mybusiness",
         title = "Mi Negocio",
         icon = Icons.Default.BarChart
     )
+
+    object ReciboDetail: ClientScreen(
+        route = "client/recibo_sale/{saleId}",
+        title = "Recibo de venta",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(saleId: Int): String = "client/recibo_sale/$saleId"
+    }
 
 
 

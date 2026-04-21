@@ -1,7 +1,6 @@
 package com.optic.pramosreservasappz.presentation.screens.rapidsale.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -15,7 +14,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,22 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
-import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
-import com.optic.pramosreservasappz.presentation.ui.theme.ButtonGreen
-import com.optic.pramosreservasappz.presentation.ui.theme.Grafito
-import com.optic.pramosreservasappz.presentation.ui.theme.GreenGradient
-import com.optic.pramosreservasappz.presentation.ui.theme.GrisModerno
-import com.optic.pramosreservasappz.presentation.ui.theme.GrisSuave
-import com.optic.pramosreservasappz.presentation.ui.theme.terciary
-
 @Composable
 fun RapidProductCard(
     product: ProductResponse,

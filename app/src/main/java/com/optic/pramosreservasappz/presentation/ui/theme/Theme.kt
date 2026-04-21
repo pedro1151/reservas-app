@@ -84,6 +84,13 @@ val GradientBackground = Brush.verticalGradient(
     )
 )
 
+val GradientBackgroundPrimary = Brush.verticalGradient(
+    listOf(
+        Color(0xFF0891B2),
+        Color(0xFF0891B2)
+    )
+)
+
 val ButtonBackground =     Brush.horizontalGradient(
     listOf(
         Color(0xFF22C1C3),

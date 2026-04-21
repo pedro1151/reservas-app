@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.business.abmmember
+package com.optic.pramosreservasappz.presentation.screens.business.createmember
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
 import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.screens.business.abmmember.components.MemberInputCard
+import com.optic.pramosreservasappz.presentation.screens.business.createmember.components.MemberInputCard
 import com.optic.pramosreservasappz.presentation.screens.business.BusinessViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 @Composable

@@ -10,8 +10,10 @@ import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeRequest
 import com.optic.pramosreservasappz.domain.model.auth.LoginSendCodeResponse
 import com.optic.pramosreservasappz.domain.model.auth.RefreshTokenRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabCreateRequest
+import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserCollabUpdateRequest
 import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemberResponse
 import com.optic.pramosreservasappz.domain.model.business.completebusiness.BusinessCompleteResponse
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import retrofit2.Response
 
 class AuthRemoteDataSourceImpl(private val authService: AuthService): AuthRemoteDataSource {
@@ -58,5 +60,15 @@ class AuthRemoteDataSourceImpl(private val authService: AuthService): AuthRemote
         businessId=businessId,
         userId = userId
     )
+
+    override suspend fun updateBusinessMember(
+        request: UserCollabUpdateRequest
+    ): Response<DefaultResponse> = authService.updateBusinessMember(
+        request = request
+    )
+
+    override suspend fun getUser(
+        userId: Int
+    ): Response<UserMemberResponse> = authService.getUser(userId)
 
 }

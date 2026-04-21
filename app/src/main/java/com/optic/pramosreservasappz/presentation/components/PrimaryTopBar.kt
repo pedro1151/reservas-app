@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackgroundPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,7 @@ fun PrimaryTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackground)
+            .background(GradientBackgroundPrimary)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)
