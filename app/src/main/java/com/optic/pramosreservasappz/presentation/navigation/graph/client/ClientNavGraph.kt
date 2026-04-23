@@ -32,18 +32,14 @@ import com.optic.pramosreservasappz.presentation.screens.auth.login.LoginViewMod
 import com.optic.pramosreservasappz.presentation.screens.auth.login.components.LoginContentPless
 import com.optic.pramosreservasappz.presentation.screens.auth.login.basiclogin.BasicLoginScreen
 
-import com.optic.pramosreservasappz.presentation.screens.sales.SalesScreen
-import com.optic.pramosreservasappz.presentation.screens.sales.SalesViewModel
-import com.optic.pramosreservasappz.presentation.screens.sales.SalesStatsScreen
-import com.optic.pramosreservasappz.presentation.screens.sales.detail.SaleDetailScreen
+import com.optic.pramosreservasappz.presentation.screens.inicio.SalesScreen
+import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.tusventas.detail.SaleDetailScreen
 
-import com.optic.pramosreservasappz.presentation.screens.rapidsale.RapidSaleScreen
-import com.optic.pramosreservasappz.presentation.screens.rapidsale.resumen.RapidSaleResumenScreen
-
-import com.optic.pramosreservasappz.presentation.screens.salecomplete.selecclient.SelectClientScreen
-import com.optic.pramosreservasappz.presentation.screens.salecomplete.stepone.CompleteSaleStepOneScreen
-import com.optic.pramosreservasappz.presentation.screens.salecomplete.steptree.CompleteSaleStepTreeScreen
-import com.optic.pramosreservasappz.presentation.screens.salecomplete.steptwo.CompleteSaleStepTwoScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.SelectClientScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.stepone.CompleteSaleStepOneScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.steptree.CompleteSaleStepTreeScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.steptwo.CompleteSaleStepTwoScreen
 
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipalScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
@@ -53,9 +49,9 @@ import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
 import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
 
-import com.optic.pramosreservasappz.presentation.screens.historial.HistorialScreen
+import com.optic.pramosreservasappz.presentation.screens.tusventas.HistorialScreen
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
-import com.optic.pramosreservasappz.presentation.screens.mas.MasScreen
+import com.optic.pramosreservasappz.presentation.screens.configuracion.MasScreen
 import com.optic.pramosreservasappz.presentation.screens.planes.PlansScreen
 
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
@@ -67,6 +63,7 @@ import com.optic.pramosreservasappz.presentation.screens.business.members.Busine
 import com.optic.pramosreservasappz.presentation.screens.business.createmember.ABMbusinessMemberScreen
 import com.optic.pramosreservasappz.presentation.screens.business.mybusiness.MyBusinessScreen
 import com.optic.pramosreservasappz.presentation.screens.business.updatemember.UpdateMemberScreen
+import com.optic.pramosreservasappz.presentation.screens.estadisticas.SalesStatsScreen
 import com.optic.pramosreservasappz.presentation.screens.recibos.ReciboScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -166,21 +163,6 @@ fun ClientNavGraph(
             SalesStatsScreen(navController, isAuthenticated)
         }
 
-        composable(ClientScreen.RapidSale.route) {
-            RapidSaleScreen(
-                navController,
-                isAuthenticated,
-                salesViewModel
-            )
-        }
-
-        composable(ClientScreen.RapidSaleResumen.route) {
-            RapidSaleResumenScreen(
-                navController,
-                isAuthenticated,
-                salesViewModel
-            )
-        }
 
         composable(ClientScreen.CompleteSaleStepOne.route) {
             CompleteSaleStepOneScreen(

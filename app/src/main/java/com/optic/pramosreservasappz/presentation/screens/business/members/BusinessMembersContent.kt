@@ -22,7 +22,7 @@ import com.optic.pramosreservasappz.domain.model.business.colaboradores.UserMemb
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.business.BusinessViewModel
 import com.optic.pramosreservasappz.presentation.screens.business.members.components.BusinessMemberCard
-import com.optic.pramosreservasappz.presentation.screens.salecomplete.selecclient.components.SelectClientSearchBar
+import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.components.SelectClientSearchBar
 
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 

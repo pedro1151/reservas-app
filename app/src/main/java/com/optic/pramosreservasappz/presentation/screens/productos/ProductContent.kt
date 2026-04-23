@@ -40,7 +40,7 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.historial.components.getAvatarColor
+import com.optic.pramosreservasappz.presentation.screens.tusventas.components.getAvatarColor
 import com.optic.pramosreservasappz.presentation.screens.productos.components.PrincipalProducCard
 import com.optic.pramosreservasappz.presentation.screens.productos.components.getServiceInitials
 import kotlinx.coroutines.delay

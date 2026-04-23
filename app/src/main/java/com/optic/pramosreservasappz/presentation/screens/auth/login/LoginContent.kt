@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -37,7 +36,6 @@ import com.optic.pramosreservasappz.presentation.components.GoogleSignInButton
 import com.optic.pramosreservasappz.presentation.components.progressBar.CustomProgressBar
 import com.optic.pramosreservasappz.presentation.navigation.Graph
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.salestats.colors.Cyan
 
 // ─── Paleta refinada ──────────────────────────────────────────────────────────
 private val Ink         = Color(0xFF0D0D0D)

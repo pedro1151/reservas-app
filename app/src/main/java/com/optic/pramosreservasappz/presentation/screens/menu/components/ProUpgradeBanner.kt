@@ -28,6 +28,7 @@ import com.optic.pramosreservasappz.presentation.navigation.screen.client.Client
 import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewMode
 import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
 import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.SuccessButtonBackground
 
 
 @Composable
@@ -41,7 +42,7 @@ fun ProUpgradeBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackground)
+            .background(SuccessButtonBackground)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)
@@ -73,7 +74,7 @@ fun ProUpgradeBanner(
             Button(
                 onClick = { navController.navigate(ClientScreen.Planes.route)},
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.fillMaxWidth()

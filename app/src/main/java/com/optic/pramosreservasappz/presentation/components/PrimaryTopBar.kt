@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackgroundPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +30,8 @@ fun PrimaryTopBar(
     navController: NavController,
     onCalendarClick: (() -> Unit)? = null,
     showTitle: Boolean = true,
-    vm: AuthStateVM = hiltViewModel()
+    vm: AuthStateVM = hiltViewModel(),
+    selectorAction: (@Composable () -> Unit)? = null
 ) {
     val isAuthenticated by vm.isAuthenticated.collectAsState()
     val userEmail by vm.userEmail.collectAsState()
@@ -41,7 +40,7 @@ fun PrimaryTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackgroundPrimary)
+            .background(MaterialTheme.colorScheme.primary)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)
@@ -70,6 +69,10 @@ fun PrimaryTopBar(
                             tint = Color.White
                         )
                     }
+                }
+
+                if (selectorAction != null) {
+                    selectorAction()
                 }
             },
 

@@ -3,6 +3,7 @@ package com.optic.pramosreservasappz.presentation.screens.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -105,64 +106,86 @@ fun PrincipalMenuDrawer(
                 )
             }
 
-         //   Spacer(Modifier.height(0.dp))
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.MyBusiness.route)},
-                title = "Mi Negocio",
-                icon =  Icons.Default.Favorite
-            )
+            LazyColumn(
+                modifier       = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 110.dp)
+            ) {
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.RapidSale.route)},
-                title = "Venta Rapida",
-                icon =  Icons.Default.Bolt
-            )
+                //   Spacer(Modifier.height(0.dp))
 
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.MyBusiness.route) },
+                        title = "Mi Negocio",
+                        icon = Icons.Default.Favorite
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.CompleteSaleStepOne.route)},
-                title = "Venta Completa",
-                icon =  Icons.Default.AddTask
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.CompleteSaleStepTwo.route) },
+                        title = "Venta Rapida",
+                        icon = Icons.Default.Bolt
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.BusinessMembers.route) },
-                title = "Tus Colaboradores",
-                icon =  Icons.Default.Person,
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.CompleteSaleStepOne.route) },
+                        title = "Venta Completa",
+                        icon = Icons.Default.AddTask
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.Historial.route)
-                },
-                title = "Transacciones",
-                icon = Icons.Default.History
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.BusinessMembers.route) },
+                        title = "Tus Colaboradores",
+                        icon = Icons.Default.Person,
+                    )
+                }
 
+                item {
+                    SaleMenuItem(
+                        onClick = {
+                            navController.navigate(ClientScreen.Historial.route)
+                        },
+                        title = "Transacciones",
+                        icon = Icons.Default.History
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.SaleStats.route)},
-                title = "Mis Estadisticas",
-                icon =  Icons.Default.BarChart
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.SaleStats.route) },
+                        title = "Mis Estadisticas",
+                        icon = Icons.Default.BarChart
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.Clientes.route) },
-                title = "Mis Clientes",
-                icon =  Icons.Default.EmojiEmotions
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.Clientes.route) },
+                        title = "Mis Clientes",
+                        icon = Icons.Default.EmojiEmotions
+                    )
+                }
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.Productos.route) },
+                        title = "Tus Productos/Servicios",
+                        icon = Icons.Default.GifBox,
+                    )
+                }
 
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.Productos.route) },
-                title = "Tus Productos/Servicios",
-                icon =  Icons.Default.GifBox,
-            )
-
-
-            SaleMenuItem(
-                onClick = { navController.navigate(ClientScreen.Mas.route) },
-                title = "Configuracion",
-                icon =  Icons.Default.Brightness7,
-            )
+                item {
+                    SaleMenuItem(
+                        onClick = { navController.navigate(ClientScreen.Mas.route) },
+                        title = "Configuracion",
+                        icon = Icons.Default.Brightness7,
+                    )
+                }
+            }
         }
     }
 

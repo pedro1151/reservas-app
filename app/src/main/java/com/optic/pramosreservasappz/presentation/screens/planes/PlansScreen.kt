@@ -15,9 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
-private val PageBg      = Color(0xFF0A0F1A)   // fondo oscuro unificado con las cards
-private val TextPrimary = Color(0xFFE2E8F0)
-private val TextMuted   = Color(0xFF64748B)
 
 @Composable
 fun PlansScreen(navController: NavHostController) {
@@ -26,7 +23,7 @@ fun PlansScreen(navController: NavHostController) {
         state = rememberLazyListState(),
         modifier = Modifier
             .fillMaxSize()
-            .background(PageBg),
+            .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 64.dp)
     ) {
 
@@ -37,8 +34,11 @@ fun PlansScreen(navController: NavHostController) {
                 .padding(top = 12.dp, start = 8.dp)
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver", tint = TextPrimary)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
             }
         }
@@ -54,15 +54,16 @@ fun PlansScreen(navController: NavHostController) {
                     "Planes",
                     fontSize = 34.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     letterSpacing = (-0.8).sp
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
                     "Elige el plan perfecto\npara tu negocio.",
-                    fontSize = 15.sp,
-                    color = TextMuted,
-                    lineHeight = 22.sp
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    lineHeight = 22.sp,
+                    letterSpacing = (-0.8).sp
                 )
                 Spacer(Modifier.height(32.dp))
             }
