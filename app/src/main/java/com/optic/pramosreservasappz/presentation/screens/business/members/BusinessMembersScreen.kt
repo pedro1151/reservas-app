@@ -52,7 +52,7 @@ fun BusinessMembersScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // 🔥 IMPORTANTE
+                .padding(paddingValues) //
         ) {
 
             when (val result = clientResource) {

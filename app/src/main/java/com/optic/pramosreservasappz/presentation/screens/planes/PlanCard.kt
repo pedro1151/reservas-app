@@ -1,5 +1,6 @@
 package com.optic.pramosreservasappz.presentation.screens.planes
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -7,63 +8,66 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// ── Standard – Navy / Mint ────────────────────────────────────────────────────
-private val StdNavyStart  = Color(0xFF0D1B2A)
-private val StdNavyEnd    = Color(0xFF183554)
+// ─── STANDARD – Navy / Mint (igual que antes) ─────────────────────────────────
+private val StdGradStart  = Color(0xFF0D1B2A)
+private val StdGradMid    = Color(0xFF0F2D4A)
+private val StdGradEnd    = Color(0xFF183554)
 private val StdMint       = Color(0xFF2DD4A0)
 private val StdMintDim    = Color(0x302DD4A0)
-private val StdTextDim    = Color(0x82FFFFFF)
-private val StdTextSoft   = Color(0xD1FFFFFF)
+private val StdTextDim    = Color(0x88FFFFFF)
+private val StdTextSoft   = Color(0xCCFFFFFF)
 
-// ── Pro – Deep Indigo ─────────────────────────────────────────────────────────
-private val ProBg         = Color(0xFF1A1040)
-private val ProBorder     = Color(0xFF4338CA)
-private val ProAccent     = Color(0xFF818CF8)
-private val ProAccentDim  = Color(0x30818CF8)
-private val ProTitle      = Color(0xFFE0E7FF)
-private val ProTextDim    = Color(0xB3A5B4FC)
-private val ProTextSoft   = Color(0xD9C7D2FE)
-private val ProButton     = Color(0xFF3730A3)
-private val ProButtonBorder = Color(0xFF4338CA)
+// ─── PRO – Purple / Violet gradient card ─────────────────────────────────────
+private val ProGradStart  = Color(0xFF1E0A3C)
+private val ProGradMid    = Color(0xFF2D1060)
+private val ProGradEnd    = Color(0xFF3B0F82)
+private val ProViolet     = Color(0xFFA78BFA)
+private val ProVioletBright = Color(0xFFC4B5FD)
+private val ProVioletDim  = Color(0x2EA78BFA)
+private val ProVioletBorder = Color(0xFF7C3AED)
+private val ProTextDim    = Color(0x88FFFFFF)
+private val ProTextSoft   = Color(0xCCFFFFFF)
+private val ProPopularBg  = Color(0xFF7C3AED)
 
-// ── Gold – Deep Amber ─────────────────────────────────────────────────────────
-private val GoldBg        = Color(0xFF1A1200)
+// ─── GOLD – Deep Amber / Orange gradient card ─────────────────────────────────
+private val GoldGradStart = Color(0xFF1C0A00)
+private val GoldGradMid   = Color(0xFF3D1400)
+private val GoldGradEnd   = Color(0xFF5C2000)
+private val GoldAmber     = Color(0xFFFBBF24)
+private val GoldOrange    = Color(0xFFF97316)
+private val GoldAmberDim  = Color(0x28FBB024)
 private val GoldBorder    = Color(0xFFD97706)
-private val GoldAccent    = Color(0xFFFCD34D)
-private val GoldAccentDim = Color(0x26F59E0B)
-private val GoldTitle     = Color(0xFFFEF3C7)
-private val GoldTextDim   = Color(0x99FCD34D)
-private val GoldTextSoft  = Color(0xD9FDE68A)
-private val GoldCTAStart  = Color(0xFFD97706)
-private val GoldCTAEnd    = Color(0xFFF59E0B)
-private val GoldCTAText   = Color(0xFF1A1200)
-private val GoldBadgeColor = Color(0xFFFCD34D)
+private val GoldTextDim   = Color(0x88FFFFFF)
+private val GoldTextSoft  = Color(0xCCFFFFFF)
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Shared composable – feature row (reused by all three cards)
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Feature row (shared) ─────────────────────────────────────────────────────
 @Composable
 private fun FeatureRow(text: String, checkColor: Color, bubbleColor: Color) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.5.dp)
+        verticalAlignment = Alignment.Top,
+        modifier          = Modifier.padding(vertical = 5.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
+            modifier         = Modifier
+                .padding(top = 2.dp)
                 .size(20.dp)
                 .background(bubbleColor, CircleShape)
         ) {
@@ -75,13 +79,40 @@ private fun FeatureRow(text: String, checkColor: Color, bubbleColor: Color) {
             )
         }
         Spacer(Modifier.width(12.dp))
-        Text(text, fontSize = 13.sp, color = Color.White.copy(alpha = 0.82f), lineHeight = 20.sp)
+        Text(
+            text       = text,
+            fontSize   = 13.5.sp,
+            color      = Color.White.copy(alpha = 0.80f),
+            lineHeight = 20.sp
+        )
+    }
+}
+
+// ─── Price block (shared) ─────────────────────────────────────────────────────
+@Composable
+private fun PriceBlock(price: String, period: String, color: Color) {
+    Row(verticalAlignment = Alignment.Bottom) {
+        Text(
+            text          = price,
+            fontSize      = 58.sp,
+            fontWeight    = FontWeight.Black,
+            color         = Color.White,
+            letterSpacing = (-3).sp,
+            lineHeight    = 58.sp
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text     = period,
+            fontSize = 13.sp,
+            color    = color,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
     }
 }
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  STANDARD  –  hero card
+//  STANDARD  –  Navy / Mint  (same vibe as before, refined)
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun StandardPlanCard(
@@ -92,80 +123,128 @@ fun StandardPlanCard(
     badge: String,
     label: String,
     features: List<String>,
-    onSelect: () -> Unit = {}
+    onSelect: () -> Unit = {},
+    animDelay: Int = 80
 ) {
-    val gradient = Brush.linearGradient(
-        colorStops = arrayOf(0f to StdNavyStart, 1f to StdNavyEnd)
+    var visible by remember { mutableStateOf(false) }
+    val alpha by animateFloatAsState(
+        if (visible) 1f else 0f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "sA"
     )
+    val slide by animateFloatAsState(
+        if (visible) 0f else 28f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "sS"
+    )
+    LaunchedEffect(Unit) { visible = true }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer { this.alpha = alpha; translationY = slide }
             .shadow(
-                elevation    = 32.dp,
+                elevation    = 28.dp,
                 shape        = RoundedCornerShape(26.dp),
-                spotColor    = StdNavyStart.copy(alpha = 0.4f),
-                ambientColor = StdNavyStart.copy(alpha = 0.15f)
+                spotColor    = StdMint.copy(alpha = 0.18f),
+                ambientColor = StdGradStart.copy(alpha = 0.25f)
             )
             .clip(RoundedCornerShape(26.dp))
-            .background(gradient)
-            .padding(horizontal = 26.dp, vertical = 26.dp)
+            .background(
+                Brush.linearGradient(
+                    colorStops = arrayOf(
+                        0.0f to StdGradStart,
+                        0.5f to StdGradMid,
+                        1.0f to StdGradEnd
+                    )
+                )
+            )
+            // Subtle mint border
+            .border(1.dp, StdMint.copy(alpha = 0.18f), RoundedCornerShape(26.dp))
     ) {
-        Column {
+        // Top mint glow strip
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color.Transparent, StdMint, StdMint.copy(0.4f), Color.Transparent)
+                    )
+                )
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 26.dp, vertical = 26.dp)
+        ) {
             // Label
-            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
-                color = StdMint, letterSpacing = 1.2.sp)
-            Spacer(Modifier.height(10.dp))
-
-            // Title + tagline
-            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
-                color = Color.White, letterSpacing = (-0.5).sp)
-            Spacer(Modifier.height(4.dp))
-            Text(tagline, fontSize = 12.sp, color = StdTextDim, lineHeight = 17.sp)
-            Spacer(Modifier.height(22.dp))
-
-            // Price
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
-                    color = Color.White, letterSpacing = (-3).sp, lineHeight = 52.sp)
-                Spacer(Modifier.width(6.dp))
-                Text(period, fontSize = 13.sp, color = StdTextDim,
-                    modifier = Modifier.padding(bottom = 8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Outlined.Star,
+                    contentDescription = null,
+                    tint               = StdMint,
+                    modifier           = Modifier.size(12.dp)
+                )
+                Spacer(Modifier.width(5.dp))
+                Text(
+                    text          = label,
+                    fontSize      = 10.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = StdMint,
+                    letterSpacing = 1.4.sp
+                )
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                title,
+                fontSize      = 26.sp,
+                fontWeight    = FontWeight.ExtraBold,
+                color         = Color.White,
+                letterSpacing = (-0.8).sp
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(tagline, fontSize = 12.sp, color = StdTextDim, lineHeight = 18.sp)
+
+            Spacer(Modifier.height(22.dp))
+
+            PriceBlock(price = price, period = period, color = StdTextDim)
+
+            Spacer(Modifier.height(12.dp))
 
             // Badge pill
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(50))
                     .background(StdMintDim)
-                    .border(1.dp, StdMint.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .border(1.dp, StdMint.copy(0.35f), RoundedCornerShape(50))
+                    .padding(horizontal = 14.dp, vertical = 5.dp)
             ) {
                 Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = StdMint)
             }
 
-            Spacer(Modifier.height(22.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider(color = Color.White.copy(0.10f), thickness = 1.dp)
+            Spacer(Modifier.height(20.dp))
 
-            // Features
-            features.forEach {
-                FeatureRow(text = it, checkColor = StdMint, bubbleColor = StdMintDim)
-            }
+            features.forEach { FeatureRow(it, StdMint, StdMintDim) }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(30.dp))
 
             Button(
                 onClick   = onSelect,
                 modifier  = Modifier.fillMaxWidth().height(54.dp),
-                shape     = RoundedCornerShape(17.dp),
+                shape     = RoundedCornerShape(16.dp),
                 colors    = ButtonDefaults.buttonColors(containerColor = StdMint),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {
-                Text("Comenzar ahora", color = StdNavyStart,
-                    fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                Text(
+                    "Comenzar ahora",
+                    color      = StdGradStart,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize   = 15.sp
+                )
             }
         }
     }
@@ -173,7 +252,7 @@ fun StandardPlanCard(
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  PRO  –  indigo dark card
+//  PRO  –  Deep Purple / Violet
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun ProPlanCard(
@@ -184,72 +263,160 @@ fun ProPlanCard(
     badge: String,
     label: String,
     features: List<String>,
-    onSelect: () -> Unit = {}
+    onSelect: () -> Unit = {},
+    animDelay: Int = 180
 ) {
+    var visible by remember { mutableStateOf(false) }
+    val alpha by animateFloatAsState(
+        if (visible) 1f else 0f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "pA"
+    )
+    val slide by animateFloatAsState(
+        if (visible) 0f else 28f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "pS"
+    )
+    LaunchedEffect(Unit) { visible = true }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer { this.alpha = alpha; translationY = slide }
             .shadow(
-                elevation    = 18.dp,
+                elevation    = 28.dp,
                 shape        = RoundedCornerShape(26.dp),
-                spotColor    = ProAccent.copy(alpha = 0.18f),
-                ambientColor = ProAccent.copy(alpha = 0.08f)
+                spotColor    = ProViolet.copy(alpha = 0.30f),
+                ambientColor = ProGradStart.copy(alpha = 0.20f)
             )
             .clip(RoundedCornerShape(26.dp))
-            .background(ProBg)
-            .border(1.5.dp, ProBorder, RoundedCornerShape(26.dp))
-            .padding(horizontal = 26.dp, vertical = 26.dp)
+            .background(
+                Brush.linearGradient(
+                    colorStops = arrayOf(
+                        0.0f to ProGradStart,
+                        0.5f to ProGradMid,
+                        1.0f to ProGradEnd
+                    )
+                )
+            )
+            .border(1.5.dp, ProVioletBorder.copy(0.5f), RoundedCornerShape(26.dp))
     ) {
-        Column {
-            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
-                color = ProAccent, letterSpacing = 1.2.sp)
-            Spacer(Modifier.height(10.dp))
+        // Top violet glow strip
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color.Transparent, ProVioletBright, ProViolet.copy(0.4f), Color.Transparent)
+                    )
+                )
+        )
 
-            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
-                color = ProTitle, letterSpacing = (-0.5).sp)
-            Spacer(Modifier.height(4.dp))
-            Text(tagline, fontSize = 12.sp, color = ProTextDim, lineHeight = 17.sp)
-            Spacer(Modifier.height(22.dp))
-
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
-                    color = ProTextSoft, letterSpacing = (-3).sp, lineHeight = 52.sp)
-                Spacer(Modifier.width(6.dp))
-                Text(period, fontSize = 13.sp, color = ProTextDim,
-                    modifier = Modifier.padding(bottom = 8.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 26.dp, vertical = 26.dp)
+        ) {
+            // Label + "Más popular" chip
+            Row(
+                modifier              = Modifier.fillMaxWidth(),
+                verticalAlignment     = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Outlined.Bolt,
+                        contentDescription = null,
+                        tint               = ProVioletBright,
+                        modifier           = Modifier.size(12.dp)
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        label,
+                        fontSize      = 10.sp,
+                        fontWeight    = FontWeight.Bold,
+                        color         = ProVioletBright,
+                        letterSpacing = 1.4.sp
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(
+                            Brush.horizontalGradient(listOf(ProViolet, ProVioletBorder))
+                        )
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        "Más popular",
+                        fontSize      = 10.sp,
+                        fontWeight    = FontWeight.Bold,
+                        color         = Color.White,
+                        letterSpacing = 0.2.sp
+                    )
+                }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                title,
+                fontSize      = 26.sp,
+                fontWeight    = FontWeight.ExtraBold,
+                color         = Color.White,
+                letterSpacing = (-0.8).sp
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(tagline, fontSize = 12.sp, color = ProTextDim, lineHeight = 18.sp)
+
+            Spacer(Modifier.height(22.dp))
+
+            PriceBlock(price = price, period = period, color = ProTextDim)
+
+            Spacer(Modifier.height(12.dp))
 
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(ProAccentDim)
-                    .border(1.dp, ProAccent.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(ProVioletDim)
+                    .border(1.dp, ProViolet.copy(0.4f), RoundedCornerShape(50))
+                    .padding(horizontal = 14.dp, vertical = 5.dp)
             ) {
-                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ProAccent)
+                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ProVioletBright)
             }
 
-            Spacer(Modifier.height(22.dp))
-            HorizontalDivider(color = ProAccent.copy(alpha = 0.15f), thickness = 1.dp)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider(color = Color.White.copy(0.10f), thickness = 1.dp)
+            Spacer(Modifier.height(20.dp))
 
-            features.forEach {
-                FeatureRow(text = it, checkColor = ProAccent, bubbleColor = ProAccentDim)
-            }
+            features.forEach { FeatureRow(it, ProVioletBright, ProVioletDim) }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(30.dp))
 
-            Button(
-                onClick   = onSelect,
-                modifier  = Modifier.fillMaxWidth().height(52.dp),
-                shape     = RoundedCornerShape(17.dp),
-                colors    = ButtonDefaults.buttonColors(containerColor = ProButton),
-                elevation = ButtonDefaults.buttonElevation(0.dp)
+            // Gradient CTA
+            Box(
+                modifier         = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.horizontalGradient(listOf(ProViolet, ProVioletBorder))
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Text("Elegir Pro", color = ProTitle,
-                    fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Button(
+                    onClick   = onSelect,
+                    modifier  = Modifier.fillMaxSize(),
+                    shape     = RoundedCornerShape(16.dp),
+                    colors    = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                ) {
+                    Text(
+                        "Elegir Pro",
+                        color      = Color.White,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize   = 15.sp
+                    )
+                }
             }
         }
     }
@@ -257,7 +424,7 @@ fun ProPlanCard(
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  GOLD  –  amber dark card
+//  GOLD  –  Deep Amber / Orange
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun GoldPlanCard(
@@ -268,83 +435,136 @@ fun GoldPlanCard(
     badge: String,
     label: String,
     features: List<String>,
-    onSelect: () -> Unit = {}
+    onSelect: () -> Unit = {},
+    animDelay: Int = 280
 ) {
-    val ctaGradient = Brush.horizontalGradient(listOf(GoldCTAStart, GoldCTAEnd))
+    var visible by remember { mutableStateOf(false) }
+    val alpha by animateFloatAsState(
+        if (visible) 1f else 0f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "gA"
+    )
+    val slide by animateFloatAsState(
+        if (visible) 0f else 28f,
+        tween(520, animDelay, FastOutSlowInEasing), label = "gS"
+    )
+    LaunchedEffect(Unit) { visible = true }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer { this.alpha = alpha; translationY = slide }
             .shadow(
-                elevation    = 18.dp,
+                elevation    = 28.dp,
                 shape        = RoundedCornerShape(26.dp),
-                spotColor    = GoldAccent.copy(alpha = 0.2f),
-                ambientColor = GoldAccent.copy(alpha = 0.08f)
+                spotColor    = GoldAmber.copy(alpha = 0.28f),
+                ambientColor = GoldGradStart.copy(alpha = 0.22f)
             )
             .clip(RoundedCornerShape(26.dp))
-            .background(GoldBg)
-            .border(1.5.dp, GoldBorder, RoundedCornerShape(26.dp))
-            .padding(horizontal = 26.dp, vertical = 26.dp)
+            .background(
+                Brush.linearGradient(
+                    colorStops = arrayOf(
+                        0.0f to GoldGradStart,
+                        0.5f to GoldGradMid,
+                        1.0f to GoldGradEnd
+                    )
+                )
+            )
+            .border(1.5.dp, GoldBorder.copy(0.55f), RoundedCornerShape(26.dp))
     ) {
-        Column {
-            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold,
-                color = GoldBadgeColor, letterSpacing = 1.2.sp)
-            Spacer(Modifier.height(10.dp))
+        // Top amber glow strip
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color.Transparent, GoldAmber, GoldOrange.copy(0.5f), Color.Transparent)
+                    )
+                )
+        )
 
-            Text(title,   fontSize = 24.sp, fontWeight = FontWeight.ExtraBold,
-                color = GoldTitle, letterSpacing = (-0.5).sp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 26.dp, vertical = 26.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Outlined.WorkspacePremium,
+                    contentDescription = null,
+                    tint               = GoldAmber,
+                    modifier           = Modifier.size(12.dp)
+                )
+                Spacer(Modifier.width(5.dp))
+                Text(
+                    label,
+                    fontSize      = 10.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = GoldAmber,
+                    letterSpacing = 1.4.sp
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                title,
+                fontSize      = 26.sp,
+                fontWeight    = FontWeight.ExtraBold,
+                color         = Color.White,
+                letterSpacing = (-0.8).sp
+            )
             Spacer(Modifier.height(4.dp))
-            Text(tagline, fontSize = 12.sp, color = GoldTextDim, lineHeight = 17.sp)
+            Text(tagline, fontSize = 12.sp, color = GoldTextDim, lineHeight = 18.sp)
+
             Spacer(Modifier.height(22.dp))
 
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(price,  fontSize = 52.sp, fontWeight = FontWeight.Black,
-                    color = GoldTextSoft, letterSpacing = (-3).sp, lineHeight = 52.sp)
-                Spacer(Modifier.width(6.dp))
-                Text(period, fontSize = 13.sp, color = GoldTextDim,
-                    modifier = Modifier.padding(bottom = 8.dp))
-            }
+            PriceBlock(price = price, period = period, color = GoldTextDim)
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
 
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(GoldAccentDim)
-                    .border(1.dp, GoldAccent.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(GoldAmberDim)
+                    .border(1.dp, GoldAmber.copy(0.4f), RoundedCornerShape(50))
+                    .padding(horizontal = 14.dp, vertical = 5.dp)
             ) {
-                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = GoldBadgeColor)
+                Text(badge, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = GoldAmber)
             }
 
-            Spacer(Modifier.height(22.dp))
-            HorizontalDivider(color = GoldAccent.copy(alpha = 0.15f), thickness = 1.dp)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider(color = Color.White.copy(0.10f), thickness = 1.dp)
+            Spacer(Modifier.height(20.dp))
 
-            features.forEach {
-                FeatureRow(text = it, checkColor = GoldBadgeColor, bubbleColor = GoldAccentDim)
-            }
+            features.forEach { FeatureRow(it, GoldAmber, GoldAmberDim) }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(30.dp))
 
-            // Gradient CTA
+            // Gradient CTA amber → orange
             Box(
-                modifier = Modifier
+                modifier         = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .clip(RoundedCornerShape(17.dp))
-                    .background(brush = ctaGradient),
+                    .height(54.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.horizontalGradient(listOf(GoldAmber, GoldOrange))
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Button(
                     onClick   = onSelect,
                     modifier  = Modifier.fillMaxSize(),
-                    shape     = RoundedCornerShape(17.dp),
+                    shape     = RoundedCornerShape(16.dp),
                     colors    = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     elevation = ButtonDefaults.buttonElevation(0.dp)
                 ) {
-                    Text("Elegir Gold", color = GoldCTAText,
-                        fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                    Text(
+                        "Elegir Gold",
+                        color      = GoldGradStart,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize   = 15.sp
+                    )
                 }
             }
         }
