@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.presentation.screens.inicio.Components.SaleCard
 import com.optic.pramosreservasappz.presentation.screens.inicio.header.SaleFullHeader
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import java.time.LocalDate
 
 @Composable
@@ -24,7 +25,8 @@ fun SalesContent(
     paddingValues: PaddingValues,
     navController: NavHostController,
     sales: List<SaleResponse>,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    newSaleViewModel: NewSaleViewModel
 ) {
 
     val Background = Color(0xFFF8F4F6)
@@ -79,7 +81,8 @@ fun SalesContent(
                     onToggleHide = { balanceHidden = !balanceHidden },
                     navController = navController,
                     listState = listState,
-                    onMenuClick = onMenuClick
+                    onMenuClick = onMenuClick,
+                    newSaleViewModel = newSaleViewModel
                 )
             }
 

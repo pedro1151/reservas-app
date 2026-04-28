@@ -11,12 +11,14 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.sales.SalesContent
 import com.optic.pramosreservasappz.presentation.screens.menu.SalesScreenWithDrawer
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 
 
 @Composable
 fun SalesScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean = false
+    isAuthenticated: Boolean = false,
+    newSaleViewModel: NewSaleViewModel
 ) {
     val viewModel: SalesViewModel = hiltViewModel()
 
@@ -64,7 +66,8 @@ fun SalesScreen(
                             paddingValues = paddingValues,
                             navController = navController,
                             sales = state.data,
-                            onMenuClick = onMenuClick
+                            onMenuClick = onMenuClick,
+                            newSaleViewModel = newSaleViewModel
                         )
                     }
                 }

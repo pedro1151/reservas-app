@@ -1,6 +1,5 @@
 package com.optic.pramosreservasappz.presentation.screens.newsale.stepone
 
-
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -33,21 +32,23 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
 
 @Composable
 fun CompleteSalePaso1Content(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
 
-    val Cyan = Color(0xFF22C1C3)
-    val CyanSoft = Color(0xFF22C1C3).copy(alpha = 0.12f)
-
-    val TextPrimary = Color(0xFF0F172A)
-    val TextSecondary = Color(0xFF475569)
-    val BorderSoft = Color(0xFFE2E8F0)
+    val primary = MaterialTheme.colorScheme.primary
+    val primarySoft = MaterialTheme.colorScheme.primaryContainer
+    val background = MaterialTheme.colorScheme.background
+    val borderSoft = Color(0xFFE2E8F0)
+    val surfaceCard = Color.White
 
     val saleName = viewModel.saleName
     val selectedMethod = viewModel.paymentMethod
@@ -64,7 +65,7 @@ fun CompleteSalePaso1Content(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SoftCoolBackground)
+            .background(background)
             .padding(vertical = 70.dp)
     ) {
 
@@ -74,7 +75,6 @@ fun CompleteSalePaso1Content(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // 🔹 INPUT NOMBRE
             item {
                 Text(
                     "Ingresa el nombre de la venta",
@@ -87,18 +87,17 @@ fun CompleteSalePaso1Content(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = Color.White,
+                            color = surfaceCard,
                             shape = RoundedCornerShape(20.dp)
                         )
                         .shadow(
                             elevation = 12.dp,
                             shape = RoundedCornerShape(20.dp),
-                            ambientColor = Color.Black.copy(alpha = 0.05f),
-                            spotColor = Color.Black.copy(alpha = 0.08f)
+                            ambientColor = primary.copy(alpha = 0.05f),
+                            spotColor = primary.copy(alpha = 0.08f)
                         )
                         .padding(16.dp)
                 ) {
-
 
                     Spacer(Modifier.height(6.dp))
 
@@ -106,21 +105,27 @@ fun CompleteSalePaso1Content(
                         value = saleName,
                         onValueChange = { viewModel.onSaleNameChange(it) },
                         placeholder = {
-                            Text("Ej: Venta mostrador", color = TextSecondary)
+                            Text(
+                                "Ej: Venta mostrador",
+                                color = TextSecondary
+                            )
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Cyan,
-                            unfocusedBorderColor = BorderSoft,
-                            cursorColor = Cyan
+                            focusedBorderColor = primary,
+                            unfocusedBorderColor = borderSoft,
+                            cursorColor = primary,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
                         )
                     )
                 }
             }
 
-            // 🔹 MÉTODOS DE PAGO
             item {
                 Text(
                     "Selecciona el método de pago",
@@ -128,7 +133,7 @@ fun CompleteSalePaso1Content(
                     fontWeight = FontWeight.Normal
                 )
             }
-            // 🔹 MÉTODOS DE PAGO (CARD CONTENEDORA)
+
             item {
 
                 Box(
@@ -141,31 +146,21 @@ fun CompleteSalePaso1Content(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = Color.White,
+                                color = surfaceCard,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .shadow(
                                 elevation = 12.dp,
                                 shape = RoundedCornerShape(20.dp),
-                                ambientColor = Color.Black.copy(alpha = 0.05f),
-                                spotColor = Color.Black.copy(alpha = 0.08f)
+                                ambientColor = primary.copy(alpha = 0.05f),
+                                spotColor = primary.copy(alpha = 0.08f)
                             )
                             .padding(16.dp)
                     ) {
-                       /*
-                        Text(
-                            "Método de pago",
-                            fontSize = 14.sp,
-                            color = TextSecondary
-                        )
-
-                        */
 
                         Spacer(Modifier.height(14.dp))
 
-
-                        // 🔥 GRID 2x2
-                       paymentMethods.chunked(2).forEach { rowMethods ->
+                        paymentMethods.chunked(2).forEach { rowMethods ->
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -176,20 +171,28 @@ fun CompleteSalePaso1Content(
 
                                     val isSelected = selectedMethod == method
 
-                                    val interaction = remember { MutableInteractionSource() }
+                                    val interaction = remember {
+                                        MutableInteractionSource()
+                                    }
+
                                     val pressed by interaction.collectIsPressedAsState()
 
                                     val scale by animateFloatAsState(
-                                        targetValue = if (isSelected) 1.05f else if (pressed) 0.97f else 1f,
+                                        targetValue = if (isSelected) {
+                                            1.05f
+                                        } else if (pressed) {
+                                            0.97f
+                                        } else {
+                                            1f
+                                        },
                                         animationSpec = tween(180),
-                                        label = ""
+                                        label = "payment_scale"
                                     )
 
-                                    // 🔥 check animado
                                     val checkScale by animateFloatAsState(
                                         targetValue = if (isSelected) 1f else 0f,
                                         animationSpec = tween(220),
-                                        label = ""
+                                        label = "check_scale"
                                     )
 
                                     Box(
@@ -199,19 +202,27 @@ fun CompleteSalePaso1Content(
                                                 scaleX = scale
                                                 scaleY = scale
                                             }
-                                            .clip(RoundedCornerShape(14.dp)) // 🔥 IMPORTANTE (limpia bordes internos)
+                                            .clip(RoundedCornerShape(14.dp))
                                             .background(
-                                                color = if (isSelected) CyanSoft else Color.Transparent
+                                                color = if (isSelected) {
+                                                    primarySoft
+                                                } else {
+                                                    Color.Transparent
+                                                }
                                             )
                                             .border(
                                                 width = if (isSelected) 1.4.dp else 1.dp,
-                                                color = if (isSelected) CyanSoft else BorderSoft,
+                                                color = if (isSelected) {
+                                                    primary.copy(alpha = 0.35f)
+                                                } else {
+                                                    borderSoft
+                                                },
                                                 shape = RoundedCornerShape(14.dp)
                                             )
                                             .clickable(
                                                 interactionSource = interaction,
                                                 indication = rememberRipple(
-                                                    color = Cyan,
+                                                    color = primary,
                                                     bounded = true
                                                 )
                                             ) {
@@ -237,10 +248,13 @@ fun CompleteSalePaso1Content(
                                                         else -> Icons.Default.AccountBalance
                                                     },
                                                     contentDescription = null,
-                                                    tint = if (isSelected) Cyan else TextSecondary
+                                                    tint = if (isSelected) {
+                                                        primary
+                                                    } else {
+                                                        TextSecondary
+                                                    }
                                                 )
 
-                                                // 🔥 CHECK tipo iOS
                                                 Box(
                                                     modifier = Modifier
                                                         .align(Alignment.TopEnd)
@@ -250,7 +264,7 @@ fun CompleteSalePaso1Content(
                                                             scaleY = checkScale
                                                         }
                                                         .background(
-                                                            color = Cyan,
+                                                            color = primary,
                                                             shape = CircleShape
                                                         ),
                                                     contentAlignment = Alignment.Center
@@ -270,13 +284,16 @@ fun CompleteSalePaso1Content(
                                                 text = method,
                                                 fontSize = 13.sp,
                                                 fontWeight = FontWeight.Medium,
-                                                color = if (isSelected) Cyan else TextPrimary
+                                                color = if (isSelected) {
+                                                    primary
+                                                } else {
+                                                    TextPrimary
+                                                }
                                             )
                                         }
                                     }
                                 }
 
-                                // 🔥 si hay impar (por seguridad)
                                 if (rowMethods.size == 1) {
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
@@ -288,13 +305,11 @@ fun CompleteSalePaso1Content(
                 }
             }
 
-
             item {
                 Spacer(Modifier.height(80.dp))
             }
         }
 
-        // 🔥 BOTÓN SIGUIENTE
         val isEnabled = saleName.isNotBlank() && selectedMethod != null
 
         Box(
@@ -304,7 +319,7 @@ fun CompleteSalePaso1Content(
         ) {
             Button(
                 onClick = {
-                    navController.navigate(ClientScreen.CompleteSaleStepTwo.route) // 🔥 ajusta tu ruta
+                    navController.navigate(ClientScreen.CompleteSaleStepTwo.route)
                     viewModel.resetCreateItemState()
                 },
                 enabled = isEnabled,
@@ -313,8 +328,10 @@ fun CompleteSalePaso1Content(
                     .height(54.dp),
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Cyan,
-                    disabledContainerColor = Cyan.copy(alpha = 0.4f)
+                    containerColor = primary,
+                    disabledContainerColor = primary.copy(alpha = 0.35f),
+                    contentColor = Color.White,
+                    disabledContentColor = Color.White.copy(alpha = 0.85f)
                 )
             ) {
                 Row(

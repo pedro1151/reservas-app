@@ -2,7 +2,6 @@ package com.optic.pramosreservasappz.presentation.screens.newsale.steptree
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,14 +20,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 
 @Composable
 fun CompleteSaleStepTreeContent(
@@ -36,194 +39,100 @@ fun CompleteSaleStepTreeContent(
     paddingValues: PaddingValues,
     total: Double,
     totalItems: Int,
-    viewModel: SalesViewModel,
+    viewModel: NewSaleViewModel,
     navController: NavHostController
 ) {
 
-    // 🎨 NUEVA PALETA
-    val Primary = Color(0xFFE91E63)
-    val PrimarySoft = Color(0xFFFCE4EC)
+    val primary = MaterialTheme.colorScheme.primary
+    val primarySoft = MaterialTheme.colorScheme.primaryContainer
 
-    val TextPrimary = Color(0xFF1F2937)
-    val TextSecondary = Color(0xFF6B7280)
+    val textPrimary = Color(0xFF0F172A)
+    val textSecondary = Color(0xFF475569)
 
-    val BorderNeutral = Color(0xFFE5E7EB)
-    val Surface = Color.White
-    val SurfaceSoft = Color(0xFFFFF7FA)
+    val borderSoft = Color(0xFFE2E8F0)
+    val surface = Color.White
+    val background = MaterialTheme.colorScheme.background
 
-    val DangerSoft = Color(0xFFFFEBEE)
+    val isRapidSale = viewModel.saleFlowType == SaleType.RAPID
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .background(SurfaceSoft),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+            .background(background)
     ) {
 
-        // HEADER
-        item {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
 
-            Spacer(Modifier.height(6.dp))
+            if (!isRapidSale) {
+                item {
+                    SectionTitle("Nombre de la venta", textSecondary)
 
-            Text(
-                text = "$totalItems productos",
-                fontSize = 15.sp,
-                color = TextSecondary
-            )
+                    Spacer(Modifier.height(8.dp))
 
-            Spacer(Modifier.height(18.dp))
-        }
-
-        // ITEMS
-        items(selectedProducts) { (product, quantity) ->
-
-            val subtotal = product.price * quantity
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(Surface)
-                    .border(1.dp, BorderNeutral, RoundedCornerShape(18.dp))
-                    .padding(horizontal = 18.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = PrimarySoft,
-                            shape = RoundedCornerShape(10.dp)
+                    InfoContainer(
+                        borderSoft = borderSoft,
+                        surface = surface
+                    ) {
+                        Text(
+                            text = viewModel.saleName,
+                            fontSize = 15.sp,
+                            color = textPrimary,
+                            fontWeight = FontWeight.Medium
                         )
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "$quantity x",
-                        fontWeight = FontWeight.Bold,
-                        color = Primary,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(Modifier.width(12.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = product.name,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 15.sp,
-                        color = TextPrimary
-                    )
-
-                    Spacer(Modifier.height(2.dp))
-
-                    Text(
-                        text = "$ ${product.price}",
-                        fontSize = 13.sp,
-                        color = TextSecondary
-                    )
-                }
-
-                Text(
-                    text = "$ ${"%.2f".format(subtotal)}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = TextPrimary
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
-        }
-
-        // NOMBRE VENTA
-        item {
-            if (viewModel.saleName != null) {
-
-                Text(
-                    text = "Nombre de la Venta",
-                    fontSize = 16.sp,
-                    color = TextSecondary
-                )
-
-                Spacer(Modifier.height(6.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Surface)
-                        .border(1.dp, BorderNeutral, RoundedCornerShape(18.dp))
-                        .padding(horizontal = 18.dp, vertical = 16.dp)
-                ) {
-                    Text(
-                        viewModel.saleName,
-                        fontSize = 16.sp,
-                        color = TextPrimary
-                    )
-                }
-            }
-        }
-
-        item { Spacer(Modifier.height(12.dp)) }
-
-        // CLIENTE
-        item {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text = "Cliente",
-                    fontSize = 16.sp,
-                    color = TextSecondary
-                )
-
-                Text(
-                    text = if (viewModel.selectedClientId == null) "Agregar cliente" else "Modificar",
-                    fontSize = 14.sp,
-                    color = Primary,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable {
-                        navController.navigate(ClientScreen.SelecClient.route)
                     }
-                )
+                }
             }
 
-            Spacer(Modifier.height(10.dp))
+            item {
+                Column {
+                    Text(
+                        text = "$totalItems Productos",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = textPrimary
+                    )
 
-            if (viewModel.selectedClientId != null) {
+                }
+            }
+
+            items(selectedProducts) { (product, quantity) ->
+
+                val subtotal = product.price * quantity
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Surface)
-                        .border(1.dp, BorderNeutral, RoundedCornerShape(18.dp))
-                        .padding(horizontal = 18.dp, vertical = 16.dp),
+                        .background(surface)
+                        .drawBehind {
+                            val strokeWidth = 1.dp.toPx()
+                            drawLine(
+                                color = borderSoft,
+                                start = androidx.compose.ui.geometry.Offset(0f, size.height),
+                                end = androidx.compose.ui.geometry.Offset(size.width, size.height),
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                        .padding(horizontal = 4.dp, vertical = 13.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .clip(CircleShape)
-                            .background(PrimarySoft),
+                            .clip(RoundedCornerShape(13.dp))
+                            .background(primarySoft),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = viewModel.selectedClientName
-                                ?.take(2)
-                                ?.uppercase() ?: "",
-                            color = Primary,
-                            fontWeight = FontWeight.Bold
+                            text = "${quantity}x",
+                            fontWeight = FontWeight.Bold,
+                            color = primary,
+                            fontSize = 13.sp
                         )
                     }
 
@@ -232,124 +141,184 @@ fun CompleteSaleStepTreeContent(
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-
                         Text(
-                            text = viewModel.selectedClientName ?: "",
-                            fontSize = 15.sp,
+                            text = product.name,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
+                            fontSize = 14.sp,
+                            color = textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
-                        val secondary = viewModel.selectedClientEmail
-                            ?: viewModel.selectedClientPhone
+                        Spacer(Modifier.height(3.dp))
 
-                        if (secondary != null) {
-                            Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = "$ ${"%.2f".format(product.price)} c/u",
+                            fontSize = 12.sp,
+                            color = textSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Spacer(Modifier.width(10.dp))
+
+                    Text(
+                        text = "$ ${"%.2f".format(subtotal)}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        color = textPrimary
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    SectionTitle("Cliente", textSecondary)
+
+                    Text(
+                        text = if (viewModel.selectedClientId == null) "Agregar cliente" else "Modificar",
+                        fontSize = 14.sp,
+                        color = primary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.clickable {
+                            navController.navigate(ClientScreen.SelecClient.route)
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                if (viewModel.selectedClientId != null) {
+
+                    InfoContainer(
+                        borderSoft = borderSoft,
+                        surface = surface
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(primarySoft),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = viewModel.selectedClientName
+                                        ?.take(2)
+                                        ?.uppercase() ?: "",
+                                    color = primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(Modifier.width(12.dp))
+
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = viewModel.selectedClientName ?: "",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = textPrimary
+                                )
+
+                                val secondary = viewModel.selectedClientEmail
+                                    ?: viewModel.selectedClientPhone
+
+                                if (secondary != null) {
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        text = secondary,
+                                        fontSize = 13.sp,
+                                        color = textSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+
+                    InfoContainer(
+                        borderSoft = borderSoft,
+                        surface = surface,
+                        modifier = Modifier.clickable {
+                            navController.navigate(ClientScreen.SelecClient.route)
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(primarySoft),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "+",
+                                    color = primary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp
+                                )
+                            }
+
+                            Spacer(Modifier.width(12.dp))
+
                             Text(
-                                text = secondary,
-                                fontSize = 13.sp,
-                                color = TextSecondary
+                                text = "Agregar cliente a la venta",
+                                fontSize = 14.sp,
+                                color = textSecondary
                             )
                         }
                     }
                 }
-
-            } else {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Surface)
-                        .border(1.dp, BorderNeutral, RoundedCornerShape(18.dp))
-                        .clickable {
-                            navController.navigate(ClientScreen.SelecClient.route)
-                        }
-                        .padding(horizontal = 18.dp, vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(PrimarySoft),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "+",
-                            color = Primary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
-
-                    Spacer(Modifier.width(12.dp))
-
-                    Text(
-                        text = "Agregar cliente a la venta",
-                        fontSize = 14.sp,
-                        color = TextSecondary
-                    )
-                }
             }
-        }
 
-        item { Spacer(Modifier.height(12.dp)) }
+            item {
+                if (viewModel.paymentMethod != null) {
 
-        // MÉTODO PAGO
-        item {
-            if (viewModel.paymentMethod != null) {
+                    SectionTitle("Método de pago", textSecondary)
 
-                Text(
-                    text = "Método de Pago",
-                    fontSize = 16.sp,
-                    color = TextSecondary
-                )
+                    Spacer(Modifier.height(8.dp))
 
-                Spacer(Modifier.height(6.dp))
+                    val scale by animateFloatAsState(
+                        targetValue = 1.02f,
+                        animationSpec = tween(180),
+                        label = "payment_scale"
+                    )
 
-                val scale by animateFloatAsState(
-                    targetValue = 1.04f,
-                    animationSpec = tween(180),
-                    label = ""
-                )
-
-                val checkScale by animateFloatAsState(
-                    targetValue = 1f,
-                    animationSpec = tween(220),
-                    label = ""
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Surface)
-                        .border(1.dp, BorderNeutral, RoundedCornerShape(18.dp))
-                        .padding(horizontal = 18.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(PrimarySoft)
-                            .border(1.dp, PrimarySoft, RoundedCornerShape(14.dp))
-                            .padding(horizontal = 22.dp, vertical = 14.dp),
-                        contentAlignment = Alignment.Center
+                    InfoContainer(
+                        borderSoft = borderSoft,
+                        surface = surface
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                        Box {
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(primarySoft),
+                                contentAlignment = Alignment.Center
                             ) {
-
                                 Icon(
                                     imageVector = when (viewModel.paymentMethod) {
                                         "Efectivo" -> Icons.Default.AttachMoney
@@ -360,77 +329,138 @@ fun CompleteSaleStepTreeContent(
                                         else -> Icons.Default.AccountBalance
                                     },
                                     contentDescription = null,
-                                    tint = Primary
-                                )
-
-                                Spacer(Modifier.height(6.dp))
-
-                                Text(
-                                    viewModel.paymentMethod ?: "",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Primary
+                                    tint = primary
                                 )
                             }
 
+                            Spacer(Modifier.width(12.dp))
+
+                            Text(
+                                text = viewModel.paymentMethod ?: "",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = textPrimary,
+                                modifier = Modifier.weight(1f)
+                            )
+
                             Box(
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 6.dp, y = (-6).dp)
-                                    .size(18.dp)
-                                    .graphicsLayer {
-                                        scaleX = checkScale
-                                        scaleY = checkScale
-                                    }
-                                    .background(Primary, CircleShape),
+                                    .size(24.dp)
+                                    .background(primary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     Icons.Default.Check,
                                     null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(11.dp)
+                                    modifier = Modifier.size(14.dp)
                                 )
                             }
                         }
                     }
                 }
             }
-        }
 
-        item { Spacer(Modifier.height(14.dp)) }
-
-        // TOTAL
-        item {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(Surface)
-                    .border(1.dp, BorderNeutral, RoundedCornerShape(20.dp))
-                    .padding(horizontal = 20.dp, vertical = 18.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    "Total",
-                    fontSize = 16.sp,
-                    color = TextSecondary
-                )
-
-                Text(
-                    "$ ${"%.2f".format(total)}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Primary
-                )
+            item {
+                Spacer(Modifier.height(20.dp))
             }
         }
 
-        item {
-            Spacer(Modifier.height(90.dp))
+        TotalSummaryBar(
+            total = total,
+            totalItems = totalItems,
+            primary = primary,
+            primarySoft = primarySoft,
+            textPrimary = textPrimary,
+            textSecondary = textSecondary,
+            surface = surface,
+            borderSoft = borderSoft
+        )
+    }
+}
+
+@Composable
+private fun TotalSummaryBar(
+    total: Double,
+    totalItems: Int,
+    primary: Color,
+    primarySoft: Color,
+    textPrimary: Color,
+    textSecondary: Color,
+    surface: Color,
+    borderSoft: Color
+) {
+    Surface(
+        shadowElevation = 10.dp,
+        color = surface
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(surface)
+                .border(
+                    width = 1.dp,
+                    color = borderSoft.copy(alpha = 0.7f)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column {
+                Text(
+                    text = "Total",
+                    fontSize = 16.sp,
+                    color = textPrimary,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(Modifier.height(2.dp))
+
+                Text(
+                    text = "$totalItems productos",
+                    fontSize = 12.sp,
+                    color = textSecondary
+                )
+            }
+
+            Text(
+                text = "$ ${"%.2f".format(total)}",
+                fontSize = 23.sp,
+                fontWeight = FontWeight.Bold,
+                color = primary
+            )
         }
     }
+}
+
+@Composable
+private fun SectionTitle(
+    title: String,
+    color: Color
+) {
+    Text(
+        text = title,
+        fontSize = 15.sp,
+        color = color,
+        fontWeight = FontWeight.Medium
+    )
+}
+
+@Composable
+private fun InfoContainer(
+    borderSoft: Color,
+    surface: Color,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(surface)
+            .border(1.dp, borderSoft, RoundedCornerShape(18.dp))
+            .padding(horizontal = 16.dp, vertical = 15.dp),
+        content = content
+    )
 }

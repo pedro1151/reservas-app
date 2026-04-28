@@ -29,7 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
+
 @Composable
 fun SaleFullHeader(
     todayTotal: Double,
@@ -40,7 +43,8 @@ fun SaleFullHeader(
     onToggleHide: () -> Unit,
     navController: NavHostController,
     listState: LazyListState,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    newSaleViewModel: NewSaleViewModel
 ) {
 
     val Primary = Color(0xFFE91E63)
@@ -164,6 +168,7 @@ fun SaleFullHeader(
                             .clip(RoundedCornerShape(14.dp))
                             .background(MaterialTheme.colorScheme.background)
                             .clickable {
+                                newSaleViewModel.updateSaleFlowType(SaleType.RAPID)
                                 navController.navigate(ClientScreen.CompleteSaleStepTwo.route)
                             }
                             .padding(vertical = 14.dp),
@@ -193,6 +198,7 @@ fun SaleFullHeader(
                                 RoundedCornerShape(14.dp)
                             )
                             .clickable {
+                                newSaleViewModel.updateSaleFlowType(SaleType.COMPLETE)
                                 navController.navigate(ClientScreen.CompleteSaleStepOne.route)
                             }
                             .padding(vertical = 14.dp),

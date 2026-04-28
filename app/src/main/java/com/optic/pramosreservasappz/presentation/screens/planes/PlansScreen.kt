@@ -28,19 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
-// ─── Page tokens ─────────────────────────────────────────────────────────────
-private val PageBg      = Color(0xFFF8FAFC)
-private val PureWhite   = Color(0xFFFFFFFF)
-private val Ink900      = Color(0xFF0F172A)
-private val Ink600      = Color(0xFF475569)
-private val Ink400      = Color(0xFF94A3B8)
-private val Ink200      = Color(0xFFE2E8F0)
-private val Ink100      = Color(0xFFF1F5F9)
-
-private val CyanAccent  = Color(0xFF06B6D4)   // brand color
-private val CyanDeep    = Color(0xFF0891B2)
-private val IndigoMain  = Color(0xFF6366F1)
-
 
 @Composable
 fun PlansScreen(navController: NavHostController) {
@@ -63,8 +50,8 @@ fun PlansScreen(navController: NavHostController) {
         state           = rememberLazyListState(),
         modifier        = Modifier
             .fillMaxSize()
-            .background(PageBg),
-        contentPadding  = PaddingValues(bottom = 80.dp)
+            .background(MaterialTheme.colorScheme.background),
+        contentPadding = PaddingValues(bottom = 64.dp)
     ) {
 
         // ── Navigation bar ────────────────────────────────────────────────
@@ -75,14 +62,11 @@ fun PlansScreen(navController: NavHostController) {
                     .background(PageBg)
                     .padding(top = 8.dp, start = 6.dp, end = 20.dp, bottom = 4.dp)
             ) {
-                IconButton(
-                    onClick  = { navController.popBackStack() },
-                    modifier = Modifier.size(40.dp)
-                ) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
-                        imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Volver",
-                        tint               = Ink900
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -125,33 +109,21 @@ fun PlansScreen(navController: NavHostController) {
 
                 // Main headline
                 Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(color = Ink900, fontWeight = FontWeight.Black)) {
-                            append("Elige tu ")
-                        }
-                        withStyle(
-                            SpanStyle(
-                                brush      = Brush.horizontalGradient(listOf(CyanAccent, IndigoMain)),
-                                fontWeight = FontWeight.Black
-                            )
-                        ) {
-                            append("plan")
-                        }
-                    },
-                    fontSize      = 38.sp,
-                    letterSpacing = (-1.5).sp,
-                    textAlign     = TextAlign.Center,
-                    lineHeight    = 42.sp
+                    "Planes",
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    letterSpacing = (-0.8).sp
                 )
 
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text      = "Sin contratos ocultos. Cancela cuando quieras.\nPrecio fijo en dólares.",
-                    fontSize  = 14.sp,
-                    color     = Ink400,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 21.sp
+                    "Elige el plan perfecto\npara tu negocio.",
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    lineHeight = 22.sp,
+                    letterSpacing = (-0.8).sp
                 )
 
                 Spacer(Modifier.height(28.dp))

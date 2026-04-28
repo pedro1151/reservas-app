@@ -5,13 +5,15 @@ import androidx.compose.runtime.*
 
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 
 @Composable
 fun CompleteSaleStepOneScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
 
 
@@ -20,7 +22,8 @@ fun CompleteSaleStepOneScreen(
         topBar = {
             BackTopBar(
                 title = "Nueva Venta",
-                navController = navController
+                navController = navController,
+                back = ClientScreen.Sales.route // volver al home de sales
             )
         }
     ) { paddingValues ->

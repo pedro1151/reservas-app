@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.ButtonSucessColor
 
 @Composable
@@ -39,7 +40,7 @@ fun RapidProductCard(
     removeProduct: () -> Unit,
     inCart: Pair<ProductResponse, Int>?,
     modifier: Modifier,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
 
     val quantity = inCart?.second ?: 0
@@ -104,7 +105,7 @@ fun RapidProductCard(
                 addProduct()
 
                 viewModel.triggerFlyAnimation(
-                    SalesViewModel.FlyAnimationData(
+                    NewSaleViewModel.FlyAnimationData(
                         product = product,
                         startX = position.x,
                         startY = position.y

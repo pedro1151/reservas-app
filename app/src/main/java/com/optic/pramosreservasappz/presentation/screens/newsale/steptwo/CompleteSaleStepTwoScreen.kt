@@ -15,16 +15,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
-import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 
 @Composable
 fun CompleteSaleStepTwoScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
 
     // posicion del carrito
@@ -51,11 +53,21 @@ fun CompleteSaleStepTwoScreen(
     val total by viewModel.total.collectAsState()
     val totalItems by viewModel.totalItems.collectAsState()
 
+    val backRoute =
+        when (viewModel.saleFlowType) {
+            SaleType.RAPID -> ClientScreen.Sales.route
+            SaleType.COMPLETE -> ClientScreen.CompleteSaleStepOne.route
+            null -> null
+        }
+
     Scaffold(
         topBar = {
+
+
             BackTopBar(
                 title = "Seleccionar Items",
-                navController = navController
+                navController = navController,
+                back = backRoute
             )
         }
     ) { paddingValues ->
