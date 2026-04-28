@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackgroundPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +25,7 @@ fun BackTopBar(
     navController: NavController,
     showTitle: Boolean = true,
     onClientClick: (() -> Unit)? = null,
+    selectorAction: (@Composable () -> Unit)? = null
 ) {
 
 
@@ -34,7 +33,7 @@ fun BackTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(GradientBackgroundPrimary)
+            .background(MaterialTheme.colorScheme.primary)
             .drawBehind {
                 drawRect(
                     color = Color.Black.copy(alpha = 0.05f)
@@ -63,6 +62,11 @@ fun BackTopBar(
                 }
             },
             actions = {
+
+                if (selectorAction != null) {
+                    selectorAction()
+                }
+
                 if (onClientClick != null) {
                     IconButton(onClick = { onClientClick() }) {
                         Icon(

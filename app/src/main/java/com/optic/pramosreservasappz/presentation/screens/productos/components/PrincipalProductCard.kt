@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.historial.components.getAvatarColor
+import com.optic.pramosreservasappz.presentation.screens.tusventas.components.getAvatarColor
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 

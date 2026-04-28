@@ -30,11 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewMode
-import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
-import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
-import com.optic.pramosreservasappz.presentation.ui.theme.Green
+
 
 @Composable
 fun SalesScreenWithDrawer(

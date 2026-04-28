@@ -1,17 +1,18 @@
-
 @file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.optic.pramosreservasappz.presentation.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -30,17 +31,21 @@ fun DefaultTextField(
     minLines: Int = 1,
     maxLines: Int = 1
 ) {
+
     OutlinedTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
+
         label = {
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.primary
             )
         },
+
         shape = RoundedCornerShape(10.dp),
+
         leadingIcon = {
             Icon(
                 imageVector = icon,
@@ -48,20 +53,50 @@ fun DefaultTextField(
                 tint = MaterialTheme.colorScheme.primary
             )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        visualTransformation = if (hideText)
+
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType
+        ),
+
+        visualTransformation =
+        if (hideText)
             PasswordVisualTransformation()
         else
             VisualTransformation.None,
+
         minLines = minLines,
         maxLines = maxLines,
+
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-            cursorColor = MaterialTheme.colorScheme.primary,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+
+            // TEXTO ESCRITO
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+
+            // LABEL
+            focusedLabelColor =
+            MaterialTheme.colorScheme.primary,
+
+            unfocusedLabelColor =
+            MaterialTheme.colorScheme.primary,
+
+            // CURSOR
+            cursorColor =
+            MaterialTheme.colorScheme.primary,
+
+            // BORDE
+            focusedBorderColor =
+            MaterialTheme.colorScheme.primary,
+
+            unfocusedBorderColor =
+            MaterialTheme.colorScheme.primary,
+
+            // ICONO
+            focusedLeadingIconColor =
+            MaterialTheme.colorScheme.primary,
+
+            unfocusedLeadingIconColor =
+            MaterialTheme.colorScheme.primary
         )
     )
 }
-

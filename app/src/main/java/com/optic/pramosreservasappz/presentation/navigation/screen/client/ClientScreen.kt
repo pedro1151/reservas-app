@@ -18,7 +18,7 @@ sealed class ClientScreen(
 
     object Sales: ClientScreen(
         route = "client/sales",
-        title = "Principal",
+        title = "Inicio",
         icon = Icons.Default.Home
     )
 

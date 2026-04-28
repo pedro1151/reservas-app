@@ -22,6 +22,7 @@ import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.auth.AuthUseCase
 import android.util.Log
+import com.optic.pramosreservasappz.domain.model.business.recibos.ReceiptType
 import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
 
 @HiltViewModel
@@ -85,6 +86,14 @@ class ReciboViewModel @Inject constructor(
                     Resource.Failure(e.message ?: "Error al obtener venta")
             }
         }
+    }
+
+
+    private val _receiptType = mutableStateOf(ReceiptType.STANDARD)
+    val receiptType: State<ReceiptType> = _receiptType
+
+    fun setReceiptType(type: ReceiptType) {
+        _receiptType.value = type
     }
 
 

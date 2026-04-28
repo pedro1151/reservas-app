@@ -45,19 +45,19 @@ import com.optic.pramosreservasappz.presentation.screens.clients.components.getI
 import kotlinx.coroutines.launch
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Blue700  = Color(0xFF1D4ED8)
-private val Blue600  = Color(0xFF2563EB)
-private val Blue500  = Color(0xFF3B82F6)
-private val Blue400  = Color(0xFF60A5FA)
-private val Blue100  = Color(0xFFDBEAFE)
-private val Blue50   = Color(0xFFEFF6FF)
+private val Pink700  = Color(0xFFC2185B)
+private val Pink600  = Color(0xFFE91E63)
+private val Pink500  = Color(0xFFEC407A)
+private val Pink400  = Color(0xFFF06292)
+private val Pink100  = Color(0xFFFCE4EC)
+private val Pink50   = Color(0xFFFFF0F3)
 private val Slate900 = Color(0xFF0F172A)
 private val Slate600 = Color(0xFF475569)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate200 = Color(0xFFE2E8F0)
 private val Slate100 = Color(0xFFF1F5F9)
 private val Red500   = Color(0xFFEF4444)
-private val PageBg   = Color(0xFFF8FAFC)
+private val PageBg   = Color(0xFFF8F4F6)
 
 enum class ClientViewType { LIST, GRID }
 
@@ -257,7 +257,7 @@ fun ClientContent(
             ) {
                 Box(Modifier.padding(22.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        color       = Blue600,
+                        color       = Pink600,
                         strokeWidth = 2.5.dp,
                         modifier    = Modifier.size(28.dp)
                     )
@@ -281,7 +281,7 @@ private fun ClientHeroStats(
             .shadow(
                 elevation    = 2.dp,
                 shape        = RoundedCornerShape(18.dp),
-                ambientColor = Blue600.copy(alpha = 0.06f)
+                ambientColor = Pink600.copy(alpha = 0.06f)
             )
             .clip(RoundedCornerShape(18.dp))
             .background(Color.White)
@@ -299,18 +299,12 @@ private fun ClientHeroStats(
                 icon       = Icons.Outlined.Group,
                 value      = "$totalClients",
                 label      = "Clientes",
-                iconBg     = Blue50,
-                iconTint   = Blue600,
+                iconBg     = Pink50,
+                iconTint   = Pink600,
                 valueColor = Slate900
             )
 
-            // ── Divider ──
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(32.dp)
-                    .background(Slate200)
-            )
+            Box(modifier = Modifier.width(1.dp).height(32.dp).background(Slate200))
 
             // ── With email ──
             ClientStatItem(
@@ -322,13 +316,7 @@ private fun ClientHeroStats(
                 valueColor = Slate900
             )
 
-            // ── Divider ──
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(32.dp)
-                    .background(Slate200)
-            )
+            Box(modifier = Modifier.width(1.dp).height(32.dp).background(Slate200))
 
             // ── With phone ──
             ClientStatItem(
@@ -364,11 +352,7 @@ private fun ClientStatItem(
                 .background(iconBg),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                icon, null,
-                tint     = iconTint,
-                modifier = Modifier.size(15.dp)
-            )
+            Icon(icon, null, tint = iconTint, modifier = Modifier.size(15.dp))
         }
         Text(
             text          = value,
@@ -418,13 +402,13 @@ private fun ClientSearchRow(
                 .shadow(
                     elevation    = if (isFocused) 4.dp else 1.dp,
                     shape        = RoundedCornerShape(16.dp),
-                    ambientColor = Blue500.copy(alpha = if (isFocused) 0.10f else 0.03f)
+                    ambientColor = Pink500.copy(alpha = if (isFocused) 0.10f else 0.03f)
                 )
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
                 .border(
                     width = if (isFocused) 1.5.dp else 1.dp,
-                    color = if (isFocused) Blue500.copy(alpha = 0.50f) else Slate200,
+                    color = if (isFocused) Pink500.copy(alpha = 0.50f) else Slate200,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 12.dp, vertical = 11.dp),
@@ -433,7 +417,7 @@ private fun ClientSearchRow(
         ) {
             Icon(
                 Icons.Outlined.Search, null,
-                tint     = if (isFocused) Blue600 else Slate400,
+                tint     = if (isFocused) Pink600 else Slate400,
                 modifier = Modifier.size(17.dp)
             )
 
@@ -448,18 +432,14 @@ private fun ClientSearchRow(
                     color      = Slate900,
                     fontWeight = FontWeight.Normal
                 ),
-                cursorBrush     = SolidColor(Blue600),
+                cursorBrush     = SolidColor(Pink600),
                 singleLine      = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                 decorationBox   = { inner ->
                     Box {
                         if (query.isEmpty()) {
-                            Text(
-                                "Buscar clientes...",
-                                fontSize = 14.sp,
-                                color    = Slate400
-                            )
+                            Text("Buscar clientes...", fontSize = 14.sp, color = Slate400)
                         }
                         inner()
                     }
@@ -475,7 +455,7 @@ private fun ClientSearchRow(
                 Box(
                     modifier = Modifier
                         .background(
-                            if (hasQuery) Blue50 else Slate100,
+                            if (hasQuery) Pink50 else Slate100,
                             RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -484,7 +464,7 @@ private fun ClientSearchRow(
                         label,
                         fontSize      = 10.sp,
                         fontWeight    = FontWeight.Bold,
-                        color         = if (hasQuery) Blue600 else Slate400,
+                        color         = if (hasQuery) Pink600 else Slate400,
                         letterSpacing = 0.2.sp
                     )
                 }
@@ -507,11 +487,7 @@ private fun ClientSearchRow(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Outlined.Close, "Limpiar",
-                        tint     = Slate600,
-                        modifier = Modifier.size(11.dp)
-                    )
+                    Icon(Icons.Outlined.Close, "Limpiar", tint = Slate600, modifier = Modifier.size(11.dp))
                 }
             }
         }
@@ -555,7 +531,7 @@ private fun ClientViewToggleButton(
     isStart    : Boolean
 ) {
     val bgColor  by animateColorAsState(
-        targetValue   = if (isSelected) Blue600 else Color.Transparent,
+        targetValue   = if (isSelected) Pink600 else Color.Transparent,
         animationSpec = tween(200),
         label         = "toggleBg"
     )
@@ -610,8 +586,8 @@ private fun ClientGridCard(
                 .shadow(
                     elevation    = 3.dp,
                     shape        = RoundedCornerShape(20.dp),
-                    ambientColor = Blue500.copy(alpha = 0.06f),
-                    spotColor    = Blue600.copy(alpha = 0.09f)
+                    ambientColor = Pink500.copy(alpha = 0.06f),
+                    spotColor    = Pink600.copy(alpha = 0.09f)
                 )
                 .clip(RoundedCornerShape(20.dp))
                 .clickable(
@@ -642,7 +618,6 @@ private fun ClientGridCard(
                             )
                         )
                 ) {
-                    // MoreVert top-right
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -658,11 +633,7 @@ private fun ClientGridCard(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                Icons.Outlined.MoreVert, null,
-                                tint     = Slate600,
-                                modifier = Modifier.size(14.dp)
-                            )
+                            Icon(Icons.Outlined.MoreVert, null, tint = Slate600, modifier = Modifier.size(14.dp))
                         }
 
                         DropdownMenu(
@@ -674,45 +645,24 @@ private fun ClientGridCard(
                         ) {
                             DropdownMenuItem(
                                 text = {
-                                    Text(
-                                        "Editar",
-                                        fontSize   = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color      = Slate900
-                                    )
+                                    Text("Editar", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Slate900)
                                 },
                                 leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.Edit, null,
-                                        tint     = Blue600,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Outlined.Edit, null, tint = Pink600, modifier = Modifier.size(16.dp))
                                 },
                                 onClick = {
                                     showMenu = false
                                     navController.navigate(
-                                        ClientScreen.ABMCliente.createRoute(
-                                            clientId = client.id,
-                                            editable = true
-                                        )
+                                        ClientScreen.ABMCliente.createRoute(clientId = client.id, editable = true)
                                     )
                                 }
                             )
                             DropdownMenuItem(
                                 text = {
-                                    Text(
-                                        "Eliminar",
-                                        fontSize   = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color      = Red500
-                                    )
+                                    Text("Eliminar", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Red500)
                                 },
                                 leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.DeleteOutline, null,
-                                        tint     = Red500,
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                    Icon(Icons.Outlined.DeleteOutline, null, tint = Red500, modifier = Modifier.size(16.dp))
                                 },
                                 onClick = {
                                     showMenu = false
@@ -722,19 +672,13 @@ private fun ClientGridCard(
                         }
                     }
 
-                    // Centered avatar
-                    Box(
-                        modifier         = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Box(
                             modifier = Modifier
                                 .size(50.dp)
                                 .clip(RoundedCornerShape(15.dp))
                                 .background(
-                                    Brush.linearGradient(
-                                        listOf(avatarColor, avatarColor.copy(alpha = 0.60f))
-                                    )
+                                    Brush.linearGradient(listOf(avatarColor, avatarColor.copy(alpha = 0.60f)))
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -751,12 +695,7 @@ private fun ClientGridCard(
 
                 // ── Content area ──
                 Column(
-                    modifier = Modifier.padding(
-                        start  = 12.dp,
-                        end    = 12.dp,
-                        top    = 10.dp,
-                        bottom = 12.dp
-                    )
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp)
                 ) {
                     Text(
                         text          = client.fullName,
@@ -772,35 +711,24 @@ private fun ClientGridCard(
 
                     val subtitle = client.email ?: client.phone
                     if (subtitle != null) {
-                        Text(
-                            text          = subtitle,
-                            fontSize      = 11.sp,
-                            color         = Slate400,
-                            maxLines      = 1,
-                            overflow      = TextOverflow.Ellipsis
-                        )
+                        Text(text = subtitle, fontSize = 11.sp, color = Slate400, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Spacer(Modifier.height(8.dp))
                     }
 
-                    // Location or contact pill
                     Box(
                         modifier = Modifier
-                            .background(Blue50, RoundedCornerShape(7.dp))
+                            .background(Pink50, RoundedCornerShape(7.dp))
                             .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Row(
                             verticalAlignment     = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(3.dp)
                         ) {
-                            Icon(
-                                Icons.Outlined.Person, null,
-                                tint     = Blue600,
-                                modifier = Modifier.size(8.dp)
-                            )
+                            Icon(Icons.Outlined.Person, null, tint = Pink600, modifier = Modifier.size(8.dp))
                             Text(
                                 "Cliente",
                                 fontSize      = 9.sp,
-                                color         = Blue600,
+                                color         = Pink600,
                                 fontWeight    = FontWeight.SemiBold,
                                 letterSpacing = 0.3.sp
                             )
@@ -826,18 +754,12 @@ private fun ClientSearchEmptyState(query: String) {
             modifier = Modifier
                 .size(76.dp)
                 .clip(RoundedCornerShape(22.dp))
-                .background(Blue50),
+                .background(Pink50),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Outlined.SearchOff, null, tint = Blue600, modifier = Modifier.size(34.dp))
+            Icon(Icons.Outlined.SearchOff, null, tint = Pink600, modifier = Modifier.size(34.dp))
         }
-        Text(
-            "Sin resultados",
-            fontSize      = 17.sp,
-            fontWeight    = FontWeight.Bold,
-            color         = Slate900,
-            letterSpacing = (-0.3).sp
-        )
+        Text("Sin resultados", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = Slate900, letterSpacing = (-0.3).sp)
         Text(
             "No hay clientes que coincidan con \"$query\"",
             fontSize   = 13.sp,
@@ -861,21 +783,17 @@ private fun EmptyClientsState(onAddClient: () -> Unit) {
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(28.dp))
-                    .background(Blue50),
+                    .background(Pink50),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
                         .size(60.dp)
                         .clip(RoundedCornerShape(18.dp))
-                        .background(Brush.linearGradient(listOf(Blue600, Blue500))),
+                        .background(Brush.linearGradient(listOf(Pink600, Pink500))),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Outlined.Group, null,
-                        tint     = Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Icon(Icons.Outlined.Group, null, tint = Color.White, modifier = Modifier.size(28.dp))
                 }
             }
 
@@ -883,13 +801,7 @@ private fun EmptyClientsState(onAddClient: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(
-                    "Sin clientes aún",
-                    fontSize      = 20.sp,
-                    fontWeight    = FontWeight.Bold,
-                    color         = Slate900,
-                    letterSpacing = (-0.5).sp
-                )
+                Text("Sin clientes aún", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Slate900, letterSpacing = (-0.5).sp)
                 Text(
                     "Registra tu primer cliente para comenzar a ver tu lista aquí.",
                     fontSize   = 14.sp,
@@ -909,20 +821,15 @@ private fun EmptyClientsState(onAddClient: () -> Unit) {
                     .shadow(
                         elevation    = 8.dp,
                         shape        = RoundedCornerShape(16.dp),
-                        ambientColor = Blue600.copy(alpha = 0.20f),
-                        spotColor    = Blue700.copy(alpha = 0.28f)
+                        ambientColor = Pink600.copy(alpha = 0.20f),
+                        spotColor    = Pink700.copy(alpha = 0.28f)
                     ),
                 shape  = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Blue600)
+                colors = ButtonDefaults.buttonColors(containerColor = Pink600)
             ) {
                 Icon(Icons.Outlined.Add, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(
-                    "Añadir cliente",
-                    fontSize      = 15.sp,
-                    fontWeight    = FontWeight.SemiBold,
-                    letterSpacing = 0.1.sp
-                )
+                Text("Añadir cliente", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.1.sp)
             }
         }
     }

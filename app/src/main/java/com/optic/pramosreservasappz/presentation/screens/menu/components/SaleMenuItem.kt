@@ -24,7 +24,7 @@ fun SaleMenuItem(
         modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onClick() }
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(horizontal = 20.dp, vertical = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
@@ -32,12 +32,12 @@ fun SaleMenuItem(
             icon,
             null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(25.dp)
+            modifier = Modifier.size(30.dp)
         )
         Text(
             text = title,
             color = TextPrimary,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 7.dp)

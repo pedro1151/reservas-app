@@ -43,6 +43,7 @@ import com.optic.pramosreservasappz.presentation.screens.business.members.compon
 import com.optic.pramosreservasappz.presentation.util.getAvatarColor
 import com.optic.pramosreservasappz.presentation.util.getInitials
 import kotlinx.coroutines.launch
+import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.components.SelectClientSearchBar
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────────
 private val Blue700  = Color(0xFF1D4ED8)
