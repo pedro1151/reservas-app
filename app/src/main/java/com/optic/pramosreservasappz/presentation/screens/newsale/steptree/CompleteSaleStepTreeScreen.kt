@@ -20,16 +20,18 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
-import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
 import com.optic.pramosreservasappz.presentation.util.getCurrentFormattedDate
 import kotlinx.coroutines.launch
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
+import com.optic.pramosreservasappz.presentation.ui.theme.ButtonSucessColor
 
 @Composable
 fun CompleteSaleStepTreeScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
 
     val total by viewModel.total.collectAsState()
@@ -80,6 +82,13 @@ fun CompleteSaleStepTreeScreen(
         }
     }
 
+    val newSaleRoute =
+        when (viewModel.saleFlowType) {
+            SaleType.RAPID -> ClientScreen.CompleteSaleStepTwo.route
+            SaleType.COMPLETE -> ClientScreen.CompleteSaleStepOne.route
+            null -> ClientScreen.CompleteSaleStepTwo.route
+        }
+
     Scaffold(
         topBar = {
             BackTopBar(
@@ -87,7 +96,8 @@ fun CompleteSaleStepTreeScreen(
                 navController = navController,
                 onClientClick = {
                     navController.navigate(ClientScreen.SelecClient.route)
-                }
+                },
+                back = ClientScreen.CompleteSaleStepTwo.route
             )
         },
 
@@ -189,11 +199,11 @@ fun CompleteSaleStepTreeScreen(
                             shape = RoundedCornerShape(18.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor =
-                                MaterialTheme.colorScheme.primary
+                                ButtonSucessColor
                             )
                         ) {
                             Text(
-                                "Compartir recibo",
+                                "Generar Recibo",
                                 color = Color.White
                             )
                         }
@@ -201,10 +211,18 @@ fun CompleteSaleStepTreeScreen(
                         // Nueva venta
                         Button(
                             onClick = {
-                                viewModel.clearSelectedProducts()
 
+                                viewModel.resetCreateSaleWithItemsState()
+                                viewModel.clearSelectedProducts()
+                                viewModel.resetStepOneState()
+                                if (viewModel.isRapidSale()){
+                                    viewModel.updateSaleFlowType(SaleType.RAPID)
+                                }
+                                else{
+                                    viewModel.updateSaleFlowType(SaleType.COMPLETE)
+                                }
                                 navController.navigate(
-                                    ClientScreen.RapidSale.route
+                                    newSaleRoute  // volver a nueva venta segun el tipo de venta
                                 )
                             },
                             modifier = Modifier
@@ -212,7 +230,7 @@ fun CompleteSaleStepTreeScreen(
                                 .height(56.dp),
                             shape = RoundedCornerShape(18.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF111827)
+                                MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Text(
@@ -224,7 +242,8 @@ fun CompleteSaleStepTreeScreen(
                         // Salir
                         TextButton(
                             onClick = {
-                                viewModel.clearSelectedProducts()
+                                viewModel.clearSelectedProducts()  // limpio carrito
+                                viewModel.resetCreateSaleWithItemsState() // limpio estado success de venta
 
                                 navController.navigate(
                                     ClientScreen.Sales.route
@@ -246,7 +265,7 @@ fun CompleteSaleStepTreeScreen(
                         ) {
                             Text(
                                 "Salir",
-                                color = Color(0xFF64748B)
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }

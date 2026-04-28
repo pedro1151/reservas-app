@@ -34,6 +34,7 @@ import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
 import com.optic.pramosreservasappz.presentation.sales.Components.SRed
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductViewType
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.NewRapidProduct
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidProductCard
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 fun CompleteSaleStepTwoContent(
     products: List<ProductResponse>,
     navController: NavHostController,
-    viewModel: SalesViewModel,
+    viewModel: NewSaleViewModel,
     paddingValues: PaddingValues,
     modifier: Modifier
 ) {
@@ -382,7 +383,7 @@ fun CompleteSaleStepTwoContent(
                             )
                             .clickable(enabled = canConfirm) {
                                 navController.navigate(ClientScreen.CompleteSaleStepTree.route)
-                                viewModel.resetCreateItemState()// resetear estado de venta
+                                viewModel.resetCreateSaleWithItemsState()
                             }
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically

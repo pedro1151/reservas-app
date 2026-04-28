@@ -64,6 +64,7 @@ import com.optic.pramosreservasappz.presentation.screens.business.createmember.A
 import com.optic.pramosreservasappz.presentation.screens.business.mybusiness.MyBusinessScreen
 import com.optic.pramosreservasappz.presentation.screens.business.updatemember.UpdateMemberScreen
 import com.optic.pramosreservasappz.presentation.screens.estadisticas.SalesStatsScreen
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.screens.recibos.ReciboScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -75,6 +76,7 @@ fun ClientNavGraph(
 ) {
 
     val salesViewModel: SalesViewModel = hiltViewModel()
+    val newSaleViewModel: NewSaleViewModel = hiltViewModel()
 
     val enterAnim: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
         slideInHorizontally(
@@ -120,7 +122,12 @@ fun ClientNavGraph(
     ) {
 
         composable(ClientScreen.Sales.route) {
-            SalesScreen(navController, isAuthenticated)
+            SalesScreen(
+                navController = navController,
+                isAuthenticated = isAuthenticated,
+                newSaleViewModel =  newSaleViewModel
+            )
+
         }
 
         composable(ClientScreen.Clientes.route) {
@@ -168,7 +175,7 @@ fun ClientNavGraph(
             CompleteSaleStepOneScreen(
                 navController,
                 isAuthenticated,
-                salesViewModel
+                newSaleViewModel
             )
         }
 
@@ -176,7 +183,7 @@ fun ClientNavGraph(
             CompleteSaleStepTwoScreen(
                 navController,
                 isAuthenticated,
-                salesViewModel
+                newSaleViewModel
             )
         }
 
@@ -184,14 +191,14 @@ fun ClientNavGraph(
             CompleteSaleStepTreeScreen(
                 navController,
                 isAuthenticated,
-                salesViewModel
+                newSaleViewModel
             )
         }
 
         composable(ClientScreen.SelecClient.route) {
             SelectClientScreen(
                 navController,
-                salesViewModel
+                newSaleViewModel
             )
         }
 
@@ -392,7 +399,8 @@ fun ClientNavGraph(
 
             ReciboScreen(
                 navController = navController,
-                saleId =  saleId
+                saleId =  saleId,
+                salesViewModel = newSaleViewModel
             )
         }
 
