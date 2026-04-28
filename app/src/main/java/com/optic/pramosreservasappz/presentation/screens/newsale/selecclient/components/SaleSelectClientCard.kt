@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
 import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
 import com.optic.pramosreservasappz.presentation.util.getAvatarColor
@@ -35,7 +36,7 @@ fun SaleSelectClientCard(
     client: ClientResponse,
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
     // ── lógica sin cambios ─────────────────────────────────────────────────────
 

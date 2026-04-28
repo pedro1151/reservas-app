@@ -24,7 +24,8 @@ class AuthRepositoryImpl(
     private val authLocalDataSource: AuthLocalDataSource
 ): AuthRepository {
 
-    override suspend fun login(email: String, password: String): Resource<AuthResponse> = ResponseToRequest.send(
+    override suspend fun login(email: String, password: String): Resource<AuthResponse>
+    = ResponseToRequest.send(
         authRemoteDataSource.login(email, password)
     )
 

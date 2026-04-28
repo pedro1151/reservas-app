@@ -23,6 +23,7 @@ import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.com
 import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.components.SelectClientSearchBar
 
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 
 @Composable
@@ -31,7 +32,7 @@ fun SaleSelectClientContent(
     clients: List<ClientResponse>,
     paddingValues: PaddingValues,   // ← mantenido para no romper el caller
     navController: NavHostController,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ) {
     val query        by viewModel.searchQuery.collectAsState()
     val localClients by viewModel.localClientsList.collectAsState()

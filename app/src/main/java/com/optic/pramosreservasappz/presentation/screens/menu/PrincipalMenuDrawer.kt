@@ -44,7 +44,7 @@ fun PrincipalMenuDrawer(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SoftCoolBackground)
+                .background(MaterialTheme.colorScheme.background)
         ) {
 
 

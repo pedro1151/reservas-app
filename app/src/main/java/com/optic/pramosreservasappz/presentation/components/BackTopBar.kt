@@ -8,12 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -25,10 +22,9 @@ fun BackTopBar(
     navController: NavController,
     showTitle: Boolean = true,
     onClientClick: (() -> Unit)? = null,
-    selectorAction: (@Composable () -> Unit)? = null
+    selectorAction: (@Composable () -> Unit)? = null,
+    back: String? = null // 🔥 NUEVO PARAMETRO
 ) {
-
-
 
     Box(
         modifier = Modifier
@@ -53,11 +49,18 @@ fun BackTopBar(
                 }
             },
             navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(
+                    onClick = {
+                        if (back != null) {
+                            navController.navigate(back)
+                        } else {
+                            navController.popBackStack()
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver",
-                        // tint = MaterialTheme.colorScheme.getGreenLima // MaterialTheme.colorScheme.onPrimary // Ícono blanco si fondo es primario
+                        contentDescription = "Volver"
                     )
                 }
             },
@@ -77,14 +80,12 @@ fun BackTopBar(
                     }
                 }
             },
-            // 🔥 CLAVE: transparente
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,
                 titleContentColor = Color.White,
                 actionIconContentColor = Color.White,
                 navigationIconContentColor = Color.White
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
     }

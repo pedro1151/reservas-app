@@ -18,12 +18,13 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.screens.calendar.components.ServiceReservationStep
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
+import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedContext
 
 @Composable
 fun SelectClientScreen(
     navController: NavHostController,
-    viewModel: SalesViewModel
+    viewModel: NewSaleViewModel
 ){
     val clientResource by viewModel.clientsState.collectAsState()
 
