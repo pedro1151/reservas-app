@@ -27,6 +27,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.presentation.ui.theme.GradientBackground
 
 
 @Composable
@@ -59,7 +60,7 @@ fun PlansScreen(navController: NavHostController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(PageBg)
+                    .background(Color.White)
                     .padding(top = 8.dp, start = 6.dp, end = 20.dp, bottom = 4.dp)
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
@@ -87,11 +88,11 @@ fun PlansScreen(navController: NavHostController) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
                         .background(
-                            Brush.horizontalGradient(listOf(CyanAccent.copy(0.12f), IndigoMain.copy(0.10f)))
+                            GradientBackground
                         )
                         .border(
                             1.dp,
-                            Brush.horizontalGradient(listOf(CyanAccent.copy(0.35f), IndigoMain.copy(0.25f))),
+                            Color.Green,
                             RoundedCornerShape(50)
                         )
                         .padding(horizontal = 16.dp, vertical = 6.dp)
@@ -100,7 +101,7 @@ fun PlansScreen(navController: NavHostController) {
                         text          = "Precios simples y transparentes",
                         fontSize      = 11.sp,
                         fontWeight    = FontWeight.SemiBold,
-                        color         = CyanDeep,
+                        color         = Color.Green,
                         letterSpacing = 0.4.sp
                     )
                 }
@@ -140,7 +141,7 @@ fun PlansScreen(navController: NavHostController) {
                         modifier = Modifier
                             .width(1.dp)
                             .height(12.dp)
-                            .background(Ink200)
+                            .background(GradientBackground)
                     )
                     Spacer(Modifier.width(8.dp))
                     TrustBadge("✓  Cancela gratis")
@@ -149,7 +150,7 @@ fun PlansScreen(navController: NavHostController) {
                         modifier = Modifier
                             .width(1.dp)
                             .height(12.dp)
-                            .background(Ink200)
+                            .background(GradientBackground)
                     )
                     Spacer(Modifier.width(8.dp))
                     TrustBadge("✓  Soporte real")
@@ -244,8 +245,8 @@ fun PlansScreen(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(PureWhite)
-                        .border(1.dp, Ink200, RoundedCornerShape(20.dp))
+                        .background(GradientBackground)
+                        .border(1.dp, Color.White, RoundedCornerShape(20.dp))
                         .padding(horizontal = 24.dp, vertical = 20.dp)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -253,13 +254,13 @@ fun PlansScreen(navController: NavHostController) {
                             text       = "🔒  Pago 100% seguro",
                             fontSize   = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = Ink900
+                            color      = Color.White
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text      = "Todos los planes incluyen 7 días de prueba gratuita.\nSi no estás satisfecho, te devolvemos tu dinero.",
                             fontSize  = 13.sp,
-                            color     = Ink400,
+                            color     = Color.White,
                             textAlign = TextAlign.Center,
                             lineHeight = 20.sp
                         )
@@ -276,7 +277,7 @@ private fun TrustBadge(text: String) {
     Text(
         text       = text,
         fontSize   = 11.sp,
-        color      = Ink600,
+        color      =Color.White,
         fontWeight = FontWeight.Medium
     )
 }

@@ -57,8 +57,6 @@ private val Slate200 = Color(0xFFE2E8F0)
 private val Slate100 = Color(0xFFF1F5F9)
 private val Red500   = Color(0xFFEF4444)
 private val PageBg   = Color(0xFFF8FAFC)
-import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.components.SelectClientSearchBar
-
 enum class MemberViewType { LIST, GRID }
 
 // ─── Main Content ────────────────────────────────────────────────────────────────
