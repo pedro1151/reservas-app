@@ -44,6 +44,12 @@ import kotlinx.coroutines.launch
 private val PrimaryPurple = Color(0xFF6E4FDB)
 private val PrimaryBlue   = Color(0xFF3B78C4)
 private val PrimaryGreen  = Color(0xFF10A37F)
+// AGREGADO START
+private enum class ViewMode {
+    LIST,
+    CARDS
+}
+// AGREGADO FINISH
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -61,6 +67,9 @@ fun HistorialContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope             = rememberCoroutineScope()
     var isDeleting        by remember { mutableStateOf(false) }
+    // AGREGADO START
+    var viewMode by remember { mutableStateOf(ViewMode.LIST) }
+// AGREGADO FINISH
 
     LaunchedEffect(deleteState) {
         when (val state = deleteState) {
@@ -118,7 +127,9 @@ fun HistorialContent(
                         onQueryChange = { viewModel.onSearchQueryChanged(it) },
                         hasQuery      = hasQuery,
                         totalCount    = localSales.size,
-                        filteredCount = filteredSales.size
+                        filteredCount = filteredSales.size,
+                        viewMode      = viewMode,
+                        onViewModeChange = { viewMode = it }
                     )
                     Spacer(Modifier.height(6.dp))
                 }
@@ -179,7 +190,11 @@ private fun SearchAndPillRow(
     onQueryChange: (String) -> Unit,
     hasQuery: Boolean,
     totalCount: Int,
-    filteredCount: Int
+    filteredCount: Int,
+    // AGREGADO START
+    viewMode: ViewMode,
+    onViewModeChange: (ViewMode) -> Unit
+    // AGREGADO FINISH
 ) {
     val focusManager = LocalFocusManager.current
     var isFocused    by remember { mutableStateOf(false) }
@@ -279,8 +294,94 @@ private fun SearchAndPillRow(
                 )
             }
         }
+        //AGREGADO START
+        ViewModeSwitch(
+            viewMode = viewMode,
+            onViewModeChange = onViewModeChange
+        )
+        //AGREGADO FINISH
     }
 }
+// AGREGADO START
+
+@Composable
+private fun ViewModeSwitch(
+    viewMode: ViewMode,
+    onViewModeChange: (ViewMode) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color.White)
+            .border(1.dp, Color(0xFFE5E5EE), RoundedCornerShape(14.dp))
+    ) {
+        ViewModeButton(
+            icon = Icons.Outlined.ViewList,
+            isSelected = viewMode == ViewMode.LIST,
+            onClick = { onViewModeChange(ViewMode.LIST) },
+            isStart = true
+        )
+
+        Box(
+            modifier = Modifier
+                .width(1.dp)
+                .height(32.dp)
+                .background(Color(0xFFE5E5EE))
+                .align(Alignment.CenterVertically)
+        )
+
+        ViewModeButton(
+            icon = Icons.Outlined.GridView,
+            isSelected = viewMode == ViewMode.CARDS,
+            onClick = { onViewModeChange(ViewMode.CARDS) },
+            isStart = false
+        )
+    }
+}
+
+@Composable
+private fun ViewModeButton(
+    icon: ImageVector,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    isStart: Boolean
+) {
+    val bgColor by animateColorAsState(
+        targetValue = if (isSelected) PrimaryPurple else Color.Transparent,
+        animationSpec = tween(200),
+        label = "viewModeBg"
+    )
+
+    val iconTint by animateColorAsState(
+        targetValue = if (isSelected) Color.White else Color(0xFFBBBBCC),
+        animationSpec = tween(200),
+        label = "viewModeTint"
+    )
+
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(
+                RoundedCornerShape(
+                    topStart = if (isStart) 14.dp else 0.dp,
+                    bottomStart = if (isStart) 14.dp else 0.dp,
+                    topEnd = if (!isStart) 14.dp else 0.dp,
+                    bottomEnd = if (!isStart) 14.dp else 0.dp
+                )
+            )
+            .background(bgColor)
+            .clickable(remember { MutableInteractionSource() }, null, onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            icon,
+            null,
+            tint = iconTint,
+            modifier = Modifier.size(18.dp)
+        )
+    }
+}
+// AGREGADO FINISH
 
 // ── Stats cards ──
 @Composable
