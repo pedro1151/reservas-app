@@ -98,7 +98,7 @@ fun LoginContent(
 
         // 1 · Foto de fondo
         Image(
-            painter        = painterResource(id = R.drawable.fondo1login),
+            painter        = painterResource(id = R.drawable.fondo_def),
             contentDescription = null,
             modifier       = Modifier.fillMaxSize(),
             contentScale   = ContentScale.Crop

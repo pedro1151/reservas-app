@@ -359,6 +359,7 @@ fun ReciboScreen(
             }
 
             is Resource.Failure -> {
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -555,6 +556,117 @@ fun ReciboScreen(
             else -> {
                 LoadingBox(paddingValues)
             }
+        }
+    }
+}
+
+/* ------------------------------------------------ */
+/* FOOTER                                           */
+/* ------------------------------------------------ */
+
+@Composable
+private fun ReceiptFooter(
+    onWhatsappClick: () -> Unit,
+    onDownloadClick: () -> Unit,
+    onNewSaleClick: () -> Unit
+) {
+
+    val primary = Color(0xFFE91E63)
+    val background = Color(0xFFF8F4F6)
+
+    Surface(
+        shadowElevation = 10.dp,
+        color = Color.White
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(
+                    horizontal = 14.dp,
+                    vertical = 12.dp
+                ),
+            horizontalArrangement =
+            Arrangement.spacedBy(10.dp)
+        ) {
+
+            FooterButton(
+                modifier = Modifier.weight(1f),
+                title = "WhatsApp",
+                icon = Icons.Outlined.Share,
+                onClick = onWhatsappClick,
+                primary = primary,
+                background = background
+            )
+
+            FooterButton(
+                modifier = Modifier.weight(1f),
+                title = "Descargar",
+                icon = Icons.Outlined.Download,
+                onClick = onDownloadClick,
+                primary = primary,
+                background = background
+            )
+
+            FooterButton(
+                modifier = Modifier.weight(1f),
+                title = "Nueva Venta",
+                icon = Icons.Outlined.AddShoppingCart,
+                onClick = onNewSaleClick,
+                primary = primary,
+                background = background
+            )
+        }
+    }
+}
+
+@Composable
+private fun FooterButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    primary: Color,
+    background: Color
+) {
+
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.height(62.dp),
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.2.dp, primary),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = background,
+            contentColor = primary
+        )
+    ) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(
+                        primary.copy(alpha = 0.10f)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            Text(
+                text = title,
+                fontSize = 12.sp
+            )
         }
     }
 }
