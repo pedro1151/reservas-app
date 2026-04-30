@@ -33,8 +33,11 @@ fun PrimaryTopBar(
     vm: AuthStateVM = hiltViewModel(),
     selectorAction: (@Composable () -> Unit)? = null
 ) {
-    val isAuthenticated by vm.isAuthenticated.collectAsState()
-    val userEmail by vm.userEmail.collectAsState()
+    val sessionData by vm.sessionData.collectAsState()
+
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val planCode = sessionData.planCode
 
 
     Box(

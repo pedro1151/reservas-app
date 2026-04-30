@@ -47,8 +47,8 @@ interface ReservasRemoteDataSource {
     request: CreateSaleWithItemsRequest
   ): Response<SaleResponse>
 
-  suspend fun getSalesByOwner(
-    ownerId: Int,
+  suspend fun getSalesByBusiness(
+    businessId: Int,
     limit: Int
   ): Response<List<SaleResponse>>
 
@@ -72,7 +72,7 @@ interface ReservasRemoteDataSource {
 
   // SALE STATS
   suspend fun getSaleStats(
-    ownerId: Int,
+    businessId: Int,
     year:Int
   ): Response<SalesStatsResponse>
 
@@ -121,8 +121,8 @@ interface ReservasRemoteDataSource {
     request: ProductCreateRequest
   ): Response<ProductResponse>
 
-  suspend fun getProductByUser(
-    ownerId: Int,
+  suspend fun getProductByBusiness(
+    businessId: Int,
     name: String
   ): Response<List<ProductResponse>>
 
@@ -181,8 +181,8 @@ interface ReservasRemoteDataSource {
 
 
     // CLIENTS
-    suspend fun getClientsByOwner(
-    ownerId: Int,
+    suspend fun getClientsByBusiness(
+    businessId: Int,
     fullName:String,
     email:String
     ): Response<List<ClientResponse>>

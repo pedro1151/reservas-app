@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
-import com.optic.pramosreservasappz.presentation.screens.inicio.Components.SaleCard
+import com.optic.pramosreservasappz.presentation.screens.inicio.components.SaleCard
 import com.optic.pramosreservasappz.presentation.screens.inicio.header.SaleFullHeader
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import java.time.LocalDate

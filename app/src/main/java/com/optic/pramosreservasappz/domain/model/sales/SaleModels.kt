@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SaleCreateRequest(
 
-    @SerializedName("owner_id") val ownerId: Int? = null,
+    @SerializedName("business_id") val businessId: Int? = null,
     @SerializedName("created_by_user_id") val createdByUserId: Int? = null,
     @SerializedName("local_id") val localId: String? = null,
     @SerializedName("amount") val amount: Double,
@@ -25,15 +25,31 @@ data class SaleUpdateRequest(
     @SerializedName("updated_by") val updatedBy: String? = null
 )
 
+data class MiniClientResponse(
+    @SerializedName("id") val id: Int,
+    @SerializedName("full_name") val fullName: String,
+    @SerializedName("email") val email: String?,
+    @SerializedName("phone") val phone: String?,
+    @SerializedName("country") val country: String?
+)
+
+data class SalesmanResponse(
+    @SerializedName("id") val id: Int?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("username") val username: String?,
+    @SerializedName("role") val role: String?
+)
+
 data class SaleResponse(
 
     @SerializedName("id") val id: Int,
-    @SerializedName("owner_id") val ownerId: Int?,
+    @SerializedName("business_id") val businessId: Int?,
     @SerializedName("created_by_user_id") val createdByUserId: Int?,
     @SerializedName("local_id") val localId: String?,
     @SerializedName("amount") val amount: Double,
     @SerializedName("description") val description: String?,
-    @SerializedName("client_id") val clientId: Int?,
+    @SerializedName("client") val client: MiniClientResponse?,
+    @SerializedName("salesman") val salesman: SalesmanResponse?,
     @SerializedName("payment_method") val paymentMethod: String,
     @SerializedName("is_synced") val isSynced: Boolean,
     @SerializedName("deleted") val deleted: String?, // ISO date

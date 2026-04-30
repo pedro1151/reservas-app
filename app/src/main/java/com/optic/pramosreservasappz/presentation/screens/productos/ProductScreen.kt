@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
@@ -45,16 +46,27 @@ private val PageBg    = Color(0xFFF8FAFC)
 @Composable
 fun ProductScreen(
     navController   : NavHostController,
-    isAuthenticated : Boolean = false
+    isAuthenticated : Boolean = false,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+    // DATOS DE LA SESSION
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
+
     val viewModel        : ProductViewModel = hiltViewModel()
     val productResource  by viewModel.productsState.collectAsState()
     val localizedContext = LocalizedContext.current
 
     var isRefreshing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadProducts(ownerId = 1, name = "")
+    LaunchedEffect(businessId) {
+        if (businessId != null) {
+            viewModel.loadProducts(businessId = businessId, name = "")
+        }
     }
 
     LaunchedEffect(productResource) {
@@ -128,7 +140,7 @@ fun ProductScreen(
             isRefreshing = isRefreshing,
             onRefresh    = {
                 isRefreshing = true
-                viewModel.loadProducts(ownerId = 1, name = "")
+                viewModel.loadProducts(businessId = 1, name = "")
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -150,7 +162,7 @@ fun ProductScreen(
                     ProductErrorState(
                         onRetry = {
                             isRefreshing = true
-                            viewModel.loadProducts(ownerId = 1, name = "")
+                            viewModel.loadProducts(businessId = 1, name = "")
                         }
                     )
                 }

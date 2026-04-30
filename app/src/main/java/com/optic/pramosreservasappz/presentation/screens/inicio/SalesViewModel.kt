@@ -94,14 +94,14 @@ class SalesViewModel @Inject constructor(
     // LOAD SALES (Flow ✅)
     // ---------------------------------------------
     fun loadSales(
-        ownerId: Int,
+        businessId: Int,
         limit: Int
     ) {
 
         Log.d("loadSales", "🚀 loadRecentSales llamado a loadSales")
         viewModelScope.launch {
-            reservasUC.getSalesByOwnerUC(
-                ownerId= ownerId,
+            reservasUC.getSalesByBusinessUC(
+                businessId= businessId,
                 limit =  limit
             )
                 .onStart {
@@ -151,10 +151,6 @@ class SalesViewModel @Inject constructor(
                 val result = reservasUC.createSaleUC(request)
                 _createSaleState.value = result
 
-                if (result is Resource.Success) {
-                    delay(500)
-                    loadSales(ownerId = 1, 25)
-                }
 
             } catch (e: Exception) {
                 _createSaleState.value =
@@ -176,7 +172,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1, 25)
+                    loadSales(businessId = 1, 25)
                 }
 
             } catch (e: Exception) {
@@ -204,7 +200,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1,  25)
+                    loadSales(businessId= 1,  25)
                 }
 
             } catch (e: Exception) {
@@ -231,8 +227,6 @@ class SalesViewModel @Inject constructor(
                 when (response) {
                     is Resource.Success -> {
                         _deleteSaleState.value = response
-                        delay(800)
-                        loadSales(ownerId = 1, 25)
                         _deleteSaleState.value = Resource.Idle
                     }
 
@@ -245,7 +239,6 @@ class SalesViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                loadSales(ownerId = 1, 25)
                 _deleteSaleState.value =
                     Resource.Failure(e.message ?: "Error al eliminar venta")
             }
@@ -265,7 +258,7 @@ class SalesViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1, 25)
+                    loadSales(businessId = 1, 25)
                 }
 
             } catch (e: Exception) {
@@ -602,7 +595,7 @@ class SalesViewModel @Inject constructor(
         name: String = ""
     ) {
         viewModelScope.launch {
-            reservasUC.getProductsByUserUC(ownerId, name)
+            reservasUC.getProductsByBusinessUC(ownerId, name)
                 .onStart {
                     _productsState.value = Resource.Loading
                 }
@@ -660,7 +653,7 @@ class SalesViewModel @Inject constructor(
                 is Resource.Success -> {
                     _createProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = request.userId ?: 1)
+                    (request.businessId ?:null)?.let { loadProducts(ownerId = it) }
                 }
                 is Resource.Failure -> {
                     _createProductState.value = result
@@ -681,7 +674,7 @@ class SalesViewModel @Inject constructor(
                 is Resource.Success -> {
                     _createProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = request.userId ?: 1)
+                    (request.businessId ?: null)?.let { loadProducts(ownerId = it) }
                 }
                 is Resource.Failure -> {
                     _createProductState.value = result
@@ -912,11 +905,11 @@ class SalesViewModel @Inject constructor(
     fun loadClients(
         fullName: String = "",
         email: String = "",
-        ownerId: Int = 1
+        businessId: Int = 1
     ) {
         viewModelScope.launch {
-            reservasUC.getClientPorOwnerUC(
-                ownerId = ownerId,
+            reservasUC.getClientPorBusinessUC(
+                businessId = businessId,
                 fullName = fullName,
                 email = email
             )

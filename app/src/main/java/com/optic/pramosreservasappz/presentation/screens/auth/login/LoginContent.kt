@@ -1,20 +1,29 @@
 package com.optic.pramosreservasappz.presentation.screens.auth.login
 
 import android.widget.Toast
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,15 +45,10 @@ import com.optic.pramosreservasappz.presentation.components.GoogleSignInButton
 import com.optic.pramosreservasappz.presentation.components.progressBar.CustomProgressBar
 import com.optic.pramosreservasappz.presentation.navigation.Graph
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-
-// ─── Paleta refinada ──────────────────────────────────────────────────────────
-private val Ink         = Color(0xFF0D0D0D)
-private val InkSoft     = Color(0xFF6B7280)
-private val InkXSoft    = Color(0xFFD1D5DB)
-private val PureWhite   = Color(0xFFFFFFFF)
-private val GlassWhite  = Color(0xF5FFFFFF)
-private val AccentCyan  = Color(0xFF06B6D4)   // mismo Cyan del proyecto
-private val AccentRing  = Color(0xFFE0F7FA)
+import com.optic.pramosreservasappz.presentation.ui.theme.AmarrilloSuave
+import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
 
 @Composable
 fun LoginContent(
@@ -53,35 +57,40 @@ fun LoginContent(
     vm: LoginViewModel,
     onGoogleSignInClick: () -> Unit
 ) {
-    val state            = vm.state
-    val context          = LocalContext.current
-    val sendCodeSuccess  by vm.sendCodeSuccess
-    val sendCodeState    by vm.sendCodeState.collectAsState()
-    val loginState       = vm.loginResponse
-    val isGoogleLoading  = loginState is Resource.Loading
+    val state = vm.state
+    val context = LocalContext.current
+    val sendCodeSuccess by vm.sendCodeSuccess
+    val loginState = vm.loginResponse
+    val isGoogleLoading = loginState is Resource.Loading
 
-    // ── Animación de entrada sutil ──────────────────────────────────────────
     var visible by remember { mutableStateOf(false) }
-    val cardAlpha   by animateFloatAsState(
-        targetValue   = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-        label         = "cardAlpha"
-    )
-    val cardOffsetY by animateFloatAsState(
-        targetValue   = if (visible) 0f else 48f,
-        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-        label         = "cardOffsetY"
-    )
-    LaunchedEffect(Unit) { visible = true }
 
-    // ── Acciones existentes (sin cambios) ───────────────────────────────────
+    val cardAlpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
+        label = "cardAlpha"
+    )
+
+    val cardOffsetY by animateFloatAsState(
+        targetValue = if (visible) 0f else 48f,
+        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
+        label = "cardOffsetY"
+    )
+
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
     LaunchedEffect(sendCodeSuccess) {
         if (sendCodeSuccess) {
             navController.navigate("${Graph.CLIENT}/${state.email}") {
-                popUpTo(ClientScreen.Login.route) { inclusive = false }
+                popUpTo(ClientScreen.Login.route) {
+                    inclusive = false
+                }
             }
         }
     }
+
     LaunchedEffect(vm.errorMessage) {
         if (vm.errorMessage.isNotEmpty()) {
             Toast.makeText(context, vm.errorMessage, Toast.LENGTH_LONG).show()
@@ -89,169 +98,206 @@ fun LoginContent(
         }
     }
 
-    // ── Root ────────────────────────────────────────────────────────────────
     Box(
         modifier = Modifier
             .padding(paddingValues)
             .fillMaxSize()
     ) {
 
-        // 1 · Foto de fondo
         Image(
-            painter        = painterResource(id = R.drawable.fondo_def),
+            painter = painterResource(id = R.drawable.fondo_def),
             contentDescription = null,
-            modifier       = Modifier.fillMaxSize(),
-            contentScale   = ContentScale.Crop
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    alpha = 0.72f
+                },
+            contentScale = ContentScale.Crop
         )
 
-        // 2 · Overlay en capas: blur suave + degradado blanco desde abajo
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0.00f to Color.Black.copy(alpha = 0.08f),
-                        0.30f to Color.White.copy(alpha = 0.45f),
-                        0.60f to Color.White.copy(alpha = 0.82f),
-                        1.00f to Color.White.copy(alpha = 0.97f)
+                        colorStops = arrayOf(
+                            0.00f to MaterialTheme.colorScheme.primary.copy(alpha = 0.46f),
+                            0.28f to MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
+                            0.58f to Color.White.copy(alpha = 0.72f),
+                            1.00f to MaterialTheme.colorScheme.background.copy(alpha = 0.97f)
+                        )
                     )
                 )
         )
 
-        // 3 · Contenido centrado con animación
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .drawBehind {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                AmarrilloSuave.copy(alpha = 0.34f),
+                                Color.Transparent
+                            ),
+                            radius = size.width * 0.68f
+                        ),
+                        center = center.copy(
+                            x = size.width * 0.08f,
+                            y = size.height * 0.10f
+                        )
+                    )
+
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFE91E63),
+                                Color.Transparent
+                            ),
+                            radius = size.width * 0.82f
+                        ),
+                        center = center.copy(
+                            x = size.width * 1.05f,
+                            y = size.height * 0.34f
+                        )
+                    )
+
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.32f),
+                                Color.Transparent
+                            ),
+                            radius = size.width * 0.90f
+                        ),
+                        center = center.copy(
+                            x = size.width * 0.50f,
+                            y = size.height * 0.96f
+                        )
+                    )
+                }
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .align(Alignment.BottomCenter)   // sube desde abajo — sensación de "sheet"
+                .align(Alignment.BottomCenter)
                 .graphicsLayer {
-                    alpha        = cardAlpha
+                    alpha = cardAlpha
                     translationY = cardOffsetY
                 }
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 36.dp, top = 120.dp),
+                .padding(top = 96.dp, bottom = 34.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ── Wordmark sobre la card ──────────────────────────────────────
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = Ink, fontWeight = FontWeight.Black)) {
-                        append("Sales")
-                    }
-                    withStyle(SpanStyle(color = AccentCyan, fontWeight = FontWeight.Black)) {
-                        append("Gow")
-                    }
-                },
-                fontSize      = 42.sp,
-                letterSpacing = (-1.5).sp,
-                modifier      = Modifier.padding(bottom = 4.dp)
-            )
+            AppBrandHeader()
 
-            Text(
-                text          = "Ventas rápidas · Control inteligente",
-                color         = InkSoft,
-                fontSize      = 13.sp,
-                letterSpacing = 0.3.sp,
-                modifier      = Modifier.padding(bottom = 28.dp)
-            )
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // ── Card glassmorphism ──────────────────────────────────────────
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape    = RoundedCornerShape(24.dp),
-                colors   = CardDefaults.cardColors(containerColor = GlassWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                border   = androidx.compose.foundation.BorderStroke(
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.96f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                border = BorderStroke(
                     width = 1.dp,
-                    color = InkXSoft.copy(alpha = 0.6f)
+                    color = Color.White.copy(alpha = 0.78f)
                 )
             ) {
                 Column(
-                    modifier            = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 28.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    // Chip / etiqueta de acceso
                     Surface(
                         shape = RoundedCornerShape(50),
-                        color = AccentRing,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+                        ),
                         modifier = Modifier.padding(bottom = 20.dp)
                     ) {
                         Text(
-                            text     = "Acceso seguro",
-                            color    = AccentCyan,
+                            text = "GESTIONA TU NEGOCIO",
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 0.8.sp,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                         )
                     }
 
                     Text(
-                        text       = "Bienvenido de vuelta",
-                        color      = Ink,
-                        fontSize   = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier   = Modifier.padding(bottom = 4.dp)
+                        text = "Empieza ya!",
+                        color = TextPrimary,
+                        fontSize = 23.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = (-0.4).sp,
+                        modifier = Modifier.padding(bottom = 5.dp)
                     )
+
                     Text(
-                        text     = "Elige cómo quieres acceder",
-                        color    = InkSoft,
-                        fontSize = 14.sp,
+                        text = "Ventas rápidas. Todo tu negocio, en segundos",
+                        color = TextSecondary,
+                        fontSize = 15.5.sp,
+                        lineHeight = 19.sp,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
 
-                    // ── Botón Google ───────────────────────────────────────
                     GoogleSignInButton(
-                        onClick  = { onGoogleSignInClick() },
-                        enabled  = !isGoogleLoading
+                        onClick = { onGoogleSignInClick() },
+                        enabled = !isGoogleLoading
                     )
 
-                    // ── Separador "o" ──────────────────────────────────────
                     Row(
-                        modifier            = Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        verticalAlignment   = Alignment.CenterVertically
+                            .padding(vertical = 18.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         HorizontalDivider(
-                            modifier  = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f),
                             thickness = 1.dp,
-                            color     = InkXSoft
+                            color = BorderGray.copy(alpha = 0.90f)
                         )
+
                         Text(
-                            text     = "  o  ",
-                            color    = InkSoft,
-                            fontSize = 12.sp
+                            text = "  o  ",
+                            color = TextSecondary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
                         )
+
                         HorizontalDivider(
-                            modifier  = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f),
                             thickness = 1.dp,
-                            color     = InkXSoft
+                            color = BorderGray.copy(alpha = 0.90f)
                         )
                     }
 
-                    // ── Botón Email ────────────────────────────────────────
                     DefaultButton(
-                        modifier  = Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        text      = "Continuar con email",
-                        onClick   = { navController.navigate(ClientScreen.BasicLogin.route) },
-                        color     = AccentCyan,
-                        icon      = Icons.Default.Email,
-                        textColor = PureWhite
+                            .height(54.dp),
+                        text = "Continuar con email",
+                        onClick = { navController.navigate(ClientScreen.BasicLogin.route) },
+                        color = MaterialTheme.colorScheme.primary,
+                        icon = Icons.Default.Email,
+                        textColor = Color.White
                     )
 
-                    // ── Footer ─────────────────────────────────────────────
                     Spacer(modifier = Modifier.height(24.dp))
 
                     HorizontalDivider(
                         thickness = 1.dp,
-                        color     = InkXSoft.copy(alpha = 0.5f)
+                        color = BorderGray.copy(alpha = 0.55f)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -263,21 +309,27 @@ fun LoginContent(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(6.dp)
-                                .clip(RoundedCornerShape(50))
-                                .background(AccentCyan)
+                                .size(7.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CircleShape
+                                )
                         )
+
                         Spacer(modifier = Modifier.width(8.dp))
+
                         Text(
-                            text       = Config.APP_NAME,
-                            color      = InkSoft,
-                            fontSize   = 12.sp,
-                            fontWeight = FontWeight.Medium
+                            text = Config.APP_NAME,
+                            color = TextSecondary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
+
                         Spacer(modifier = Modifier.width(8.dp))
+
                         Text(
-                            text  = "· 2026",
-                            color = InkXSoft,
+                            text = "· 2026",
+                            color = BorderGray,
                             fontSize = 12.sp
                         )
                     }
@@ -286,6 +338,56 @@ fun LoginContent(
         }
     }
 
-    // Loading overlay (sin cambios)
     CustomProgressBar(isLoading = isGoogleLoading)
+}
+
+@Composable
+private fun AppBrandHeader() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            color = Color.White.copy(alpha = 0.18f),
+            border = BorderStroke(
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.28f)
+            )
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
+                            color = Color.White,
+                            fontWeight = FontWeight.Black
+                        )
+                    ) {
+                        append("Sales")
+                    }
+
+                    withStyle(
+                        SpanStyle(
+                            color = AmarrilloSuave,
+                            fontWeight = FontWeight.Black
+                        )
+                    ) {
+                        append("Gow")
+                    }
+                },
+                fontSize = 43.sp,
+                letterSpacing = (-1.6).sp,
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = "Ventas rápidas · Control inteligente de tu negocio",
+            color = Color.White.copy(alpha = 0.92f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.3.sp
+        )
+    }
 }

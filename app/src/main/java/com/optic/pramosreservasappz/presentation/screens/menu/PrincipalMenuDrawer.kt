@@ -32,11 +32,16 @@ import com.optic.pramosreservasappz.presentation.util.getInitials
 @Composable
 fun PrincipalMenuDrawer(
     onDrawerClose: () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
 
-    val authStateVM: AuthStateVM = hiltViewModel()
-    val userEmail   by authStateVM.userEmail.collectAsState()
+    val sessionData by authStateVM.sessionData.collectAsState()
+
+    val businessId = sessionData.businessId
+    val userEmail = sessionData.email
+    val planCode = sessionData.planCode
+
     ModalDrawerSheet(
         drawerContainerColor = Color.White,
         modifier = Modifier.fillMaxWidth(0.82f)

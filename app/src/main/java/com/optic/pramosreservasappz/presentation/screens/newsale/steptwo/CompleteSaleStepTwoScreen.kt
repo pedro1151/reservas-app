@@ -14,9 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
@@ -26,8 +28,16 @@ import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewMode
 fun CompleteSaleStepTwoScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: NewSaleViewModel
+    viewModel: NewSaleViewModel,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+    // DATOS DE LA SESSION
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
 
     // posicion del carrito
     var cartPosition by remember { mutableStateOf(Offset.Zero) }
@@ -36,8 +46,10 @@ fun CompleteSaleStepTwoScreen(
 
     var isRefreshing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadProducts(ownerId = 1, name = "")
+    LaunchedEffect(businessId  ){
+        if (businessId != null) {
+            viewModel.loadProducts(businessId = businessId, name = "")
+        }
     }
 
     LaunchedEffect( productsResource ) {
@@ -76,7 +88,7 @@ fun CompleteSaleStepTwoScreen(
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
-                viewModel.loadProducts(ownerId = 1, name = "")
+                viewModel.loadProducts(businessId = 1, name = "")
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -92,16 +104,19 @@ fun CompleteSaleStepTwoScreen(
                     ) { CircularProgressIndicator() }
                 }
                 is Resource.Success -> {
-                    CompleteSaleStepTwoContent(
-                        products = result.data,
-                        viewModel = viewModel,
-                        navController = navController,
-                        paddingValues = paddingValues,
-                        modifier = Modifier
-                    )
+                    if (businessId != null) {
+                        CompleteSaleStepTwoContent(
+                            products = result.data,
+                            viewModel = viewModel,
+                            navController = navController,
+                            paddingValues = paddingValues,
+                            modifier = Modifier,
+                            businessId = businessId
+                        )
+                    }
                 }
                 is Resource.Failure -> {
-                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadProducts(ownerId = 1, name = "") })
+                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadProducts(businessId = 1, name = "") })
                 }
                 else -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

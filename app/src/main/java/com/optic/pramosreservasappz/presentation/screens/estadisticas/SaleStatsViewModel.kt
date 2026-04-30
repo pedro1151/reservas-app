@@ -29,12 +29,12 @@ class SaleStatsViewModel @Inject constructor(
     // LOAD SALES (Flow ✅)
     // ---------------------------------------------
     fun loadStats(
-        ownerId: Int,
+        businessId: Int,
         year: Int
     ) {
         viewModelScope.launch {
             reservasUC.getSaleStatsUC(
-                ownerId = ownerId,
+                businessId = businessId,
                 year = year
             )
                 .onStart {
@@ -61,12 +61,10 @@ class SaleStatsViewModel @Inject constructor(
 
     fun setYear(year: Int) {
         _selectedYear.value = year
-        loadStats(ownerId = 1, year = year) // 🔥 hardcode por ahora
+        loadStats(businessId = 1, year = year) // 🔥 hardcode por ahora
     }
 
-    init {
-        loadStats(ownerId = 1, year = _selectedYear.value)
-    }
+
 
 
     // 🔥 MODOS DISPONIBLES

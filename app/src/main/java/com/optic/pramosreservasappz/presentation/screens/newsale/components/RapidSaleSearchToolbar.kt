@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.platform.LocalFocusManager
-import com.optic.pramosreservasappz.presentation.screens.productos.ProductViewType
+import com.optic.pramosreservasappz.domain.model.product.ProductViewType
 
 // ─────────────────────────────────────────────────────────────
 // 🎨 PEDIDOS YA STYLE TOKENS

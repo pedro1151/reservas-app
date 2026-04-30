@@ -96,16 +96,13 @@ class HistorialViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    init {
-        loadSales(ownerId = 1)
-    }
 
     // ---------------------------------------------
     // LOAD SALES (Flow ✅)
     // ---------------------------------------------
-    fun loadSales(ownerId: Int) {
+    fun loadSales(businessId: Int) {
         viewModelScope.launch {
-            reservasUC.getSalesByOwnerUC(ownerId, 50)
+            reservasUC.getSalesByBusinessUC(businessId, 50)
                 .onStart {
                     _salesState.value = Resource.Loading
                 }
@@ -151,10 +148,7 @@ class HistorialViewModel @Inject constructor(
                 val result = reservasUC.createSaleUC(request)
                 _createSaleState.value = result
 
-                if (result is Resource.Success) {
-                    delay(500)
-                    loadSales(ownerId = 1)
-                }
+
 
             } catch (e: Exception) {
                 _createSaleState.value =
@@ -174,10 +168,7 @@ class HistorialViewModel @Inject constructor(
                 val result = reservasUC.createSaleWithItemsUC(request)
                 _createSaleWithItemsState.value = result
 
-                if (result is Resource.Success) {
-                    delay(500)
-                    loadSales(ownerId = 1)
-                }
+
 
             } catch (e: Exception) {
                 _createSaleWithItemsState.value =
@@ -200,10 +191,7 @@ class HistorialViewModel @Inject constructor(
                 val result = reservasUC.updateSaleUC(saleId, request)
                 _updateSaleState.value = result
 
-                if (result is Resource.Success) {
-                    delay(500)
-                    loadSales(ownerId = 1)
-                }
+
 
             } catch (e: Exception) {
                 _updateSaleState.value =
@@ -230,7 +218,7 @@ class HistorialViewModel @Inject constructor(
                     is Resource.Success -> {
                         _deleteSaleState.value = response
                         delay(800)
-                        loadSales(ownerId = 1)
+                        loadSales(businessId = 1)
                         _deleteSaleState.value = Resource.Idle
                     }
 
@@ -243,7 +231,7 @@ class HistorialViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                loadSales(ownerId = 1)
+                loadSales(businessId = 1)
                 _deleteSaleState.value =
                     Resource.Failure(e.message ?: "Error al eliminar venta")
             }
@@ -263,7 +251,7 @@ class HistorialViewModel @Inject constructor(
 
                 if (result is Resource.Success) {
                     delay(500)
-                    loadSales(ownerId = 1)
+                    loadSales(businessId = 1)
                 }
 
             } catch (e: Exception) {

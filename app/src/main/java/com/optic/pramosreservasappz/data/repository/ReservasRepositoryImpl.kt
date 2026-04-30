@@ -70,14 +70,14 @@ class ReservasRepositoryImpl(
 
 
 
-    override fun getSalesByOwner(
-        ownerId: Int,
+    override fun getSalesByBusiness(
+        businessId: Int,
         limit:Int
     ): Flow<Resource<List<SaleResponse>>> = flow {
         emit(
             ResponseToRequest.send(
-                reservasRemoteDataSource.getSalesByOwner(
-                    ownerId =  ownerId,
+                reservasRemoteDataSource.getSalesByBusiness(
+                    businessId =  businessId,
                     limit = limit
 
                 )
@@ -123,13 +123,13 @@ class ReservasRepositoryImpl(
     // SALE STATS
 
     override fun getSaleStats(
-        ownerId: Int,
+        businessId: Int,
         year: Int
     ): Flow<Resource<SalesStatsResponse>> = flow {
         emit(
             ResponseToRequest.send(
                 reservasRemoteDataSource.getSaleStats(
-                    ownerId = ownerId,
+                    businessId = businessId,
                     year    = year
                 )
             )
@@ -208,13 +208,16 @@ class ReservasRepositoryImpl(
             reservasRemoteDataSource.createProductSafe(request)
         )
 
-    override suspend fun getProductByUser(
-        ownerId: Int,
+    override suspend fun getProductByBusiness(
+        businessId: Int,
         name: String
     ): Flow<Resource<List<ProductResponse>>> = flow {
     emit(
         ResponseToRequest.send(
-            reservasRemoteDataSource.getProductByUser(ownerId = ownerId, name = name)
+            reservasRemoteDataSource.getProductByBusiness(
+                businessId = businessId,
+                name = name
+            )
         )
     )
 }
@@ -307,15 +310,15 @@ class ReservasRepositoryImpl(
     }
 
     //clients
-    override suspend fun getClientsByOwner(
-        ownerId: Int,
+    override suspend fun getClientsByBusiness(
+        businessId: Int,
         fullName: String,
         email:String
     ): Flow<Resource<List<ClientResponse>>> =flow{
     emit(
         ResponseToRequest.send(
-            reservasRemoteDataSource.getClientsByOwner(
-                ownerId = ownerId,
+            reservasRemoteDataSource.getClientsByBusiness(
+                businessId = businessId,
                 fullName = fullName,
                 email = email
             )

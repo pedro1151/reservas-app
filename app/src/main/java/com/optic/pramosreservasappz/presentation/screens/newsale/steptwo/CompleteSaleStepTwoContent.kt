@@ -28,15 +28,16 @@ import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import com.optic.pramosreservasappz.domain.model.product.ProductViewType
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
 import com.optic.pramosreservasappz.presentation.sales.Components.SRed
-import com.optic.pramosreservasappz.presentation.screens.productos.ProductViewType
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.NewRapidProduct
+import com.optic.pramosreservasappz.presentation.screens.newsale.components.ProductNotFoundAction
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidProductCard
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidProductGridCard
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidSaleSearchToolbar
@@ -51,7 +52,8 @@ fun CompleteSaleStepTwoContent(
     navController: NavHostController,
     viewModel: NewSaleViewModel,
     paddingValues: PaddingValues,
-    modifier: Modifier
+    modifier: Modifier,
+    businessId: Int
 ) {
     // posicion del carrito
     var cartPosition by remember { mutableStateOf(Offset.Zero) }
@@ -135,9 +137,9 @@ fun CompleteSaleStepTwoContent(
 
 // dentro de RapidSaleContent()
 
-    var viewType          by remember { mutableStateOf(ProductViewType.GRID) }
+    val viewType by viewModel.productViewType.collectAsState()
     var showCreateSheet by remember { mutableStateOf(false) }
-
+    /*
     LaunchedEffect(hasQuery, filteredProducts) {
         showCreateAnimated = false
         if (hasQuery && filteredProducts.isEmpty()) {
@@ -145,6 +147,8 @@ fun CompleteSaleStepTwoContent(
             showCreateAnimated = true
         }
     }
+
+     */
 
     Column(
         modifier
@@ -167,7 +171,7 @@ fun CompleteSaleStepTwoContent(
                 totalCount       = localProducts.size,
                 filteredCount    = filteredProducts.size,
                 viewType         = viewType,
-                onViewTypeChange = { viewType = it },
+                onViewTypeChange = { viewModel.updateProductViewType( it) },
                 onAddClick = {
                     showCreateSheet = true   // 🔥 SOLO ABRIR
                 }
@@ -203,144 +207,164 @@ fun CompleteSaleStepTwoContent(
 
                 is Resource.Success -> {
 
-                    when (viewType) {
+                    if (hasQuery && filteredProducts.isEmpty()) {
 
-                        // ─────────────────────────────────────────────
-                        // LIST MODE
-                        // ─────────────────────────────────────────────
-                        ProductViewType.LIST -> {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .background(SoftCoolBackground),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ProductNotFoundAction(
+                                query = query,
+                                onAddClick = {
+                                    productName = query
+                                    showCreateSheet = true
+                                }
+                            )
+                        }
 
-                            LazyColumn(
-                                modifier = Modifier.weight(1f),
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    end = 10.dp,
-                                    bottom = 8.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
+                    } else {
 
-                                items(
-                                    items = filteredProducts,
-                                    key = { it.id }
-                                ) { product ->
+                        when (viewType) {
 
-                                    val inCart =
-                                        selectedProducts.find { it.first.id == product.id }
+                            // ─────────────────────────────────────────────
+                            // LIST MODE
+                            // ─────────────────────────────────────────────
+                            ProductViewType.LIST -> {
 
-                                    var visible by remember { mutableStateOf(false) }
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(
+                                        start = 10.dp,
+                                        end = 10.dp,
+                                        bottom = 8.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
 
-                                    LaunchedEffect(Unit) {
-                                        visible = true
-                                    }
+                                    items(
+                                        items = filteredProducts,
+                                        key = { it.id }
+                                    ) { product ->
 
-                                    AnimatedVisibility(
-                                        visible = visible,
-                                        enter = fadeIn(tween(220)) +
-                                                slideInVertically(
-                                                    animationSpec = tween(220)
-                                                ) { it / 4 }
-                                    ) {
+                                        val inCart =
+                                            selectedProducts.find { it.first.id == product.id }
 
-                                        RapidProductCard(
-                                            product = product,
-                                            inCart = inCart,
-                                            addProduct = { viewModel.addProduct(product) },
-                                            removeProduct = { viewModel.removeProduct(product) },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .animateItemPlacement(
-                                                    spring(
-                                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                                        stiffness = Spring.StiffnessLow
-                                                    )
-                                                ),
-                                            viewModel = viewModel
-                                        )
+                                        var visible by remember { mutableStateOf(false) }
+
+                                        LaunchedEffect(Unit) {
+                                            visible = true
+                                        }
+
+                                        AnimatedVisibility(
+                                            visible = visible,
+                                            enter = fadeIn(tween(220)) +
+                                                    slideInVertically(
+                                                        animationSpec = tween(220)
+                                                    ) { it / 4 }
+                                        ) {
+
+                                            RapidProductCard(
+                                                product = product,
+                                                inCart = inCart,
+                                                addProduct = { viewModel.addProduct(product) },
+                                                removeProduct = { viewModel.removeProduct(product) },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .animateItemPlacement(
+                                                        spring(
+                                                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                            stiffness = Spring.StiffnessLow
+                                                        )
+                                                    ),
+                                                viewModel = viewModel
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        // ─────────────────────────────────────────────
-                        // GRID MODE (2 por fila REAL)
-                        // ─────────────────────────────────────────────
-                        ProductViewType.GRID -> {
+                            // ─────────────────────────────────────────────
+                            // GRID MODE (2 por fila REAL)
+                            // ─────────────────────────────────────────────
+                            ProductViewType.GRID -> {
 
-                            val rows = filteredProducts.chunked(3)
+                                val rows = filteredProducts.chunked(3)
 
-                            LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .background(SoftCoolBackground)
-                                ,
-                                contentPadding = PaddingValues(
-                                    start = 5.dp,
-                                    end = 5.dp,
-                                    bottom = 5.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(SoftCoolBackground),
+                                    contentPadding = PaddingValues(
+                                        start = 5.dp,
+                                        end = 5.dp,
+                                        bottom = 5.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
 
-                                items(
-                                    items = rows,
-                                    key = { row -> row.first().id }
-                                ) { pair ->
+                                    items(
+                                        items = rows,
+                                        key = { row -> row.first().id }
+                                    ) { pair ->
 
-                                    var visible by remember { mutableStateOf(false) }
+                                        var visible by remember { mutableStateOf(false) }
 
-                                    LaunchedEffect(Unit) {
-                                        visible = true
-                                    }
+                                        LaunchedEffect(Unit) {
+                                            visible = true
+                                        }
 
-                                    AnimatedVisibility(
-                                        visible = visible,
-                                        enter = fadeIn(tween(220)) +
-                                                slideInVertically(
-                                                    animationSpec = tween(220)
-                                                ) { it / 5 }
-                                    ) {
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                        AnimatedVisibility(
+                                            visible = visible,
+                                            enter = fadeIn(tween(220)) +
+                                                    slideInVertically(
+                                                        animationSpec = tween(220)
+                                                    ) { it / 5 }
                                         ) {
 
-                                            pair.forEach { product ->
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                            ) {
 
-                                                val inCart =
-                                                    selectedProducts.find {
-                                                        it.first.id == product.id
-                                                    }
+                                                pair.forEach { product ->
 
-                                                RapidProductGridCard(
-                                                    product = product,
-                                                    inCart = inCart,
-                                                    addProduct = {
-                                                        viewModel.addProduct(product)
-                                                    },
-                                                    removeProduct = {
-                                                        viewModel.removeProduct(product)
-                                                    },
-                                                    modifier = Modifier
-                                                        .weight(1f)
-                                                        .animateItemPlacement(
-                                                            spring(
-                                                                dampingRatio =
-                                                                Spring.DampingRatioMediumBouncy,
-                                                                stiffness =
-                                                                Spring.StiffnessLow
-                                                            )
-                                                        ),
-                                                    viewModel = viewModel
-                                                )
-                                            }
+                                                    val inCart =
+                                                        selectedProducts.find {
+                                                            it.first.id == product.id
+                                                        }
 
-                                            // si queda impar
-                                            if (pair.size == 1) {
-                                                Spacer(
-                                                    modifier = Modifier.weight(1f)
-                                                )
+                                                    RapidProductGridCard(
+                                                        product = product,
+                                                        inCart = inCart,
+                                                        addProduct = {
+                                                            viewModel.addProduct(product)
+                                                        },
+                                                        removeProduct = {
+                                                            viewModel.removeProduct(product)
+                                                        },
+                                                        modifier = Modifier
+                                                            .weight(1f)
+                                                            .animateItemPlacement(
+                                                                spring(
+                                                                    dampingRatio =
+                                                                    Spring.DampingRatioMediumBouncy,
+                                                                    stiffness =
+                                                                    Spring.StiffnessLow
+                                                                )
+                                                            ),
+                                                        viewModel = viewModel
+                                                    )
+                                                }
+
+                                                // si queda impar
+                                                if (pair.size == 1) {
+                                                    Spacer(
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -424,8 +448,8 @@ fun CompleteSaleStepTwoContent(
         }
     }
 
-    val shouldShowCreateOverlay =
-        (hasQuery && filteredProducts.isEmpty()) || showCreateSheet
+    val shouldShowCreateOverlay = showCreateSheet
+       // (hasQuery && filteredProducts.isEmpty()) || showCreateSheet
 
     if (shouldShowCreateOverlay) {
 
@@ -493,7 +517,7 @@ fun CompleteSaleStepTwoContent(
 
                             viewModel.createProduct(
                                 ProductCreateRequest(
-                                    userId = 1,
+                                    businessId = businessId,
                                     name = productName,
                                     price = price
                                 )
