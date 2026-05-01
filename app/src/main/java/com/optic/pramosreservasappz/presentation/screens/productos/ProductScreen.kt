@@ -76,7 +76,7 @@ fun ProductScreen(
     Scaffold(
         topBar = {
             PrimaryTopBar(
-                title         = "PRODUCTOS Y SERVICIOS",
+                title         = "Productos y servicios",
                 navController = navController
             )
         },
