@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
 import com.optic.pramosreservasappz.presentation.screens.calendar.components.ServiceReservationStep
 import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
@@ -24,12 +26,23 @@ import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedConte
 @Composable
 fun SelectClientScreen(
     navController: NavHostController,
-    viewModel: NewSaleViewModel
-){
+    viewModel: NewSaleViewModel,
+    authStateVM: AuthStateVM = hiltViewModel()
+) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+    // DATOS DE LA SESSION
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
+
     val clientResource by viewModel.clientsState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadClients("", "", 1)
+    LaunchedEffect(businessId) {
+        if (businessId != null) {
+            viewModel.loadClients("", "", businessId)
+        }
     }
 
     val localizedContext = LocalizedContext.current

@@ -27,11 +27,15 @@ import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 fun MasContent(
     paddingValues: PaddingValues,
     viewModel: MasViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
     val context     = LocalContext.current
-    val authStateVM: AuthStateVM = hiltViewModel()
-    val userEmail   by authStateVM.userEmail.collectAsState()
+    val sessionData by authStateVM.sessionData.collectAsState()
+
+    val businessId = sessionData.businessId
+    val userEmail = sessionData.email
+    val planCode = sessionData.planCode
 
     var showAboutDialog  by remember { mutableStateOf(false) }
     var showPrivacyDialog by remember { mutableStateOf(false) }

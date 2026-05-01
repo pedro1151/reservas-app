@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.sales.SalesContent
 import com.optic.pramosreservasappz.presentation.screens.menu.SalesScreenWithDrawer
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
@@ -18,8 +19,16 @@ import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewMode
 fun SalesScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    newSaleViewModel: NewSaleViewModel
+    newSaleViewModel: NewSaleViewModel,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
     val viewModel: SalesViewModel = hiltViewModel()
 
     // 🔹 Usar rememberSaveable para que Compose recuerde el estado del drawer
@@ -33,8 +42,10 @@ fun SalesScreen(
     val salesState by viewModel.salesState.collectAsState()
 
     // 🔥 CARGA INICIAL
-    LaunchedEffect(Unit) {
-        viewModel.loadSales(1, 25)
+    LaunchedEffect(businessId) {
+        if (businessId != null) {
+            viewModel.loadSales(businessId, 25)
+        }
     }
 
         Scaffold(

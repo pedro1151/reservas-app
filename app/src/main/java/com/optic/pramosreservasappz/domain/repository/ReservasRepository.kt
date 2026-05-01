@@ -43,8 +43,8 @@ interface ReservasRepository {
         request: CreateSaleWithItemsRequest
     ): Resource<SaleResponse>
 
-    fun getSalesByOwner(
-        ownerId: Int,
+    fun getSalesByBusiness(
+        businessId: Int,
         limit: Int
     ): Flow<Resource<List<SaleResponse>>>
 
@@ -71,7 +71,7 @@ interface ReservasRepository {
 
     // SALE STATS
     fun getSaleStats(
-        ownerId: Int,
+        businessId: Int,
         year: Int
     ): Flow<Resource<SalesStatsResponse>>
 
@@ -121,8 +121,8 @@ interface ReservasRepository {
         request: ProductCreateRequest
     ): Resource<ProductResponse>
 
-    suspend fun getProductByUser(
-        ownerId: Int,
+    suspend fun getProductByBusiness(
+        businessId: Int,
         name: String
     ): Flow<Resource<List<ProductResponse>>>
 
@@ -171,8 +171,8 @@ interface ReservasRepository {
     ): Flow<Resource<List<ReservationResponseComplete>>>
 
     // clients
-    suspend fun getClientsByOwner(
-        ownerId: Int,
+    suspend fun getClientsByBusiness(
+        businessId: Int,
         fullName:String,
         email:String
     ): Flow<Resource<List<ClientResponse>>>

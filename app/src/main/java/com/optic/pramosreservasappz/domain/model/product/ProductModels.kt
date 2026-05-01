@@ -3,8 +3,8 @@ package com.optic.pramosreservasappz.domain.model.product
 import com.google.gson.annotations.SerializedName
 data class ProductCreateRequest(
 
-    @SerializedName("user_id")
-    val userId: Int? = null,
+    @SerializedName("business_id")
+    val businessId: Int? = null,
     @SerializedName("name")
     val name: String,
     @SerializedName("price")
@@ -38,8 +38,8 @@ data class ProductResponse(
     @SerializedName("id")
     val id: Int,
 
-    @SerializedName("user_id")
-    val userId: Int?,
+    @SerializedName("business_id")
+    val businessId: Int?,
 
     @SerializedName("name")
     val name: String,

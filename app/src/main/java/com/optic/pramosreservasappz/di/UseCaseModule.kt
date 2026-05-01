@@ -16,15 +16,15 @@ import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.DeleteClientUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorBusinessUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorIdUC
-import com.optic.pramosreservasappz.domain.useCase.reservas.clients.GetClientPorOwnerUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.UpdateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductSafeUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.CreateProductUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.DeleteProductHardUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.DeleteProductSoftUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.GetProductByIdUC
-import com.optic.pramosreservasappz.domain.useCase.reservas.product.GetProductsByUserUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.product.GetProductsByBusinessUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.product.UpdateProductUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.CreateReservationUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.reservation.GetReservationByIdUC
@@ -43,7 +43,7 @@ import com.optic.pramosreservasappz.domain.useCase.reservas.sales.CreateSaleWith
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.DeleteSaleHardUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.DeleteSaleSoftUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.GetSaleByIdUC
-import com.optic.pramosreservasappz.domain.useCase.reservas.sales.GetSalesByOwnerUC
+import com.optic.pramosreservasappz.domain.useCase.reservas.sales.GetSalesByBusinessUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.sales.UpdateSaleUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.salestats.GetSaleStatsUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.services.CreateServiceUC
@@ -85,7 +85,7 @@ object UseCaseModule {
     fun provideTeamUseCase(reservasRepository: ReservasRepository) = ReservasUC(
 
         //clients
-        getClientPorOwnerUC = GetClientPorOwnerUC(reservasRepository),
+        getClientPorBusinessUC = GetClientPorBusinessUC(reservasRepository),
         getClientPorIdUC = GetClientPorIdUC(reservasRepository),
         createClientUC = CreateClientUC(reservasRepository),
         updateClientUC = UpdateClientUC(reservasRepository),
@@ -110,7 +110,7 @@ object UseCaseModule {
         createSaleUC = CreateSaleUC(reservasRepository),
         createSaleWithItemsUC = CreateSaleWithItemsUC(reservasRepository),
         getSaleByIdUC = GetSaleByIdUC(reservasRepository),
-        getSalesByOwnerUC = GetSalesByOwnerUC(reservasRepository),
+        getSalesByBusinessUC = GetSalesByBusinessUC(reservasRepository),
         updateSaleUC = UpdateSaleUC(reservasRepository),
         deleteSaleHardUC = DeleteSaleHardUC(reservasRepository),
         deleteSaleSoftUC = DeleteSaleSoftUC(reservasRepository),
@@ -128,7 +128,7 @@ object UseCaseModule {
         //products
         createProductUC = CreateProductUC(reservasRepository),
         createProductSafeUC = CreateProductSafeUC(reservasRepository),
-        getProductsByUserUC = GetProductsByUserUC(reservasRepository),
+        getProductsByBusinessUC = GetProductsByBusinessUC(reservasRepository),
         getProductByIdUC = GetProductByIdUC(reservasRepository),
         updateProductUC = UpdateProductUC(reservasRepository),
         deleteProductHardUC = DeleteProductHardUC(reservasRepository),

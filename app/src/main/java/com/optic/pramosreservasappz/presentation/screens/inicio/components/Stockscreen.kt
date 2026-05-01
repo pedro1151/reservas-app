@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.inicio.Components
+package com.optic.pramosreservasappz.presentation.screens.inicio.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*

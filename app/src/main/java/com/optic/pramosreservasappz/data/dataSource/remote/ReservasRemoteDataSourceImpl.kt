@@ -32,12 +32,12 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
 
 
     //clientes
-    override suspend fun getClientsByOwner(
-        ownerId: Int,
-        fullName: String,
-        email: String
-    ): Response<List<ClientResponse>> = reservasService.getClientsByProvider(
-        ownerId = ownerId,
+    override suspend fun getClientsByBusiness(
+        businessId: Int,
+        fullName:String,
+        email:String
+    ): Response<List<ClientResponse>> = reservasService.getClientsByBusiness(
+        businessId = businessId,
         fullName = fullName,
         email = email
     )
@@ -97,11 +97,11 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
         request: CreateSaleWithItemsRequest
     ): Response<SaleResponse> = reservasService.createSaleWithItems(request)
 
-    override suspend fun getSalesByOwner(
-        ownerId: Int,
+    override suspend fun getSalesByBusiness(
+        businessId: Int,
         limit: Int
-    ): Response<List<SaleResponse>> = reservasService.getSalesByOwner(
-        ownerId= ownerId,
+    ): Response<List<SaleResponse>> = reservasService.getSalesByBusiness(
+        businessId= businessId,
         limit = limit
     )
 
@@ -126,9 +126,12 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
     // SALE STATS
 
     override suspend fun getSaleStats(
-        ownerId: Int,
+        businessId: Int,
         year: Int
-    ): Response<SalesStatsResponse> = reservasService.getSalesStats(ownerId = ownerId, year = year)
+    ): Response<SalesStatsResponse> = reservasService.getSalesStats(
+        businessId = businessId,
+        year = year
+    )
 
 
     // SALE ITEMS
@@ -171,10 +174,13 @@ class ReservasRemoteDataSourceImpl (private val reservasService: ReservasService
         request: ProductCreateRequest
     ): Response<ProductResponse> = reservasService.createProductSafe(request)
 
-    override suspend fun getProductByUser(
-        ownerId: Int,
+    override suspend fun getProductByBusiness(
+        businessId: Int,
         name: String
-    ): Response<List<ProductResponse>> = reservasService.getProductsByUser(ownerId= ownerId, name = name)
+    ): Response<List<ProductResponse>> = reservasService.getProductsByBusiness(
+        businessId= businessId,
+        name = name
+    )
 
     override suspend fun getProductById(
         productId: Int

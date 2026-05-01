@@ -25,6 +25,9 @@ data class AuthResponse(
     val isCollaborator: Boolean
         get() = business?.role == "collaborator"
 
+    val isAdmin: Boolean
+        get() = business?.role == "admin"
+
     val maxCollabs: Int
         get() = business?.plan?.maxCollab ?: 1
 

@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.screens.estadisticas.modeanalitics.SalesStatsAnalyticsContent
 import com.optic.pramosreservasappz.presentation.screens.estadisticas.modefintech.SalesStatsFintechContent
 import com.optic.pramosreservasappz.presentation.screens.estadisticas.modefire.SalesStatsFireContent
@@ -17,13 +18,29 @@ import com.optic.pramosreservasappz.presentation.screens.estadisticas.modefire.S
 @Composable
 fun SalesStatsScreen(
     navController: NavHostController,
-    isAuthenticated: Boolean = false
+    isAuthenticated: Boolean = false ,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+    // DATOS DE LA SESSION
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
+
     val viewModel: SaleStatsViewModel = hiltViewModel()
     val selectedMode by viewModel.selectedMode.collectAsState()
 
     // 🔥 OBSERVAR ESTADO REAL
     val statsState by viewModel.salesStatsState.collectAsState()
+    val selectedYear by viewModel.selectedYear.collectAsState()
+
+    LaunchedEffect(businessId) {
+        if (businessId != null) {
+            viewModel.loadStats (businessId = businessId, year = selectedYear)
+        }
+    }
     Scaffold(
         containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->

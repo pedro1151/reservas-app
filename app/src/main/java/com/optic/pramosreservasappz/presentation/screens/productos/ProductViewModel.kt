@@ -56,21 +56,14 @@ class ProductViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     // ---------------------------------------------
-    // INIT
-    // ---------------------------------------------
-    init {
-        loadProducts(ownerId = 1, name = "")
-    }
-
-    // ---------------------------------------------
     // LOAD PRODUCTS
     // ---------------------------------------------
     fun loadProducts(
-        ownerId: Int,
+        businessId: Int,
         name: String = ""
     ) {
         viewModelScope.launch {
-            reservasUC.getProductsByUserUC(ownerId, name)
+            reservasUC.getProductsByBusinessUC(businessId, name)
                 .onStart {
                     _productsState.value = Resource.Loading
                 }
@@ -128,7 +121,7 @@ class ProductViewModel @Inject constructor(
                 is Resource.Success -> {
                     _createProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = request.userId ?: 1)
+                    (request.businessId ?: null)?.let { loadProducts(businessId = it) }
                 }
                 is Resource.Failure -> {
                     _createProductState.value = result
@@ -149,7 +142,7 @@ class ProductViewModel @Inject constructor(
                 is Resource.Success -> {
                     _createProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = request.userId ?: 1)
+                    (request.businessId ?: null)?.let { loadProducts(businessId = it) }
                 }
                 is Resource.Failure -> {
                     _createProductState.value = result
@@ -174,7 +167,7 @@ class ProductViewModel @Inject constructor(
                 is Resource.Success -> {
                     _updateProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = ownerId)
+                    loadProducts(businessId = ownerId)
                 }
                 is Resource.Failure -> {
                     _updateProductState.value = result
@@ -204,7 +197,7 @@ class ProductViewModel @Inject constructor(
                     is Resource.Success -> {
                         _deleteProductState.value = response
                         delay(800)
-                        loadProducts(ownerId = ownerId)
+                        loadProducts(businessId = ownerId)
                         delay(300)
                         _deleteProductState.value = Resource.Idle
                     }
@@ -223,7 +216,7 @@ class ProductViewModel @Inject constructor(
                 _deleteProductState.value =
                     Resource.Failure(e.message ?: "Error al eliminar producto")
 
-                loadProducts(ownerId = ownerId)
+                loadProducts(businessId = ownerId)
             }
         }
     }

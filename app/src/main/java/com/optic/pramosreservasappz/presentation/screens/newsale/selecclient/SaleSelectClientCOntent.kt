@@ -34,6 +34,8 @@ fun SaleSelectClientContent(
     navController: NavHostController,
     viewModel: NewSaleViewModel
 ) {
+
+     // FALTAN DATOS DE LA SESION ( pendiente)
     val query        by viewModel.searchQuery.collectAsState()
     val localClients by viewModel.localClientsList.collectAsState()
 

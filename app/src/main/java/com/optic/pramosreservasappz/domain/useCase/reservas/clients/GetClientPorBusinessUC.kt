@@ -3,13 +3,13 @@ package com.optic.pramosreservasappz.domain.useCase.reservas.clients
 
 import com.optic.pramosreservasappz.domain.repository.ReservasRepository
 
-class GetClientPorOwnerUC constructor(private val repository: ReservasRepository) {
+class GetClientPorBusinessUC constructor(private val repository: ReservasRepository) {
     suspend operator fun invoke(
-        ownerId:Int,
+        businessId:Int,
         fullName: String,
         email:String
-    ) = repository.getClientsByOwner(
-        ownerId = ownerId,
+    ) = repository.getClientsByBusiness(
+        businessId = businessId,
         fullName = fullName,
         email = email
     )

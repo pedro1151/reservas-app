@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
 import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
@@ -24,6 +25,7 @@ import com.optic.pramosreservasappz.presentation.util.getCurrentFormattedDate
 import kotlinx.coroutines.launch
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.optic.pramosreservasappz.domain.model.sales.types.SaleType
+import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.ButtonSucessColor
 
@@ -31,8 +33,15 @@ import com.optic.pramosreservasappz.presentation.ui.theme.ButtonSucessColor
 fun CompleteSaleStepTreeScreen(
     navController: NavHostController,
     isAuthenticated: Boolean = false,
-    viewModel: NewSaleViewModel
+    viewModel: NewSaleViewModel,
+    authStateVM: AuthStateVM = hiltViewModel()
 ) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
 
     val total by viewModel.total.collectAsState()
     val totalItems by viewModel.totalItems.collectAsState()
@@ -143,8 +152,8 @@ fun CompleteSaleStepTreeScreen(
                             val saleRequest =
                                 CreateSaleWithItemsRequest(
                                     sale = SaleCreateRequest(
-                                        ownerId = 1,
-                                        createdByUserId = 1,
+                                        businessId = businessId,
+                                        createdByUserId = userId,
                                         amount = totalAmount,
                                         description = generatedName,
                                         paymentMethod = viewModel.paymentMethod,

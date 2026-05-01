@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.inicio.Components
+package com.optic.pramosreservasappz.presentation.screens.inicio.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

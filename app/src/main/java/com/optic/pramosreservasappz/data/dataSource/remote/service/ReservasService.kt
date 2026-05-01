@@ -55,10 +55,10 @@ interface ReservasService {
         @Body request: SaleCreateRequest
     ): Response<SaleResponse>
 
-    // get ventas por owner id (user_id)
+    // get ventas por business
     @GET("/reservas/sales")
-    suspend fun getSalesByOwner(
-        @Query("user_id") ownerId: Int,
+    suspend fun getSalesByBusiness(
+        @Query("business_id") businessId: Int,
         @Query("limit") limit: Int
     ): Response<List<SaleResponse>>
 
@@ -90,7 +90,7 @@ interface ReservasService {
     // SALE STATS    --------------------------->
     @GET("/reservas/sales/stats")
     suspend fun getSalesStats(
-        @Query("owner_id") ownerId: Int,
+        @Query("business_id") businessId: Int,
         @Query("year") year: Int
     ): Response<SalesStatsResponse>
 
@@ -154,8 +154,8 @@ interface ReservasService {
     ): Response<ProductResponse>
 
     @GET("/reservas/products")
-    suspend fun getProductsByUser(
-        @Query("user_id") ownerId: Int,
+    suspend fun getProductsByBusiness(
+        @Query("business_id") businessId: Int,
         @Query("name") name: String
     ): Response<List<ProductResponse>>
 
@@ -220,9 +220,9 @@ interface ReservasService {
 
     //clientes
 
-    @GET("/reservas/client/byowner")
-    suspend fun getClientsByProvider(
-    @Query("owner_id") ownerId: Int,
+    @GET("/reservas/clients/bybusiness")
+    suspend fun getClientsByBusiness(
+    @Query("business_id") businessId: Int,
     @Query("full_name") fullName: String,
     @Query("email") email: String,
     ): Response<List<ClientResponse>>

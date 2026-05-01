@@ -10,6 +10,7 @@ import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.ProductViewType
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemResponse
 import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
@@ -30,6 +31,12 @@ import javax.inject.Inject
 class NewSaleViewModel @Inject constructor(
     private val reservasUC: ReservasUC
 ) : ViewModel() {
+
+    private var businessId: Int? = null
+
+    fun setBusinessId(value: Int) {
+        businessId = value
+    }
 
 
     // STATE: Crear venta
@@ -234,22 +241,17 @@ class NewSaleViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    // ---------------------------------------------
-    // INIT
-    // ---------------------------------------------
-    init {
-        loadProducts(ownerId = 1, name = "")
-    }
+
 
     // ---------------------------------------------
     // LOAD PRODUCTS
     // ---------------------------------------------
     fun loadProducts(
-        ownerId: Int,
+        businessId: Int,
         name: String = ""
     ) {
         viewModelScope.launch {
-            reservasUC.getProductsByUserUC(ownerId, name)
+            reservasUC.getProductsByBusinessUC(businessId, name)
                 .onStart {
                     _productsState.value = Resource.Loading
                 }
@@ -307,7 +309,7 @@ class NewSaleViewModel @Inject constructor(
                 is Resource.Success -> {
                     _createProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = request.userId ?: 1)
+                    (request.businessId?:null)?.let { loadProducts(businessId = it) }
                 }
                 is Resource.Failure -> {
                     _createProductState.value = result
@@ -318,6 +320,14 @@ class NewSaleViewModel @Inject constructor(
     }
 
 
+    private val _productViewType = MutableStateFlow(ProductViewType.GRID)
+    val productViewType: StateFlow<ProductViewType> = _productViewType
+
+    fun updateProductViewType(type: ProductViewType) {
+        _productViewType.value = type
+    }
+
+
 
     // ---------------------------------------------
     // UPDATE PRODUCT
@@ -325,7 +335,7 @@ class NewSaleViewModel @Inject constructor(
     fun updateProduct(
         productId: Int,
         request: ProductUpdateRequest,
-        ownerId: Int = 1
+        businessId: Int = 1
     ) {
         viewModelScope.launch {
             _updateProductState.value = Resource.Loading
@@ -334,7 +344,7 @@ class NewSaleViewModel @Inject constructor(
                 is Resource.Success -> {
                     _updateProductState.value = result
                     delay(500)
-                    loadProducts(ownerId = ownerId)
+                    loadProducts(businessId=businessId)
                 }
                 is Resource.Failure -> {
                     _updateProductState.value = result
@@ -348,7 +358,7 @@ class NewSaleViewModel @Inject constructor(
     // DELETE PRODUCT (OPTIMISTA 🔥)
     // ---------------------------------------------
 
-    fun deleteProduct(productId: Int, ownerId: Int = 1) {
+    fun deleteProduct(productId: Int, businessId: Int = 1) {
         viewModelScope.launch {
 
             try {
@@ -364,7 +374,7 @@ class NewSaleViewModel @Inject constructor(
                     is Resource.Success -> {
                         _deleteProductState.value = response
                         delay(800)
-                        loadProducts(ownerId = ownerId)
+                        loadProducts(businessId=businessId)
                         delay(300)
                         _deleteProductState.value = Resource.Idle
                     }
@@ -383,7 +393,7 @@ class NewSaleViewModel @Inject constructor(
                 _deleteProductState.value =
                     Resource.Failure(e.message ?: "Error al eliminar producto")
 
-                loadProducts(ownerId = ownerId)
+                loadProducts(businessId=businessId)
             }
         }
     }
@@ -545,11 +555,11 @@ class NewSaleViewModel @Inject constructor(
     fun loadClients(
         fullName: String = "",
         email: String = "",
-        ownerId: Int = 1
+        businessId: Int = 1
     ) {
         viewModelScope.launch {
-            reservasUC.getClientPorOwnerUC(
-                ownerId = ownerId,
+            reservasUC.getClientPorBusinessUC(
+                businessId = businessId,
                 fullName = fullName,
                 email = email
             )
