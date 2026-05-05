@@ -31,6 +31,7 @@ import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.menu.SalesScreenWithDrawer
 import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedContext
 
 // ─── Design Tokens ─────────────────────────────────────────────────────────────
@@ -72,101 +73,110 @@ fun ProductScreen(
     LaunchedEffect(productResource) {
         if (productResource !is Resource.Loading) isRefreshing = false
     }
+    SalesScreenWithDrawer(navController) { onMenuClick ->
+        Scaffold(
+            topBar = {
 
-    Scaffold(
-        topBar = {
-            PrimaryTopBar(
-                title         = "Productos y servicios",
-                navController = navController
-            )
-        },
-        floatingActionButton = {
-            // ── Gradient Extended FAB ──
-            Box(
-                modifier = Modifier
-                    .shadow(
-                        elevation    = 12.dp,
-                        shape        = RoundedCornerShape(20.dp),
-                        ambientColor = Blue600.copy(alpha = 0.25f),
-                        spotColor    = Blue700.copy(alpha = 0.35f)
-                    )
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(listOf(Blue600, Blue500))
-                    )
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication        = null
-                    ) {
-                        navController.navigate(
-                            ClientScreen.ABMServicio.createRoute(serviceId = null, editable = false)
-                        )
-                    }
-                    .padding(horizontal = 22.dp, vertical = 15.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(9.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.22f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = null,
-                            tint     = Color.White,
-                            modifier = Modifier.size(15.dp)
-                        )
-                    }
-                    Text(
-                        "Nuevo producto",
-                        color      = Color.White,
-                        fontSize   = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.1.sp
-                    )
-                }
-            }
-        },
-        containerColor = PageBg
-    ) { paddingValues ->
+                PrimaryTopBar(
+                    title = "Productos y servicios",
+                    navController = navController,
+                    onMenuClick = onMenuClick
+                )
 
-        PullRefreshWrapper(
-            isRefreshing = isRefreshing,
-            onRefresh    = {
-                isRefreshing = true
-                viewModel.loadProducts(businessId = 1, name = "")
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when (val result = productResource) {
-                is Resource.Loading -> ProductLoadingState()
-                is Resource.Success -> {
-                    ProductContent(
-                        products         = result.data,
-                        paddingValues    = PaddingValues(0.dp),
-                        viewModel        = viewModel,
-                        navController    = navController,
-                        isAuthenticated  = isAuthenticated,
-                        localizedContext = localizedContext
-                    )
-                }
-                is Resource.Failure -> {
-                    ProductErrorState(
-                        onRetry = {
-                            isRefreshing = true
-                            viewModel.loadProducts(businessId = 1, name = "")
+            floatingActionButton = {
+                // ── Gradient Extended FAB ──
+                Box(
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 12.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            ambientColor = Blue600.copy(alpha = 0.25f),
+                            spotColor = Blue700.copy(alpha = 0.35f)
+                        )
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            Brush.linearGradient(listOf(Blue600, Blue500))
+                        )
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            navController.navigate(
+                                ClientScreen.ABMServicio.createRoute(
+                                    serviceId = null,
+                                    editable = false
+                                )
+                            )
                         }
-                    )
+                        .padding(horizontal = 22.dp, vertical = 15.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(9.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(22.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.22f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
+                        Text(
+                            "Nuevo producto",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.1.sp
+                        )
+                    }
                 }
-                else -> ProductLoadingState()
+            },
+            containerColor = PageBg
+        ) { paddingValues ->
+
+            PullRefreshWrapper(
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    viewModel.loadProducts(businessId = 1, name = "")
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (val result = productResource) {
+                    is Resource.Loading -> ProductLoadingState()
+                    is Resource.Success -> {
+                        ProductContent(
+                            products = result.data,
+                            paddingValues = PaddingValues(0.dp),
+                            viewModel = viewModel,
+                            navController = navController,
+                            isAuthenticated = isAuthenticated,
+                            localizedContext = localizedContext
+                        )
+                    }
+
+                    is Resource.Failure -> {
+                        ProductErrorState(
+                            onRetry = {
+                                isRefreshing = true
+                                viewModel.loadProducts(businessId = 1, name = "")
+                            }
+                        )
+                    }
+
+                    else -> ProductLoadingState()
+                }
             }
         }
     }

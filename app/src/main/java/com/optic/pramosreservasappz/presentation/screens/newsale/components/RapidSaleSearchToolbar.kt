@@ -1,16 +1,10 @@
-
 package com.optic.pramosreservasappz.presentation.screens.newsale.components
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,45 +13,36 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.*
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.optic.pramosreservasappz.domain.model.product.ProductViewType
-
-// ─────────────────────────────────────────────────────────────
-// 🎨 PEDIDOS YA STYLE TOKENS
-// ─────────────────────────────────────────────────────────────
-private val Primary = Color(0xFFE91E63)
-private val PrimaryDark = Color(0xFFD81B60)
-private val PrimarySoft = Color(0xFFFCE4EC)
-
-private val Accent = Color(0xFFFFC107)
-
-private val TextPrimary = Color(0xFF1F2937)
-private val TextSecondary = Color(0xFF6B7280)
-private val TextHint = Color(0xFF9CA3AF)
-
-private val BorderSoft = Color(0xFFF1D5E0)
-private val BorderNeutral = Color(0xFFE5E7EB)
-
-private val Surface = Color.White
-private val SurfaceSoft = Color(0xFFFFF7FA)
-private val PageBg = Color(0xFFFFFBFC)
+import com.optic.pramosreservasappz.presentation.ui.theme.BorderGray
+import com.optic.pramosreservasappz.presentation.ui.theme.GrisSuave
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
 
 @Composable
 fun RapidSaleSearchToolbar(
@@ -70,48 +55,57 @@ fun RapidSaleSearchToolbar(
     onViewTypeChange: (ProductViewType) -> Unit,
     onAddClick: () -> Unit
 ) {
-
+    val primary = MaterialTheme.colorScheme.primary
     val focusManager = LocalFocusManager.current
+
     var isFocused by remember { mutableStateOf(false) }
 
-    val badgeText =
-        if (hasQuery) "$filteredCount / $totalCount"
-        else "$totalCount"
+    val badgeText = if (hasQuery) "$filteredCount/$totalCount" else "$totalCount"
+
+    val searchBorderColor by animateColorAsState(
+        targetValue = if (isFocused) primary.copy(alpha = 0.65f) else BorderGray,
+        animationSpec = tween(180),
+        label = "searchBorderColor"
+    )
+
+    val searchElevation by animateDpAsState(
+        targetValue = if (isFocused) 5.dp else 1.dp,
+        animationSpec = tween(180),
+        label = "searchElevation"
+    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 2.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
-        // 🔎 SEARCH
         Row(
             modifier = Modifier
                 .weight(1f)
                 .shadow(
-                    elevation = if (isFocused) 5.dp else 1.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    ambientColor = Primary.copy(alpha = 0.10f)
+                    elevation = searchElevation,
+                    shape = RoundedCornerShape(18.dp),
+                    ambientColor = primary.copy(alpha = if (isFocused) 0.10f else 0.03f),
+                    spotColor = primary.copy(alpha = if (isFocused) 0.08f else 0.02f)
                 )
-                .clip(RoundedCornerShape(16.dp))
-                .background(Surface)
+                .clip(RoundedCornerShape(18.dp))
+                .background(Color.White)
                 .border(
                     width = if (isFocused) 1.4.dp else 1.dp,
-                    color = if (isFocused) Primary.copy(alpha = 0.45f) else BorderNeutral,
-                    shape = RoundedCornerShape(16.dp)
+                    color = searchBorderColor,
+                    shape = RoundedCornerShape(18.dp)
                 )
-                .padding(horizontal = 12.dp, vertical = 11.dp),
+                .padding(horizontal = 13.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(9.dp)
         ) {
-
             Icon(
-                Icons.Outlined.Search,
+                imageVector = Icons.Outlined.Search,
                 contentDescription = null,
-                tint = if (isFocused) Primary else TextHint,
-                modifier = Modifier.size(17.dp)
+                tint = if (isFocused) primary else TextSecondary.copy(alpha = 0.65f),
+                modifier = Modifier.size(18.dp)
             )
 
             BasicTextField(
@@ -120,16 +114,14 @@ fun RapidSaleSearchToolbar(
                 modifier = Modifier
                     .weight(1f)
                     .onFocusChanged { isFocused = it.isFocused },
-                textStyle = androidx.compose.ui.text.TextStyle(
+                textStyle = TextStyle(
                     fontSize = 14.sp,
                     color = TextPrimary,
                     fontWeight = FontWeight.Normal
                 ),
-                cursorBrush = SolidColor(Primary),
+                cursorBrush = SolidColor(primary),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = { focusManager.clearFocus() }
                 ),
@@ -137,9 +129,9 @@ fun RapidSaleSearchToolbar(
                     Box {
                         if (query.isEmpty()) {
                             Text(
-                                text = "Buscar productos...",
+                                text = "Buscar...",
                                 fontSize = 14.sp,
-                                color = TextHint
+                                color = TextSecondary.copy(alpha = 0.58f)
                             )
                         }
                         inner()
@@ -147,21 +139,25 @@ fun RapidSaleSearchToolbar(
                 }
             )
 
-            // 🔢 BADGE
             AnimatedContent(
                 targetState = badgeText,
                 transitionSpec = {
-                    fadeIn(tween(180)) togetherWith
-                            fadeOut(tween(130))
+                    fadeIn(tween(160)) + scaleIn(tween(160), initialScale = 0.92f) togetherWith
+                            fadeOut(tween(110)) + scaleOut(tween(110), targetScale = 0.92f)
                 },
                 label = "badge_count"
             ) { label ->
-
                 Box(
                     modifier = Modifier
+                        .clip(RoundedCornerShape(999.dp))
                         .background(
-                            if (hasQuery) PrimarySoft else SurfaceSoft,
-                            RoundedCornerShape(8.dp)
+                            if (hasQuery) primary.copy(alpha = 0.10f)
+                            else GrisSuave.copy(alpha = 0.70f)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (hasQuery) primary.copy(alpha = 0.18f) else BorderGray,
+                            shape = RoundedCornerShape(999.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
@@ -169,25 +165,25 @@ fun RapidSaleSearchToolbar(
                         text = label,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (hasQuery) Primary else TextSecondary
+                        color = if (hasQuery) primary else TextSecondary,
+                        letterSpacing = 0.1.sp
                     )
                 }
             }
 
-            // ❌ CLEAR
             AnimatedVisibility(
                 visible = query.isNotEmpty(),
-                enter = scaleIn(tween(150)) + fadeIn(tween(150)),
-                exit = scaleOut(tween(100)) + fadeOut(tween(100))
+                enter = scaleIn(tween(140), initialScale = 0.75f) + fadeIn(tween(140)),
+                exit = scaleOut(tween(90), targetScale = 0.75f) + fadeOut(tween(90))
             ) {
                 Box(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(22.dp)
                         .clip(CircleShape)
-                        .background(BorderSoft)
+                        .background(TextSecondary.copy(alpha = 0.12f))
                         .clickable(
-                            remember { MutableInteractionSource() },
-                            null
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
                         ) {
                             onQueryChange("")
                             focusManager.clearFocus()
@@ -195,70 +191,71 @@ fun RapidSaleSearchToolbar(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        Icons.Outlined.Close,
-                        contentDescription = "Limpiar",
-                        tint = PrimaryDark,
-                        modifier = Modifier.size(11.dp)
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = "Limpiar búsqueda",
+                        tint = TextSecondary,
+                        modifier = Modifier.size(13.dp)
                     )
                 }
             }
         }
 
-        // 🔄 TOGGLE VIEW
         Row(
             modifier = Modifier
-                .shadow(1.dp, RoundedCornerShape(14.dp))
-                .clip(RoundedCornerShape(14.dp))
-                .background(Surface)
-                .border(
-                    1.dp,
-                    BorderNeutral,
-                    RoundedCornerShape(14.dp)
+                .shadow(
+                    elevation = 1.dp,
+                    shape = RoundedCornerShape(16.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.03f),
+                    spotColor = Color.Black.copy(alpha = 0.05f)
                 )
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .border(
+                    width = 1.dp,
+                    color = BorderGray,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(3.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
             ViewToggleButton(
-                icon = Icons.Outlined.ViewList,
+                icon = Icons.AutoMirrored.Outlined.ViewList,
                 isSelected = viewType == ProductViewType.LIST,
-                onClick = {
-                    onViewTypeChange(ProductViewType.LIST)
-                },
+                onClick = { onViewTypeChange(ProductViewType.LIST) },
                 isStart = true
             )
 
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(32.dp)
-                    .background(BorderNeutral)
-            )
+            Spacer(Modifier.width(3.dp))
 
             ViewToggleButton(
                 icon = Icons.Outlined.GridView,
                 isSelected = viewType == ProductViewType.GRID,
-                onClick = {
-                    onViewTypeChange(ProductViewType.GRID)
-                },
+                onClick = { onViewTypeChange(ProductViewType.GRID) },
                 isStart = false
             )
         }
 
-        // ➕ ADD BUTTON
         Box(
             modifier = Modifier
-                .size(42.dp)
+                .size(44.dp)
                 .shadow(
-                    4.dp,
-                    CircleShape,
-                    ambientColor = Primary.copy(alpha = 0.25f)
+                    elevation = 4.dp,
+                    shape = CircleShape,
+                    ambientColor = primary.copy(alpha = 0.22f),
+                    spotColor = primary.copy(alpha = 0.18f)
                 )
                 .clip(CircleShape)
-                .background(Primary)
-                .clickable { onAddClick() },
+                .background(primary)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onAddClick()
+                },
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                Icons.Default.Add,
+                imageVector = Icons.Default.Add,
                 contentDescription = "Nuevo producto",
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)
@@ -269,49 +266,56 @@ fun RapidSaleSearchToolbar(
 
 @Composable
 private fun ViewToggleButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit,
     isStart: Boolean
 ) {
+    val primary = MaterialTheme.colorScheme.primary
 
     val bgColor by animateColorAsState(
-        targetValue =
-        if (isSelected) Primary
-        else Color.Transparent,
-        animationSpec = tween(200),
+        targetValue = if (isSelected) primary else Color.Transparent,
+        animationSpec = tween(180),
         label = "toggleBg"
     )
 
     val iconTint by animateColorAsState(
-        targetValue =
-        if (isSelected) Color.White
-        else TextHint,
-        animationSpec = tween(200),
+        targetValue = if (isSelected) Color.White else TextSecondary,
+        animationSpec = tween(180),
         label = "toggleTint"
+    )
+
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.04f else 1f,
+        animationSpec = spring(),
+        label = "toggleScale"
     )
 
     Box(
         modifier = Modifier
-            .size(42.dp)
+            .size(38.dp)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(
                 RoundedCornerShape(
-                    topStart = if (isStart) 14.dp else 0.dp,
-                    bottomStart = if (isStart) 14.dp else 0.dp,
-                    topEnd = if (!isStart) 14.dp else 0.dp,
-                    bottomEnd = if (!isStart) 14.dp else 0.dp
+                    topStart = if (isStart) 13.dp else 11.dp,
+                    bottomStart = if (isStart) 13.dp else 11.dp,
+                    topEnd = if (!isStart) 13.dp else 11.dp,
+                    bottomEnd = if (!isStart) 13.dp else 11.dp
                 )
             )
             .background(bgColor)
             .clickable(
-                remember { MutableInteractionSource() },
-                null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
                 onClick = onClick
             ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            icon,
+            imageVector = icon,
             contentDescription = null,
             tint = iconTint,
             modifier = Modifier.size(18.dp)

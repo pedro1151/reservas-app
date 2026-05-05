@@ -18,8 +18,6 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.BackTopBar
-import com.optic.pramosreservasappz.presentation.screens.calendar.components.ServiceReservationStep
-import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.settings.idiomas.LocalizedContext
 
@@ -47,13 +45,7 @@ fun SelectClientScreen(
 
     val localizedContext = LocalizedContext.current
 
-    var currentStep by remember { mutableStateOf(ServiceReservationStep.SELECT_CLIENT) }
-    var isForward   by remember { mutableStateOf(true) }
-    var showSuccess by remember { mutableStateOf(false) }
-    fun goTo(step: ServiceReservationStep, forward: Boolean = true) {
-        isForward   = forward
-        currentStep = step
-    }
+
 
     Scaffold(
         topBar = {

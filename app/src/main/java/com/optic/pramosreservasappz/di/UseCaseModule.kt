@@ -13,6 +13,10 @@ import com.optic.pramosreservasappz.domain.useCase.business.GetMemberUC
 import com.optic.pramosreservasappz.domain.useCase.business.UpdateColaboradorUC
 import com.optic.pramosreservasappz.domain.useCase.external.ExternalUseCase
 import com.optic.pramosreservasappz.domain.useCase.external.LoginGoogleUseCase
+import com.optic.pramosreservasappz.domain.useCase.external.googleplaybilling.GetMyEntitlementUC
+import com.optic.pramosreservasappz.domain.useCase.external.googleplaybilling.GetUserEntitlementsUC
+import com.optic.pramosreservasappz.domain.useCase.external.googleplaybilling.GetUserPurchasesUC
+import com.optic.pramosreservasappz.domain.useCase.external.googleplaybilling.GooglePlayVerifyPurchasesUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.CreateClientUC
 import com.optic.pramosreservasappz.domain.useCase.reservas.clients.DeleteClientUC
@@ -145,7 +149,14 @@ object UseCaseModule {
 
     @Provides
     fun provideExternalUseCase(externalRepository: ExternalRepository) = ExternalUseCase(
-        login = LoginGoogleUseCase(externalRepository)
+        login = LoginGoogleUseCase(externalRepository),
+
+        // google play billings
+
+        googlePlayVerifyPurchasesUC = GooglePlayVerifyPurchasesUC(externalRepository),
+        getUserPurchasesUC = GetUserPurchasesUC(externalRepository),
+        getMyEntitlementUC =  GetMyEntitlementUC(externalRepository),
+        getUserEntitlementsUC = GetUserEntitlementsUC(externalRepository)
     )
 
 

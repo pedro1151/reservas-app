@@ -8,7 +8,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -18,7 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -27,34 +30,36 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.*
-import com.optic.pramosreservasappz.domain.model.product.ProductResponse
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.ui.theme.ButtonSucessColor
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
+import com.optic.pramosreservasappz.presentation.util.getAvatarColor
 
 @Composable
 fun RapidProductCard(
-    product: ProductResponse,
+    product: MiniProductResponse,
     addProduct: () -> Unit,
     removeProduct: () -> Unit,
-    inCart: Pair<ProductResponse, Int>?,
+    inCart: Pair<MiniProductResponse, Int>?,
     modifier: Modifier,
     viewModel: NewSaleViewModel
 ) {
     val quantity = inCart?.second ?: 0
     val isSelected = quantity > 0
 
-    val Primary = Color(0xFFE91E63)
-    val TextPrimary = Color(0xFF1F2937)
-    val TextSecondary = Color(0xFF6B7280)
+    val primary = MaterialTheme.colorScheme.primary
+    val surface = Color.White
+    val avatarColor = remember(product.id) { getAvatarColor(product.id) }
 
-    val Surface = Color.White
-    val SurfaceSoft = Color(0xFFF8FAFC)
-    val SelectedSurface = Color(0xFFFFFBFD)
-    val SelectedLine = ButtonSucessColor.copy(alpha = 0.86f)
+    val selectedSurface = Color(0xFFFFFBFD)
+    val selectedLine = ButtonSucessColor.copy(alpha = 0.86f)
 
-    val Danger = Color(0xFFE53935)
-    val DangerSoft = Color(0xFFFFEBEE)
+    val danger = Color(0xFFE53935)
+    val dangerSoft = Color(0xFFFFEBEE)
 
     var position by remember { mutableStateOf(Offset.Zero) }
 
@@ -78,8 +83,18 @@ fun RapidProductCard(
 
     val shortName = remember(product.name) {
         product.name
+            .trim()
             .take(6)
             .uppercase()
+            .ifBlank { "PR" }
+    }
+
+    val priceText = remember(product.price) {
+        try {
+            "$ %,.0f".format(product.price.toString().toDouble())
+        } catch (_: Exception) {
+            "$ ${product.price}"
+        }
     }
 
     val removeInteraction = remember { MutableInteractionSource() }
@@ -94,21 +109,33 @@ fun RapidProductCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(70.dp)
+            .height(74.dp)
             .graphicsLayer {
                 scaleX = cardScale
                 scaleY = cardScale
             }
             .shadow(
-                elevation = if (isSelected) 10.dp else 4.dp,
-                shape = RoundedCornerShape(18.dp),
-                ambientColor = Color.Black.copy(alpha = if (isSelected) 0.09f else 0.05f),
-                spotColor = Color.Black.copy(alpha = if (isSelected) 0.14f else 0.08f)
+                elevation = if (isSelected) 10.dp else 8.dp,
+                shape = RoundedCornerShape(24.dp),
+                ambientColor = Color.Black.copy(alpha = if (isSelected) 0.06f else 0.04f),
+                spotColor = Color.Black.copy(alpha = if (isSelected) 0.10f else 0.08f)
+            )
+            .clip(RoundedCornerShape(24.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected)
+                    primary.copy(alpha = 0.18f)
+                else
+                    Color.Transparent,
+                shape = RoundedCornerShape(24.dp)
             )
             .onGloballyPositioned {
                 position = it.localToRoot(Offset.Zero)
             }
-            .clickable {
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
                 addProduct()
 
                 viewModel.triggerFlyAnimation(
@@ -119,14 +146,16 @@ fun RapidProductCard(
                     )
                 )
             },
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) selectedSurface else surface
+        ),
+        shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (isSelected) SelectedSurface else Surface)
+                .background(if (isSelected) selectedSurface else surface)
         ) {
             Row(
                 modifier = Modifier
@@ -136,25 +165,37 @@ fun RapidProductCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier.size(58.dp),
+                    modifier = Modifier.size(54.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .clip(RoundedCornerShape(15.dp))
-                            .background(
-                                if (isSelected) TextPrimary
-                                else SurfaceSoft
-                            ),
+                            .clip(RoundedCornerShape(21.dp))
+                            .background(avatarColor.copy(alpha = 0.08f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = shortName,
-                            color = if (isSelected) Color.White else TextSecondary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.White.copy(alpha = 0.88f))
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = RoundedCornerShape(16.dp),
+                                    ambientColor = Color.Black.copy(alpha = 0.03f),
+                                    spotColor = Color.Black.copy(alpha = 0.07f)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = shortName,
+                                color = avatarColor.copy(alpha = 0.88f),
+                                fontSize = 10.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1
+                            )
+                        }
                     }
 
                     this@Row.AnimatedVisibility(
@@ -165,22 +206,20 @@ fun RapidProductCard(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(23.dp)
                                 .graphicsLayer {
                                     scaleX = badgeScale
                                     scaleY = badgeScale
                                 }
-                                .background(
-                                    color = ButtonSucessColor,
-                                    shape = RoundedCornerShape(7.dp)
-                                ),
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(ButtonSucessColor),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = quantity.toString(),
                                 color = Color.White,
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
@@ -194,21 +233,23 @@ fun RapidProductCard(
                     Text(
                         text = product.name,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 15.sp,
+                        fontSize = 14.5.sp,
                         color = TextPrimary,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        letterSpacing = (-0.1).sp
                     )
                 }
 
                 Spacer(Modifier.width(10.dp))
 
                 Text(
-                    text = "$ ${product.price}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = Primary,
-                    maxLines = 1
+                    text = priceText,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.5.sp,
+                    color = TextSecondary,
+                    maxLines = 1,
+                    letterSpacing = (-0.2).sp
                 )
 
                 Spacer(Modifier.width(10.dp))
@@ -230,10 +271,10 @@ fun RapidProductCard(
                                     scaleY = removeScale
                                 }
                                 .clip(CircleShape)
-                                .background(DangerSoft)
+                                .background(dangerSoft)
                                 .border(
                                     width = 1.dp,
-                                    color = Danger.copy(alpha = 0.10f),
+                                    color = danger.copy(alpha = 0.10f),
                                     shape = CircleShape
                                 )
                                 .clickable(
@@ -249,7 +290,7 @@ fun RapidProductCard(
                             Icon(
                                 Icons.Default.Remove,
                                 contentDescription = "Quitar",
-                                tint = Danger,
+                                tint = danger,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -262,7 +303,7 @@ fun RapidProductCard(
                     .fillMaxWidth()
                     .height(2.dp)
                     .background(
-                        if (isSelected) SelectedLine
+                        if (isSelected) selectedLine
                         else Color.Transparent
                     )
             )

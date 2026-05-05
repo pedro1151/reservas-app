@@ -128,7 +128,7 @@ fun LoginContentPless(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(id = com.optic.pramosreservasappz.R.drawable.logo_app),
+                    painter = painterResource(id = com.optic.pramosreservasappz.R.drawable.fondo_rosado),
                     contentDescription = "Logo UNIFOT",
                     modifier = Modifier
                         .size(80.dp)

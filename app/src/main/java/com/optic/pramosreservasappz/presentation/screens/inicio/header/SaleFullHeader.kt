@@ -76,6 +76,7 @@ fun SaleFullHeader(
                     )
                 )
             )
+            .statusBarsPadding()
             .drawBehind {
                 drawCircle(
                     brush = Brush.radialGradient(
@@ -328,7 +329,7 @@ fun SaleFullHeader(
                         Spacer(Modifier.width(7.dp))
 
                         Text(
-                            text = "Completa",
+                            text = "Venta completa",
                             color = white,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp

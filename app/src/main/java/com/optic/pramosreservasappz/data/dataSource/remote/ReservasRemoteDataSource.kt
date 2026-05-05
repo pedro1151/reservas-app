@@ -4,6 +4,7 @@ package com.optic.pramosreservasappz.data.dataSource.remote
 import com.optic.pramosreservasappz.domain.model.clients.ClientCreateRequest
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
@@ -115,7 +116,7 @@ interface ReservasRemoteDataSource {
 
   suspend fun createProduct(
     request: ProductCreateRequest
-  ): Response<ProductResponse>
+  ): Response<MiniProductResponse>
 
   suspend fun createProductSafe(
     request: ProductCreateRequest
@@ -124,7 +125,7 @@ interface ReservasRemoteDataSource {
   suspend fun getProductByBusiness(
     businessId: Int,
     name: String
-  ): Response<List<ProductResponse>>
+  ): Response<List<MiniProductResponse>>
 
 
   suspend fun getProductById(

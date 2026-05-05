@@ -4,17 +4,19 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Storefront
+import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +24,11 @@ import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.screens.tusventas.components.getAvatarColor
+import com.optic.pramosreservasappz.presentation.ui.theme.AccentText
+import com.optic.pramosreservasappz.presentation.ui.theme.BadgeGrisBackground
+import com.optic.pramosreservasappz.presentation.ui.theme.BorderGrisSoftCard
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
 
 @Composable
 fun SaleCard(
@@ -29,19 +36,25 @@ fun SaleCard(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-
     val time = sale.created.substring(11, 16)
 
-    val cardBg = Color.White
-    val border = Color(0xFFF1F5F9)
-    val title = Color(0xFF0F172A)
-    val subtitle = Color(0xFF64748B)
-    val amount = Color(0xFFE91E63)
+    val cardBg = MaterialTheme.colorScheme.surface
+    val border = BorderGrisSoftCard
+    val primary = MaterialTheme.colorScheme.primary
 
-    val badgeBg = Color(0xFFF8FAFC)
-    val badgeText = subtitle
+    val badgeBg = BadgeGrisBackground
+    val accentSoft = Color(0xFFFFF6D8)
+    val accentText = AccentText
 
     val avatarColor = remember(sale.id) { getAvatarColor(sale.id) }
+
+    val saleCode = remember(sale.id) {
+        "V-${sale.id.toString().padStart(5, '0')}"
+    }
+
+    val saleTitle = sale.description
+        ?.takeIf { it.isNotBlank() }
+        ?: "Venta rápida"
 
     val salesmanName = sale.salesman?.username
         ?.takeIf { it.isNotBlank() }
@@ -51,105 +64,114 @@ fun SaleCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(92.dp) // 🔥 ALTURA FIJA
+            .heightIn(min = 96.dp)
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable {
                 navController.navigate(
                     ClientScreen.SaleDetail.createRoute(saleId = sale.id)
                 )
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         border = BorderStroke(1.dp, border),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // ── Avatar ─────────────────────────────
             Box(
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(avatarColor),
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(accentSoft),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "#${sale.id}",
-                    color = Color.White,
-                    fontSize = 12.sp
+                Icon(
+                    imageVector = Icons.Outlined.ReceiptLong,
+                    contentDescription = null,
+                    tint = accentText,
+                    modifier = Modifier.size(23.dp)
                 )
             }
 
             Spacer(Modifier.width(12.dp))
 
-            // ── Contenido ───────────────────────────
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = saleTitle,
+                        color = TextPrimary,
+                        fontSize = 14.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                // 🔥 Título
-                Text(
-                    text = sale.description ?: "Venta rápida",
-                    color = title,
-                    fontSize = 14.5.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    Spacer(Modifier.width(8.dp))
 
-                // 🔥 Metadata
+                    Text(
+                        text = saleCode,
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1
+                    )
+                }
+
+                sale.client?.let { client ->
+                    Text(
+                        text = client.fullName,
+                        color = TextSecondary,
+                        fontSize = 12.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
                     SaleInfoBadge(
                         text = salesmanName,
                         bgColor = badgeBg,
-                        textColor = badgeText,
+                        textColor = TextSecondary,
                         icon = Icons.Outlined.Storefront
                     )
 
                     SaleInfoBadge(
                         text = time,
                         bgColor = badgeBg,
-                        textColor = badgeText,
+                        textColor = TextSecondary,
                         icon = Icons.Outlined.Schedule
                     )
-                }
 
-                // 🔥 Cliente
-                sale.client?.let { client ->
-                    Text(
-                        text = client.fullName,
-                        color = subtitle,
-                        fontSize = 11.5.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                    Box(
+                        modifier = Modifier
+                            .size(5.dp)
+                            .clip(CircleShape)
+                            .background(avatarColor.copy(alpha = 0.75f))
                     )
                 }
             }
 
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(12.dp))
 
-            // ── Monto ─────────────────────────────
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "$ ${"%.0f".format(sale.amount)}",
-                    color = amount,
-                    fontSize = 16.5.sp
-                )
-            }
+            Text(
+                text = "$ ${"%.0f".format(sale.amount)}",
+                color = primary,
+                fontSize = 18.5.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
         }
     }
 }
@@ -181,6 +203,7 @@ private fun SaleInfoBadge(
             text = text,
             color = textColor,
             fontSize = 10.5.sp,
+            fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

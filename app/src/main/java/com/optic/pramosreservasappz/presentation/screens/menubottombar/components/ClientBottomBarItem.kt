@@ -31,7 +31,7 @@ fun RowScope.ClientBottomBarItem(
     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
     val selectedColor =  MaterialTheme.colorScheme.primary//MaterialTheme.colorScheme.secondary //   Color(0xFFFF4D4D) // rojo fluorescente suave (inspirado en FotMob)
-    val unselectedColor = MaterialTheme.colorScheme.surface
+    val unselectedColor = MaterialTheme.colorScheme.onSurface
 
     var title_traducido =""
     if (screen.title == "Matches") { title_traducido = localizedContext.getString(R.string.menu_principal_matches)}

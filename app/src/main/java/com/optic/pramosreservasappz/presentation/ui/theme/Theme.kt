@@ -16,6 +16,9 @@ val GrisSuave = Color(0xFFE5E7EB)
 val AmarrilloSuave =  Color(0xFFFFC857)
 val TextPrimary = Color(0xFF0F172A)
 val TextSecondary = Color(0xFF475569)
+val  BadgeGrisBackground = Color(0xFFF8FAFC)
+val BorderGrisSoftCard = Color(0xFFF1F5F9)
+val AccentText = Color(0xFF8A6100)
 
 
 val SoftCoolBackground = Brush.verticalGradient(
@@ -61,8 +64,8 @@ private val LightColorScheme = lightColorScheme(
     onSecondary =Color(0xFFE5E7EB),
     background = Color(0xFFF8F4F6),
     onBackground = Color(0xFF1b1b1b),
-    surface =  Color(0xFF3A3A3A) ,
-    onSurface =  Color(0xFFE5E7EB)
+    surface =   Color.White,
+    onSurface =  Color(0xFF4A4A4A)
 )
 
 
@@ -76,8 +79,8 @@ private val DarkColorScheme = darkColorScheme(
     onSecondary =Color(0xFFE5E7EB),
     background = Color(0xFFF8F4F6),
     onBackground = Color(0xFF1b1b1b),
-    surface =  Color(0xFF3A3A3A) ,
-    onSurface =  Color(0xFFE5E7EB)
+    surface =   Color.White,
+    onSurface =  Color(0xFF4A4A4A)
 )
 
 @Composable
