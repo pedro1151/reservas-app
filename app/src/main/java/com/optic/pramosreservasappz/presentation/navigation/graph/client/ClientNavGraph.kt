@@ -20,7 +20,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import androidx.navigation.navArgument
 
 import com.optic.pramosreservasappz.presentation.navigation.Graph
@@ -45,26 +44,21 @@ import com.optic.pramosreservasappz.presentation.screens.clients.ClientPrincipal
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.clients.abmcliente.ABMClienteScreen
 
-import com.optic.pramosreservasappz.presentation.screens.services.ServiceScreen
-import com.optic.pramosreservasappz.presentation.screens.services.ServiceDetailScreen
-import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ABMServiceScreen
-
 import com.optic.pramosreservasappz.presentation.screens.tusventas.HistorialScreen
 import com.optic.pramosreservasappz.presentation.screens.productos.ProductScreen
 import com.optic.pramosreservasappz.presentation.screens.configuracion.MasScreen
-import com.optic.pramosreservasappz.presentation.screens.planes.PlansScreen
-
-import com.optic.pramosreservasappz.presentation.screens.calendar.CalendarViewModel
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.stepone.CreateResevationStepOneScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steptwo.CreateReservationStepTwoScreen
-import com.optic.pramosreservasappz.presentation.screens.calendar.abmcalendar.steofour.CreateReservationStepFourScreen
+import com.optic.pramosreservasappz.presentation.screens.planes.seleccionarplan.PlansScreen
 
 import com.optic.pramosreservasappz.presentation.screens.business.members.BusinessMembersScreen
 import com.optic.pramosreservasappz.presentation.screens.business.createmember.ABMbusinessMemberScreen
 import com.optic.pramosreservasappz.presentation.screens.business.mybusiness.MyBusinessScreen
 import com.optic.pramosreservasappz.presentation.screens.business.updatemember.UpdateMemberScreen
 import com.optic.pramosreservasappz.presentation.screens.estadisticas.SalesStatsScreen
+import com.optic.pramosreservasappz.presentation.screens.googleplaybilling.GooglePlayBillingViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
+import com.optic.pramosreservasappz.presentation.screens.planes.seleccionarplanmode.SelectPlanModeScreen
+import com.optic.pramosreservasappz.presentation.screens.productos.abmproducto.ABMProductScreen
+import com.optic.pramosreservasappz.presentation.screens.productos.detail.ProductDetailScreen
 import com.optic.pramosreservasappz.presentation.screens.recibos.ReciboScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,6 +71,9 @@ fun ClientNavGraph(
 
     val salesViewModel: SalesViewModel = hiltViewModel()
     val newSaleViewModel: NewSaleViewModel = hiltViewModel()
+
+    // google play billing
+    val googlePlayBillingViewModel: GooglePlayBillingViewModel = hiltViewModel()
 
     val enterAnim: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
         slideInHorizontally(
@@ -142,9 +139,7 @@ fun ClientNavGraph(
             ProductScreen(navController, isAuthenticated)
         }
 
-        composable(ClientScreen.Servicios.route) {
-            ServiceScreen(navController, isAuthenticated)
-        }
+
 
         composable(ClientScreen.Login.route) {
             LoginScreen(navController)
@@ -163,7 +158,17 @@ fun ClientNavGraph(
         }
 
         composable(ClientScreen.Planes.route) {
-            PlansScreen(navController)
+            PlansScreen(
+                navController = navController,
+                googlePlayBillingViewModel = googlePlayBillingViewModel
+            )
+        }
+
+        composable(ClientScreen.PlanMode.route) {
+            SelectPlanModeScreen(
+                navController = navController,
+                googlePlayBillingViewModel = googlePlayBillingViewModel
+            )
         }
 
         composable(ClientScreen.SaleStats.route) {
@@ -235,19 +240,23 @@ fun ClientNavGraph(
             )
         }
 
+
+
+
+
         composable(
-            route = ClientScreen.ServiceDetail.route,
+            route = ClientScreen.ProductDetail.route,
             arguments = listOf(
-                navArgument("serviceId") {
+                navArgument("productId") {
                     type = NavType.IntType
                 }
             )
         ) { backStackEntry ->
-            val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: return@composable
+            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
 
-            ServiceDetailScreen(
-                navController,
-                serviceId
+            ProductDetailScreen(
+                navController = navController,
+                productId =  productId
             )
         }
 
@@ -279,10 +288,13 @@ fun ClientNavGraph(
             )
         }
 
+
+
+
         composable(
-            route = ClientScreen.ABMServicio.route,
+            route = ClientScreen.ABMProduct.route,
             arguments = listOf(
-                navArgument("serviceId") {
+                navArgument("productId") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = ""
@@ -294,57 +306,20 @@ fun ClientNavGraph(
             )
         ) { backStackEntry ->
 
-            val serviceId =
-                backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
+            val productId =
+                backStackEntry.arguments?.getString("productId")?.toIntOrNull()
 
             val editable =
                 backStackEntry.arguments?.getBoolean("editable") ?: false
 
-            ABMServiceScreen(
-                navController,
-                serviceId,
-                editable
+            ABMProductScreen(
+                navController = navController,
+                productId = productId,
+                editable = editable
             )
         }
 
-        navigation(
-            route = Graph.CREATE_RESERVATION_GRAPH,
-            startDestination = ClientScreen.CreateReservationStepOne.route
-        ) {
 
-            composable(ClientScreen.CreateReservationStepOne.route) { backStackEntry ->
-
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
-                }
-
-                val vm: CalendarViewModel = hiltViewModel(parentEntry)
-
-                CreateResevationStepOneScreen(navController, vm)
-            }
-
-            composable(ClientScreen.CreateReservationStepTwo.route) { backStackEntry ->
-
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
-                }
-
-                val vm: CalendarViewModel = hiltViewModel(parentEntry)
-
-                CreateReservationStepTwoScreen(navController, vm)
-            }
-
-            composable(ClientScreen.CreateReservationStepFour.route) { backStackEntry ->
-
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Graph.CREATE_RESERVATION_GRAPH)
-                }
-
-                val vm: CalendarViewModel = hiltViewModel(parentEntry)
-
-                CreateReservationStepFourScreen(navController, vm)
-            }
-        }
 
         composable(
             route = ClientScreen.BusinessMembers.route

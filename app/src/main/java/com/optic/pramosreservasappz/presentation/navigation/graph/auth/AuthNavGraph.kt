@@ -7,7 +7,6 @@ import androidx.navigation.navigation
 import com.optic.pramosreservasappz.presentation.navigation.Graph
 import com.optic.pramosreservasappz.presentation.navigation.screen.auth.AuthScreen
 import com.optic.pramosreservasappz.presentation.screens.auth.login.LoginScreen
-import com.optic.pramosreservasappz.presentation.screens.auth.register.RegisterScreen
 import androidx.navigation.navArgument
 
 
@@ -29,8 +28,6 @@ fun NavGraphBuilder.AuthNavGraph(navController: NavHostController) {
             LoginScreen(navController)
         }
 
-        composable(route = AuthScreen.Register.route) {
-            RegisterScreen(navController)
-        }
+
     }
 }

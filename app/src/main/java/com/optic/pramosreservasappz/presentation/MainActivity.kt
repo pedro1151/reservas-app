@@ -146,7 +146,7 @@ class MainActivity : ComponentActivity() {
                             if (currentRoute == ClientScreen.Productos.route) {
                                 CustomFloatingActionButton(
                                     onClick = {
-                                        navController.navigate(ClientScreen.ABMServicio.createRoute())
+                                        navController.navigate(ClientScreen.ABMProduct.createRoute())
                                     },
                                     icon = { Icon(Icons.Default.Add, contentDescription = "Agregar/editar producto") }
                                 )

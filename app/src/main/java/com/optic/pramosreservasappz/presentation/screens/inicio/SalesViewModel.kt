@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
@@ -555,15 +556,15 @@ class SalesViewModel @Inject constructor(
     // STATE: Lista de productos
     // ---------------------------------------------
 // LISTAS → Flow
-    private val _productsState = MutableStateFlow<Resource<List<ProductResponse>>>(Resource.Loading)
-    val productsState: StateFlow<Resource<List<ProductResponse>>> = _productsState.asStateFlow()
+    private val _productsState = MutableStateFlow<Resource<List<MiniProductResponse>>>(Resource.Loading)
+    val productsState: StateFlow<Resource<List<MiniProductResponse>>> = _productsState.asStateFlow()
 
-    private val _localProductsList = MutableStateFlow<List<ProductResponse>>(emptyList())
-    val localProductsList: StateFlow<List<ProductResponse>> = _localProductsList.asStateFlow()
+    private val _localProductsList = MutableStateFlow<List<MiniProductResponse>>(emptyList())
+    val localProductsList: StateFlow<List<MiniProductResponse>> = _localProductsList.asStateFlow()
 
     // ONE SHOT → Compose State
-    private val _createProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
-    val createProductState: State<Resource<ProductResponse>> = _createProductState
+    private val _createProductState = mutableStateOf<Resource<MiniProductResponse>>(Resource.Idle)
+    val createProductState: State<Resource<MiniProductResponse>> = _createProductState
 
     private val _updateProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
     val updateProductState: State<Resource<ProductResponse>> = _updateProductState
@@ -663,26 +664,6 @@ class SalesViewModel @Inject constructor(
         }
     }
 
-    // ---------------------------------------------
-    // CREATE SAFE (opcional)
-    // ---------------------------------------------
-    fun createProductSafe(request: ProductCreateRequest) {
-        viewModelScope.launch {
-            _createProductState.value = Resource.Loading
-
-            when (val result = reservasUC.createProductSafeUC(request)) {
-                is Resource.Success -> {
-                    _createProductState.value = result
-                    delay(500)
-                    (request.businessId ?: null)?.let { loadProducts(ownerId = it) }
-                }
-                is Resource.Failure -> {
-                    _createProductState.value = result
-                }
-                else -> {}
-            }
-        }
-    }
 
     // ---------------------------------------------
     // UPDATE PRODUCT
@@ -709,49 +690,6 @@ class SalesViewModel @Inject constructor(
         }
     }
 
-    // ---------------------------------------------
-    // DELETE PRODUCT (OPTIMISTA 🔥)
-    // ---------------------------------------------
-
-    fun deleteProduct(productId: Int, ownerId: Int = 1) {
-        viewModelScope.launch {
-
-            try {
-                val currentList = _localProductsList.value
-                val updatedList = currentList.filter { it.id != productId }
-
-                _localProductsList.value = updatedList
-                _deleteProductState.value = Resource.Loading
-
-                val response = reservasUC.deleteProductSoftUC(productId)
-
-                when (response) {
-                    is Resource.Success -> {
-                        _deleteProductState.value = response
-                        delay(800)
-                        loadProducts(ownerId = ownerId)
-                        delay(300)
-                        _deleteProductState.value = Resource.Idle
-                    }
-
-                    is Resource.Failure -> {
-                        _localProductsList.value = currentList
-                        _deleteProductState.value = response
-                    }
-
-                    else -> {
-                        _deleteProductState.value = Resource.Idle
-                    }
-                }
-
-            } catch (e: Exception) {
-                _deleteProductState.value =
-                    Resource.Failure(e.message ?: "Error al eliminar producto")
-
-                loadProducts(ownerId = ownerId)
-            }
-        }
-    }
 
     // ---------------------------------------------
     // RESET STATES

@@ -4,9 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramosreservasappz.domain.model.services.ServiceCreateRequest
-import com.optic.pramosreservasappz.domain.model.services.ServiceResponse
-import com.optic.pramosreservasappz.domain.model.services.ServiceUpdateRequest
 import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
 import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
 import com.optic.pramosreservasappz.domain.util.Resource
@@ -15,11 +12,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
-import com.optic.pramosreservasappz.presentation.screens.services.abmservicio.ServiceCreateState
+import com.optic.pramosreservasappz.domain.model.product.ProductViewType
+import com.optic.pramosreservasappz.presentation.screens.productos.abmproducto.ProductCreateState
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
@@ -30,15 +28,15 @@ class ProductViewModel @Inject constructor(
     // STATE: Lista de productos
     // ---------------------------------------------
 // LISTAS → Flow
-    private val _productsState = MutableStateFlow<Resource<List<ProductResponse>>>(Resource.Loading)
-    val productsState: StateFlow<Resource<List<ProductResponse>>> = _productsState.asStateFlow()
+    private val _productsState = MutableStateFlow<Resource<List<MiniProductResponse>>>(Resource.Loading)
+    val productsState: StateFlow<Resource<List<MiniProductResponse>>> = _productsState.asStateFlow()
 
-    private val _localProductsList = MutableStateFlow<List<ProductResponse>>(emptyList())
-    val localProductsList: StateFlow<List<ProductResponse>> = _localProductsList.asStateFlow()
+    private val _localProductsList = MutableStateFlow<List<MiniProductResponse>>(emptyList())
+    val localProductsList: StateFlow<List<MiniProductResponse>> = _localProductsList.asStateFlow()
 
     // ONE SHOT → Compose State
-    private val _createProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
-    val createProductState: State<Resource<ProductResponse>> = _createProductState
+    private val _createProductState = mutableStateOf<Resource<MiniProductResponse>>(Resource.Idle)
+    val createProductState: State<Resource<MiniProductResponse>> = _createProductState
 
     private val _updateProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
     val updateProductState: State<Resource<ProductResponse>> = _updateProductState
@@ -131,26 +129,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    // ---------------------------------------------
-    // CREATE SAFE (opcional)
-    // ---------------------------------------------
-    fun createProductSafe(request: ProductCreateRequest) {
-        viewModelScope.launch {
-            _createProductState.value = Resource.Loading
 
-            when (val result = reservasUC.createProductSafeUC(request)) {
-                is Resource.Success -> {
-                    _createProductState.value = result
-                    delay(500)
-                    (request.businessId ?: null)?.let { loadProducts(businessId = it) }
-                }
-                is Resource.Failure -> {
-                    _createProductState.value = result
-                }
-                else -> {}
-            }
-        }
-    }
 
     // ---------------------------------------------
     // UPDATE PRODUCT
@@ -239,4 +218,25 @@ class ProductViewModel @Inject constructor(
     fun resetOneProductState() {
         _oneProductState.value = Resource.Loading
     }
+
+    private val _productViewType = MutableStateFlow(ProductViewType.GRID)
+    val productViewType: StateFlow<ProductViewType> = _productViewType
+
+    fun updateProductViewType(type: ProductViewType) {
+        _productViewType.value = type
+    }
+
+
+
+    private val _formState = MutableStateFlow(ProductCreateState())
+    val formState: StateFlow<ProductCreateState> = _formState
+
+    fun onFormChange(state: ProductCreateState) {
+        _formState.value = state
+    }
+
+    fun resetForm() {
+        _formState.value = ProductCreateState()
+    }
+
 }

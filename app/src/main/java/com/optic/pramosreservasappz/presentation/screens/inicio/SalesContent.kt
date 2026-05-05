@@ -59,17 +59,17 @@ fun SalesContent(
 
     Column(
         modifier = modifier
-            .padding(paddingValues)
             .fillMaxSize()
     ) {
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Background),
-            contentPadding = PaddingValues(bottom = 100.dp),
+            contentPadding = PaddingValues(
+                bottom = paddingValues.calculateBottomPadding() + 100.dp
+            ),
             state = listState
-        ) {
+        )  {
 
             item {
                 SaleFullHeader(

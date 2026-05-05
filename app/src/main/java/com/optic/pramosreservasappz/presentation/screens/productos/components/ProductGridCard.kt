@@ -1,7 +1,9 @@
 package com.optic.pramosreservasappz.presentation.screens.productos.components
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,177 +11,195 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.tusventas.components.getAvatarColor
+import com.optic.pramosreservasappz.presentation.ui.theme.TextPrimary
+import com.optic.pramosreservasappz.presentation.ui.theme.TextSecondary
+import com.optic.pramosreservasappz.presentation.util.getAvatarColor
 import kotlinx.coroutines.delay
 
-
-// ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Blue700  = Color(0xFF1D4ED8)
-private val Blue600  = Color(0xFF2563EB)
-private val Blue500  = Color(0xFF3B82F6)
-private val Blue400  = Color(0xFF60A5FA)
-private val Blue100  = Color(0xFFDBEAFE)
-private val Blue50   = Color(0xFFEFF6FF)
-private val Slate900 = Color(0xFF0F172A)
-private val Slate600 = Color(0xFF475569)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate200 = Color(0xFFE2E8F0)
-private val Slate100 = Color(0xFFF1F5F9)
-private val Red500   = Color(0xFFEF4444)
-private val PageBg   = Color(0xFFF8FAFC)
-
-// ─── Grid Card ──────────────────────────────────────────────────────────────────
 @Composable
 fun ProductGridCard(
-    product       : ProductResponse,
-    modifier      : Modifier = Modifier,
-    navController : NavHostController,
-    onDelete      : (ProductResponse) -> Unit
+    product: MiniProductResponse,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    onDelete: (MiniProductResponse) -> Unit
 ) {
+    val primary = MaterialTheme.colorScheme.primary
+    val surface = Color.White
+    val danger = Color(0xFFE53935)
+
     val avatarColor = remember(product.id) { getAvatarColor(product.id) }
-    val priceText   = remember(product.price) {
-        try { "Bs. %,.0f".format(product.price.toString().toDouble()) }
-        catch (_: Exception) { "Bs. ${product.price}" }
+
+    val priceText = remember(product.price) {
+        try {
+            "$ %,.0f".format(product.price.toString().toDouble())
+        } catch (_: Exception) {
+            "$ ${product.price}"
+        }
     }
 
     var showMenu by remember { mutableStateOf(false) }
-    var visible  by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(false) }
+
+
+    fun goToDetail() {
+        navController.navigate(
+            ClientScreen.ProductDetail.createRoute(productId = product.id)
+        )
+    }
+
+    fun goToEdit() {
+        navController.navigate(
+            ClientScreen.ABMProduct.createRoute(
+                productId = product.id,
+                editable = true
+            )
+        )
+    }
 
     LaunchedEffect(Unit) {
-        delay(30L * (product.id % 8))
+        delay(24L * (product.id % 8))
         visible = true
     }
 
     AnimatedVisibility(
-        visible  = visible,
-        enter    = fadeIn(tween(260)) + scaleIn(tween(260), initialScale = 0.92f),
+        visible = visible,
+        enter = fadeIn(tween(220)) + scaleIn(tween(220), initialScale = 0.96f),
         modifier = modifier
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(196.dp) // 🔥 reducido
                 .shadow(
-                    elevation    = 3.dp,
-                    shape        = RoundedCornerShape(20.dp),
-                    ambientColor = Blue500.copy(alpha = 0.06f),
-                    spotColor    = Blue600.copy(alpha = 0.09f)
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.04f),
+                    spotColor = Color.Black.copy(alpha = 0.08f)
                 )
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication        = null
+                    indication = null
                 ) {
-                    navController.navigate(
-                        ClientScreen.ServiceDetail.createRoute(serviceId = product.id)
-                    )
+                  goToDetail()
                 },
-            shape           = RoundedCornerShape(20.dp),
-            color           = Color.White,
+            shape = RoundedCornerShape(24.dp),
+            color = surface,
             shadowElevation = 0.dp
         ) {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
 
-                // ── Colored header area ──
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(96.dp)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    avatarColor.copy(alpha = 0.16f),
-                                    avatarColor.copy(alpha = 0.04f)
-                                )
-                            )
-                        )
+                        .height(84.dp) // 🔥 reducido
+                        .background(avatarColor.copy(alpha = 0.08f))
                 ) {
-                    // MoreVert in top-right
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(8.dp)
+                            .padding(10.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(28.dp)
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = CircleShape,
+                                    ambientColor = Color.Black.copy(alpha = 0.04f),
+                                    spotColor = Color.Black.copy(alpha = 0.08f)
+                                )
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.80f))
-                                .clickable(remember { MutableInteractionSource() }, null) {
+                                .background(Color.White.copy(alpha = 0.92f))
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
                                     showMenu = true
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Outlined.MoreVert, null,
-                                tint     = Slate600,
-                                modifier = Modifier.size(14.dp)
+                                imageVector = Icons.Outlined.MoreVert,
+                                contentDescription = "Más opciones",
+                                tint = TextSecondary,
+                                modifier = Modifier.size(14.dp) // 🔥 reducido
                             )
                         }
 
-                        // Dropdown menu
                         DropdownMenu(
-                            expanded          = showMenu,
-                            onDismissRequest  = { showMenu = false },
-                            modifier          = Modifier
-                                .clip(RoundedCornerShape(14.dp))
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
                                 .background(Color.White)
                         ) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        "Editar",
-                                        fontSize   = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color      = Slate900
+                                        text = "Editar",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = TextPrimary
                                     )
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        Icons.Outlined.Edit, null,
-                                        tint     = Blue600,
-                                        modifier = Modifier.size(16.dp)
+                                        imageVector = Icons.Outlined.Edit,
+                                        contentDescription = null,
+                                        tint = primary,
+                                        modifier = Modifier.size(18.dp)
                                     )
                                 },
                                 onClick = {
                                     showMenu = false
-                                    navController.navigate(
-                                        ClientScreen.ABMServicio.createRoute(
-                                            serviceId = product.id,
-                                            editable  = true
-                                        )
-                                    )
+                                    goToEdit()
                                 }
                             )
+
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        "Eliminar",
-                                        fontSize   = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color      = Red500
+                                        text = "Eliminar",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = danger
                                     )
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        Icons.Outlined.DeleteOutline, null,
-                                        tint     = Red500,
-                                        modifier = Modifier.size(16.dp)
+                                        imageVector = Icons.Outlined.DeleteOutline,
+                                        contentDescription = null,
+                                        tint = danger,
+                                        modifier = Modifier.size(18.dp)
                                     )
                                 },
                                 onClick = {
@@ -190,87 +210,95 @@ fun ProductGridCard(
                         }
                     }
 
-                    // Centered avatar
                     Box(
-                        modifier         = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(15.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(avatarColor, avatarColor.copy(alpha = 0.60f))
-                                    )
+                                .size(52.dp) // 🔥 reducido
+                                .clip(RoundedCornerShape(21.dp))
+                                .background(Color.White.copy(alpha = 0.88f))
+                                .shadow(
+                                    elevation = 5.dp,
+                                    shape = RoundedCornerShape(21.dp),
+                                    ambientColor = Color.Black.copy(alpha = 0.03f),
+                                    spotColor = Color.Black.copy(alpha = 0.07f)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text       = getServiceInitials(product.name),
-                                fontSize   = 17.sp,
-                                fontWeight = FontWeight.Bold,
-                                color      = Color.White,
-                                letterSpacing = (-0.3).sp
+                            Icon(
+                                imageVector = Icons.Outlined.Inventory2,
+                                contentDescription = null,
+                                tint = avatarColor.copy(alpha = 0.88f),
+                                modifier = Modifier.size(24.dp) // 🔥 reducido
                             )
                         }
                     }
                 }
 
-                // ── Content area ──
                 Column(
-                    modifier = Modifier.padding(
-                        start  = 12.dp,
-                        end    = 12.dp,
-                        top    = 10.dp,
-                        bottom = 12.dp
-                    )
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(
+                            start = 12.dp,
+                            end = 12.dp,
+                            top = 11.dp,
+                            bottom = 11.dp
+                        ), // 🔥 compacto
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text          = product.name,
-                        fontSize      = 13.sp,
-                        fontWeight    = FontWeight.SemiBold,
-                        color         = Slate900,
-                        maxLines      = 2,
-                        overflow      = TextOverflow.Ellipsis,
-                        lineHeight    = 17.sp,
-                        letterSpacing = (-0.1).sp
-                    )
-                    Spacer(Modifier.height(8.dp))
-
-                    // Price
-                    Text(
-                        text          = priceText,
-                        fontSize      = 15.sp,
-                        fontWeight    = FontWeight.Bold,
-                        color         = Blue600,
-                        letterSpacing = (-0.4).sp
+                        text = product.name,
+                        fontSize = 13.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextPrimary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 18.sp,
+                        letterSpacing = (-0.1).sp,
+                        textAlign = TextAlign.Center
                     )
 
-                    Spacer(Modifier.height(8.dp))
-
-                    // Category pill
-                    Box(
-                        modifier = Modifier
-                            .background(Blue50, RoundedCornerShape(7.dp))
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(
-                            verticalAlignment     = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        Text(
+                            text = priceText,
+                            fontSize = 15.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextSecondary,
+                            letterSpacing = (-0.2).sp
+                        )
+
+                        Spacer(Modifier.height(6.dp)) // 🔥 reducido
+
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFF8FAFC), RoundedCornerShape(999.dp))
+                                .padding(horizontal = 9.dp, vertical = 4.dp)
                         ) {
-                            Icon(
-                                Icons.Outlined.Category, null,
-                                tint     = Blue600,
-                                modifier = Modifier.size(8.dp)
-                            )
-                            Text(
-                                "Producto",
-                                fontSize      = 9.sp,
-                                color         = Blue600,
-                                fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.3.sp
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Category,
+                                    contentDescription = null,
+                                    tint = TextSecondary.copy(alpha = 0.72f),
+                                    modifier = Modifier.size(11.dp)
+                                )
+
+                                Text(
+                                    text = product.type,
+                                    fontSize = 10.sp,
+                                    color = TextSecondary.copy(alpha = 0.82f),
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.2.sp
+                                )
+                            }
                         }
                     }
                 }

@@ -32,7 +32,8 @@ fun CompleteSaleStepOneScreen(
         CompleteSalePaso1Content(
             viewModel = viewModel,
             navController = navController,
-            isAuthenticated = isAuthenticated
+            isAuthenticated = isAuthenticated,
+            paddingValues = paddingValues
         )
     }
 

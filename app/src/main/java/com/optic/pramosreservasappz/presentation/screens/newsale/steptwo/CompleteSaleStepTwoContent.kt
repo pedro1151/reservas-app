@@ -16,8 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductViewType
@@ -33,7 +34,6 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramosreservasappz.presentation.sales.Components.SGray400
 import com.optic.pramosreservasappz.presentation.sales.Components.SRed
-import com.optic.pramosreservasappz.presentation.screens.inicio.SalesViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.MiniCart
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.NewRapidProduct
@@ -41,14 +41,13 @@ import com.optic.pramosreservasappz.presentation.screens.newsale.components.Prod
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidProductCard
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidProductGridCard
 import com.optic.pramosreservasappz.presentation.screens.newsale.components.RapidSaleSearchToolbar
-import com.optic.pramosreservasappz.presentation.ui.theme.SoftCoolBackground
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CompleteSaleStepTwoContent(
-    products: List<ProductResponse>,
+    products: List<MiniProductResponse>,
     navController: NavHostController,
     viewModel: NewSaleViewModel,
     paddingValues: PaddingValues,
@@ -57,6 +56,8 @@ fun CompleteSaleStepTwoContent(
 ) {
     // posicion del carrito
     var cartPosition by remember { mutableStateOf(Offset.Zero) }
+
+    val background = MaterialTheme.colorScheme.background
 
     val createWithItemsSaleState by viewModel.createSaleWithItemsState
     val scope = rememberCoroutineScope()
@@ -153,7 +154,7 @@ fun CompleteSaleStepTwoContent(
     Column(
         modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(background)
     ) {
 
         // 🟢 HEADER (DIVISIÓN VISUAL)
@@ -182,7 +183,7 @@ fun CompleteSaleStepTwoContent(
         Column(
             modifier =  Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
+                .background(background)
         ) {
 
             when (productsState) {
@@ -213,7 +214,7 @@ fun CompleteSaleStepTwoContent(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth()
-                                .background(SoftCoolBackground),
+                                .background(background),
                             contentAlignment = Alignment.Center
                         ) {
                             ProductNotFoundAction(
@@ -296,7 +297,7 @@ fun CompleteSaleStepTwoContent(
                                 LazyColumn(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .background(SoftCoolBackground),
+                                        .background(background),
                                     contentPadding = PaddingValues(
                                         start = 5.dp,
                                         end = 5.dp,
@@ -437,7 +438,7 @@ fun CompleteSaleStepTwoContent(
 
                         // 👉 ICONO
                         Icon(
-                            imageVector = Icons.Default.KeyboardDoubleArrowRight,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Continuar",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)

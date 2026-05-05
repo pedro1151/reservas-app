@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
+import com.optic.pramosreservasappz.domain.model.product.MiniProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductCreateRequest
 import com.optic.pramosreservasappz.domain.model.product.ProductResponse
 import com.optic.pramosreservasappz.domain.model.product.ProductUpdateRequest
@@ -216,15 +217,15 @@ class NewSaleViewModel @Inject constructor(
     // STATE: Lista de productos
     // ---------------------------------------------
 // LISTAS → Flow
-    private val _productsState = MutableStateFlow<Resource<List<ProductResponse>>>(Resource.Loading)
-    val productsState: StateFlow<Resource<List<ProductResponse>>> = _productsState.asStateFlow()
+    private val _productsState = MutableStateFlow<Resource<List<MiniProductResponse>>>(Resource.Loading)
+    val productsState: StateFlow<Resource<List<MiniProductResponse>>> = _productsState.asStateFlow()
 
-    private val _localProductsList = MutableStateFlow<List<ProductResponse>>(emptyList())
-    val localProductsList: StateFlow<List<ProductResponse>> = _localProductsList.asStateFlow()
+    private val _localProductsList = MutableStateFlow<List<MiniProductResponse>>(emptyList())
+    val localProductsList: StateFlow<List<MiniProductResponse>> = _localProductsList.asStateFlow()
 
     // ONE SHOT → Compose State
-    private val _createProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
-    val createProductState: State<Resource<ProductResponse>> = _createProductState
+    private val _createProductState = mutableStateOf<Resource<MiniProductResponse>>(Resource.Idle)
+    val createProductState: State<Resource<MiniProductResponse>> = _createProductState
 
     private val _updateProductState = mutableStateOf<Resource<ProductResponse>>(Resource.Idle)
     val updateProductState: State<Resource<ProductResponse>> = _updateProductState
@@ -422,12 +423,12 @@ class NewSaleViewModel @Inject constructor(
     // STATE: Selected Products (🔥 CARRITO GLOBAL) EN VENTA RAPIDA
     // ---------------------------------------------
     private val _selectedProducts =
-        MutableStateFlow<List<Pair<ProductResponse, Int>>>(emptyList())
-    val selectedProducts: StateFlow<List<Pair<ProductResponse, Int>>> =
+        MutableStateFlow<List<Pair<MiniProductResponse, Int>>>(emptyList())
+    val selectedProducts: StateFlow<List<Pair<MiniProductResponse, Int>>> =
         _selectedProducts.asStateFlow()
 
 
-    fun addProduct(product: ProductResponse) {
+    fun addProduct(product: MiniProductResponse) {
 
         val currentList = _selectedProducts.value.toMutableList()
 
@@ -443,7 +444,7 @@ class NewSaleViewModel @Inject constructor(
         _selectedProducts.value = currentList
     }
 
-    fun removeProduct(product: ProductResponse) {
+    fun removeProduct(product: MiniProductResponse) {
 
         val currentList = _selectedProducts.value.toMutableList()
 
@@ -480,7 +481,7 @@ class NewSaleViewModel @Inject constructor(
     // 🔥 Estado global de animación item vuela al carrito
 
     data class FlyAnimationData(
-        val product: ProductResponse,
+        val product: MiniProductResponse,
         val startX: Float,
         val startY: Float
     )

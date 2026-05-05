@@ -123,6 +123,17 @@ sealed class ClientScreen(
         }
     }
 
+
+    object ABMProduct : ClientScreen(
+        route = "products/abm_product?productId={productId}&editable={editable}",
+        title = "Crear/Editar SProducto",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(productId: Int? = null, editable: Boolean = false): String {
+            return "products/abm_product?productId=${productId ?: ""}&editable=$editable"
+        }
+    }
+
     object ABMCliente : ClientScreen(
         route = "create_client?clientId={clientId}&editable={editable}",
         title = "Crear/Editar Cliente",
@@ -144,6 +155,17 @@ sealed class ClientScreen(
         fun createRoute(serviceId: Int): String = "client/service_detail/$serviceId"
     }
 
+
+    // Pantalla de detalle de producto
+    object ProductDetail : ClientScreen(
+        route = "products/product_detail/{productId}",
+        title = "Detalle Producto",
+        icon = Icons.Default.SpaceDashboard
+    ) {
+        fun createRoute(productId: Int): String = "products/product_detail/$productId"
+    }
+
+
     object Games: ClientScreen(
         route = "client/games",
         title = "Games",
@@ -158,7 +180,7 @@ sealed class ClientScreen(
 
     object SaleStats: ClientScreen(
         route = "client/fire_stats",
-        title = "Estadisticas",
+        title = "Resumen",
         icon = Icons.Default.BarChart
     )
 
@@ -228,6 +250,12 @@ sealed class ClientScreen(
 
     object Planes: ClientScreen(
         route = "client/planes",
+        title = "Planes",
+        icon = Icons.Default.Menu
+    )
+
+    object PlanMode: ClientScreen(
+        route = "client/planes_mode",
         title = "Planes",
         icon = Icons.Default.Menu
     )

@@ -27,6 +27,7 @@ import com.optic.pramosreservasappz.presentation.authstate.AuthStateVM
 import com.optic.pramosreservasappz.presentation.components.PrimaryTopBar
 import com.optic.pramosreservasappz.presentation.components.PullRefreshWrapper
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramosreservasappz.presentation.screens.menu.SalesScreenWithDrawer
 
 // ── Colores de la pantalla ──
 private val PrimaryPurple = Color(0xFF6E4FDB)
@@ -61,70 +62,80 @@ fun HistorialScreen(
     LaunchedEffect(salesResource) {
         if (salesResource !is Resource.Loading) isRefreshing = false
     }
+    SalesScreenWithDrawer(navController) { onMenuClick ->
+        Scaffold(
+            topBar = {
 
-    Scaffold(
-        topBar = {
-            PrimaryTopBar(
-                title         = "Tus ventas",
-                navController = navController
-            )
-        },
-        floatingActionButton = {
-            // FAB con gradiente estilo Tiimo
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(PrimaryPurple, PrimaryBlue)
-                        )
-                    )
-                    .clickableNoRipple {
-                        navController.navigate(
-                            ClientScreen.ABMCliente.createRoute(clientId = null, editable = false)
-                        )
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Nueva venta",
-                    tint     = Color.White,
-                    modifier = Modifier.size(24.dp)
+                PrimaryTopBar(
+                    title = "Tus ventas",
+                    navController = navController,
+                    onMenuClick = onMenuClick
                 )
-            }
-        },
-        containerColor = Color(0xFFF7F6FA)
-    ) { paddingValues ->
 
-        PullRefreshWrapper(
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                viewModel.loadSales(1)
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when (val result = salesResource) {
-                is Resource.Loading -> {
-                    LoadingState()
-                }
-                is Resource.Success -> {
-                    HistorialContent(
-                        sales         = result.data,
-                        paddingValues = PaddingValues(0.dp),
-                        viewModel     = viewModel,
-                        navController = navController
+            floatingActionButton = {
+                // FAB con gradiente estilo Tiimo
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(PrimaryPurple, PrimaryBlue)
+                            )
+                        )
+                        .clickableNoRipple {
+                            navController.navigate(
+                                ClientScreen.ABMCliente.createRoute(
+                                    clientId = null,
+                                    editable = false
+                                )
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Nueva venta",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-                is Resource.Failure -> {
-                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadSales(1) })
-                }
-                else -> {
-                    LoadingState()
+            },
+            containerColor = Color(0xFFF7F6FA)
+        ) { paddingValues ->
+
+            PullRefreshWrapper(
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    viewModel.loadSales(1)
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (val result = salesResource) {
+                    is Resource.Loading -> {
+                        LoadingState()
+                    }
+
+                    is Resource.Success -> {
+                        HistorialContent(
+                            sales = result.data,
+                            paddingValues = PaddingValues(0.dp),
+                            viewModel = viewModel,
+                            navController = navController
+                        )
+                    }
+
+                    is Resource.Failure -> {
+                        ErrorState(onRetry = { isRefreshing = true; viewModel.loadSales(1) })
+                    }
+
+                    else -> {
+                        LoadingState()
+                    }
                 }
             }
         }
