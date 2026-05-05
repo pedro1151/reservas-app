@@ -3,7 +3,6 @@ package com.optic.pramosreservasappz.presentation.screens.clients.abmcliente
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,13 +24,13 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.screens.clients.ClientViewModel
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Blue700  = Color(0xFF1D4ED8)
-private val Blue600  = Color(0xFF2563EB)
-private val Blue500  = Color(0xFF3B82F6)
+private val Pink700  = Color(0xFFC2185B)
+private val Pink600  = Color(0xFFE91E63)
 private val Slate900 = Color(0xFF0F172A)
+private val Slate700 = Color(0xFF334155)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate200 = Color(0xFFE2E8F0)
-private val PageBg   = Color(0xFFF8FAFC)
+private val PageBg   = Color(0xFFF8F4F6)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,11 +47,8 @@ fun ABMClienteScreen(
 
     val isSaving = createState is Resource.Loading || updateState is Resource.Loading
 
-    // Load existing client when editing
     LaunchedEffect(clientId) {
-        if (editable && clientId != null) {
-            viewModel.getClientById(clientId)
-        }
+        if (editable && clientId != null) viewModel.getClientById(clientId)
     }
 
     Scaffold(
@@ -62,7 +58,7 @@ fun ABMClienteScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.Outlined.Close, null,
-                            tint     = Slate900,
+                            tint     = Slate700,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -73,19 +69,18 @@ fun ABMClienteScreen(
                         fontSize      = 16.sp,
                         fontWeight    = FontWeight.SemiBold,
                         color         = Slate900,
-                        letterSpacing = (-0.2).sp
+                        letterSpacing = (-0.3).sp
                     )
                 },
                 actions = {
-                    // ── Save / Create button ──
                     Box(
                         modifier = Modifier
                             .padding(end = 12.dp)
                             .shadow(
-                                elevation    = if (isSaving) 0.dp else 5.dp,
+                                elevation    = if (isSaving) 0.dp else 6.dp,
                                 shape        = RoundedCornerShape(12.dp),
-                                ambientColor = Blue600.copy(alpha = 0.18f),
-                                spotColor    = Blue700.copy(alpha = 0.22f)
+                                ambientColor = Pink600.copy(alpha = 0.20f),
+                                spotColor    = Pink700.copy(alpha = 0.26f)
                             )
                     ) {
                         Button(
@@ -116,16 +111,16 @@ fun ABMClienteScreen(
                                             address        = state.address,
                                             city           = state.city,
                                             state          = state.state,
-                                            businessId        = 1
+                                            businessId     = 1
                                         )
                                     )
                                 }
                             },
-                            enabled           = !isSaving && formState.fullName.isNotBlank(),
-                            shape             = RoundedCornerShape(12.dp),
-                            contentPadding    = PaddingValues(horizontal = 18.dp, vertical = 0.dp),
-                            colors            = ButtonDefaults.buttonColors(
-                                containerColor         = Blue600,
+                            enabled        = !isSaving && formState.fullName.isNotBlank(),
+                            shape          = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 0.dp),
+                            colors         = ButtonDefaults.buttonColors(
+                                containerColor         = Pink600,
                                 contentColor           = Color.White,
                                 disabledContainerColor = Slate200,
                                 disabledContentColor   = Slate400
@@ -136,9 +131,7 @@ fun ABMClienteScreen(
                                 CircularProgressIndicator(
                                     color       = Color.White,
                                     strokeWidth = 2.dp,
-                                    modifier    = Modifier
-                                        .size(14.dp)
-                                        .padding(end = 0.dp)
+                                    modifier    = Modifier.size(14.dp)
                                 )
                             }
                             AnimatedVisibility(visible = !isSaving, enter = fadeIn(), exit = fadeOut()) {
@@ -168,7 +161,6 @@ fun ABMClienteScreen(
         )
     }
 
-    // ── Navigation on success ──
     LaunchedEffect(createState) {
         if (createState is Resource.Success) {
             viewModel.resetCreateState()

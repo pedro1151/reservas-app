@@ -43,23 +43,24 @@ import com.optic.pramosreservasappz.presentation.screens.business.members.compon
 import com.optic.pramosreservasappz.presentation.util.getAvatarColor
 import com.optic.pramosreservasappz.presentation.util.getInitials
 import kotlinx.coroutines.launch
-import com.optic.pramosreservasappz.presentation.screens.newsale.selecclient.components.SelectClientSearchBar
 
-// ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Blue700  = Color(0xFF1D4ED8)
-private val Blue600  = Color(0xFF2563EB)
-private val Blue500  = Color(0xFF3B82F6)
-private val Blue50   = Color(0xFFEFF6FF)
-private val Slate900 = Color(0xFF0F172A)
-private val Slate600 = Color(0xFF475569)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate200 = Color(0xFFE2E8F0)
-private val Slate100 = Color(0xFFF1F5F9)
-private val Red500   = Color(0xFFEF4444)
-private val PageBg   = Color(0xFFF8FAFC)
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+private val Magenta700  = Color(0xFFAD1457)
+private val Magenta600  = Color(0xFFD81B60)
+private val Magenta500  = Color(0xFFE91E63)
+private val Magenta50   = Color(0xFFFCE4EC)
+private val MagentaSoft = Color(0xFFFFF0F5)
+private val Slate900    = Color(0xFF0F172A)
+private val Slate600    = Color(0xFF475569)
+private val Slate400    = Color(0xFF94A3B8)
+private val Slate200    = Color(0xFFE2E8F0)
+private val Slate100    = Color(0xFFF1F5F9)
+private val Red500      = Color(0xFFEF4444)
+private val PageBg      = Color(0xFFF8FAFC)
+
 enum class MemberViewType { LIST, GRID }
 
-// ─── Main Content ────────────────────────────────────────────────────────────────
+// ─── Main Content ─────────────────────────────────────────────────────────────
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BusinessMembersContent(
@@ -207,7 +208,7 @@ fun BusinessMembersContent(
     }
 }
 
-// ─── Hero Stats strip ────────────────────────────────────────────────────────────
+// ─── Hero Stats strip ─────────────────────────────────────────────────────────
 @Composable
 private fun MemberHeroStats(
     total  : Int,
@@ -217,45 +218,62 @@ private fun MemberHeroStats(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .shadow(
-                elevation    = 2.dp,
-                shape        = RoundedCornerShape(18.dp),
-                ambientColor = Blue600.copy(alpha = 0.06f)
+                elevation    = 4.dp,
+                shape        = RoundedCornerShape(20.dp),
+                ambientColor = Magenta600.copy(alpha = 0.10f),
+                spotColor    = Magenta600.copy(alpha = 0.14f)
             )
-            .clip(RoundedCornerShape(18.dp))
-            .background(Color.White)
-            .border(1.dp, Slate200, RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(Magenta700, Magenta600)
+                )
+            )
     ) {
         Row(
             modifier              = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 14.dp),
+                .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment     = Alignment.CenterVertically
         ) {
             MemberStatItem(
-                icon       = Icons.Outlined.Group,
-                value      = "$total",
-                label      = "Total",
-                iconBg     = Blue50,
-                iconTint   = Blue600
+                icon     = Icons.Outlined.Group,
+                value    = "$total",
+                label    = "Total",
+                iconBg   = Color.White.copy(alpha = 0.20f),
+                iconTint = Color.White,
+                textColor = Color.White
             )
-            Box(Modifier.width(1.dp).height(32.dp).background(Slate200))
-            MemberStatItem(
-                icon       = Icons.Outlined.CheckCircle,
-                value      = "$active",
-                label      = "Activos",
-                iconBg     = Color(0xFFF0FDF4),
-                iconTint   = Color(0xFF059669)
+            Box(
+                Modifier
+                    .width(1.dp)
+                    .height(36.dp)
+                    .background(Color.White.copy(alpha = 0.25f))
             )
-            Box(Modifier.width(1.dp).height(32.dp).background(Slate200))
             MemberStatItem(
-                icon       = Icons.Outlined.AdminPanelSettings,
-                value      = "$admins",
-                label      = "Admins",
-                iconBg     = Color(0xFFFAF5FF),
-                iconTint   = Color(0xFF7C3AED)
+                icon     = Icons.Outlined.CheckCircle,
+                value    = "$active",
+                label    = "Activos",
+                iconBg   = Color.White.copy(alpha = 0.20f),
+                iconTint = Color.White,
+                textColor = Color.White
+            )
+            Box(
+                Modifier
+                    .width(1.dp)
+                    .height(36.dp)
+                    .background(Color.White.copy(alpha = 0.25f))
+            )
+            MemberStatItem(
+                icon     = Icons.Outlined.AdminPanelSettings,
+                value    = "$admins",
+                label    = "Admins",
+                iconBg   = Color.White.copy(alpha = 0.20f),
+                iconTint = Color.White,
+                textColor = Color.White
             )
         }
     }
@@ -263,11 +281,12 @@ private fun MemberHeroStats(
 
 @Composable
 private fun MemberStatItem(
-    icon     : androidx.compose.ui.graphics.vector.ImageVector,
-    value    : String,
-    label    : String,
-    iconBg   : Color,
-    iconTint : Color
+    icon      : androidx.compose.ui.graphics.vector.ImageVector,
+    value     : String,
+    label     : String,
+    iconBg    : Color,
+    iconTint  : Color,
+    textColor : Color = Slate900
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -276,32 +295,32 @@ private fun MemberStatItem(
     ) {
         Box(
             modifier = Modifier
-                .size(30.dp)
+                .size(32.dp)
                 .clip(CircleShape)
                 .background(iconBg),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, null, tint = iconTint, modifier = Modifier.size(15.dp))
+            Icon(icon, null, tint = iconTint, modifier = Modifier.size(16.dp))
         }
         Text(
             text          = value,
-            fontSize      = 18.sp,
+            fontSize      = 20.sp,
             fontWeight    = FontWeight.Black,
-            color         = Slate900,
+            color         = textColor,
             letterSpacing = (-0.5).sp,
-            lineHeight    = 20.sp
+            lineHeight    = 22.sp
         )
         Text(
             text          = label,
             fontSize      = 10.sp,
-            color         = Slate400,
+            color         = textColor.copy(alpha = 0.75f),
             fontWeight    = FontWeight.Medium,
             letterSpacing = 0.1.sp
         )
     }
 }
 
-// ─── Search Row + View Toggle ────────────────────────────────────────────────────
+// ─── Search Row + View Toggle ─────────────────────────────────────────────────
 @Composable
 private fun MemberSearchRow(
     query            : String,
@@ -329,13 +348,13 @@ private fun MemberSearchRow(
                 .shadow(
                     elevation    = if (isFocused) 4.dp else 1.dp,
                     shape        = RoundedCornerShape(16.dp),
-                    ambientColor = Blue500.copy(alpha = if (isFocused) 0.10f else 0.03f)
+                    ambientColor = Magenta500.copy(alpha = if (isFocused) 0.12f else 0.03f)
                 )
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
                 .border(
                     width = if (isFocused) 1.5.dp else 1.dp,
-                    color = if (isFocused) Blue500.copy(alpha = 0.50f) else Slate200,
+                    color = if (isFocused) Magenta500.copy(alpha = 0.50f) else Slate200,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 12.dp, vertical = 11.dp),
@@ -344,7 +363,7 @@ private fun MemberSearchRow(
         ) {
             Icon(
                 Icons.Outlined.Search, null,
-                tint     = if (isFocused) Blue600 else Slate400,
+                tint     = if (isFocused) Magenta600 else Slate400,
                 modifier = Modifier.size(17.dp)
             )
             BasicTextField(
@@ -358,7 +377,7 @@ private fun MemberSearchRow(
                     color      = Slate900,
                     fontWeight = FontWeight.Normal
                 ),
-                cursorBrush     = SolidColor(Blue600),
+                cursorBrush     = SolidColor(Magenta600),
                 singleLine      = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
@@ -379,7 +398,7 @@ private fun MemberSearchRow(
                 Box(
                     modifier = Modifier
                         .background(
-                            if (hasQuery) Blue50 else Slate100,
+                            if (hasQuery) Magenta50 else Slate100,
                             RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -388,7 +407,7 @@ private fun MemberSearchRow(
                         label,
                         fontSize      = 10.sp,
                         fontWeight    = FontWeight.Bold,
-                        color         = if (hasQuery) Blue600 else Slate400,
+                        color         = if (hasQuery) Magenta600 else Slate400,
                         letterSpacing = 0.2.sp
                     )
                 }
@@ -409,7 +428,11 @@ private fun MemberSearchRow(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Outlined.Close, "Limpiar", tint = Slate600, modifier = Modifier.size(11.dp))
+                    Icon(
+                        Icons.Outlined.Close, "Limpiar",
+                        tint     = Slate600,
+                        modifier = Modifier.size(11.dp)
+                    )
                 }
             }
         }
@@ -428,7 +451,13 @@ private fun MemberSearchRow(
                 onClick    = { onViewTypeChange(MemberViewType.LIST) },
                 isStart    = true
             )
-            Box(Modifier.width(1.dp).height(32.dp).background(Slate200).align(Alignment.CenterVertically))
+            Box(
+                Modifier
+                    .width(1.dp)
+                    .height(32.dp)
+                    .background(Slate200)
+                    .align(Alignment.CenterVertically)
+            )
             MemberViewToggle(
                 icon       = Icons.Outlined.GridView,
                 isSelected = viewType == MemberViewType.GRID,
@@ -447,7 +476,7 @@ private fun MemberViewToggle(
     isStart    : Boolean
 ) {
     val bgColor  by animateColorAsState(
-        if (isSelected) Blue600 else Color.Transparent, tween(200), label = "bg"
+        if (isSelected) Magenta600 else Color.Transparent, tween(200), label = "bg"
     )
     val iconTint by animateColorAsState(
         if (isSelected) Color.White else Slate400, tween(200), label = "tint"
@@ -471,7 +500,7 @@ private fun MemberViewToggle(
     }
 }
 
-// ─── Grid Card ───────────────────────────────────────────────────────────────────
+// ─── Grid Card ────────────────────────────────────────────────────────────────
 @Composable
 private fun MemberGridCard(
     member        : UserMemberResponse,
@@ -486,7 +515,7 @@ private fun MemberGridCard(
     var visible  by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
-    val isActive = member.businessMember.statusLabel.contains("activ", ignoreCase = true)
+    val isActive   = member.businessMember.statusLabel.contains("activ", ignoreCase = true)
     val statusBg   = if (isActive) Color(0xFFF0FDF4) else Color(0xFFFFF7ED)
     val statusTint = if (isActive) Color(0xFF059669) else Color(0xFFEA580C)
 
@@ -501,8 +530,8 @@ private fun MemberGridCard(
                 .shadow(
                     elevation    = 3.dp,
                     shape        = RoundedCornerShape(20.dp),
-                    ambientColor = Blue500.copy(alpha = 0.06f),
-                    spotColor    = Blue600.copy(alpha = 0.09f)
+                    ambientColor = Magenta500.copy(alpha = 0.06f),
+                    spotColor    = Magenta600.copy(alpha = 0.09f)
                 )
                 .clip(RoundedCornerShape(20.dp))
                 .clickable(remember { MutableInteractionSource() }, null) {
@@ -515,7 +544,7 @@ private fun MemberGridCard(
             shadowElevation = 0.dp
         ) {
             Column {
-                // Header
+                // Header with gradient
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -523,8 +552,8 @@ private fun MemberGridCard(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    avatarColor.copy(alpha = 0.16f),
-                                    avatarColor.copy(alpha = 0.04f)
+                                    avatarColor.copy(alpha = 0.18f),
+                                    avatarColor.copy(alpha = 0.05f)
                                 )
                             )
                         )
@@ -539,13 +568,17 @@ private fun MemberGridCard(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.80f))
+                                .background(Color.White.copy(alpha = 0.85f))
                                 .clickable(remember { MutableInteractionSource() }, null) {
                                     showMenu = true
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Outlined.MoreVert, null, tint = Slate600, modifier = Modifier.size(14.dp))
+                            Icon(
+                                Icons.Outlined.MoreVert, null,
+                                tint     = Slate600,
+                                modifier = Modifier.size(14.dp)
+                            )
                         }
                         DropdownMenu(
                             expanded         = showMenu,
@@ -556,15 +589,26 @@ private fun MemberGridCard(
                         ) {
                             DropdownMenuItem(
                                 text = {
-                                    Text("Editar", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Slate900)
+                                    Text(
+                                        "Editar",
+                                        fontSize   = 14.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color      = Slate900
+                                    )
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Outlined.Edit, null, tint = Blue600, modifier = Modifier.size(16.dp))
+                                    Icon(
+                                        Icons.Outlined.Edit, null,
+                                        tint     = Magenta600,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 },
                                 onClick = {
                                     showMenu = false
                                     navController.navigate(
-                                        ClientScreen.UpdateBusinessMember.createRoute(userId = member.user.id)
+                                        ClientScreen.UpdateBusinessMember.createRoute(
+                                            userId = member.user.id
+                                        )
                                     )
                                 }
                             )
@@ -575,18 +619,18 @@ private fun MemberGridCard(
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Box(
                             modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(15.dp))
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(16.dp))
                                 .background(
                                     Brush.linearGradient(
-                                        listOf(avatarColor, avatarColor.copy(alpha = 0.60f))
+                                        listOf(avatarColor, avatarColor.copy(alpha = 0.65f))
                                     )
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text          = initials,
-                                fontSize      = 17.sp,
+                                fontSize      = 18.sp,
                                 fontWeight    = FontWeight.Bold,
                                 color         = Color.White,
                                 letterSpacing = (-0.3).sp
@@ -597,7 +641,12 @@ private fun MemberGridCard(
 
                 // Content
                 Column(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp)
+                    modifier = Modifier.padding(
+                        start   = 12.dp,
+                        end     = 12.dp,
+                        top     = 10.dp,
+                        bottom  = 12.dp
+                    )
                 ) {
                     Text(
                         text          = member.user.username,
@@ -620,13 +669,13 @@ private fun MemberGridCard(
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         Box(
                             modifier = Modifier
-                                .background(Blue50, RoundedCornerShape(7.dp))
+                                .background(Magenta50, RoundedCornerShape(7.dp))
                                 .padding(horizontal = 7.dp, vertical = 3.dp)
                         ) {
                             Text(
                                 member.businessMember.roleLabel,
                                 fontSize      = 9.sp,
-                                color         = Blue600,
+                                color         = Magenta600,
                                 fontWeight    = FontWeight.SemiBold,
                                 letterSpacing = 0.3.sp
                             )
@@ -651,7 +700,7 @@ private fun MemberGridCard(
     }
 }
 
-// ─── Empty Search State ──────────────────────────────────────────────────────────
+// ─── Empty Search State ───────────────────────────────────────────────────────
 @Composable
 private fun MemberSearchEmptyState(query: String) {
     Column(
@@ -665,10 +714,14 @@ private fun MemberSearchEmptyState(query: String) {
             modifier = Modifier
                 .size(76.dp)
                 .clip(RoundedCornerShape(22.dp))
-                .background(Blue50),
+                .background(Magenta50),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Outlined.SearchOff, null, tint = Blue600, modifier = Modifier.size(34.dp))
+            Icon(
+                Icons.Outlined.SearchOff, null,
+                tint     = Magenta600,
+                modifier = Modifier.size(34.dp)
+            )
         }
         Text(
             "Sin resultados",
@@ -687,7 +740,7 @@ private fun MemberSearchEmptyState(query: String) {
     }
 }
 
-// ─── Empty Members State ─────────────────────────────────────────────────────────
+// ─── Empty Members State ──────────────────────────────────────────────────────
 @Composable
 private fun EmptyMembersState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -698,19 +751,25 @@ private fun EmptyMembersState() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(96.dp)
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(Blue50),
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Magenta50),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Brush.linearGradient(listOf(Blue600, Blue500))),
+                        .size(62.dp)
+                        .clip(RoundedCornerShape(19.dp))
+                        .background(
+                            Brush.linearGradient(listOf(Magenta700, Magenta600))
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Outlined.Group, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                    Icon(
+                        Icons.Outlined.Group, null,
+                        tint     = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
             }
             Text(
