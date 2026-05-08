@@ -1,0 +1,218 @@
+package com.optic.pramozventicoappz.domain.repository
+
+
+import com.optic.pramozventicoappz.domain.model.clients.ClientCreateRequest
+import com.optic.pramozventicoappz.domain.model.clients.ClientResponse
+import com.optic.pramozventicoappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramozventicoappz.domain.model.product.MiniProductResponse
+import com.optic.pramozventicoappz.domain.model.product.ProductCreateRequest
+import com.optic.pramozventicoappz.domain.model.product.ProductResponse
+import com.optic.pramozventicoappz.domain.model.product.ProductUpdateRequest
+import com.optic.pramozventicoappz.domain.model.reservations.ReservationCreateRequest
+import com.optic.pramozventicoappz.domain.model.reservations.ReservationResponse
+import com.optic.pramozventicoappz.domain.model.reservations.ReservationUpdateRequest
+import com.optic.pramozventicoappz.domain.model.reservations.completeresponse.ReservationResponseComplete
+import com.optic.pramozventicoappz.domain.model.services.ServiceCreateRequest
+import com.optic.pramozventicoappz.domain.model.services.ServiceResponse
+import com.optic.pramozventicoappz.domain.model.services.ServiceUpdateRequest
+import com.optic.pramozventicoappz.domain.model.staff.StaffResponse
+import com.optic.pramozventicoappz.domain.model.response.DefaultResponse
+import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemResponse
+import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemUpdateRequest
+import com.optic.pramozventicoappz.domain.model.sales.CreateSaleWithItemsRequest
+import com.optic.pramozventicoappz.domain.model.sales.SaleCreateRequest
+import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemCreateRequest
+import com.optic.pramozventicoappz.domain.model.sales.SaleResponse
+import com.optic.pramozventicoappz.domain.model.sales.SaleUpdateRequest
+import com.optic.pramozventicoappz.domain.model.sales.SaleWithItemsResponse
+import com.optic.pramozventicoappz.domain.model.sales.SalesStatsResponse
+
+import com.optic.pramozventicoappz.domain.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.Response
+
+interface ReservasRepository {
+
+    //sales
+
+    suspend fun createSale(
+        request: SaleCreateRequest
+    ): Resource<SaleResponse>
+
+    suspend fun createSaleWithItems(
+        request: CreateSaleWithItemsRequest
+    ): Resource<SaleResponse>
+
+    fun getSalesByBusiness(
+        businessId: Int,
+        limit: Int
+    ): Flow<Resource<List<SaleResponse>>>
+
+    suspend fun getSaleById(
+        saleId:Int
+    ): Resource<SaleWithItemsResponse>
+
+    suspend fun updateSale(
+        saleId: Int,
+        request: SaleUpdateRequest
+    ): Resource<SaleResponse>
+
+    suspend fun deleteSaleSoft(
+        saleId:Int
+    ): Resource<DefaultResponse>
+
+    suspend fun deleteSaleHard(
+        saleId:Int
+    ): Resource<DefaultResponse>
+
+
+
+
+
+    // SALE STATS
+    fun getSaleStats(
+        businessId: Int,
+        year: Int
+    ): Flow<Resource<SalesStatsResponse>>
+
+
+
+    // sale items:
+
+    suspend fun createSaleItem(
+        request: SaleItemCreateRequest
+    ): Resource<SaleItemResponse>
+
+    suspend fun createSaleItemBulk(
+        request: List<SaleItemCreateRequest>
+    ): Resource<List<SaleItemResponse>>
+
+    suspend fun getItemsBySale(
+        saleId: Int,
+    ): Flow<Resource<List<SaleItemResponse>>>
+
+
+    suspend fun getSaleItemById(
+        itemId: Int,
+    ): Resource<SaleItemResponse>
+
+    suspend fun updateSaleItem(
+        itemId: Int,
+        request: SaleItemUpdateRequest
+    ): Resource<SaleItemResponse>
+
+
+    suspend fun deleteSaleItemHard(
+        itemId: Int
+    ): Resource<DefaultResponse>
+
+    suspend fun deleteSaleItemSoft(
+        itemId: Int
+    ): Resource<DefaultResponse>
+
+
+    // products
+
+    suspend fun createProduct(
+        request: ProductCreateRequest
+    ): Resource<MiniProductResponse>
+
+    suspend fun createProductSafe(
+        request: ProductCreateRequest
+    ): Resource<ProductResponse>
+
+    suspend fun getProductByBusiness(
+        businessId: Int,
+        name: String
+    ): Flow<Resource<List<MiniProductResponse>>>
+
+
+    suspend fun getProductById(
+        productId: Int,
+    ): Resource<ProductResponse>
+
+    suspend fun updateProduct(
+        productId: Int,
+        request: ProductUpdateRequest
+    ): Resource<ProductResponse>
+
+    suspend fun deleteProductSoft(
+        productId: Int,
+    ): Resource<DefaultResponse>
+
+    suspend fun deleteProductHard(
+        productId: Int,
+    ): Resource<DefaultResponse>
+
+
+
+
+
+    // reservas
+
+    suspend fun createReservation(
+        request: ReservationCreateRequest
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun updateReservation(
+        reservationId: Int,
+        request: ReservationUpdateRequest
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun getReservationById(
+        reservationId: Int,
+    ): Flow<Resource<ReservationResponse>>
+
+    suspend fun getReservations(
+    ): Flow<Resource<List<ReservationResponse>>>
+
+    suspend fun getReservationsByProvider(
+        providerId: Int
+    ): Flow<Resource<List<ReservationResponseComplete>>>
+
+    // clients
+    suspend fun getClientsByBusiness(
+        businessId: Int,
+        fullName:String,
+        email:String
+    ): Flow<Resource<List<ClientResponse>>>
+
+    suspend fun createClient(
+        request: ClientCreateRequest
+    ): Flow<Resource<ClientResponse>>
+
+    suspend fun updateClient(
+        clientId: Int,
+        request: ClientUpdateRequest
+    ): Flow<Resource<ClientResponse>>
+
+    suspend fun deleteClient(
+        clientId:Int,
+    ): Resource<DefaultResponse>
+
+
+    suspend fun getClientById(
+        clientId: Int,
+    ): Flow<Resource<ClientResponse>>
+
+
+    //services
+    suspend fun createService(
+        request: ServiceCreateRequest
+    ): Flow<Resource<ServiceResponse>>
+
+    suspend fun updateService(
+        serviceId: Int,
+        request: ServiceUpdateRequest
+    ): Flow<Resource<ServiceResponse>>
+
+    suspend fun getServiceById(
+        serviceId: Int,
+    ): Flow<Resource<ServiceResponse>>
+
+    suspend fun getServicesByProvider(providerId: Int, name:String): Flow<Resource<List<ServiceResponse>>>
+    suspend fun getStaffTotales(): Flow<Resource<List<StaffResponse>>>
+
+
+}

@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace 'com.optic.pramosreservasappz'
+    namespace 'com.optic.pramozventicoappz'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.optic.pramosreservasappz"
+        applicationId "com.optic.pramozventicoappz"
         minSdk 23
         targetSdk 35
-        versionCode 6
-        versionName "6.0"
+        versionCode 3
+        versionName "3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -23,7 +23,8 @@ android {
         }
     }
 
-    buildTypes {
+
+
 
         debug {
             minifyEnabled false

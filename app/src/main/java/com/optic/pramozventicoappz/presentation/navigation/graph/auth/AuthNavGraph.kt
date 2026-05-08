@@ -1,0 +1,33 @@
+package com.optic.pramozventicoappz.presentation.navigation.graph.auth
+
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
+import com.optic.pramozventicoappz.presentation.navigation.Graph
+import com.optic.pramozventicoappz.presentation.navigation.screen.auth.AuthScreen
+import com.optic.pramozventicoappz.presentation.screens.auth.login.LoginScreen
+import androidx.navigation.navArgument
+
+
+fun NavGraphBuilder.AuthNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.AUTH,
+        startDestination = AuthScreen.Login.route
+    ) {
+        // ✅ Login con argumento opcional "redirect"
+        composable(
+            route = "${AuthScreen.Login.route}?redirect={redirect}",
+            arguments = listOf(
+                navArgument("redirect") {
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
+            LoginScreen(navController)
+        }
+
+
+    }
+}
