@@ -195,12 +195,13 @@ fun ProductContent(
                                         ),
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    pair.forEach { product ->
-                                        ProductGridCard (
+                                    pair.forEachIndexed { index, product ->   // ← forEachIndexed
+                                        ProductGridCard(
                                             product       = product,
                                             modifier      = Modifier.weight(1f),
                                             navController = navController,
-                                            onDelete      = { viewModel.deleteProduct(it.id) }
+                                            onDelete      = { viewModel.deleteProduct(it.id) },
+                                            isLeftColumn  = index == 0          // ← 0 = izquierda, 1 = derecha
                                         )
                                     }
                                     if (pair.size == 1) {

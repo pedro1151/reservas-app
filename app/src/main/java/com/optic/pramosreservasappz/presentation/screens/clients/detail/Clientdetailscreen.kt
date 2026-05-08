@@ -1,5 +1,12 @@
 package com.optic.pramosreservasappz.presentation.screens.clients
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,10 +23,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -31,20 +38,14 @@ import com.optic.pramosreservasappz.domain.util.Resource
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Pink700  = Color(0xFFC2185B)
-private val Pink600  = Color(0xFFE91E63)
-private val Pink500  = Color(0xFFEC407A)
-private val Pink400  = Color(0xFFF06292)
-private val Pink50   = Color(0xFFFFF0F3)
-private val Slate900 = Color(0xFF0F172A)
-private val Slate700 = Color(0xFF334155)
-private val Slate500 = Color(0xFF64748B)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate200 = Color(0xFFE2E8F0)
-private val Slate100 = Color(0xFFF1F5F9)
-private val PageBg   = Color(0xFFF8F4F6)
+private val Pink700    = Color(0xFFC2185B)
+private val Pink600    = Color(0xFFE91E63)
+private val Pink500    = Color(0xFFEC407A)
+private val Pink50     = Color(0xFFFFF0F3)
+private val TextPrimary   = Color(0xFF0F172A)
+private val TextSecondary = Color(0xFF94A3B8)
+private val BorderGray    = Color(0xFFE2E8F0)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientDetailScreen(
     navController: NavHostController,
@@ -60,26 +61,16 @@ fun ClientDetailScreen(
     when (val state = oneClientState) {
         is Resource.Loading -> {
             Box(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .background(PageBg),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    CircularProgressIndicator(
-                        color       = Pink600,
-                        strokeWidth = 2.5.dp,
-                        modifier    = Modifier.size(30.dp)
-                    )
-                    Text(
-                        "Cargando perfil...",
-                        fontSize = 13.sp,
-                        color    = Slate400
-                    )
-                }
+                CircularProgressIndicator(
+                    color       = Pink600,
+                    strokeWidth = 2.dp,
+                    modifier    = Modifier.size(28.dp)
+                )
             }
         }
 
@@ -89,28 +80,16 @@ fun ClientDetailScreen(
 
         is Resource.Failure -> {
             Box(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .background(PageBg),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier            = Modifier.padding(32.dp)
-                ) {
-                    Icon(
-                        Icons.Outlined.WifiOff, null,
-                        tint     = Slate400,
-                        modifier = Modifier.size(38.dp)
-                    )
-                    Text(
-                        "No se pudo cargar el cliente",
-                        color         = Slate500,
-                        fontSize      = 15.sp,
-                        fontWeight    = FontWeight.SemiBold
-                    )
-                }
+                Text(
+                    text     = "No se pudo cargar el cliente",
+                    color    = TextSecondary,
+                    fontSize = 14.sp
+                )
             }
         }
 
@@ -125,350 +104,255 @@ private fun ClientDetailContent(
     navController: NavHostController
 ) {
     val scrollState = rememberScrollState()
-    val initials    = getDetailInitials(client.fullName)
-    val avatarColor = getDetailAvatarColor(client.id)
+    val avatarColor = remember(client.id) { getDetailAvatarColor(client.id) }
+    val initials    = remember(client.fullName) { getDetailInitials(client.fullName) }
+    var expanded    by remember { mutableStateOf(false) }
+
+    val rotate by animateFloatAsState(
+        targetValue   = if (expanded) 180f else 0f,
+        animationSpec = tween(180),
+        label         = "expandRotation"
+    )
+
+    // Build location string
+    val locationParts = listOfNotNull(
+        client.address?.takeIf { it.isNotBlank() },
+        client.city?.takeIf { it.isNotBlank() },
+        client.state?.takeIf { it.isNotBlank() },
+        client.country?.takeIf { it.isNotBlank() }
+    )
+    val locationText = locationParts.joinToString(", ").ifBlank { "-" }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Slate100),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Outlined.ArrowBack, null,
-                                tint     = Slate700,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = TextPrimary
+                        )
                     }
                 },
                 title = {},
                 actions = {
-                    // Botón editar
-                    IconButton(onClick = {
-                        navController.navigate(
-                            ClientScreen.ABMCliente.createRoute(
-                                clientId = client.id,
-                                editable = true
+                    IconButton(
+                        onClick = {
+                            navController.navigate(
+                                ClientScreen.ABMCliente.createRoute(
+                                    clientId = client.id,
+                                    editable = true
+                                )
                             )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "Editar",
+                            tint     = TextPrimary,
+                            modifier = Modifier.size(22.dp)
                         )
-                    }) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Pink50)
-                                .border(1.dp, Pink400.copy(alpha = 0.25f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Outlined.Edit, null,
-                                tint     = Pink600,
-                                modifier = Modifier.size(17.dp)
-                            )
-                        }
                     }
-                    // Menú más opciones
+
                     IconButton(onClick = { }) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Slate100),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Outlined.MoreVert, null,
-                                tint     = Slate700,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Outlined.MoreVert,
+                            contentDescription = "Más opciones",
+                            tint     = TextPrimary,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
-                    Spacer(Modifier.width(4.dp))
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
-        containerColor = PageBg
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(horizontal = 18.dp, vertical = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ── White hero card ─────────────────────────────────────────────────
+            // ── Avatar box ──────────────────────────────────────────────────
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-                    .background(Color.White)
-                    .padding(bottom = 28.dp),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                // Pink gradient strip at top
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(
-                                    Pink500.copy(alpha = 0f),
-                                    Pink600, Pink700,
-                                    Pink600,
-                                    Pink500.copy(alpha = 0f)
-                                )
-                            )
-                        )
-                )
-
-                Column(
-                    modifier            = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    // ── Avatar ──
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier         = Modifier.size(102.dp)
-                    ) {
-                        // Color halo
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clip(CircleShape)
-                                .background(
-                                    Brush.radialGradient(
-                                        listOf(avatarColor.copy(alpha = 0.16f), Color.Transparent)
-                                    )
-                                )
-                        )
-                        // Avatar circle
-                        Box(
-                            modifier = Modifier
-                                .size(86.dp)
-                                .shadow(
-                                    elevation    = 10.dp,
-                                    shape        = CircleShape,
-                                    ambientColor = avatarColor.copy(alpha = 0.28f),
-                                    spotColor    = avatarColor.copy(alpha = 0.38f)
-                                )
-                                .clip(CircleShape)
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(avatarColor, avatarColor.copy(alpha = 0.72f))
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text          = initials,
-                                fontSize      = 28.sp,
-                                fontWeight    = FontWeight.Black,
-                                color         = Color.White,
-                                letterSpacing = 1.sp
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(14.dp))
-
-                    // ── Nombre ──
-                    Text(
-                        text          = client.fullName,
-                        fontSize      = 22.sp,
-                        fontWeight    = FontWeight.Bold,
-                        color         = Slate900,
-                        letterSpacing = (-0.5).sp
+                    .size(92.dp)
+                    .shadow(
+                        elevation    = 10.dp,
+                        shape        = RoundedCornerShape(28.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.04f),
+                        spotColor    = Color.Black.copy(alpha = 0.08f)
                     )
-
-                    // Subtitle — email o ciudad/país
-                    val subtitle = client.email
-                        ?: listOfNotNull(client.city, client.country).joinToString(", ").ifBlank { null }
-                    if (subtitle != null) {
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text     = subtitle,
-                            fontSize = 13.sp,
-                            color    = Slate400,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    // Badge "Cliente"
-                    Spacer(Modifier.height(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(Pink50, RoundedCornerShape(8.dp))
-                            .border(1.dp, Pink400.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
-                    ) {
-                        Row(
-                            verticalAlignment     = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                Icons.Outlined.Person, null,
-                                tint     = Pink600,
-                                modifier = Modifier.size(10.dp)
-                            )
-                            Text(
-                                "Cliente",
-                                fontSize      = 11.sp,
-                                color         = Pink600,
-                                fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.3.sp
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(22.dp))
-
-                    // ── Iconos de acción rápida ──
-                    Row(
-                        modifier              = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
-                    ) {
-                        ActionIcon(
-                            icon    = Icons.Outlined.CalendarMonth,
-                            label   = "Cita",
-                            tint    = Pink600,
-                            bg      = Pink50,
-                            ring    = Pink400.copy(alpha = 0.22f),
-                            modifier = Modifier.weight(1f)
-                        )
-                        ActionIcon(
-                            icon    = Icons.Outlined.ChatBubbleOutline,
-                            label   = "Mensaje",
-                            tint    = Color(0xFF7C3AED),
-                            bg      = Color(0xFFF5F3FF),
-                            ring    = Color(0xFF7C3AED).copy(alpha = 0.18f),
-                            modifier = Modifier.weight(1f)
-                        )
-                        ActionIcon(
-                            icon    = Icons.Outlined.Phone,
-                            label   = "Llamar",
-                            tint    = Color(0xFF059669),
-                            bg      = Color(0xFFF0FDF4),
-                            ring    = Color(0xFF059669).copy(alpha = 0.18f),
-                            modifier = Modifier.weight(1f)
-                        )
-                        ActionIcon(
-                            icon    = Icons.Outlined.Mail,
-                            label   = "Email",
-                            tint    = Color(0xFF0284C7),
-                            bg      = Color(0xFFF0F9FF),
-                            ring    = Color(0xFF0284C7).copy(alpha = 0.18f),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(
+                        Brush.linearGradient(listOf(avatarColor, avatarColor.copy(alpha = 0.72f)))
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text          = initials,
+                    fontSize      = 28.sp,
+                    fontWeight    = FontWeight.Black,
+                    color         = Color.White,
+                    letterSpacing = 0.5.sp
+                )
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(18.dp))
 
-            // ── Campos de información ─────────────────────────────────────────
+            // ── Nombre ──
+            Text(
+                text      = client.fullName,
+                fontSize  = 22.sp,
+                fontWeight = FontWeight.Black,
+                color     = TextPrimary,
+                maxLines  = 2,
+                overflow  = TextOverflow.Ellipsis
+            )
+
+            // ── Subtítulo (email o teléfono) ──
+            val subtitle = client.email?.takeIf { it.isNotBlank() }
+                ?: client.phone?.takeIf { it.isNotBlank() }
+            if (subtitle != null) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text      = subtitle,
+                    fontSize  = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color     = TextSecondary
+                )
+            }
+
+            Spacer(Modifier.height(18.dp))
+
+            // ── Chip "Cliente" ──
+            ClientTypeChip()
+
+            Spacer(Modifier.height(22.dp))
+
+            // ── Card: Contacto ──────────────────────────────────────────────
+            val hasPhone = !client.phone.isNullOrBlank()
+            val hasEmail = !client.email.isNullOrBlank()
+            if (hasPhone || hasEmail) {
+                DetailCard {
+                    DetailSectionTitle("Contacto")
+                    Spacer(Modifier.height(8.dp))
+
+                    if (hasPhone) {
+                        DetailRow(label = "Teléfono", value = client.phone!!)
+                    }
+                    if (hasPhone && hasEmail) {
+                        DetailDivider()
+                    }
+                    if (hasEmail) {
+                        DetailRow(label = "Correo", value = client.email!!)
+                    }
+                }
+                Spacer(Modifier.height(14.dp))
+            }
+
+            // ── Card: Información principal ─────────────────────────────────
+            DetailCard {
+                DetailRow(
+                    label = "Empresa",
+                    value = client.enterpriseName?.takeIf { it.isNotBlank() } ?: "-"
+                )
+
+                if (!client.address.isNullOrBlank() || locationParts.isNotEmpty()) {
+                    DetailDivider()
+                    DetailRow(label = "Ubicación", value = locationText)
+                }
+
+                DetailDivider()
+                DetailRow(
+                    label      = "Estado",
+                    value      = "Activo",
+                    valueColor = Color(0xFF059669)
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // ── Secciones de actividad ──────────────────────────────────────
+            DetailCard {
+                DetailSectionTitle("Actividad")
+                Spacer(Modifier.height(8.dp))
+
+                DetailRow(
+                    label = "Citas",
+                    value = "Ver historial →"
+                )
+                DetailDivider()
+                DetailRow(
+                    label = "Actualizaciones",
+                    value = "Ver historial →"
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // ── Expandible: Información adicional ───────────────────────────
             Column(
-                modifier            = Modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .shadow(
+                        elevation    = 8.dp,
+                        shape        = RoundedCornerShape(24.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.03f),
+                        spotColor    = Color.Black.copy(alpha = 0.07f)
+                    )
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.White)
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication        = null
+                        ) { expanded = !expanded }
+                        .padding(horizontal = 18.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text      = "Información adicional",
+                        fontSize  = 15.sp,
+                        fontWeight = FontWeight.Black,
+                        color     = TextPrimary,
+                        modifier  = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.ExpandMore,
+                        contentDescription = null,
+                        tint     = TextSecondary,
+                        modifier = Modifier.size(22.dp).rotate(rotate)
+                    )
+                }
 
-                // Sección Contacto — solo si hay datos
-                val hasPhone = !client.phone.isNullOrBlank()
-                val hasEmail = !client.email.isNullOrBlank()
-                if (hasPhone || hasEmail) {
-                    InfoSection(title = "Contacto") {
-                        client.phone?.let { phone ->
-                            DetailField(
-                                label  = "Teléfono",
-                                value  = phone,
-                                isLink = true,
-                                icon   = Icons.Outlined.Phone,
-                                tint   = Color(0xFF059669)
-                            )
-                        }
-                        if (hasPhone && hasEmail) SectionDivider()
-                        client.email?.let { email ->
-                            DetailField(
-                                label  = "Correo\nelectrónico",
-                                value  = email,
-                                isLink = true,
-                                icon   = Icons.Outlined.Mail,
-                                tint   = Color(0xFF0284C7)
-                            )
-                        }
+                AnimatedVisibility(
+                    visible = expanded,
+                    enter   = expandVertically(tween(220)) + fadeIn(tween(180)),
+                    exit    = shrinkVertically(tween(180)) + fadeOut(tween(120))
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 18.dp, vertical = 4.dp)) {
+                        DetailDivider()
+                        DetailRow(label = "Dirección",  value = client.address?.takeIf  { it.isNotBlank() } ?: "-")
+                        DetailDivider()
+                        DetailRow(label = "Ciudad",     value = client.city?.takeIf     { it.isNotBlank() } ?: "-")
+                        DetailDivider()
+                        DetailRow(label = "Provincia",  value = client.state?.takeIf    { it.isNotBlank() } ?: "-")
+                        DetailDivider()
+                        DetailRow(label = "País",       value = client.country?.takeIf  { it.isNotBlank() } ?: "-")
+                        Spacer(Modifier.height(8.dp))
                     }
-                }
-
-                // Sección con ciudad/país (mantiene la lógica original de "Empresa")
-                if (!client.city.isNullOrBlank() || !client.country.isNullOrBlank()) {
-                    val location = listOfNotNull(client.city, client.country).joinToString(", ")
-                    InfoSection(title = "Ubicación") {
-                        DetailField(
-                            label  = "Empresa",
-                            value  = location,
-                            isLink = false,
-                            icon   = Icons.Outlined.LocationOn,
-                            tint   = Pink600
-                        )
-                    }
-                }
-
-                // Campo dirección
-                InfoSection(title = "Notas") {
-                    DetailField(
-                        label       = "Dirección",
-                        value       = "",
-                        isLink      = true,
-                        placeholder = "Agregar dirección",
-                        icon        = Icons.Outlined.LocationOn,
-                        tint        = Slate400
-                    )
-                    SectionDivider()
-                    DetailField(
-                        label       = "Notas",
-                        value       = "",
-                        isLink      = false,
-                        placeholder = "Agregar tu nota",
-                        icon        = Icons.Outlined.Notes,
-                        tint        = Slate400
-                    )
-                }
-
-                // ── Citas / Actualizaciones ──
-                NavSection {
-                    DetailNavRow(
-                        title      = "Citas",
-                        icon       = Icons.Outlined.CalendarMonth,
-                        iconTint   = Pink600,
-                        iconBg     = Pink50,
-                        onClick    = { /* TODO: navegar a citas del cliente */ }
-                    )
-                    SectionDivider()
-                    DetailNavRow(
-                        title      = "Actualizaciones",
-                        icon       = Icons.Outlined.Notifications,
-                        iconTint   = Color(0xFF7C3AED),
-                        iconBg     = Color(0xFFF5F3FF),
-                        onClick    = { /* TODO */ }
-                    )
                 }
             }
 
@@ -477,236 +361,108 @@ private fun ClientDetailContent(
     }
 }
 
-// ─── Quick Action Button ─────────────────────────────────────────────────────────
+// ─── Chip ────────────────────────────────────────────────────────────────────────
 @Composable
-private fun ActionIcon(
-    icon     : ImageVector,
-    label    : String,
-    tint     : Color,
-    bg       : Color,
-    ring     : Color,
-    modifier : Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .shadow(2.dp, RoundedCornerShape(16.dp), ambientColor = tint.copy(alpha = 0.08f))
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
-            .border(1.dp, Slate200, RoundedCornerShape(16.dp))
-            .clickable(remember { MutableInteractionSource() }, null) { }
-            .padding(vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(7.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(38.dp)
-                .clip(CircleShape)
-                .background(bg)
-                .border(1.dp, ring, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp))
-        }
-        Text(
-            text          = label,
-            fontSize      = 10.sp,
-            color         = Slate500,
-            fontWeight    = FontWeight.SemiBold,
-            letterSpacing = 0.1.sp
-        )
-    }
-}
-
-// ─── Info Section Card ────────────────────────────────────────────────────────────
-@Composable
-private fun InfoSection(
-    title   : String,
-    content : @Composable ColumnScope.() -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            verticalAlignment     = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier              = Modifier.padding(start = 4.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(5.dp)
-                    .clip(CircleShape)
-                    .background(Pink600)
-            )
-            Text(
-                text          = title.uppercase(),
-                fontSize      = 10.sp,
-                fontWeight    = FontWeight.Bold,
-                color         = Pink600.copy(alpha = 0.80f),
-                letterSpacing = 1.4.sp
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(2.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(0.04f))
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color.White)
-                .border(1.dp, Pink600.copy(alpha = 0.08f), RoundedCornerShape(18.dp))
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            content             = content
-        )
-    }
-}
-
-// ─── Navigation Section Card ─────────────────────────────────────────────────────
-@Composable
-private fun NavSection(
-    content : @Composable ColumnScope.() -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            verticalAlignment     = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier              = Modifier.padding(start = 4.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(5.dp)
-                    .clip(CircleShape)
-                    .background(Pink600)
-            )
-            Text(
-                text          = "ACTIVIDAD",
-                fontSize      = 10.sp,
-                fontWeight    = FontWeight.Bold,
-                color         = Pink600.copy(alpha = 0.80f),
-                letterSpacing = 1.4.sp
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(2.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(0.04f))
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color.White)
-                .border(1.dp, Pink600.copy(alpha = 0.08f), RoundedCornerShape(18.dp))
-                .padding(vertical = 4.dp),
-            content = content
-        )
-    }
-}
-
-// ─── Detail Field ────────────────────────────────────────────────────────────────
-@Composable
-private fun DetailField(
-    label       : String,
-    value       : String,
-    isLink      : Boolean,
-    icon        : ImageVector,
-    tint        : Color,
-    placeholder : String = ""
-) {
+private fun ClientTypeChip() {
     Row(
-        modifier          = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(Pink600.copy(alpha = 0.10f))
+            .padding(horizontal = 13.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icon chip
         Box(
             modifier = Modifier
-                .size(32.dp)
-                .clip(RoundedCornerShape(9.dp))
-                .background(tint.copy(alpha = if (value.isBlank()) 0.06f else 0.10f)),
+                .size(18.dp)
+                .clip(CircleShape)
+                .background(Pink600.copy(alpha = 0.16f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                icon, null,
-                tint     = if (value.isBlank()) tint.copy(alpha = 0.45f) else tint,
-                modifier = Modifier.size(15.dp)
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null,
+                tint     = Pink600,
+                modifier = Modifier.size(11.dp)
             )
         }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text          = label,
-                fontSize      = 11.sp,
-                color         = Slate400,
-                fontWeight    = FontWeight.Medium,
-                letterSpacing = 0.1.sp,
-                lineHeight    = 14.sp
-            )
-            Spacer(Modifier.height(1.dp))
-            val displayText  = value.ifBlank { placeholder }
-            val displayColor = when {
-                value.isBlank() -> Slate200
-                isLink          -> Color(0xFF0D9488)   // mantiene el color teal original para links
-                else            -> Slate900
-            }
-            Text(
-                text          = displayText,
-                fontSize      = 14.sp,
-                color         = displayColor,
-                fontWeight    = if (value.isBlank()) FontWeight.Normal else FontWeight.Medium,
-                letterSpacing = (-0.1).sp,
-                maxLines      = 2,
-                overflow      = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-// ─── Navigation Row ──────────────────────────────────────────────────────────────
-@Composable
-private fun DetailNavRow(
-    title    : String,
-    icon     : ImageVector,
-    iconTint : Color,
-    iconBg   : Color,
-    onClick  : () -> Unit
-) {
-    Row(
-        modifier          = Modifier
-            .fillMaxWidth()
-            .clickable(remember { MutableInteractionSource() }, null, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment     = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(iconBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, null, tint = iconTint, modifier = Modifier.size(17.dp))
-        }
+        Spacer(Modifier.width(7.dp))
         Text(
-            text       = title,
-            fontSize   = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-            color      = Slate900,
-            modifier   = Modifier.weight(1f)
-        )
-        Icon(
-            Icons.Outlined.ChevronRight, null,
-            tint     = Slate200,
-            modifier = Modifier.size(20.dp)
+            text       = "Cliente",
+            fontSize   = 13.sp,
+            fontWeight = FontWeight.Bold,
+            color      = Pink600
         )
     }
 }
 
-// ─── Hairline divider ────────────────────────────────────────────────────────────
+// ─── Card container ───────────────────────────────────────────────────────────────
 @Composable
-private fun SectionDivider() {
-    HorizontalDivider(
-        color     = Slate200,
-        thickness = 0.5.dp,
-        modifier  = Modifier.padding(horizontal = 4.dp)
+private fun DetailCard(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation    = 8.dp,
+                shape        = RoundedCornerShape(24.dp),
+                ambientColor = Color.Black.copy(alpha = 0.03f),
+                spotColor    = Color.Black.copy(alpha = 0.07f)
+            )
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White)
+            .padding(18.dp),
+        content = content
     )
 }
 
-// ─── Helpers (sin cambios de lógica) ─────────────────────────────────────────────
+@Composable
+private fun DetailSectionTitle(title: String) {
+    Text(
+        text       = title,
+        fontSize   = 15.sp,
+        fontWeight = FontWeight.Black,
+        color      = TextPrimary
+    )
+}
+
+@Composable
+private fun DetailRow(
+    label      : String,
+    value      : String,
+    valueColor : Color = TextPrimary
+) {
+    Row(
+        modifier              = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 13.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment     = Alignment.Top
+    ) {
+        Text(
+            text       = label,
+            fontSize   = 13.sp,
+            color      = TextSecondary,
+            fontWeight = FontWeight.Medium,
+            modifier   = Modifier.width(105.dp)
+        )
+        Text(
+            text       = value,
+            fontSize   = 14.sp,
+            color      = valueColor,
+            fontWeight = FontWeight.SemiBold,
+            modifier   = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun DetailDivider() {
+    HorizontalDivider(
+        color     = BorderGray.copy(alpha = 0.65f),
+        thickness = 0.8.dp
+    )
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────────
 private fun getDetailInitials(fullName: String): String {
     val parts = fullName.trim().split(" ")
     return when {

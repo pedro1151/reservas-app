@@ -22,9 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,15 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramosreservasappz.domain.model.clients.ClientResponse
 import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import kotlin.math.abs
+import kotlinx.coroutines.launch
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Blue600  = Color(0xFF2563EB)
-private val Blue50   = Color(0xFFEFF6FF)
-private val Slate900 = Color(0xFF0F172A)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate200 = Color(0xFFE2E8F0)
-private val Red500   = Color(0xFFEF4444)
+private val Slate900     = Color(0xFF0F172A)
+private val Slate400     = Color(0xFF94A3B8)
+private val Slate200     = Color(0xFFE2E8F0)
+private val Red500       = Color(0xFFEF4444)
+private val ACTION_WIDTH = 64.dp
 
 @Composable
 fun ClientCard(
@@ -50,176 +47,192 @@ fun ClientCard(
     onDelete      : (ClientResponse) -> Unit,
     modifier      : Modifier = Modifier
 ) {
-    var offsetX           by remember { mutableStateOf(0f) }
-    var showDeleteDialog  by remember { mutableStateOf(false) }
-    var visible           by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) { visible = true }
-
+    val primary     = MaterialTheme.colorScheme.primary
     val avatarColor = remember(client.id) { getAvatarColor(client.id) }
     val initials    = remember(client.fullName) { getInitials(client.fullName) }
 
-    val maxSwipeDistance = -200f
-    val editThreshold    = -60f
-    val deleteThreshold  = -140f
+    val animatable = remember { Animatable(0f) }
+    val offsetX    = animatable.value
+    val scope      = rememberCoroutineScope()
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var visible          by remember { mutableStateOf(false) }
+    var isDragging       by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(20L * (client.id % 10))
+        visible = true
+    }
+
+    val maxSwipe        = -(ACTION_WIDTH.value * 2f)
+    val editThreshold   = -(ACTION_WIDTH.value * 0.7f)
+    val deleteThreshold = -(ACTION_WIDTH.value * 1.4f)
+
+    // Blanco en reposo → plomo suave al deslizar (igual que PrincipalProducCard)
+    val cardBgColor by animateColorAsState(
+        targetValue   = if (offsetX < -1f) Color(0xFFEEF0F2) else Color.White,
+        animationSpec = tween(durationMillis = 180, easing = FastOutSlowInEasing),
+        label         = "cardBg"
+    )
+
+    fun goToDetail() {
+        navController.navigate(ClientScreen.ClientDetail.createRoute(clientId = client.id))
+    }
+
+    fun goToEdit() {
+        navController.navigate(
+            ClientScreen.ABMCliente.createRoute(clientId = client.id, editable = true)
+        )
+    }
+
+    fun snap(target: Float) {
+        scope.launch {
+            animatable.animateTo(
+                targetValue   = target,
+                animationSpec = spring(
+                    dampingRatio = when (target) {
+                        0f       -> Spring.DampingRatioMediumBouncy
+                        maxSwipe -> Spring.DampingRatioNoBouncy
+                        else     -> Spring.DampingRatioLowBouncy
+                    },
+                    stiffness = when (target) {
+                        0f   -> Spring.StiffnessMedium
+                        else -> Spring.StiffnessMediumLow
+                    }
+                )
+            )
+        }
+    }
 
     AnimatedVisibility(
         visible = visible,
-        enter   = fadeIn(tween(250)) + expandVertically(tween(250)),
-        exit    = fadeOut(tween(180)) + shrinkVertically(tween(180))
+        enter   = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 4 },
+        exit    = fadeOut(tween(200)) + shrinkVertically(tween(200))
     ) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication        = null,
-                    enabled           = offsetX != 0f
-                ) { offsetX = 0f }
+                .padding(vertical = 5.dp)
         ) {
-            // ── Swipe action buttons ──
-            Row(
-                modifier              = Modifier
+
+            // ── Fondo blanco con botones estáticos detrás ──
+            Box(
+                modifier = Modifier
                     .fillMaxWidth()
                     .matchParentSize()
-                    .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment     = Alignment.CenterVertically
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.White)
             ) {
-                // Edit action pill
-                AnimatedVisibility(
-                    visible = offsetX <= editThreshold,
-                    enter   = fadeIn(tween(160)) + scaleIn(tween(160), initialScale = 0.80f),
-                    exit    = fadeOut(tween(120)) + scaleOut(tween(120))
+                Row(
+                    modifier              = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment     = Alignment.CenterVertically
                 ) {
+                    // ─── Botón EDITAR
                     Box(
                         modifier = Modifier
-                            .padding(end = 8.dp)
-                            .shadow(
-                                elevation    = 4.dp,
-                                shape        = RoundedCornerShape(14.dp),
-                                ambientColor = Blue600.copy(alpha = 0.20f),
-                                spotColor    = Blue600.copy(alpha = 0.28f)
-                            )
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(Brush.linearGradient(listOf(Color(0xFF1D4ED8), Blue600)))
-                            .clickable(remember { MutableInteractionSource() }, null) {
-                                offsetX = 0f
-                                navController.navigate(
-                                    ClientScreen.ABMCliente.createRoute(
-                                        clientId = client.id,
-                                        editable = true
-                                    )
-                                )
-                            }
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                            .width(ACTION_WIDTH)
+                            .fillMaxHeight()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication        = null
+                            ) {
+                                if (offsetX <= editThreshold) { snap(0f); goToEdit() }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(3.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .border(1.5.dp, primary, RoundedCornerShape(14.dp))
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.18f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Edit, null,
-                                    tint     = Color.White,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                            }
-                            Text(
-                                "Editar",
-                                color         = Color.White,
-                                fontSize      = 10.sp,
-                                fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.2.sp
+                            Icon(
+                                imageVector        = Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint               = primary,
+                                modifier           = Modifier.size(19.dp)
                             )
                         }
                     }
-                }
 
-                // Delete action pill
-                AnimatedVisibility(
-                    visible = offsetX <= deleteThreshold,
-                    enter   = fadeIn(tween(160)) + scaleIn(tween(160), initialScale = 0.80f),
-                    exit    = fadeOut(tween(120)) + scaleOut(tween(120))
-                ) {
+                    // ─── Botón ELIMINAR
                     Box(
                         modifier = Modifier
-                            .padding(end = 4.dp)
-                            .shadow(
-                                elevation    = 4.dp,
-                                shape        = RoundedCornerShape(14.dp),
-                                ambientColor = Red500.copy(alpha = 0.20f),
-                                spotColor    = Red500.copy(alpha = 0.28f)
-                            )
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(Red500)
-                            .clickable(remember { MutableInteractionSource() }, null) {
-                                showDeleteDialog = true
-                            }
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                            .width(ACTION_WIDTH)
+                            .fillMaxHeight()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication        = null
+                            ) {
+                                if (offsetX <= deleteThreshold) showDeleteDialog = true
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(3.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(primary),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.18f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete, null,
-                                    tint     = Color.White,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                            }
-                            Text(
-                                "Eliminar",
-                                color         = Color.White,
-                                fontSize      = 10.sp,
-                                fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.2.sp
+                            Icon(
+                                imageVector        = Icons.Default.Delete,
+                                contentDescription = "Eliminar",
+                                tint               = Color.White,
+                                modifier           = Modifier.size(19.dp)
                             )
                         }
                     }
                 }
             }
 
-            // ── Main card ──
-            Surface(
+            // ── Card principal — se desliza y adquiere tono plomo ──
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(x = offsetX.dp)
-                    .graphicsLayer {
-                        scaleY = (1f - abs(offsetX) / 1000f).coerceIn(0.98f, 1f)
-                    }
                     .shadow(
-                        elevation    = 2.dp,
-                        shape        = RoundedCornerShape(18.dp),
-                        ambientColor = Blue600.copy(alpha = 0.05f)
+                        elevation    = if (offsetX > -1f) 4.dp else 2.dp,
+                        shape        = RoundedCornerShape(20.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.04f),
+                        spotColor    = Color.Black.copy(alpha = 0.08f),
+                        clip         = false
                     )
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(cardBgColor)
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
-                            onDragEnd = {
-                                offsetX = when {
-                                    offsetX <= deleteThreshold -> maxSwipeDistance
-                                    offsetX <= editThreshold   -> -80f
-                                    else                       -> 0f
+                            onDragStart = { isDragging = true },
+                            onHorizontalDrag = { _, drag ->
+                                scope.launch {
+                                    val current    = animatable.value
+                                    val resistance = if (current < maxSwipe * 0.88f) 0.25f else 1f
+                                    animatable.snapTo(
+                                        (current + drag * resistance).coerceIn(maxSwipe, 0f)
+                                    )
                                 }
                             },
-                            onHorizontalDrag = { _, drag ->
-                                offsetX = (offsetX + drag).coerceIn(maxSwipeDistance, 0f)
+                            onDragEnd = {
+                                val target = when {
+                                    animatable.value <= deleteThreshold -> maxSwipe
+                                    animatable.value <= editThreshold   -> -ACTION_WIDTH.value
+                                    else                                -> 0f
+                                }
+                                snap(target)
+                                scope.launch {
+                                    kotlinx.coroutines.delay(100)
+                                    isDragging = false
+                                }
+                            },
+                            onDragCancel = {
+                                snap(0f)
+                                scope.launch {
+                                    kotlinx.coroutines.delay(100)
+                                    isDragging = false
+                                }
                             }
                         )
                     }
@@ -227,17 +240,9 @@ fun ClientCard(
                         interactionSource = remember { MutableInteractionSource() },
                         indication        = null
                     ) {
-                        if (offsetX == 0f) {
-                            navController.navigate(
-                                ClientScreen.ClientDetail.createRoute(clientId = client.id)
-                            )
-                        } else {
-                            offsetX = 0f
-                        }
-                    },
-                shape           = RoundedCornerShape(18.dp),
-                color           = Color.White,
-                shadowElevation = 0.dp
+                        if (isDragging) return@clickable
+                        if (offsetX < -1f) snap(0f) else goToDetail()
+                    }
             ) {
                 Row(
                     modifier          = Modifier
@@ -245,42 +250,38 @@ fun ClientCard(
                         .padding(horizontal = 14.dp, vertical = 13.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // ── Avatar ──
+                    // ── Avatar sutil (fondo tenue + iniciales de color) ──
                     Box(
                         modifier = Modifier
-                            .size(46.dp)
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(
-                                Brush.linearGradient(
-                                    listOf(avatarColor, avatarColor.copy(alpha = 0.70f))
-                                )
-                            ),
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(avatarColor.copy(alpha = 0.10f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text          = initials,
-                            fontSize      = 15.sp,
+                            fontSize      = 16.sp,
                             fontWeight    = FontWeight.Bold,
-                            color         = Color.White,
+                            color         = avatarColor.copy(alpha = 0.88f),
                             letterSpacing = 0.3.sp
                         )
                     }
 
-                    Spacer(Modifier.width(13.dp))
+                    Spacer(Modifier.width(14.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text          = client.fullName,
-                            fontSize      = 14.sp,
+                            fontSize      = 15.sp,
                             fontWeight    = FontWeight.SemiBold,
                             color         = Slate900,
                             maxLines      = 1,
                             overflow      = TextOverflow.Ellipsis,
                             letterSpacing = (-0.2).sp
                         )
-                        Spacer(Modifier.height(4.dp))
 
-                        // Subtitle row
+                        Spacer(Modifier.height(6.dp))
+
                         val subtitle = client.email ?: client.phone
                         if (subtitle != null) {
                             Row(
@@ -288,11 +289,11 @@ fun ClientCard(
                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Icon(
-                                    if (client.email != null) Icons.Outlined.Mail
+                                    imageVector = if (client.email != null) Icons.Outlined.Mail
                                     else Icons.Outlined.Phone,
-                                    null,
+                                    contentDescription = null,
                                     tint     = Slate400,
-                                    modifier = Modifier.size(11.dp)
+                                    modifier = Modifier.size(10.dp)
                                 )
                                 Text(
                                     text     = subtitle,
@@ -305,11 +306,12 @@ fun ClientCard(
                         }
                     }
 
-                    if (offsetX == 0f) {
+                    if (offsetX > -1f) {
                         Icon(
-                            Icons.Outlined.ChevronRight, null,
-                            tint     = Slate200,
-                            modifier = Modifier.size(18.dp)
+                            imageVector        = Icons.Outlined.ChevronRight,
+                            contentDescription = null,
+                            tint               = Slate200,
+                            modifier           = Modifier.size(18.dp)
                         )
                     }
                 }
@@ -317,21 +319,38 @@ fun ClientCard(
         }
     }
 
-    // ── Delete confirmation dialog ──
+    // ── Dialog de confirmación de borrado ──
     if (showDeleteDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false; offsetX = 0f },
+            onDismissRequest = { showDeleteDialog = false; snap(0f) },
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFFEF2F2)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector        = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint               = Red500,
+                        modifier           = Modifier.size(22.dp)
+                    )
+                }
+            },
             title = {
                 Text(
-                    "¿Eliminar cliente?",
-                    fontSize   = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = Slate900
+                    text          = "¿Eliminar cliente?",
+                    fontSize      = 17.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = Slate900,
+                    letterSpacing = (-0.3).sp
                 )
             },
             text = {
                 Text(
-                    "Se eliminará el perfil de ${client.fullName}. Esta acción no se puede deshacer.",
+                    text       = "Se eliminará \"${client.fullName}\". Esta acción no se puede deshacer.",
                     fontSize   = 14.sp,
                     color      = Slate400,
                     lineHeight = 20.sp
@@ -339,29 +358,29 @@ fun ClientCard(
             },
             confirmButton = {
                 Button(
-                    onClick = {
-                        showDeleteDialog = false
-                        visible = false
-                        onDelete(client)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Red500),
-                    shape  = RoundedCornerShape(12.dp)
+                    onClick  = { showDeleteDialog = false; visible = false; onDelete(client) },
+                    colors   = ButtonDefaults.buttonColors(containerColor = Red500),
+                    shape    = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Eliminar", color = Color.White, fontWeight = FontWeight.SemiBold)
+                    Text("Eliminar cliente", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false; offsetX = 0f }) {
-                    Text("Cancelar", color = Slate900)
+                TextButton(
+                    onClick  = { showDeleteDialog = false; snap(0f) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancelar", color = Slate400, fontWeight = FontWeight.Medium)
                 }
             },
-            shape          = RoundedCornerShape(18.dp),
+            shape          = RoundedCornerShape(24.dp),
             containerColor = Color.White
         )
     }
 }
 
-// ─── Public helpers (also used by ClientContent grid card) ──────────────────────
+// ─── Public helpers (también usados por el grid card en ClientContent) ──────────
 fun getAvatarColor(id: Int): Color {
     val colors = listOf(
         Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF7C3AED),
