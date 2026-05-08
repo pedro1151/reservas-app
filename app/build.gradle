@@ -23,8 +23,7 @@ android {
         }
     }
 
-
-
+    buildTypes {
 
         debug {
             minifyEnabled false
@@ -122,9 +121,9 @@ dependencies {
     // ----------------------------
     // Room no se usa de momento, al momento de usar ver room compatible, con googe play billings
     // ----------------------------
-     implementation "androidx.room:room-runtime:2.6.1"
-     implementation "androidx.room:room-ktx:2.6.1"
-     kapt "androidx.room:room-compiler:2.6.1"
+    implementation "androidx.room:room-runtime:2.6.1"
+    implementation "androidx.room:room-ktx:2.6.1"
+    kapt "androidx.room:room-compiler:2.6.1"
 
     // ----------------------------
     // DataStore
@@ -154,6 +153,7 @@ dependencies {
     // Google Play Billing
     implementation "com.android.billingclient:billing:7.1.1"
     implementation "com.android.billingclient:billing-ktx:7.1.1"
+
     // ----------------------------
     // Utils
     // ----------------------------
