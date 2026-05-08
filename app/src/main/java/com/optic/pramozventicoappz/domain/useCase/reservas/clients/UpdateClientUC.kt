@@ -1,0 +1,11 @@
+package com.optic.pramozventicoappz.domain.useCase.reservas.clients
+
+import com.optic.pramozventicoappz.domain.model.clients.ClientUpdateRequest
+import com.optic.pramozventicoappz.domain.repository.ReservasRepository
+
+class UpdateClientUC constructor(private val repository: ReservasRepository) {
+    suspend operator fun invoke(
+        clientId:Int,
+        request: ClientUpdateRequest
+    ) = repository.updateClient(clientId=clientId, request=request)
+}

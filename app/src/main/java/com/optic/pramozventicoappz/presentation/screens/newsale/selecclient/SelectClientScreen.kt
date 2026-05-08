@@ -1,0 +1,130 @@
+package com.optic.pramozventicoappz.presentation.screens.newsale.selecclient
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.optic.pramozventicoappz.domain.util.Resource
+import com.optic.pramozventicoappz.presentation.authstate.AuthStateVM
+import com.optic.pramozventicoappz.presentation.components.BackTopBar
+import com.optic.pramozventicoappz.presentation.screens.newsale.NewSaleViewModel
+import com.optic.pramozventicoappz.presentation.settings.idiomas.LocalizedContext
+
+@Composable
+fun SelectClientScreen(
+    navController: NavHostController,
+    viewModel: NewSaleViewModel,
+    authStateVM: AuthStateVM = hiltViewModel()
+) {
+    val sessionData by authStateVM.sessionData.collectAsState()
+    // DATOS DE LA SESSION
+    val businessId = sessionData.businessId
+    val email = sessionData.email
+    val userId = sessionData.userId
+    val planCode = sessionData.planCode
+
+
+    val clientResource by viewModel.clientsState.collectAsState()
+
+    LaunchedEffect(businessId) {
+        if (businessId != null) {
+            viewModel.loadClients("", "", businessId)
+        }
+    }
+
+    val localizedContext = LocalizedContext.current
+
+
+
+    Scaffold(
+        topBar = {
+            BackTopBar(
+                navController = navController,
+                title = "Seleccionar Cliente"
+            )
+        },
+
+        containerColor = Color.White
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues) // 🔥 IMPORTANTE
+        ) {
+
+            when (val result = clientResource) {
+                is Resource.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.Black,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+
+                is Resource.Success -> {
+                    SaleSelectClientContent(
+                        clients = result.data,
+                        paddingValues = paddingValues,
+                        navController = navController,
+                        viewModel = viewModel
+
+                    )
+                }
+
+                is Resource.Failure -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = "No se pudo cargar los clientes",
+                                color = Color(0xFF9E9E9E),
+                                fontSize = 15.sp
+                            )
+                            TextButton(onClick = { viewModel.loadClients("", "", 1) }) {
+                                Text("Reintentar", color = Color.Black)
+                            }
+                        }
+                    }
+                }
+
+                else -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.Black,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
