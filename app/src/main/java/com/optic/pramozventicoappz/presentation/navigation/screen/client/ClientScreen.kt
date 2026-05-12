@@ -16,6 +16,12 @@ sealed class ClientScreen(
         icon = Icons.Default.Star
     )
 
+    object ReciboConfig: ClientScreen(
+        route = "recibo_config",
+        title = "Config. de Recibo",
+        icon = Icons.Default.Star
+    )
+
     object Sales: ClientScreen(
         route = "client/sales",
         title = "Inicio",

@@ -60,6 +60,7 @@ import com.optic.pramozventicoappz.presentation.screens.planes.seleccionarplanmo
 import com.optic.pramozventicoappz.presentation.screens.productos.abmproducto.ABMProductScreen
 import com.optic.pramozventicoappz.presentation.screens.productos.detail.ProductDetailScreen
 import com.optic.pramozventicoappz.presentation.screens.recibos.ReciboScreen
+import com.optic.pramozventicoappz.presentation.screens.recibos.configuracion.RecibosConfigScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -129,6 +130,10 @@ fun ClientNavGraph(
 
         composable(ClientScreen.Clientes.route) {
             ClientPrincipalScreen(navController, isAuthenticated)
+        }
+
+        composable(ClientScreen.ReciboConfig.route) {
+            RecibosConfigScreen(navController)
         }
 
         composable(ClientScreen.Historial.route) {

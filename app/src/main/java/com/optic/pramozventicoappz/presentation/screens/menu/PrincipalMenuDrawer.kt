@@ -190,6 +190,17 @@ fun PrincipalMenuDrawer(
 
                 item {
                     Box(modifier = Modifier.padding(horizontal = 14.dp)) {
+                        SaleMenuItem(
+                            onClick = { navigateAndClose(ClientScreen.ReciboConfig.route) },
+                            title = "Tu Recibo",
+                            subtitle = "Personaliza tu recibo",
+                            icon = Icons.Default.Receipt
+                        )
+                    }
+                }
+
+                item {
+                    Box(modifier = Modifier.padding(horizontal = 14.dp)) {
                         MenuDivider()
                     }
                 }
