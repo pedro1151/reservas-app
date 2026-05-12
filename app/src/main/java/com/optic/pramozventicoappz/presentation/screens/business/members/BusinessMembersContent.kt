@@ -42,21 +42,18 @@ import com.optic.pramozventicoappz.presentation.screens.business.BusinessViewMod
 import com.optic.pramozventicoappz.presentation.screens.business.members.components.BusinessMemberCard
 import com.optic.pramozventicoappz.presentation.util.getAvatarColor
 import com.optic.pramozventicoappz.presentation.util.getInitials
-import kotlinx.coroutines.launch
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 private val Magenta700  = Color(0xFFAD1457)
 private val Magenta600  = Color(0xFFD81B60)
 private val Magenta500  = Color(0xFFE91E63)
 private val Magenta50   = Color(0xFFFCE4EC)
-private val MagentaSoft = Color(0xFFFFF0F5)
 private val Slate900    = Color(0xFF0F172A)
 private val Slate600    = Color(0xFF475569)
 private val Slate400    = Color(0xFF94A3B8)
 private val Slate200    = Color(0xFFE2E8F0)
 private val Slate100    = Color(0xFFF1F5F9)
-private val Red500      = Color(0xFFEF4444)
-private val PageBg      = Color(0xFFF8FAFC)
+private val PageBg      = Color(0xFFF8F9FA)
 
 enum class MemberViewType { LIST, GRID }
 
@@ -73,9 +70,7 @@ fun BusinessMembersContent(
     val query        by viewModel.searchQuery.collectAsState()
     val localMembers by viewModel.localMembersList.collectAsState()
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope             = rememberCoroutineScope()
-    var viewType          by remember { mutableStateOf(MemberViewType.LIST) }
+    var viewType by remember { mutableStateOf(MemberViewType.LIST) }
 
     val hasQuery = query.isNotBlank()
     val filteredMembers = remember(query, localMembers) {
@@ -110,7 +105,7 @@ fun BusinessMembersContent(
                 item {
                     AnimatedVisibility(
                         visible = localMembers.isNotEmpty(),
-                        enter   = fadeIn(tween(400)) + expandVertically(tween(400))
+                        enter   = fadeIn(tween(350)) + expandVertically(tween(350))
                     ) {
                         MemberHeroStats(
                             total  = localMembers.size,
@@ -131,7 +126,7 @@ fun BusinessMembersContent(
                         viewType         = viewType,
                         onViewTypeChange = { viewType = it }
                     )
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(8.dp))
                 }
 
                 // ── Empty search ──
@@ -153,7 +148,7 @@ fun BusinessMembersContent(
                                                 Spring.StiffnessLow
                                             )
                                         )
-                                        .padding(horizontal = 16.dp)
+                                        .padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
                         }
@@ -190,25 +185,10 @@ fun BusinessMembersContent(
                 }
             }
         }
-
-        // ── Snackbar ──
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier  = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) { data ->
-            Snackbar(
-                snackbarData   = data,
-                containerColor = Slate900,
-                contentColor   = Color.White,
-                shape          = RoundedCornerShape(14.dp)
-            )
-        }
     }
 }
 
-// ─── Hero Stats strip ─────────────────────────────────────────────────────────
+// ─── Hero Stats Strip ─────────────────────────────────────────────────────────
 @Composable
 private fun MemberHeroStats(
     total  : Int,
@@ -218,61 +198,59 @@ private fun MemberHeroStats(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 14.dp)
             .shadow(
-                elevation    = 4.dp,
+                elevation    = 6.dp,
                 shape        = RoundedCornerShape(20.dp),
-                ambientColor = Magenta600.copy(alpha = 0.10f),
-                spotColor    = Magenta600.copy(alpha = 0.14f)
+                ambientColor = Magenta700.copy(alpha = 0.18f),
+                spotColor    = Magenta700.copy(alpha = 0.22f)
             )
             .clip(RoundedCornerShape(20.dp))
             .background(
-                Brush.linearGradient(
-                    listOf(Magenta700, Magenta600)
-                )
+                Brush.linearGradient(listOf(Magenta700, Magenta500))
             )
     ) {
         Row(
             modifier              = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment     = Alignment.CenterVertically
         ) {
             MemberStatItem(
-                icon     = Icons.Outlined.Group,
-                value    = "$total",
-                label    = "Total",
-                iconBg   = Color.White.copy(alpha = 0.20f),
-                iconTint = Color.White,
+                icon      = Icons.Outlined.Group,
+                value     = "$total",
+                label     = "Total",
+                iconBg    = Color.White.copy(alpha = 0.20f),
+                iconTint  = Color.White,
                 textColor = Color.White
             )
             Box(
                 Modifier
                     .width(1.dp)
-                    .height(36.dp)
-                    .background(Color.White.copy(alpha = 0.25f))
+                    .height(40.dp)
+                    .background(Color.White.copy(alpha = 0.22f))
             )
             MemberStatItem(
-                icon     = Icons.Outlined.CheckCircle,
-                value    = "$active",
-                label    = "Activos",
-                iconBg   = Color.White.copy(alpha = 0.20f),
-                iconTint = Color.White,
+                icon      = Icons.Outlined.CheckCircle,
+                value     = "$active",
+                label     = "Activos",
+                iconBg    = Color.White.copy(alpha = 0.20f),
+                iconTint  = Color.White,
                 textColor = Color.White
             )
             Box(
                 Modifier
                     .width(1.dp)
-                    .height(36.dp)
-                    .background(Color.White.copy(alpha = 0.25f))
+                    .height(40.dp)
+                    .background(Color.White.copy(alpha = 0.22f))
             )
             MemberStatItem(
-                icon     = Icons.Outlined.AdminPanelSettings,
-                value    = "$admins",
-                label    = "Admins",
-                iconBg   = Color.White.copy(alpha = 0.20f),
-                iconTint = Color.White,
+                icon      = Icons.Outlined.AdminPanelSettings,
+                value     = "$admins",
+                label     = "Admins",
+                iconBg    = Color.White.copy(alpha = 0.20f),
+                iconTint  = Color.White,
                 textColor = Color.White
             )
         }
@@ -290,32 +268,31 @@ private fun MemberStatItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         modifier            = Modifier.padding(horizontal = 8.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .size(34.dp)
                 .clip(CircleShape)
                 .background(iconBg),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, null, tint = iconTint, modifier = Modifier.size(16.dp))
+            Icon(icon, null, tint = iconTint, modifier = Modifier.size(17.dp))
         }
         Text(
             text          = value,
-            fontSize      = 20.sp,
+            fontSize      = 22.sp,
             fontWeight    = FontWeight.Black,
             color         = textColor,
             letterSpacing = (-0.5).sp,
-            lineHeight    = 22.sp
+            lineHeight    = 24.sp
         )
         Text(
-            text          = label,
-            fontSize      = 10.sp,
-            color         = textColor.copy(alpha = 0.75f),
-            fontWeight    = FontWeight.Medium,
-            letterSpacing = 0.1.sp
+            text       = label,
+            fontSize   = 11.sp,
+            color      = textColor.copy(alpha = 0.78f),
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -342,29 +319,31 @@ private fun MemberSearchRow(
         verticalAlignment     = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        // ── Search field ──────────────────────────────────────────────────
         Row(
             modifier = Modifier
                 .weight(1f)
                 .shadow(
-                    elevation    = if (isFocused) 4.dp else 1.dp,
-                    shape        = RoundedCornerShape(16.dp),
-                    ambientColor = Magenta500.copy(alpha = if (isFocused) 0.12f else 0.03f)
+                    elevation    = if (isFocused) 3.dp else 1.dp,
+                    shape        = RoundedCornerShape(14.dp),
+                    ambientColor = if (isFocused) Magenta500.copy(alpha = 0.10f)
+                    else Color.Black.copy(alpha = 0.04f)
                 )
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .background(Color.White)
                 .border(
                     width = if (isFocused) 1.5.dp else 1.dp,
-                    color = if (isFocused) Magenta500.copy(alpha = 0.50f) else Slate200,
-                    shape = RoundedCornerShape(16.dp)
+                    color = if (isFocused) Magenta500.copy(alpha = 0.45f) else Slate200,
+                    shape = RoundedCornerShape(14.dp)
                 )
-                .padding(horizontal = 12.dp, vertical = 11.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment     = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(9.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Icon(
                 Icons.Outlined.Search, null,
                 tint     = if (isFocused) Magenta600 else Slate400,
-                modifier = Modifier.size(17.dp)
+                modifier = Modifier.size(18.dp)
             )
             BasicTextField(
                 value           = query,
@@ -390,9 +369,11 @@ private fun MemberSearchRow(
                     }
                 }
             )
+
+            // Badge
             AnimatedContent(
                 targetState    = badgeText,
-                transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(130)) },
+                transitionSpec = { fadeIn(tween(160)) togetherWith fadeOut(tween(120)) },
                 label          = "badge"
             ) { label ->
                 Box(
@@ -401,20 +382,21 @@ private fun MemberSearchRow(
                             if (hasQuery) Magenta50 else Slate100,
                             RoundedCornerShape(8.dp)
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         label,
-                        fontSize      = 10.sp,
-                        fontWeight    = FontWeight.Bold,
-                        color         = if (hasQuery) Magenta600 else Slate400,
-                        letterSpacing = 0.2.sp
+                        fontSize   = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = if (hasQuery) Magenta600 else Slate400
                     )
                 }
             }
+
+            // Clear button
             AnimatedVisibility(
                 visible = query.isNotEmpty(),
-                enter   = scaleIn(tween(150)) + fadeIn(tween(150)),
+                enter   = scaleIn(tween(140)) + fadeIn(tween(140)),
                 exit    = scaleOut(tween(100)) + fadeOut(tween(100))
             ) {
                 Box(
@@ -429,7 +411,7 @@ private fun MemberSearchRow(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        Icons.Outlined.Close, "Limpiar",
+                        Icons.Outlined.Close, null,
                         tint     = Slate600,
                         modifier = Modifier.size(11.dp)
                     )
@@ -437,7 +419,7 @@ private fun MemberSearchRow(
             }
         }
 
-        // View toggle
+        // ── View toggle ───────────────────────────────────────────────────
         Row(
             modifier = Modifier
                 .shadow(1.dp, RoundedCornerShape(14.dp))
@@ -454,7 +436,7 @@ private fun MemberSearchRow(
             Box(
                 Modifier
                     .width(1.dp)
-                    .height(32.dp)
+                    .height(30.dp)
                     .background(Slate200)
                     .align(Alignment.CenterVertically)
             )
@@ -476,10 +458,10 @@ private fun MemberViewToggle(
     isStart    : Boolean
 ) {
     val bgColor  by animateColorAsState(
-        if (isSelected) Magenta600 else Color.Transparent, tween(200), label = "bg"
+        if (isSelected) Magenta600 else Color.Transparent, tween(180), label = "bg"
     )
     val iconTint by animateColorAsState(
-        if (isSelected) Color.White else Slate400, tween(200), label = "tint"
+        if (isSelected) Color.White else Slate400, tween(180), label = "tint"
     )
     Box(
         modifier = Modifier
@@ -511,141 +493,74 @@ private fun MemberGridCard(
     val avatarColor = remember(member.user.id) { getAvatarColor(member.user.id) }
     val initials    = remember(member.user.email) { getInitials(member.user.email) }
 
-    var showMenu by remember { mutableStateOf(false) }
-    var visible  by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
     val isActive   = member.businessMember.statusLabel.contains("activ", ignoreCase = true)
-    val statusBg   = if (isActive) Color(0xFFF0FDF4) else Color(0xFFFFF7ED)
-    val statusTint = if (isActive) Color(0xFF059669) else Color(0xFFEA580C)
+    val statusBg   = if (isActive) Color(0xFFE8F5E9) else Color(0xFFFFF3E0)
+    val statusTint = if (isActive) Color(0xFF2E7D32) else Color(0xFFE65100)
 
     AnimatedVisibility(
         visible  = visible,
-        enter    = fadeIn(tween(260)) + scaleIn(tween(260), initialScale = 0.92f),
+        enter    = fadeIn(tween(240)) + scaleIn(tween(240), initialScale = 0.93f),
         modifier = modifier
     ) {
-        Surface(
-            modifier = Modifier
+        Card(
+            modifier  = Modifier
                 .fillMaxWidth()
-                .shadow(
-                    elevation    = 3.dp,
-                    shape        = RoundedCornerShape(20.dp),
-                    ambientColor = Magenta500.copy(alpha = 0.06f),
-                    spotColor    = Magenta600.copy(alpha = 0.09f)
-                )
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(remember { MutableInteractionSource() }, null) {
+                .clickable {
                     navController.navigate(
                         ClientScreen.UpdateBusinessMember.createRoute(userId = member.user.id)
                     )
                 },
-            shape           = RoundedCornerShape(20.dp),
-            color           = Color.White,
-            shadowElevation = 0.dp
+            shape     = RoundedCornerShape(18.dp),
+            colors    = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column {
-                // Header with gradient
+
+                // ── Gradient header with avatar ────────────────────────────
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(96.dp)
+                        .height(90.dp)
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    avatarColor.copy(alpha = 0.18f),
-                                    avatarColor.copy(alpha = 0.05f)
+                                    avatarColor.copy(alpha = 0.15f),
+                                    avatarColor.copy(alpha = 0.04f)
                                 )
                             )
-                        )
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // MoreVert
                     Box(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(avatarColor, avatarColor.copy(alpha = 0.65f))
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.85f))
-                                .clickable(remember { MutableInteractionSource() }, null) {
-                                    showMenu = true
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Outlined.MoreVert, null,
-                                tint     = Slate600,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                        DropdownMenu(
-                            expanded         = showMenu,
-                            onDismissRequest = { showMenu = false },
-                            modifier         = Modifier
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color.White)
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        "Editar",
-                                        fontSize   = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color      = Slate900
-                                    )
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.Edit, null,
-                                        tint     = Magenta600,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    navController.navigate(
-                                        ClientScreen.UpdateBusinessMember.createRoute(
-                                            userId = member.user.id
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                    }
-
-                    // Avatar centered
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Box(
-                            modifier = Modifier
-                                .size(52.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(avatarColor, avatarColor.copy(alpha = 0.65f))
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text          = initials,
-                                fontSize      = 18.sp,
-                                fontWeight    = FontWeight.Bold,
-                                color         = Color.White,
-                                letterSpacing = (-0.3).sp
-                            )
-                        }
+                        Text(
+                            text       = initials,
+                            fontSize   = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = Color.White
+                        )
                     }
                 }
 
-                // Content
+                // ── Content ────────────────────────────────────────────────
                 Column(
                     modifier = Modifier.padding(
-                        start   = 12.dp,
-                        end     = 12.dp,
-                        top     = 10.dp,
-                        bottom  = 12.dp
+                        start  = 12.dp,
+                        end    = 12.dp,
+                        top    = 10.dp,
+                        bottom = 12.dp
                     )
                 ) {
                     Text(
@@ -657,7 +572,7 @@ private fun MemberGridCard(
                         overflow      = TextOverflow.Ellipsis,
                         letterSpacing = (-0.1).sp
                     )
-                    Spacer(Modifier.height(3.dp))
+                    Spacer(Modifier.height(2.dp))
                     Text(
                         text     = member.user.email,
                         fontSize = 11.sp,
@@ -677,7 +592,7 @@ private fun MemberGridCard(
                                 fontSize      = 9.sp,
                                 color         = Magenta600,
                                 fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.3.sp
+                                letterSpacing = 0.2.sp
                             )
                         }
                         Box(
@@ -690,7 +605,7 @@ private fun MemberGridCard(
                                 fontSize      = 9.sp,
                                 color         = statusTint,
                                 fontWeight    = FontWeight.SemiBold,
-                                letterSpacing = 0.3.sp
+                                letterSpacing = 0.2.sp
                             )
                         }
                     }
@@ -706,21 +621,21 @@ private fun MemberSearchEmptyState(query: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 64.dp, start = 32.dp, end = 32.dp),
+            .padding(top = 72.dp, start = 32.dp, end = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(76.dp)
-                .clip(RoundedCornerShape(22.dp))
+                .size(80.dp)
+                .clip(RoundedCornerShape(24.dp))
                 .background(Magenta50),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Outlined.SearchOff, null,
                 tint     = Magenta600,
-                modifier = Modifier.size(34.dp)
+                modifier = Modifier.size(36.dp)
             )
         }
         Text(
@@ -735,7 +650,7 @@ private fun MemberSearchEmptyState(query: String) {
             fontSize   = 13.sp,
             color      = Slate400,
             textAlign  = TextAlign.Center,
-            lineHeight = 19.sp
+            lineHeight = 20.sp
         )
     }
 }
@@ -759,9 +674,9 @@ private fun EmptyMembersState() {
                 Box(
                     modifier = Modifier
                         .size(62.dp)
-                        .clip(RoundedCornerShape(19.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .background(
-                            Brush.linearGradient(listOf(Magenta700, Magenta600))
+                            Brush.linearGradient(listOf(Magenta700, Magenta500))
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -777,7 +692,7 @@ private fun EmptyMembersState() {
                 fontSize      = 20.sp,
                 fontWeight    = FontWeight.Bold,
                 color         = Slate900,
-                letterSpacing = (-0.5).sp
+                letterSpacing = (-0.4).sp
             )
             Text(
                 "Aún no hay colaboradores registrados en este negocio.",
