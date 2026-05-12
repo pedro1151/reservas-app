@@ -1,9 +1,9 @@
-package com.optic.pramosreservasappz.presentation.screens.tusventas
+package com.optic.pramozventicoappz.presentation.screens.tusventas
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,13 +21,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -36,21 +39,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.model.product.ProductViewType
-import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
-import com.optic.pramosreservasappz.domain.util.Resource
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramosreservasappz.presentation.screens.tusventas.components.HistorialSaleCard
-import com.optic.pramosreservasappz.presentation.screens.tusventas.components.HistorialSaleGridCard
+import com.optic.pramozventicoappz.R
+import com.optic.pramozventicoappz.domain.model.product.ProductViewType
+import com.optic.pramozventicoappz.domain.model.sales.SaleResponse
+import com.optic.pramozventicoappz.domain.util.Resource
+import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramozventicoappz.presentation.screens.tusventas.components.HistorialSaleCard
+import com.optic.pramozventicoappz.presentation.screens.tusventas.components.HistorialSaleGridCard
 import kotlinx.coroutines.launch
+import java.time.OffsetDateTime
 
 private val PrimaryPink = Color(0xFFE91E63)
-private val PrimaryPinkDark = Color(0xFFD81B60)
-
-private val TextPrimary = Color(0xFF0F172A)
-private val TextSecondary = Color(0xFF475569)
+private val TextPrimarySoft = Color(0xFF334155)
+private val TextSecondarySoft = Color(0xFF64748B)
 private val BorderGray = Color(0xFFE5E7EB)
-private val SoftGray = Color(0xFFF8FAFC)
+
+private enum class SaleQuickFilter {
+    RECENT,
+    SELLERS,
+    TOP_AMOUNT
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -69,6 +77,16 @@ fun HistorialContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var isDeleting by remember { mutableStateOf(false) }
+
+    var selectedQuickFilter by remember { mutableStateOf(SaleQuickFilter.RECENT) }
+    var selectedSeller by remember { mutableStateOf<String?>(null) }
+
+    val sellers = remember(localSales) {
+        localSales.mapNotNull {
+            it.salesman?.username?.takeIf { name -> name.isNotBlank() }
+                ?: it.salesman?.email?.takeIf { email -> email.isNotBlank() }
+        }.distinct().sorted()
+    }
 
     LaunchedEffect(deleteState) {
         when (val state = deleteState) {
@@ -99,30 +117,36 @@ fun HistorialContent(
 
     val hasQuery = query.isNotBlank()
 
-    val filteredSales = remember(query, localSales) {
-        if (query.isBlank()) {
+    val filteredSales = remember(
+        query,
+        localSales,
+        selectedSeller,
+        selectedQuickFilter
+    ) {
+        val bySearch = if (query.isBlank()) {
             localSales
         } else {
             localSales.filter {
                 it.description?.contains(query, ignoreCase = true) == true ||
                         it.client?.fullName?.contains(query, ignoreCase = true) == true ||
-                        it.salesman?.username?.contains(query, ignoreCase = true) == true
+                        it.salesman?.username?.contains(query, ignoreCase = true) == true ||
+                        it.salesman?.email?.contains(query, ignoreCase = true) == true
             }
         }
-    }
 
-    val totalAmount = remember(localSales) {
-        localSales.sumOf {
-            try {
-                it.amount.toString().toDouble()
-            } catch (e: Exception) {
-                0.0
+        val bySeller = selectedSeller?.let { seller ->
+            bySearch.filter {
+                it.salesman?.username == seller || it.salesman?.email == seller
             }
-        }
-    }
+        } ?: bySearch
 
-    val totalAmountText = remember(totalAmount) {
-        "$ %,.0f".format(totalAmount)
+        when (selectedQuickFilter) {
+            SaleQuickFilter.RECENT -> bySeller.sortedByDescending { parseSaleDateMillis(it.created) }
+            SaleQuickFilter.SELLERS -> bySeller.sortedBy {
+                it.salesman?.username ?: it.salesman?.email ?: ""
+            }
+            SaleQuickFilter.TOP_AMOUNT -> bySeller.sortedByDescending { saleAmountAsDouble(it.amount) }
+        }
     }
 
     Box(
@@ -138,6 +162,15 @@ fun HistorialContent(
                 )
             )
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.fondo_ventas),
+            contentDescription = null,
+            modifier = Modifier
+                .matchParentSize()
+                .alpha(0.075f),
+            contentScale = ContentScale.Crop
+        )
+
         if (localSales.isEmpty() && !hasQuery) {
             EmptySalesState {
                 navController.navigate(
@@ -147,17 +180,13 @@ fun HistorialContent(
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 110.dp)
+                contentPadding = PaddingValues(
+                    top = 10.dp,
+                    bottom = 110.dp
+                )
             ) {
                 item {
-                    SalesHeroHeader(
-                        totalSales = localSales.size,
-                        totalAmount = totalAmountText
-                    )
-                }
-
-                item {
-                    SearchAndPillRow(
+                    SalesFilterHeader(
                         query = query,
                         onQueryChange = { viewModel.onSearchQueryChanged(it) },
                         hasQuery = hasQuery,
@@ -166,12 +195,18 @@ fun HistorialContent(
                         viewMode = viewType,
                         onViewModeChange = { selectedType ->
                             viewModel.updateProductViewType(selectedType)
-                        }
+                        },
+                        selectedQuickFilter = selectedQuickFilter,
+                        onQuickFilterChange = { selectedQuickFilter = it },
+                        sellers = sellers,
+                        selectedSeller = selectedSeller,
+                        onSellerSelected = { selectedSeller = it }
                     )
+
                     Spacer(Modifier.height(10.dp))
                 }
 
-                if (hasQuery && filteredSales.isEmpty()) {
+                if ((hasQuery || selectedSeller != null) && filteredSales.isEmpty()) {
                     item {
                         SearchEmptyState(query = query)
                     }
@@ -245,7 +280,7 @@ fun HistorialContent(
         ) { data ->
             Snackbar(
                 snackbarData = data,
-                containerColor = TextPrimary,
+                containerColor = Color(0xFF0F172A),
                 contentColor = Color.White,
                 shape = RoundedCornerShape(16.dp)
             )
@@ -253,8 +288,8 @@ fun HistorialContent(
 
         AnimatedVisibility(
             visible = isDeleting,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = fadeIn(animationSpec = tween(220)),
+            exit = fadeOut(animationSpec = tween(180)),
             modifier = Modifier.align(Alignment.Center)
         ) {
             Surface(
@@ -278,200 +313,207 @@ fun HistorialContent(
 }
 
 @Composable
-private fun SalesHeroHeader(
-    totalSales: Int,
-    totalAmount: String
+private fun SalesFilterHeader(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    hasQuery: Boolean,
+    totalCount: Int,
+    filteredCount: Int,
+    viewMode: ProductViewType,
+    onViewModeChange: (ProductViewType) -> Unit,
+    selectedQuickFilter: SaleQuickFilter,
+    onQuickFilterChange: (SaleQuickFilter) -> Unit,
+    sellers: List<String>,
+    selectedSeller: String?,
+    onSellerSelected: (String?) -> Unit
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 16.dp)
-            .height(174.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(x = (-38).dp, y = 8.dp)
-                .size(width = 280.dp, height = 122.dp)
-                .clip(RoundedCornerShape(64.dp))
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            PrimaryPink.copy(alpha = 0.18f),
-                            PrimaryPink.copy(alpha = 0.07f),
-                            Color.Transparent
-                        )
-                    )
-                )
+        SearchAndViewModeRow(
+            query = query,
+            onQueryChange = onQueryChange,
+            hasQuery = hasQuery,
+            totalCount = totalCount,
+            filteredCount = filteredCount,
+            viewMode = viewMode,
+            onViewModeChange = onViewModeChange
         )
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(x = 46.dp, y = (-2).dp)
-                .size(width = 260.dp, height = 116.dp)
-                .clip(RoundedCornerShape(62.dp))
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color.Transparent,
-                            PrimaryPinkDark.copy(alpha = 0.08f),
-                            PrimaryPink.copy(alpha = 0.20f)
-                        )
-                    )
-                )
-        )
+        Spacer(Modifier.height(10.dp))
 
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(144.dp)
-                .align(Alignment.Center),
-            shape = RoundedCornerShape(32.dp),
-            color = Color.White,
-            shadowElevation = 5.dp,
-            border = BorderStroke(1.dp, Color.White)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(120.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    PrimaryPink.copy(alpha = 0.055f),
-                                    PrimaryPinkDark.copy(alpha = 0.095f)
-                                )
-                            )
-                        )
-                )
+            SaleFilterChip(
+                text = "Reciente",
+                selected = selectedQuickFilter == SaleQuickFilter.RECENT,
+                onClick = { onQuickFilterChange(SaleQuickFilter.RECENT) }
+            )
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    PrimaryPink.copy(alpha = 0.045f)
-                                )
-                            )
-                        )
-                )
+            SaleFilterChip(
+                text = "Mayor venta",
+                selected = selectedQuickFilter == SaleQuickFilter.TOP_AMOUNT,
+                onClick = { onQuickFilterChange(SaleQuickFilter.TOP_AMOUNT) }
+            )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 18.dp, vertical = 16.dp)
+            Spacer(Modifier.weight(1f))
+
+            SellerLovButton(
+                sellers = sellers,
+                selectedSeller = selectedSeller,
+                onSellerSelected = onSellerSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun SaleFilterChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val bgColor by animateColorAsState(
+        targetValue = if (selected) PrimaryPink.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.90f),
+        animationSpec = tween(180),
+        label = "filterBg"
+    )
+
+    val textColor by animateColorAsState(
+        targetValue = if (selected) PrimaryPink else TextSecondarySoft,
+        animationSpec = tween(180),
+        label = "filterText"
+    )
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(bgColor)
+            .border(
+                width = 1.dp,
+                color = if (selected) PrimaryPink.copy(alpha = 0.22f) else BorderGray,
+                shape = RoundedCornerShape(999.dp)
+            )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 11.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun SellerLovButton(
+    sellers: List<String>,
+    selectedSeller: String?,
+    onSellerSelected: (String?) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        Row(
+            modifier = Modifier
+                .height(36.dp)
+                .clip(RoundedCornerShape(999.dp))
+                .background(Color.White.copy(alpha = 0.92f))
+                .border(1.dp, BorderGray, RoundedCornerShape(999.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
                 ) {
-                    Text(
-                        text = "Resumen",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = TextPrimary
-                    )
-
-                    Spacer(Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        HeaderTotalCard(
-                            modifier = Modifier.weight(1.75f),
-                            value = totalAmount
-                        )
-
-                        HeaderSalesCard(
-                            modifier = Modifier.weight(0.75f),
-                            value = "$totalSales"
-                        )
-                    }
+                    expanded = true
                 }
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.PersonSearch,
+                contentDescription = null,
+                tint = PrimaryPink,
+                modifier = Modifier.size(16.dp)
+            )
+
+            Spacer(Modifier.width(5.dp))
+
+            Text(
+                text = selectedSeller ?: "Vendedor",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                color = TextSecondarySoft,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.widthIn(max = 86.dp)
+            )
+
+            Spacer(Modifier.width(3.dp))
+
+            Icon(
+                imageVector = Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null,
+                tint = TextSecondarySoft,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Todos",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimarySoft
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onSellerSelected(null)
+                }
+            )
+
+            sellers.forEach { seller ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = seller,
+                            fontSize = 13.sp,
+                            color = TextPrimarySoft,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onSellerSelected(seller)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun HeaderTotalCard(
-    modifier: Modifier,
-    value: String
-) {
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(24.dp))
-            .background(SoftGray)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Total",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = TextSecondary,
-            maxLines = 1
-        )
-
-        Spacer(Modifier.height(6.dp))
-
-        Text(
-            text = value,
-            fontSize = 21.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            letterSpacing = (-0.4).sp
-        )
-    }
-}
-
-@Composable
-private fun HeaderSalesCard(
-    modifier: Modifier,
-    value: String
-) {
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(24.dp))
-            .background(SoftGray)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Ventas",
-            fontSize = 10.5.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = TextSecondary,
-            maxLines = 1
-        )
-
-        Spacer(Modifier.height(4.dp))
-
-        Text(
-            text = value,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
-            maxLines = 1
-        )
-    }
-}
-
-@Composable
-private fun SearchAndPillRow(
+private fun SearchAndViewModeRow(
     query: String,
     onQueryChange: (String) -> Unit,
     hasQuery: Boolean,
@@ -486,9 +528,7 @@ private fun SearchAndPillRow(
     val badgeText = if (hasQuery) "$filteredCount/$totalCount" else "$totalCount"
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -497,10 +537,10 @@ private fun SearchAndPillRow(
                 .weight(1f)
                 .height(44.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
+                .background(Color.White.copy(alpha = 0.94f))
                 .border(
                     width = if (isFocused) 1.2.dp else 1.dp,
-                    color = if (isFocused) PrimaryPink.copy(alpha = 0.45f) else BorderGray,
+                    color = if (isFocused) PrimaryPink.copy(alpha = 0.40f) else BorderGray,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 12.dp),
@@ -522,8 +562,8 @@ private fun SearchAndPillRow(
                     .onFocusChanged { isFocused = it.isFocused },
                 textStyle = TextStyle(
                     fontSize = 13.sp,
-                    color = TextPrimary,
-                    fontWeight = FontWeight.Medium
+                    color = TextPrimarySoft,
+                    fontWeight = FontWeight.Normal
                 ),
                 cursorBrush = SolidColor(PrimaryPink),
                 singleLine = true,
@@ -545,33 +585,24 @@ private fun SearchAndPillRow(
                 }
             )
 
-            AnimatedContent(
-                targetState = badgeText,
-                transitionSpec = {
-                    fadeIn(tween(180)) togetherWith fadeOut(tween(130))
-                },
-                label = "badge_counter"
-            ) { label ->
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(PrimaryPink.copy(alpha = 0.10f))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = label,
-                        fontSize = 9.5.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = PrimaryPink,
-                        letterSpacing = 0.2.sp
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(PrimaryPink.copy(alpha = 0.09f))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = badgeText,
+                    fontSize = 9.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = PrimaryPink
+                )
             }
 
             AnimatedVisibility(
                 visible = query.isNotEmpty(),
-                enter = scaleIn(tween(150)) + fadeIn(tween(150)),
-                exit = scaleOut(tween(100)) + fadeOut(tween(100))
+                enter = scaleIn(tween(180)) + fadeIn(tween(180)),
+                exit = scaleOut(tween(120)) + fadeOut(tween(120))
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
@@ -606,7 +637,7 @@ private fun ViewModeSwitch(
         modifier = Modifier
             .height(44.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
+            .background(Color.White.copy(alpha = 0.94f))
             .padding(3.dp)
     ) {
         ViewModeButton(
@@ -631,13 +662,13 @@ private fun ViewModeButton(
 ) {
     val bgColor by animateColorAsState(
         targetValue = if (isSelected) PrimaryPink else Color.Transparent,
-        animationSpec = tween(200),
+        animationSpec = tween(180),
         label = "viewModeBg"
     )
 
     val iconTint by animateColorAsState(
         targetValue = if (isSelected) Color.White else Color(0xFF94A3B8),
-        animationSpec = tween(200),
+        animationSpec = tween(180),
         label = "viewModeTint"
     )
 
@@ -659,6 +690,22 @@ private fun ViewModeButton(
             tint = iconTint,
             modifier = Modifier.size(18.dp)
         )
+    }
+}
+
+private fun saleAmountAsDouble(raw: Any?): Double {
+    return try {
+        raw.toString().toDouble()
+    } catch (e: Exception) {
+        0.0
+    }
+}
+
+private fun parseSaleDateMillis(rawDate: String): Long {
+    return try {
+        OffsetDateTime.parse(rawDate).toInstant().toEpochMilli()
+    } catch (e: Exception) {
+        0L
     }
 }
 
@@ -689,14 +736,18 @@ private fun SearchEmptyState(query: String) {
         Text(
             text = "Sin resultados",
             fontSize = 18.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary
+            fontWeight = FontWeight.Medium,
+            color = TextPrimarySoft
         )
 
         Text(
-            text = "No hay ventas que coincidan con \"$query\"",
+            text = if (query.isBlank()) {
+                "No hay ventas para el filtro seleccionado"
+            } else {
+                "No hay ventas que coincidan con \"$query\""
+            },
             fontSize = 13.sp,
-            color = TextSecondary,
+            color = TextSecondarySoft,
             textAlign = TextAlign.Center,
             lineHeight = 19.sp
         )
@@ -718,6 +769,15 @@ private fun EmptySalesState(onAddSale: () -> Unit) {
             ),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.fondo_ventas),
+            contentDescription = null,
+            modifier = Modifier
+                .matchParentSize()
+                .alpha(0.075f),
+            contentScale = ContentScale.Crop
+        )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -727,20 +787,13 @@ private fun EmptySalesState(onAddSale: () -> Unit) {
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                PrimaryPink,
-                                PrimaryPinkDark
-                            )
-                        )
-                    ),
+                    .background(PrimaryPink.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Payments,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = PrimaryPink,
                     modifier = Modifier.size(42.dp)
                 )
             }
@@ -748,15 +801,15 @@ private fun EmptySalesState(onAddSale: () -> Unit) {
             Text(
                 text = "Sin ventas aún",
                 fontSize = 22.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = TextPrimary,
+                fontWeight = FontWeight.Medium,
+                color = TextPrimarySoft,
                 letterSpacing = (-0.6).sp
             )
 
             Text(
-                text = "Registra tu primera venta para comenzar a ver tu historial y tus métricas.",
+                text = "Registra tu primera venta para comenzar a ver tu historial.",
                 fontSize = 14.sp,
-                color = TextSecondary,
+                color = TextSecondarySoft,
                 textAlign = TextAlign.Center,
                 lineHeight = 21.sp
             )
@@ -784,7 +837,7 @@ private fun EmptySalesState(onAddSale: () -> Unit) {
                 Text(
                     text = "Nueva venta",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.optic.pramosreservasappz.presentation.screens.tusventas.components
+package com.optic.pramozventicoappz.presentation.screens.tusventas.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -16,8 +16,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Payments
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,8 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
-import com.optic.pramosreservasappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramozventicoappz.domain.model.sales.SaleResponse
+import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
@@ -46,26 +44,18 @@ private val ACTION_WIDTH = 64.dp
 private val PrimaryPink = Color(0xFFE91E63)
 private val PrimaryPinkDark = Color(0xFFD81B60)
 
-private val TextPrimary = Color(0xFF0F172A)
-private val TextSecondary = Color(0xFF475569)
+private val TextPrimarySoft = Color(0xFF334155)
+private val TextSecondarySoft = Color(0xFF64748B)
+private val AmountSoft = Color(0xFF475569)
 private val DividerGray = Color(0xFFE2E8F0)
 private val SaleTagText = Color(0xFF8A3A55)
 private val SaleTagBg = Color(0xFFF8F4F6)
 private val BorderGray = Color(0xFFE5E7EB)
 
-private val SALE_PALETTE = listOf(
-    Color(0xFF6E4FDB), Color(0xFF3B78C4), Color(0xFF10A37F),
-    Color(0xFFE05C5C), Color(0xFFD97706), Color(0xFF7C3AED),
-    Color(0xFF0891B2), Color(0xFFDB2777), Color(0xFF16A34A),
-    Color(0xFF9333EA), Color(0xFF2563EB), Color(0xFFDC6B19),
-)
-
-fun getAvatarColor(id: Int): Color = SALE_PALETTE[id % SALE_PALETTE.size]
-
 private fun formatAmount(raw: Any?): String = try {
-    "$ ${"%,.0f".format(raw.toString().toDouble())}"
+    "\$ ${"%,.0f".format(raw.toString().toDouble())}"
 } catch (e: Exception) {
-    "$ $raw"
+    "\$ $raw"
 }
 
 private fun formatSalePedidoDate(rawDate: String): String {
@@ -102,7 +92,7 @@ fun HistorialSaleCard(
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(20L * (sale.id % 10))
+        delay(35L * (sale.id % 10))
         visible = true
     }
 
@@ -111,6 +101,7 @@ fun HistorialSaleCard(
 
     val title = sale.description ?: "Venta rápida"
     val clientName = sale.client?.fullName ?: "Cliente"
+    val salesmanName = sale.salesman?.username ?: sale.salesman?.email ?: "Vendedor"
 
     val maxSwipe = -(ACTION_WIDTH.value * 2f)
     val editThreshold = -(ACTION_WIDTH.value * 0.7f)
@@ -147,8 +138,8 @@ fun HistorialSaleCard(
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 4 },
-        exit = fadeOut(tween(200)) + shrinkVertically(tween(200))
+        enter = fadeIn(tween(520)) + slideInVertically(tween(520)) { it / 5 },
+        exit = fadeOut(tween(240)) + shrinkVertically(tween(240))
     ) {
         Column(
             modifier = modifier.fillMaxWidth()
@@ -171,7 +162,7 @@ fun HistorialSaleCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(104.dp)
+                        .height(108.dp)
                         .background(bgColor),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -300,8 +291,8 @@ fun HistorialSaleCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        PrimaryPink,
-                                        PrimaryPinkDark
+                                        PrimaryPink.copy(alpha = 0.88f),
+                                        PrimaryPinkDark.copy(alpha = 0.82f)
                                     )
                                 )
                             ),
@@ -310,8 +301,8 @@ fun HistorialSaleCard(
                         Icon(
                             imageVector = Icons.Outlined.Payments,
                             contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
+                            tint = Color.White.copy(alpha = 0.92f),
+                            modifier = Modifier.size(27.dp)
                         )
                     }
 
@@ -332,8 +323,8 @@ fun HistorialSaleCard(
                                 Text(
                                     text = "Venta",
                                     fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = SaleTagText
+                                    fontWeight = FontWeight.Medium,
+                                    color = SaleTagText.copy(alpha = 0.82f)
                                 )
                             }
 
@@ -341,9 +332,9 @@ fun HistorialSaleCard(
 
                             Text(
                                 text = dateText,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextSecondary,
+                                fontSize = 12.5.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = TextSecondarySoft,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -357,12 +348,12 @@ fun HistorialSaleCard(
                         ) {
                             Text(
                                 text = title,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF12001F),
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = TextPrimarySoft.copy(alpha = 0.92f),
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
-                                letterSpacing = (-0.4).sp,
+                                letterSpacing = (-0.20).sp,
                                 modifier = Modifier.weight(1f)
                             )
 
@@ -370,9 +361,9 @@ fun HistorialSaleCard(
 
                             Text(
                                 text = amountText,
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF12001F),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = AmountSoft.copy(alpha = 0.96f),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -381,10 +372,10 @@ fun HistorialSaleCard(
                         Spacer(Modifier.height(4.dp))
 
                         Text(
-                            text = clientName,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF6B7280),
+                            text = "$clientName · $salesmanName",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = TextSecondarySoft.copy(alpha = 0.82f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -394,8 +385,8 @@ fun HistorialSaleCard(
 
             HorizontalDivider(
                 modifier = Modifier.padding(start = 88.dp, end = 16.dp),
-                thickness = 1.25.dp,
-                color = DividerGray
+                thickness = 1.15.dp,
+                color = Color(0xFFCBD5E1)
             )
         }
     }
@@ -410,14 +401,14 @@ fun HistorialSaleCard(
                 Text(
                     text = "¿Eliminar venta?",
                     fontSize = 16.sp,
-                    color = TextPrimary
+                    color = TextPrimarySoft
                 )
             },
             text = {
                 Text(
                     text = "Se eliminará \"${sale.description}\". Esta acción no se puede deshacer.",
                     fontSize = 14.sp,
-                    color = TextSecondary
+                    color = TextSecondarySoft
                 )
             },
             confirmButton = {
@@ -442,7 +433,7 @@ fun HistorialSaleCard(
                         snap(0f)
                     }
                 ) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text("Cancelar", color = TextSecondarySoft)
                 }
             },
             shape = RoundedCornerShape(20.dp),
@@ -461,25 +452,26 @@ fun HistorialSaleGridCard(
     val amountText = remember(sale.amount) { formatAmount(sale.amount) }
     val title = sale.description ?: "Venta rápida"
     val clientName = sale.client?.fullName ?: "Cliente"
-    val salesmanName = sale.salesman?.username ?: "Vendedor"
+    val salesmanName = sale.salesman?.username ?: sale.salesman?.email ?: "Vendedor"
 
     var showMenu by remember { mutableStateOf(false) }
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(24L * (sale.id % 8))
+        delay(42L * (sale.id % 8))
         visible = true
     }
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(tween(220)) + scaleIn(tween(220), initialScale = 0.96f),
+        enter = fadeIn(tween(520)) + scaleIn(tween(520), initialScale = 0.965f),
+        exit = fadeOut(tween(240)),
         modifier = modifier
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(176.dp)
+                .height(178.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -490,9 +482,9 @@ fun HistorialSaleGridCard(
                     )
                 },
             shape = RoundedCornerShape(24.dp),
-            color = Color.White,
-            shadowElevation = 2.dp,
-            border = BorderStroke(1.dp, BorderGray)
+            color = Color.White.copy(alpha = 0.96f),
+            shadowElevation = 1.dp,
+            border = BorderStroke(1.dp, BorderGray.copy(alpha = 0.82f))
         ) {
             Column(
                 modifier = Modifier
@@ -512,8 +504,8 @@ fun HistorialSaleGridCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        PrimaryPink,
-                                        PrimaryPinkDark
+                                        PrimaryPink.copy(alpha = 0.88f),
+                                        PrimaryPinkDark.copy(alpha = 0.82f)
                                     )
                                 )
                             ),
@@ -522,7 +514,7 @@ fun HistorialSaleGridCard(
                         Icon(
                             imageVector = Icons.Outlined.Payments,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = Color.White.copy(alpha = 0.92f),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -544,7 +536,7 @@ fun HistorialSaleGridCard(
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = "Más opciones",
-                                tint = TextSecondary,
+                                tint = TextSecondarySoft,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -561,7 +553,7 @@ fun HistorialSaleGridCard(
                                     Text(
                                         text = "Eliminar",
                                         fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Medium,
                                         color = Color(0xFFE53935)
                                     )
                                 },
@@ -592,8 +584,8 @@ fun HistorialSaleGridCard(
                         Text(
                             text = "Venta",
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = SaleTagText
+                            fontWeight = FontWeight.Medium,
+                            color = SaleTagText.copy(alpha = 0.82f)
                         )
                     }
 
@@ -602,8 +594,8 @@ fun HistorialSaleGridCard(
                     Text(
                         text = title,
                         fontSize = 13.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimarySoft.copy(alpha = 0.92f),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -613,7 +605,7 @@ fun HistorialSaleGridCard(
                     Text(
                         text = clientName,
                         fontSize = 11.sp,
-                        color = TextSecondary,
+                        color = TextSecondarySoft,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -621,7 +613,7 @@ fun HistorialSaleGridCard(
                     Text(
                         text = salesmanName,
                         fontSize = 11.sp,
-                        color = TextSecondary,
+                        color = TextSecondarySoft.copy(alpha = 0.82f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -629,9 +621,9 @@ fun HistorialSaleGridCard(
 
                 Text(
                     text = amountText,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = PrimaryPink,
+                    fontSize = 16.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = AmountSoft.copy(alpha = 0.96f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
