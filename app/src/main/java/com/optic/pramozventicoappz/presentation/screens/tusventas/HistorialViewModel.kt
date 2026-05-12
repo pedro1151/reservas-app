@@ -1,20 +1,21 @@
-package com.optic.pramozventicoappz.presentation.screens.tusventas
+package com.optic.pramosreservasappz.presentation.screens.tusventas
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optic.pramozventicoappz.domain.model.response.DefaultResponse
-import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemResponse
-import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemUpdateRequest
-import com.optic.pramozventicoappz.domain.model.sales.CreateSaleWithItemsRequest
-import com.optic.pramozventicoappz.domain.model.sales.SaleCreateRequest
-import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemCreateRequest
-import com.optic.pramozventicoappz.domain.model.sales.SaleResponse
-import com.optic.pramozventicoappz.domain.model.sales.SaleUpdateRequest
-import com.optic.pramozventicoappz.domain.model.sales.SaleWithItemsResponse
-import com.optic.pramozventicoappz.domain.useCase.reservas.ReservasUC
-import com.optic.pramozventicoappz.domain.util.Resource
+import com.optic.pramosreservasappz.domain.model.product.ProductViewType
+import com.optic.pramosreservasappz.domain.model.response.DefaultResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemResponse
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.CreateSaleWithItemsRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleCreateRequest
+import com.optic.pramosreservasappz.domain.model.saleitem.SaleItemCreateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleResponse
+import com.optic.pramosreservasappz.domain.model.sales.SaleUpdateRequest
+import com.optic.pramosreservasappz.domain.model.sales.SaleWithItemsResponse
+import com.optic.pramosreservasappz.domain.useCase.reservas.ReservasUC
+import com.optic.pramosreservasappz.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -457,6 +458,11 @@ class HistorialViewModel @Inject constructor(
             }
         }
     }
+    private val _productViewType = MutableStateFlow(ProductViewType.GRID)
+    val productViewType: StateFlow<ProductViewType> = _productViewType
 
+    fun updateProductViewType(type: ProductViewType) {
+        _productViewType.value = type
+    }
 
 }
