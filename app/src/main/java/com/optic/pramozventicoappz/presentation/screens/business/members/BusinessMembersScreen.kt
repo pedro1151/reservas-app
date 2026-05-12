@@ -20,19 +20,24 @@ import com.optic.pramozventicoappz.presentation.components.BackTopBar
 import com.optic.pramozventicoappz.presentation.screens.business.BusinessViewModel
 import com.optic.pramozventicoappz.presentation.settings.idiomas.LocalizedContext
 
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+private val Magenta600 = Color(0xFFD81B60)
+private val PageBg     = Color(0xFFF8F9FA)
+private val Slate400   = Color(0xFF94A3B8)
+private val Slate900   = Color(0xFF0F172A)
+
 @Composable
 fun BusinessMembersScreen(
     navController: NavHostController
-){
-
-    val viewModel        : BusinessViewModel= hiltViewModel()
+) {
+    val viewModel      : BusinessViewModel = hiltViewModel()
     val clientResource by viewModel.membersState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadMembers(
             businessId = 1,
-            email = "",
-            username = ""
+            email      = "",
+            username   = ""
         )
     }
 
@@ -42,40 +47,38 @@ fun BusinessMembersScreen(
         topBar = {
             BackTopBar(
                 navController = navController,
-                title = "Colaboradores"
+                title         = "Colaboradores"
             )
         },
-
-        containerColor = Color.White
+        containerColor = PageBg
     ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) //
+                .padding(paddingValues)
         ) {
-
             when (val result = clientResource) {
+
                 is Resource.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier         = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = Color.Black,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
+                            color       = Magenta600,
+                            strokeWidth = 2.5.dp,
+                            modifier    = Modifier.size(30.dp)
                         )
                     }
                 }
 
                 is Resource.Success -> {
                     BusinessMembersContent(
-                        members = result.data,
+                        members       = result.data,
                         paddingValues = paddingValues,
                         navController = navController,
-                        viewModel = viewModel
-
+                        viewModel     = viewModel
                     )
                 }
 
@@ -88,15 +91,20 @@ fun BusinessMembersScreen(
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
                             Text(
-                                text = "No se pudo cargar los clientes",
-                                color = Color(0xFF9E9E9E),
+                                text     = "No se pudo cargar los colaboradores",
+                                color    = Slate400,
                                 fontSize = 15.sp
                             )
-                            TextButton(onClick = { viewModel.loadMembers(1, "", "") }) {
-                                Text("Reintentar", color = Color.Black)
+                            Button(
+                                onClick = { viewModel.loadMembers(1, "", "") },
+                                colors  = ButtonDefaults.buttonColors(
+                                    containerColor = Magenta600
+                                )
+                            ) {
+                                Text("Reintentar", color = Color.White)
                             }
                         }
                     }
@@ -104,13 +112,13 @@ fun BusinessMembersScreen(
 
                 else -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier         = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = Color.Black,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
+                            color       = Magenta600,
+                            strokeWidth = 2.5.dp,
+                            modifier    = Modifier.size(30.dp)
                         )
                     }
                 }
@@ -118,4 +126,3 @@ fun BusinessMembersScreen(
         }
     }
 }
-

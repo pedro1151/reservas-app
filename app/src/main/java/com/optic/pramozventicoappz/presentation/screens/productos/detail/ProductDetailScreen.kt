@@ -18,11 +18,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,8 +37,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,7 +53,9 @@ import com.optic.pramozventicoappz.presentation.ui.theme.BorderGray
 import com.optic.pramozventicoappz.presentation.ui.theme.ButtonSucessColor
 import com.optic.pramozventicoappz.presentation.ui.theme.TextPrimary
 import com.optic.pramozventicoappz.presentation.ui.theme.TextSecondary
-import com.optic.pramozventicoappz.presentation.util.getAvatarColor
+
+// ── Tokens locales ───────────────────────────────────────────────────────────
+private val PageBg = Color(0xFFFAFAFA)
 
 @Composable
 fun ProductDetailScreen(
@@ -65,7 +74,7 @@ fun ProductDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(PageBg),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -87,7 +96,7 @@ fun ProductDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(PageBg),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -108,10 +117,9 @@ private fun ProductDetailContent(
     product: ProductResponse,
     navController: NavHostController
 ) {
-    val scrollState  = rememberScrollState()
-    val primary      = MaterialTheme.colorScheme.primary
-    val avatarColor  = remember(product.id) { getAvatarColor(product.id) }
-    var expanded     by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    val primary     = MaterialTheme.colorScheme.primary
+    var expanded    by remember { mutableStateOf(false) }
 
     val rotate by animateFloatAsState(
         targetValue   = if (expanded) 180f else 0f,
@@ -119,57 +127,47 @@ private fun ProductDetailContent(
         label         = "expandRotation"
     )
 
-    val priceText = remember(product.price) {
-        "Bs. %,.0f".format(product.price)
-    }
+    val heroTint  = primary.copy(alpha = 0.10f)
+    val priceText = remember(product.price) { "%,.0f".format(product.price) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = TextPrimary
-                        )
-                    }
+                    RoundIconButton(
+                        icon = Icons.Outlined.ArrowBack,
+                        contentDescription = "Volver",
+                        onClick = { navController.popBackStack() }
+                    )
                 },
                 title = {},
                 actions = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(
-                                ClientScreen.ABMServicio.createRoute(
-                                    serviceId = product.id,
-                                    editable  = true
-                                )
-                            )
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = "Editar",
-                            tint     = TextPrimary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Outlined.MoreVert,
-                            contentDescription = "Más opciones",
-                            tint     = TextPrimary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
+                    RoundIconButton(
+                        icon = Icons.Outlined.MoreVert,
+                        contentDescription = "Más opciones",
+                        onClick = { }
+                    )
+                    Spacer(Modifier.width(8.dp))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = heroTint
                 )
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        bottomBar = {
+            BottomActionBar(
+                primary = primary,
+                onEdit  = {
+                    navController.navigate(
+                        ClientScreen.ABMServicio.createRoute(
+                            serviceId = product.id,
+                            editable  = true
+                        )
+                    )
+                }
+            )
+        },
+        containerColor = PageBg
     ) { padding ->
 
         Column(
@@ -177,359 +175,548 @@ private fun ProductDetailContent(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(scrollState)
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ── Icon hero ──────────────────────────────────────────────────────
-            Box(contentAlignment = Alignment.Center) {
-                // Outer glow ring
-                Box(
-                    modifier = Modifier
-                        .size(108.dp)
-                        .clip(RoundedCornerShape(32.dp))
-                        .background(
-                            Brush.radialGradient(
-                                listOf(avatarColor.copy(alpha = 0.14f), Color.Transparent)
-                            )
-                        )
-                )
-                // Main icon box
-                Box(
-                    modifier = Modifier
-                        .size(92.dp)
-                        .shadow(
-                            elevation    = 14.dp,
-                            shape        = RoundedCornerShape(28.dp),
-                            ambientColor = avatarColor.copy(alpha = 0.18f),
-                            spotColor    = avatarColor.copy(alpha = 0.26f)
-                        )
-                        .clip(RoundedCornerShape(28.dp))
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    avatarColor.copy(alpha = 0.18f),
-                                    avatarColor.copy(alpha = 0.06f)
-                                )
-                            )
-                        )
-                        .border(1.dp, avatarColor.copy(alpha = 0.20f), RoundedCornerShape(28.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Inventory2,
-                        contentDescription = null,
-                        tint     = avatarColor,
-                        modifier = Modifier.size(44.dp)
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            // ── Nombre ──
-            Text(
-                text      = product.name,
-                fontSize  = 24.sp,
-                fontWeight = FontWeight.Black,
-                color     = TextPrimary,
-                maxLines  = 2,
-                overflow  = TextOverflow.Ellipsis,
-                letterSpacing = (-0.5).sp
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // ── Precio — tag style ──
+            // ── HERO ────────────────────────────────────────────────────────
             Box(
                 modifier = Modifier
-                    .background(primary.copy(alpha = 0.09f), RoundedCornerShape(12.dp))
-                    .border(1.dp, primary.copy(alpha = 0.18f), RoundedCornerShape(12.dp))
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text       = priceText,
-                    fontSize   = 20.sp,
-                    fontWeight = FontWeight.Black,
-                    color      = primary,
-                    letterSpacing = (-0.5).sp
-                )
-            }
-
-            Spacer(Modifier.height(18.dp))
-
-            // ── TypeChips ──
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                TypeChip(text = "Producto", selected = true)
-                TypeChip(text = "Servicio",  selected = false)
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            // ── Descripción card ──
-            DetailCard {
-                Row(
-                    verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(primary.copy(alpha = 0.10f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Outlined.Inventory2, null,
-                            tint     = primary,
-                            modifier = Modifier.size(14.dp)
+                    .fillMaxWidth()
+                    .height(230.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                heroTint,
+                                primary.copy(alpha = 0.04f),
+                                PageBg
+                            )
                         )
-                    }
-                    DetailSectionTitle("Descripción")
-                }
-
-                Spacer(Modifier.height(10.dp))
-
-                Text(
-                    text       = "Producto disponible para venta rápida dentro del catálogo de tu negocio.",
-                    fontSize   = 14.sp,
-                    color      = TextSecondary,
-                    lineHeight = 22.sp
-                )
-            }
-
-            Spacer(Modifier.height(14.dp))
-
-            // ── Datos principales card ──
-            // Left accent column + rows
-            Row(modifier = Modifier.fillMaxWidth()) {
-                // Left accent bar
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                // Blobs decorativos sutiles
                 Box(
                     modifier = Modifier
-                        .width(3.dp)
-                        .clip(RoundedCornerShape(topStart = 24.dp, bottomStart = 24.dp))
-                        .background(
-                            Brush.linearGradient(listOf(primary, primary.copy(alpha = 0.40f)))
-                        )
-                        .fillMaxHeight()
+                        .size(170.dp)
+                        .offset(x = (-50).dp, y = (-30).dp)
+                        .clip(CircleShape)
+                        .background(primary.copy(alpha = 0.05f))
+                        .align(Alignment.TopStart)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(110.dp)
+                        .offset(x = 30.dp, y = 20.dp)
+                        .clip(CircleShape)
+                        .background(primary.copy(alpha = 0.04f))
+                        .align(Alignment.BottomEnd)
                 )
 
-                Column(
+                // Ícono principal flotante
+                Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .size(124.dp)
                         .shadow(
-                            elevation    = 8.dp,
-                            shape        = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp, topStart = 0.dp, bottomStart = 0.dp),
-                            ambientColor = Color.Black.copy(alpha = 0.03f),
-                            spotColor    = Color.Black.copy(alpha = 0.07f)
+                            elevation    = 24.dp,
+                            shape        = RoundedCornerShape(34.dp),
+                            ambientColor = primary.copy(alpha = 0.25f),
+                            spotColor    = primary.copy(alpha = 0.40f)
                         )
-                        .clip(RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp))
+                        .clip(RoundedCornerShape(34.dp))
                         .background(Color.White)
-                        .padding(horizontal = 18.dp)
+                        .border(1.dp, primary.copy(alpha = 0.10f), RoundedCornerShape(34.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    DetailRow(label = "Nombre", value = product.name)
-                    DetailDivider()
-                    DetailRow(label = "Precio", value = priceText)
-                    DetailDivider()
-                    DetailRow(
-                        label      = "Estado",
-                        value      = if (product.isActive) "Activo" else "Inactivo",
-                        valueColor = if (product.isActive) ButtonSucessColor else TextSecondary
-                    )
-                    if (product.stock != null) {
-                        DetailDivider()
-                        DetailRow(label = "Stock", value = product.stock.toString())
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(14.dp))
-
-            // ── Expandable: Información adicional ──
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation    = 8.dp,
-                        shape        = RoundedCornerShape(24.dp),
-                        ambientColor = Color.Black.copy(alpha = 0.03f),
-                        spotColor    = Color.Black.copy(alpha = 0.07f)
-                    )
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color.White)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication        = null
-                        ) { expanded = !expanded }
-                        .background(
-                            if (expanded) primary.copy(alpha = 0.04f) else Color.Transparent
-                        )
-                        .padding(horizontal = 18.dp, vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text       = "Información adicional",
-                        fontSize   = 15.sp,
-                        fontWeight = FontWeight.Black,
-                        color      = TextPrimary,
-                        modifier   = Modifier.weight(1f)
-                    )
-
                     Box(
                         modifier = Modifier
-                            .size(28.dp)
+                            .size(74.dp)
                             .clip(CircleShape)
                             .background(
-                                if (expanded) primary.copy(alpha = 0.10f)
-                                else BorderGray.copy(alpha = 0.50f)
+                                Brush.linearGradient(
+                                    listOf(
+                                        primary.copy(alpha = 0.18f),
+                                        primary.copy(alpha = 0.08f)
+                                    )
+                                )
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.ExpandMore,
+                            imageVector = Icons.Outlined.Inventory2,
                             contentDescription = null,
-                            tint     = if (expanded) primary else TextSecondary,
-                            modifier = Modifier.size(18.dp).rotate(rotate)
+                            tint     = primary,
+                            modifier = Modifier.size(40.dp)
                         )
-                    }
-                }
-
-                AnimatedVisibility(
-                    visible = expanded,
-                    enter   = expandVertically(tween(240)) + fadeIn(tween(200)),
-                    exit    = shrinkVertically(tween(200)) + fadeOut(tween(140))
-                ) {
-                    Column(modifier = Modifier.padding(horizontal = 18.dp, vertical = 4.dp)) {
-                        DetailDivider()
-                        DetailRow(label = "Creado por",          value = product.createdBy ?: "-")
-                        DetailDivider()
-                        DetailRow(label = "Fecha creación",      value = product.created)
-                        DetailDivider()
-                        DetailRow(label = "Actualizado por",     value = product.updatedBy ?: "-")
-                        DetailDivider()
-                        DetailRow(label = "Fecha actualización", value = product.updated)
-                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
 
-            Spacer(Modifier.height(40.dp))
+            // ── CONTENIDO ───────────────────────────────────────────────────
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
+
+                // Status badge
+                StatusBadge(isActive = product.isActive)
+
+                Spacer(Modifier.height(12.dp))
+
+                // Nombre del producto
+                Text(
+                    text          = product.name,
+                    fontSize      = 26.sp,
+                    fontWeight    = FontWeight.ExtraBold,
+                    color         = TextPrimary,
+                    lineHeight    = 32.sp,
+                    letterSpacing = (-0.6).sp,
+                    maxLines      = 3,
+                    overflow      = TextOverflow.Ellipsis
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    text       = "Producto · Disponible en catálogo",
+                    fontSize   = 13.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                // Precio gigante
+                Row(
+                    verticalAlignment     = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text       = "Bs.",
+                        fontSize   = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = primary,
+                        modifier   = Modifier.padding(bottom = 7.dp)
+                    )
+                    Text(
+                        text          = priceText,
+                        fontSize      = 38.sp,
+                        fontWeight    = FontWeight.Black,
+                        color         = primary,
+                        letterSpacing = (-1.2).sp,
+                        lineHeight    = 42.sp
+                    )
+                }
+
+                Spacer(Modifier.height(22.dp))
+
+                // Cards de info rápida
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    QuickInfoCard(
+                        modifier = Modifier.weight(1f),
+                        icon     = Icons.Outlined.Category,
+                        label    = "Tipo",
+                        value    = "Producto",
+                        accent   = primary
+                    )
+                    QuickInfoCard(
+                        modifier = Modifier.weight(1f),
+                        icon     = Icons.Rounded.Bolt,
+                        label    = "Stock",
+                        value    = product.stock?.toString() ?: "—",
+                        accent   = primary
+                    )
+                    QuickInfoCard(
+                        modifier = Modifier.weight(1f),
+                        icon     = Icons.Outlined.CheckCircle,
+                        label    = "Estado",
+                        value    = if (product.isActive) "Activo" else "Inactivo",
+                        accent   = if (product.isActive) ButtonSucessColor else TextSecondary
+                    )
+                }
+
+                Spacer(Modifier.height(22.dp))
+
+                // Card de descripción
+                DetailCard {
+                    SectionHeader(
+                        icon    = Icons.Outlined.Inventory2,
+                        title   = "Descripción",
+                        primary = primary
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text       = "Producto disponible para venta rápida dentro del catálogo de tu negocio.",
+                        fontSize   = 14.sp,
+                        color      = TextSecondary,
+                        lineHeight = 22.sp
+                    )
+                }
+
+                Spacer(Modifier.height(14.dp))
+
+                // Card expandible — Auditoría
+                DetailCard(padding = 0.dp) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication        = null
+                            ) { expanded = !expanded }
+                            .padding(horizontal = 18.dp, vertical = 16.dp),
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(primary.copy(alpha = 0.10f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Outlined.CalendarMonth, null,
+                                tint     = primary,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text          = "Información del registro",
+                                fontSize      = 15.sp,
+                                fontWeight    = FontWeight.ExtraBold,
+                                color         = TextPrimary,
+                                letterSpacing = (-0.2).sp
+                            )
+                            Text(
+                                text     = if (expanded) "Toca para ocultar" else "Toca para ver más",
+                                fontSize = 12.sp,
+                                color    = TextSecondary
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (expanded) primary.copy(alpha = 0.10f)
+                                    else BorderGray.copy(alpha = 0.50f)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ExpandMore,
+                                contentDescription = null,
+                                tint     = if (expanded) primary else TextSecondary,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .rotate(rotate)
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter   = expandVertically(tween(240)) + fadeIn(tween(200)),
+                        exit    = shrinkVertically(tween(200)) + fadeOut(tween(140))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(
+                                start  = 18.dp,
+                                end    = 18.dp,
+                                bottom = 14.dp
+                            )
+                        ) {
+                            HorizontalDivider(
+                                color     = BorderGray.copy(alpha = 0.55f),
+                                thickness = 0.8.dp,
+                                modifier  = Modifier.padding(bottom = 4.dp)
+                            )
+                            AuditRow(
+                                icon  = Icons.Outlined.Person,
+                                label = "Creado por",
+                                value = product.createdBy ?: "—"
+                            )
+                            AuditRow(
+                                icon  = Icons.Outlined.CalendarMonth,
+                                label = "Fecha de creación",
+                                value = product.created
+                            )
+                            AuditRow(
+                                icon  = Icons.Outlined.Person,
+                                label = "Actualizado por",
+                                value = product.updatedBy ?: "—"
+                            )
+                            AuditRow(
+                                icon  = Icons.Outlined.Update,
+                                label = "Última actualización",
+                                value = product.updated
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 }
 
-// ─── DetailCard ───────────────────────────────────────────────────────────────────
+// ─── Helpers UI ──────────────────────────────────────────────────────────────
+
 @Composable
-private fun DetailCard(content: @Composable ColumnScope.() -> Unit) {
+private fun RoundIconButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .padding(start = 12.dp)
+            .size(40.dp)
+            .shadow(4.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.06f))
+            .clip(CircleShape)
+            .background(Color.White)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector        = icon,
+            contentDescription = contentDescription,
+            tint               = TextPrimary,
+            modifier           = Modifier.size(20.dp)
+        )
+    }
+}
+
+@Composable
+private fun StatusBadge(isActive: Boolean) {
+    val color = if (isActive) ButtonSucessColor else TextSecondary
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(color.copy(alpha = 0.10f))
+            .border(1.dp, color.copy(alpha = 0.22f), RoundedCornerShape(999.dp))
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text(
+            text          = if (isActive) "ACTIVO" else "INACTIVO",
+            fontSize      = 10.sp,
+            fontWeight    = FontWeight.ExtraBold,
+            color         = color,
+            letterSpacing = 0.8.sp
+        )
+    }
+}
+
+@Composable
+private fun QuickInfoCard(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    label: String,
+    value: String,
+    accent: Color
+) {
+    Column(
+        modifier = modifier
+            .shadow(
+                elevation    = 4.dp,
+                shape        = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.02f),
+                spotColor    = Color.Black.copy(alpha = 0.05f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .border(1.dp, BorderGray.copy(alpha = 0.45f), RoundedCornerShape(16.dp))
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(7.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(30.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(accent.copy(alpha = 0.10f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, null, tint = accent, modifier = Modifier.size(16.dp))
+        }
+        Text(
+            text          = label,
+            fontSize      = 11.sp,
+            color         = TextSecondary,
+            fontWeight    = FontWeight.Medium,
+            letterSpacing = 0.3.sp
+        )
+        Text(
+            text          = value,
+            fontSize      = 14.sp,
+            fontWeight    = FontWeight.Bold,
+            color         = TextPrimary,
+            maxLines      = 1,
+            overflow      = TextOverflow.Ellipsis,
+            letterSpacing = (-0.2).sp
+        )
+    }
+}
+
+@Composable
+private fun DetailCard(
+    padding: Dp = 18.dp,
+    content: @Composable ColumnScope.() -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation    = 8.dp,
-                shape        = RoundedCornerShape(24.dp),
+                elevation    = 6.dp,
+                shape        = RoundedCornerShape(22.dp),
                 ambientColor = Color.Black.copy(alpha = 0.03f),
-                spotColor    = Color.Black.copy(alpha = 0.07f)
+                spotColor    = Color.Black.copy(alpha = 0.06f)
             )
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color.White)
-            .padding(18.dp),
+            .padding(padding),
         content = content
     )
 }
 
 @Composable
-private fun DetailSectionTitle(title: String) {
-    Text(
-        text       = title,
-        fontSize   = 15.sp,
-        fontWeight = FontWeight.Black,
-        color      = TextPrimary
-    )
-}
-
-@Composable
-private fun DetailRow(
-    label      : String,
-    value      : String,
-    valueColor : Color = TextPrimary
+private fun SectionHeader(
+    icon: ImageVector,
+    title: String,
+    primary: Color
 ) {
     Row(
-        modifier              = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 13.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalAlignment     = Alignment.Top
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(primary.copy(alpha = 0.10f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, null, tint = primary, modifier = Modifier.size(16.dp))
+        }
         Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = TextSecondary,
-            fontWeight = FontWeight.Medium,
-            modifier   = Modifier.width(105.dp)
-        )
-        Text(
-            text       = value,
-            fontSize   = 14.sp,
-            color      = valueColor,
-            fontWeight = FontWeight.SemiBold,
-            modifier   = Modifier.weight(1f)
+            text          = title,
+            fontSize      = 15.sp,
+            fontWeight    = FontWeight.ExtraBold,
+            color         = TextPrimary,
+            letterSpacing = (-0.2).sp
         )
     }
 }
 
 @Composable
-private fun DetailDivider() {
-    HorizontalDivider(
-        color     = BorderGray.copy(alpha = 0.65f),
-        thickness = 0.8.dp
-    )
-}
-
-@Composable
-private fun TypeChip(text: String, selected: Boolean) {
-    val primary = MaterialTheme.colorScheme.primary
-
+private fun AuditRow(
+    icon: ImageVector,
+    label: String,
+    value: String
+) {
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (selected) primary.copy(alpha = 0.10f) else Color(0xFFF8FAFC))
-            .border(
-                width = 1.dp,
-                color = if (selected) primary.copy(alpha = 0.25f) else BorderGray,
-                shape = RoundedCornerShape(999.dp)
-            )
-            .padding(horizontal = 14.dp, vertical = 9.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(18.dp)
+                .size(30.dp)
                 .clip(CircleShape)
-                .background(
-                    if (selected) primary.copy(alpha = 0.18f)
-                    else BorderGray.copy(alpha = 0.75f)
-                ),
+                .background(BorderGray.copy(alpha = 0.40f)),
             contentAlignment = Alignment.Center
         ) {
-            if (selected) {
-                Icon(
-                    imageVector = Icons.Outlined.Check,
-                    contentDescription = null,
-                    tint     = primary,
-                    modifier = Modifier.size(13.dp)
-                )
+            Icon(
+                icon, null,
+                tint     = TextSecondary,
+                modifier = Modifier.size(14.dp)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text       = label,
+                fontSize   = 11.sp,
+                color      = TextSecondary,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text       = value,
+                fontSize   = 13.sp,
+                color      = TextPrimary,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomActionBar(
+    primary: Color,
+    onEdit: () -> Unit
+) {
+    Surface(
+        color           = Color.White,
+        shadowElevation = 14.dp,
+        modifier        = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 14.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .shadow(
+                        elevation    = 12.dp,
+                        shape        = RoundedCornerShape(16.dp),
+                        ambientColor = primary.copy(alpha = 0.30f),
+                        spotColor    = primary.copy(alpha = 0.40f)
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(primary, primary.copy(alpha = 0.88f))
+                        )
+                    )
+                    .clickable(onClick = onEdit),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment     = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = null,
+                        tint     = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text          = "Editar producto",
+                        color         = Color.White,
+                        fontSize      = 15.sp,
+                        fontWeight    = FontWeight.Bold,
+                        letterSpacing = 0.2.sp
+                    )
+                }
             }
         }
-        Spacer(Modifier.width(7.dp))
-        Text(
-            text       = text,
-            fontSize   = 13.sp,
-            fontWeight = FontWeight.Bold,
-            color      = if (selected) primary else TextSecondary
-        )
     }
 }

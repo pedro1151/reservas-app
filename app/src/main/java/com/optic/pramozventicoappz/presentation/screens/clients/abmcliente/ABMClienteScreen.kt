@@ -1,17 +1,20 @@
 package com.optic.pramozventicoappz.presentation.screens.clients.abmcliente
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,30 +25,33 @@ import com.optic.pramozventicoappz.domain.model.clients.ClientCreateRequest
 import com.optic.pramozventicoappz.domain.model.clients.ClientUpdateRequest
 import com.optic.pramozventicoappz.domain.util.Resource
 import com.optic.pramozventicoappz.presentation.screens.clients.ClientViewModel
+import com.optic.pramozventicoappz.presentation.ui.theme.TextPrimary
+import com.optic.pramozventicoappz.presentation.ui.theme.TextSecondary
 
-// ─── Design Tokens ──────────────────────────────────────────────────────────────
-private val Pink700  = Color(0xFFC2185B)
-private val Pink600  = Color(0xFFE91E63)
-private val Slate900 = Color(0xFF0F172A)
-private val Slate700 = Color(0xFF334155)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate200 = Color(0xFFE2E8F0)
-private val PageBg   = Color(0xFFF8F4F6)
+private val PageBg = Color(0xFFF9FAFB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ABMClienteScreen(
-    navController : NavHostController,
-    clientId      : Int?,
-    editable      : Boolean,
+    navController: NavHostController,
+    clientId: Int?,
+    editable: Boolean,
 ) {
-    val viewModel      : ClientViewModel = hiltViewModel()
+    val viewModel: ClientViewModel = hiltViewModel()
     val formState      by viewModel.formState.collectAsState()
     val createState    by viewModel.createClientState.collectAsState()
     val updateState    by viewModel.updateClientState.collectAsState()
     val oneClientState by viewModel.oneClientState.collectAsState()
 
+    val primary  = MaterialTheme.colorScheme.primary
     val isSaving = createState is Resource.Loading || updateState is Resource.Loading
+    val isFormValid = formState.fullName.isNotBlank() && formState.email.isNotBlank()
+
+    val errorMessage = when {
+        createState is Resource.Failure -> (createState as Resource.Failure).message
+        updateState is Resource.Failure -> (updateState as Resource.Failure).message
+        else -> null
+    }
 
     LaunchedEffect(clientId) {
         if (editable && clientId != null) viewModel.getClientById(clientId)
@@ -57,9 +63,9 @@ fun ABMClienteScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Outlined.Close, null,
-                            tint     = Slate700,
-                            modifier = Modifier.size(20.dp)
+                            Icons.Outlined.ArrowBack, null,
+                            tint     = TextPrimary,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 },
@@ -68,86 +74,54 @@ fun ABMClienteScreen(
                         text          = if (editable) "Editar cliente" else "Nuevo cliente",
                         fontSize      = 16.sp,
                         fontWeight    = FontWeight.SemiBold,
-                        color         = Slate900,
+                        color         = TextPrimary,
                         letterSpacing = (-0.3).sp
                     )
-                },
-                actions = {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .shadow(
-                                elevation    = if (isSaving) 0.dp else 6.dp,
-                                shape        = RoundedCornerShape(12.dp),
-                                ambientColor = Pink600.copy(alpha = 0.20f),
-                                spotColor    = Pink700.copy(alpha = 0.26f)
-                            )
-                    ) {
-                        Button(
-                            onClick = {
-                                val state = viewModel.formState.value
-                                if (editable && clientId != null) {
-                                    viewModel.updateClient(
-                                        clientId,
-                                        ClientUpdateRequest(
-                                            fullName       = state.fullName,
-                                            email          = state.email,
-                                            phone          = state.phone,
-                                            enterpriseName = state.enterprise,
-                                            country        = state.country,
-                                            address        = state.address,
-                                            city           = state.city,
-                                            state          = state.state
-                                        )
-                                    )
-                                } else {
-                                    viewModel.createClient(
-                                        ClientCreateRequest(
-                                            fullName       = state.fullName,
-                                            email          = state.email,
-                                            phone          = state.phone,
-                                            enterpriseName = state.enterprise,
-                                            country        = state.country,
-                                            address        = state.address,
-                                            city           = state.city,
-                                            state          = state.state,
-                                            businessId     = 1
-                                        )
-                                    )
-                                }
-                            },
-                            enabled        = !isSaving && formState.fullName.isNotBlank(),
-                            shape          = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 0.dp),
-                            colors         = ButtonDefaults.buttonColors(
-                                containerColor         = Pink600,
-                                contentColor           = Color.White,
-                                disabledContainerColor = Slate200,
-                                disabledContentColor   = Slate400
-                            ),
-                            modifier = Modifier.height(36.dp)
-                        ) {
-                            AnimatedVisibility(visible = isSaving, enter = fadeIn(), exit = fadeOut()) {
-                                CircularProgressIndicator(
-                                    color       = Color.White,
-                                    strokeWidth = 2.dp,
-                                    modifier    = Modifier.size(14.dp)
-                                )
-                            }
-                            AnimatedVisibility(visible = !isSaving, enter = fadeIn(), exit = fadeOut()) {
-                                Text(
-                                    text          = if (editable) "Guardar" else "Crear",
-                                    fontSize      = 14.sp,
-                                    fontWeight    = FontWeight.SemiBold,
-                                    letterSpacing = 0.1.sp
-                                )
-                            }
-                        }
-                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White
                 )
+            )
+        },
+        bottomBar = {
+            SaveBottomBar(
+                isLoading = isSaving,
+                isEnabled = isFormValid && !isSaving,
+                isEdit    = editable,
+                primary   = primary,
+                onSave    = {
+                    // ⚠️ MISMA lógica que tenías en el topbar — sin cambios
+                    val state = viewModel.formState.value
+                    if (editable && clientId != null) {
+                        viewModel.updateClient(
+                            clientId,
+                            ClientUpdateRequest(
+                                fullName       = state.fullName,
+                                email          = state.email,
+                                phone          = state.phone,
+                                enterpriseName = state.enterprise,
+                                country        = state.country,
+                                address        = state.address,
+                                city           = state.city,
+                                state          = state.state
+                            )
+                        )
+                    } else {
+                        viewModel.createClient(
+                            ClientCreateRequest(
+                                fullName       = state.fullName,
+                                email          = state.email,
+                                phone          = state.phone,
+                                enterpriseName = state.enterprise,
+                                country        = state.country,
+                                address        = state.address,
+                                city           = state.city,
+                                state          = state.state,
+                                businessId     = 1
+                            )
+                        )
+                    }
+                }
             )
         },
         containerColor = PageBg
@@ -157,7 +131,8 @@ fun ABMClienteScreen(
             navController = navController,
             clientId      = clientId,
             editable      = editable,
-            viewModel     = viewModel
+            viewModel     = viewModel,
+            errorMessage  = errorMessage
         )
     }
 
@@ -174,6 +149,78 @@ fun ABMClienteScreen(
             viewModel.resetUpdateState()
             viewModel.resetForm()
             navController.popBackStack()
+        }
+    }
+}
+
+@Composable
+private fun SaveBottomBar(
+    isLoading: Boolean,
+    isEnabled: Boolean,
+    isEdit: Boolean,
+    primary: Color,
+    onSave: () -> Unit
+) {
+    Surface(
+        color           = Color.White,
+        shadowElevation = 14.dp,
+        modifier        = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 14.dp)
+        ) {
+            val buttonBg = if (isEnabled) {
+                Brush.horizontalGradient(listOf(primary, primary.copy(alpha = 0.88f)))
+            } else {
+                Brush.horizontalGradient(listOf(Color(0xFFCBD5E1), Color(0xFFCBD5E1)))
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .then(
+                        if (isEnabled) Modifier.shadow(
+                            elevation    = 12.dp,
+                            shape        = RoundedCornerShape(16.dp),
+                            ambientColor = primary.copy(alpha = 0.30f),
+                            spotColor    = primary.copy(alpha = 0.40f)
+                        ) else Modifier
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(buttonBg)
+                    .clickable(enabled = isEnabled, onClick = onSave),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color       = Color.White,
+                        strokeWidth = 2.5.dp,
+                        modifier    = Modifier.size(22.dp)
+                    )
+                } else {
+                    Row(
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isEdit) Icons.Outlined.Check else Icons.Outlined.Add,
+                            contentDescription = null,
+                            tint     = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text          = if (isEdit) "Guardar cambios" else "Crear cliente",
+                            color         = Color.White,
+                            fontSize      = 15.sp,
+                            fontWeight    = FontWeight.Bold,
+                            letterSpacing = 0.2.sp
+                        )
+                    }
+                }
+            }
         }
     }
 }
