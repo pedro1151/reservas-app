@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Storefront
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +54,7 @@ fun SaleCard(
         "V-${sale.id.toString().padStart(5, '0')}"
     }
 
+
     val saleTitle = sale.description
         ?.takeIf { it.isNotBlank() }
         ?: "Venta rápida"
@@ -66,15 +69,29 @@ fun SaleCard(
             .fillMaxWidth()
             .heightIn(min = 96.dp)
             .padding(horizontal = 16.dp, vertical = 6.dp)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.035f),
+                spotColor = primary.copy(alpha = 0.08f),
+                clip = false
+            )
             .clickable {
                 navController.navigate(
                     ClientScreen.SaleDetail.createRoute(saleId = sale.id)
                 )
             },
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = cardBg),
-        border = BorderStroke(1.dp, border),
-        elevation = CardDefaults.cardElevation(0.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBg
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = border.copy(alpha = 0.88f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
     ) {
         Row(
             modifier = Modifier
@@ -90,7 +107,12 @@ fun SaleCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ReceiptLong,
+                    imageVector = if (sale.paymentMethod == null) {
+                        Icons.Outlined.Bolt
+                    } else {
+                       // Icons.Outlined.ReceiptLong
+                        Icons.Outlined.Bolt
+                    },
                     contentDescription = null,
                     tint = accentText,
                     modifier = Modifier.size(23.dp)
@@ -154,12 +176,6 @@ fun SaleCard(
                         icon = Icons.Outlined.Schedule
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .size(5.dp)
-                            .clip(CircleShape)
-                            .background(avatarColor.copy(alpha = 0.75f))
-                    )
                 }
             }
 
@@ -167,9 +183,9 @@ fun SaleCard(
 
             Text(
                 text = "$ ${"%.0f".format(sale.amount)}",
-                color = primary,
-                fontSize = 18.5.sp,
-                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
                 maxLines = 1
             )
         }

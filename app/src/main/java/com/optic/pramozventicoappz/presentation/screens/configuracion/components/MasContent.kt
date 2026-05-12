@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramozventicoappz.presentation.authstate.AuthStateVM
+import com.optic.pramozventicoappz.presentation.ui.theme.TextPrimary
 
 @Composable
 fun MasContent(
@@ -106,7 +107,7 @@ fun MasContent(
                 icon       = Icons.Default.Air,
                 title      = "Cerrar sesión",
                 subtitle   = userEmail,
-                onClick    = { viewModel.logout() },
+                onClick = { viewModel.logout(context) },
                 iconTint   = MaterialTheme.colorScheme.primary,
                 titleColor = MaterialTheme.colorScheme.primary
             )
@@ -227,7 +228,7 @@ private fun SectionHeader(text: String) {
         text       = text,
         style      = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.SemiBold,
-        color      = MaterialTheme.colorScheme.primary,
+        color      = TextPrimary,
         modifier   = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
     )
 }
@@ -237,10 +238,13 @@ private fun MenuCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier  = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors    = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(vertical = 4.dp)) { content() }
+        Column(
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+        { content()
+        }
     }
 }
 

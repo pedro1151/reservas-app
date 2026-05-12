@@ -4,26 +4,41 @@ import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -45,10 +60,13 @@ import com.optic.pramozventicoappz.presentation.components.GoogleSignInButton
 import com.optic.pramozventicoappz.presentation.components.progressBar.CustomProgressBar
 import com.optic.pramozventicoappz.presentation.navigation.Graph
 import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
+import com.optic.pramozventicoappz.presentation.ui.theme.AccentText
 import com.optic.pramozventicoappz.presentation.ui.theme.AmarrilloSuave
 import com.optic.pramozventicoappz.presentation.ui.theme.BorderGray
 import com.optic.pramozventicoappz.presentation.ui.theme.TextPrimary
 import com.optic.pramozventicoappz.presentation.ui.theme.TextSecondary
+import com.optic.pramozventicoappz.presentation.ui.theme.AccentSecondary
+import com.optic.pramozventicoappz.presentation.ui.theme.Grafito
 
 @Composable
 fun LoginContent(
@@ -63,18 +81,20 @@ fun LoginContent(
     val loginState = vm.loginResponse
     val isGoogleLoading = loginState is Resource.Loading
 
+    val primary = MaterialTheme.colorScheme.primary
+
     var visible by remember { mutableStateOf(false) }
 
     val cardAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-        label = "cardAlpha"
+        label = "loginBoxAlpha"
     )
 
     val cardOffsetY by animateFloatAsState(
         targetValue = if (visible) 0f else 48f,
         animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-        label = "cardOffsetY"
+        label = "loginBoxOffsetY"
     )
 
     LaunchedEffect(Unit) {
@@ -103,33 +123,18 @@ fun LoginContent(
             .padding(paddingValues)
             .fillMaxSize()
     ) {
+// ── Fondo imagen premium gris moderno ───────────────────────────────
+
 
         Image(
-            painter = painterResource(id = R.drawable.fondo_def),
+            painter = painterResource(id = R.drawable.fondo_claro),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    alpha = 0.72f
-                },
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colorStops = arrayOf(
-                            0.00f to MaterialTheme.colorScheme.primary.copy(alpha = 0.46f),
-                            0.28f to MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
-                            0.58f to Color.White.copy(alpha = 0.72f),
-                            1.00f to MaterialTheme.colorScheme.background.copy(alpha = 0.97f)
-                        )
-                    )
-                )
-        )
 
+// ── Glow blanco inferior premium ────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -137,42 +142,14 @@ fun LoginContent(
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                AmarrilloSuave.copy(alpha = 0.34f),
-                                Color.Transparent
-                            ),
-                            radius = size.width * 0.68f
-                        ),
-                        center = center.copy(
-                            x = size.width * 0.08f,
-                            y = size.height * 0.10f
-                        )
-                    )
-
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFE91E63),
-                                Color.Transparent
-                            ),
-                            radius = size.width * 0.82f
-                        ),
-                        center = center.copy(
-                            x = size.width * 1.05f,
-                            y = size.height * 0.34f
-                        )
-                    )
-
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.32f),
+                                Color.White.copy(alpha = 0.22f),
                                 Color.Transparent
                             ),
                             radius = size.width * 0.90f
                         ),
                         center = center.copy(
                             x = size.width * 0.50f,
-                            y = size.height * 0.96f
+                            y = size.height * 1.02f
                         )
                     )
                 }
@@ -182,125 +159,112 @@ fun LoginContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .align(Alignment.BottomCenter)
+                .align(Alignment.Center)
                 .graphicsLayer {
                     alpha = cardAlpha
                     translationY = cardOffsetY
                 }
                 .padding(horizontal = 20.dp)
-                .padding(top = 96.dp, bottom = 34.dp),
+                .padding(top = 80.dp, bottom = 34.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            AppBrandHeader()
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.96f)
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = Color.White.copy(alpha = 0.78f)
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 28.dp,
+                        shape = RoundedCornerShape(34.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.07f),
+                        spotColor = primary.copy(alpha = 0.10f),
+                        clip = false
+                    )
+                    .graphicsLayer {
+                        shadowElevation = 10f
+                        shape = RoundedCornerShape(34.dp)
+                        clip = false
+                    }
+                    .clip(RoundedCornerShape(34.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.White,
+                                Color(0xFFFFFCFD)
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color.White.copy(alpha = 0.78f),
+                        shape = RoundedCornerShape(34.dp)
+                    )
+                    .padding(horizontal = 24.dp, vertical = 30.dp)
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 28.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    AppBrandHeaderInsideCard()
 
-                    Surface(
-                        shape = RoundedCornerShape(50),
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
-                        ),
-                        modifier = Modifier.padding(bottom = 20.dp)
+                    Spacer(modifier = Modifier.height(22.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Text(
-                            text = "GESTIONA TU NEGOCIO",
-                            color = MaterialTheme.colorScheme.primary,
+                            text = "VENTAS RÁPIDAS",
+                            color = primary,
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.sp,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 1.1.sp
                         )
                     }
 
-                    Text(
-                        text = "Empieza ya!",
-                        color = TextPrimary,
-                        fontSize = 23.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.4).sp,
-                        modifier = Modifier.padding(bottom = 5.dp)
-                    )
+                    Spacer(modifier = Modifier.height(25.dp))
 
                     Text(
-                        text = "Ventas rápidas. Todo tu negocio, en segundos",
-                        color = TextSecondary,
-                        fontSize = 15.5.sp,
-                        lineHeight = 19.sp,
-                        modifier = Modifier.padding(bottom = 24.dp)
+                        text = "Tu negocio, más rápido",
+                        color = TextPrimary,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = (-0.55).sp
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Ventas rápidas y control diario ágil",
+                        color = TextSecondary,
+                        fontSize = 15.sp,
+                        lineHeight = 19.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     GoogleSignInButton(
                         onClick = { onGoogleSignInClick() },
                         enabled = !isGoogleLoading
                     )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 18.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        HorizontalDivider(
-                            modifier = Modifier.weight(1f),
-                            thickness = 1.dp,
-                            color = BorderGray.copy(alpha = 0.90f)
-                        )
-
-                        Text(
-                            text = "  o  ",
-                            color = TextSecondary,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier.weight(1f),
-                            thickness = 1.dp,
-                            color = BorderGray.copy(alpha = 0.90f)
-                        )
-                    }
-
+                    Spacer(modifier = Modifier.height(10.dp))
                     DefaultButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(54.dp),
                         text = "Continuar con email",
                         onClick = { navController.navigate(ClientScreen.BasicLogin.route) },
-                        color = MaterialTheme.colorScheme.primary,
+                        color = Grafito,
                         icon = Icons.Default.Email,
                         textColor = Color.White
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(22.dp))
 
                     HorizontalDivider(
                         thickness = 1.dp,
-                        color = BorderGray.copy(alpha = 0.55f)
+                        color = BorderGray.copy(alpha = 0.48f)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -311,7 +275,7 @@ fun LoginContent(
                             modifier = Modifier
                                 .size(7.dp)
                                 .background(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = AmarrilloSuave,
                                     shape = CircleShape
                                 )
                         )
@@ -319,7 +283,7 @@ fun LoginContent(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
-                            text = Config.APP_NAME,
+                            text = "Seguro y rápido",
                             color = TextSecondary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
@@ -328,9 +292,10 @@ fun LoginContent(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
-                            text = "· 2026",
-                            color = BorderGray,
-                            fontSize = 12.sp
+                            text = "· ${Config.APP_NAME}",
+                            color = TextSecondary.copy(alpha = 0.58f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
@@ -342,52 +307,32 @@ fun LoginContent(
 }
 
 @Composable
-private fun AppBrandHeader() {
+private fun AppBrandHeaderInsideCard() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = Color.White.copy(alpha = 0.18f),
-            border = BorderStroke(
-                width = 1.dp,
-                color = Color.White.copy(alpha = 0.28f)
-            )
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            color = Color.White,
-                            fontWeight = FontWeight.Black
-                        )
-                    ) {
-                        append("Sales")
-                    }
-
-                    withStyle(
-                        SpanStyle(
-                            color = AmarrilloSuave,
-                            fontWeight = FontWeight.Black
-                        )
-                    ) {
-                        append("Gow")
-                    }
-                },
-                fontSize = 43.sp,
-                letterSpacing = (-1.6).sp,
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
         Text(
-            text = "Ventas rápidas · Control inteligente de tu negocio",
-            color = Color.White.copy(alpha = 0.92f),
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-            letterSpacing = 0.3.sp
+            text = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        color = TextPrimary,
+                        fontWeight = FontWeight.Black
+                    )
+                ) {
+                    append("Sales")
+                }
+
+                withStyle(
+                    SpanStyle(
+                        color = AccentSecondary,
+                        fontWeight = FontWeight.Black
+                    )
+                ) {
+                    append("Gow")
+                }
+            },
+            fontSize = 42.sp,
+            letterSpacing = (-1.6).sp
         )
     }
 }

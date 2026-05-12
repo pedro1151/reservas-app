@@ -21,6 +21,7 @@ import com.optic.pramozventicoappz.domain.util.Resource
 import com.optic.pramozventicoappz.presentation.authstate.AuthStateVM
 import com.optic.pramozventicoappz.presentation.components.BackTopBar
 import com.optic.pramozventicoappz.presentation.components.PullRefreshWrapper
+import com.optic.pramozventicoappz.presentation.components.loading.DefaultLoadingState
 import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
 import com.optic.pramozventicoappz.presentation.screens.newsale.NewSaleViewModel
 
@@ -55,12 +56,7 @@ fun CompleteSaleStepTwoScreen(
     LaunchedEffect( productsResource ) {
         if ( productsResource  !is Resource.Loading) isRefreshing = false
     }
-    // BORRO PRODUCTOS SELECCIONADOS VIEJOS DEL CARRITO
-    /* LaunchedEffect(Unit) {
-         viewModel.clearSelectedProducts()
-     }
 
-     */
 
     val total by viewModel.total.collectAsState()
     val totalItems by viewModel.totalItems.collectAsState()
@@ -96,12 +92,7 @@ fun CompleteSaleStepTwoScreen(
         ) {
             when (val result = productsResource) {
                 is Resource.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
+                    DefaultLoadingState(itemName = "items")
                 }
                 is Resource.Success -> {
                     if (businessId != null) {
@@ -116,15 +107,14 @@ fun CompleteSaleStepTwoScreen(
                     }
                 }
                 is Resource.Failure -> {
-                    ErrorState(onRetry = { isRefreshing = true; viewModel.loadProducts(businessId = 1, name = "") })
+                    ErrorState(
+                        onRetry = { isRefreshing = true;
+                        if (businessId != null) {
+                        viewModel.loadProducts(businessId = businessId, name = "")
+                    } })
                 }
                 else -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Black, strokeWidth = 2.dp,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    DefaultLoadingState(itemName = "items")
                 }
             }
         }

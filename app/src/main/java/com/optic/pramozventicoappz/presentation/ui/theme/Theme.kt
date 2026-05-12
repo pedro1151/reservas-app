@@ -19,6 +19,9 @@ val TextSecondary = Color(0xFF475569)
 val  BadgeGrisBackground = Color(0xFFF8FAFC)
 val BorderGrisSoftCard = Color(0xFFF1F5F9)
 val AccentText = Color(0xFF8A6100)
+val AccentSecondary = Color(0xFFFFC857)
+val AccentSoft = Color(0xFFFFF6D8)
+
 
 
 val SoftCoolBackground = Brush.verticalGradient(

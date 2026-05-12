@@ -5,6 +5,8 @@ import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramozventicoappz.presentation.components.BackTopBar
+import com.optic.pramozventicoappz.presentation.components.PrimaryTopBar
+import com.optic.pramozventicoappz.presentation.screens.menu.SalesScreenWithDrawer
 
 @Composable
 fun MasScreen(
@@ -12,19 +14,21 @@ fun MasScreen(
     isAuthenticated: Boolean = false
 ) {
     val viewModel: MasViewModel = hiltViewModel()
-
-    Scaffold(
-        topBar = {
-            BackTopBar(
-                navController = navController,
-                title = "Configuracion"
+    SalesScreenWithDrawer(navController) { onMenuClick ->
+        Scaffold(
+            topBar = {
+                PrimaryTopBar(
+                    navController = navController,
+                    title = "Configuracion",
+                    onMenuClick = onMenuClick
+                )
+            }
+        ) { paddingValues ->
+            MasContent(
+                paddingValues = paddingValues,
+                viewModel = viewModel,
+                navController = navController
             )
         }
-    ) { paddingValues ->
-        MasContent(
-            paddingValues = paddingValues,
-            viewModel = viewModel,
-            navController = navController
-        )
     }
 }

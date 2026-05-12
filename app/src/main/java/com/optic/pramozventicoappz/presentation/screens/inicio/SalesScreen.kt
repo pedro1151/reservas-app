@@ -1,15 +1,14 @@
 package com.optic.pramozventicoappz.presentation.screens.inicio
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.optic.pramozventicoappz.domain.util.Resource
 import com.optic.pramozventicoappz.presentation.authstate.AuthStateVM
+import com.optic.pramozventicoappz.presentation.components.errorstate.DefaultErrorState
+import com.optic.pramozventicoappz.presentation.components.loading.DefaultLoadingState
 import com.optic.pramozventicoappz.presentation.sales.SalesContent
 import com.optic.pramozventicoappz.presentation.screens.menu.SalesScreenWithDrawer
 import com.optic.pramozventicoappz.presentation.screens.newsale.NewSaleViewModel
@@ -31,13 +30,6 @@ fun SalesScreen(
 
     val viewModel: SalesViewModel = hiltViewModel()
 
-    // 🔹 Usar rememberSaveable para que Compose recuerde el estado del drawer
-    // 🔹 Drawer state
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-
-
     // 🔥 OBSERVAR ESTADO REAL
     val salesState by viewModel.salesState.collectAsState()
 
@@ -54,22 +46,21 @@ fun SalesScreen(
 
             when (val state = salesState) {
                 is Resource.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
+                    DefaultLoadingState(itemName = "ventas")
                 }
                 is Resource.Failure -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No se pudieron cargar las ventas")
-                    }
+
+                    DefaultErrorState(
+                        title = "No se pudieron cargar los ventas",
+                        message = "Intenta nuevamente en unos segundos.",
+                        retryText = "Volver a intentar",
+                        onRetry = {
+                            if (businessId != null) {
+                                viewModel.loadSales(businessId, 25)
+                            }
+                        }
+                    )
+
                 }
                 is Resource.Success -> {
                     SalesScreenWithDrawer(navController) { onMenuClick ->
@@ -82,7 +73,7 @@ fun SalesScreen(
                         )
                     }
                 }
-                else -> {}
+                else ->  DefaultLoadingState(itemName = "ventas")
             }
         }
 

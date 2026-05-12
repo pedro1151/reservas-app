@@ -20,7 +20,6 @@ import com.optic.pramozventicoappz.domain.model.sales.SaleItemCreateWithoutSaleI
 import com.optic.pramozventicoappz.domain.util.Resource
 import com.optic.pramozventicoappz.presentation.components.BackTopBar
 import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramozventicoappz.presentation.sales.Components.SGray400
 import com.optic.pramozventicoappz.presentation.util.getCurrentFormattedDate
 import kotlinx.coroutines.launch
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -28,6 +27,7 @@ import com.optic.pramozventicoappz.domain.model.sales.types.SaleType
 import com.optic.pramozventicoappz.presentation.authstate.AuthStateVM
 import com.optic.pramozventicoappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramozventicoappz.presentation.ui.theme.ButtonSucessColor
+import com.optic.pramozventicoappz.presentation.ui.theme.GrisSuave
 
 @Composable
 fun CompleteSaleStepTreeScreen(
@@ -173,7 +173,7 @@ fun CompleteSaleStepTreeScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor =
                             MaterialTheme.colorScheme.primary,
-                            disabledContainerColor = SGray400
+                            disabledContainerColor = GrisSuave
                         )
                     ) {
                         Text(
