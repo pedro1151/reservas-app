@@ -32,8 +32,6 @@ import com.optic.pramozventicoappz.domain.model.product.ProductResponse
 import com.optic.pramozventicoappz.domain.model.product.ProductViewType
 import com.optic.pramozventicoappz.domain.util.Resource
 import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramozventicoappz.presentation.sales.Components.SGray400
-import com.optic.pramozventicoappz.presentation.sales.Components.SRed
 import com.optic.pramozventicoappz.presentation.screens.newsale.NewSaleViewModel
 import com.optic.pramozventicoappz.presentation.screens.newsale.components.MiniCart
 import com.optic.pramozventicoappz.presentation.screens.newsale.components.NewRapidProduct
@@ -41,6 +39,7 @@ import com.optic.pramozventicoappz.presentation.screens.newsale.components.Produ
 import com.optic.pramozventicoappz.presentation.screens.newsale.components.RapidProductCard
 import com.optic.pramozventicoappz.presentation.screens.newsale.components.RapidProductGridCard
 import com.optic.pramozventicoappz.presentation.screens.newsale.components.RapidSaleSearchToolbar
+import com.optic.pramozventicoappz.presentation.ui.theme.GrisSuave
 import kotlinx.coroutines.launch
 
 
@@ -200,7 +199,7 @@ fun CompleteSaleStepTwoContent(
                 is Resource.Failure -> {
                     Text(
                         "Error cargando productos",
-                        color = SRed,
+                        color = Color.Red,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -391,7 +390,7 @@ fun CompleteSaleStepTwoContent(
                 val backgroundColor = if (canConfirm)
                     MaterialTheme.colorScheme.primary
                 else
-                    SGray400
+                    GrisSuave
 
                 Row(
                     modifier = Modifier

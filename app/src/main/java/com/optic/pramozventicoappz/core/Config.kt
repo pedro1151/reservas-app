@@ -19,16 +19,6 @@ object  Config {
 
 
 
-
-
-
-
-
-
-
-
-
-
     // IP DE GCP --REMOTO -PRODUCCION : 34.136.16.162  ( SIN PUERTO ya que internamente usa nginx puerto 80)
 
     const val BASE_URL = URL_BASE
@@ -38,13 +28,7 @@ object  Config {
     const val AUTH_KEY = "AUTH_KEY"
 
 
-
-
-
-
-
     const val APP_NAME ="SalesGow"
-
 
     /*google auht */
     const val CLIENT_ID_GOOGLE ="433710092520-m7644hv1215dgfqr11ks4dseusl8rcgl.apps.googleusercontent.com"

@@ -244,7 +244,7 @@ sealed class ClientScreen(
     object Mas: ClientScreen(
         route = "client/mas",
         title = "Menu",
-        icon = Icons.Default.Menu
+        icon = Icons.Default.BrightnessHigh
     )
 
 

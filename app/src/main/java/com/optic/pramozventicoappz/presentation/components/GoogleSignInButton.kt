@@ -3,6 +3,7 @@ package com.optic.pramozventicoappz.presentation.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -34,21 +36,21 @@ fun GoogleSignInButton(
             .fillMaxWidth()
             .height(54.dp)
             .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-                spotColor = Color.Black.copy(alpha = 0.10f)
+                elevation = 7.dp,
+                shape = RoundedCornerShape(17.dp),
+                ambientColor = Color.Black.copy(alpha = 0.05f),
+                spotColor = Color.Black.copy(alpha = 0.08f)
             ),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(17.dp),
         border = BorderStroke(
             width = 1.dp,
-            color = BorderGray.copy(alpha = 0.85f)
+            color = BorderGray.copy(alpha = 0.75f)
         ),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White,
             contentColor = TextPrimary,
-            disabledContainerColor = Color.White.copy(alpha = 0.75f),
-            disabledContentColor = TextPrimary.copy(alpha = 0.45f)
+            disabledContainerColor = Color.White,
+            disabledContentColor = TextPrimary.copy(alpha = 0.55f)
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
@@ -63,10 +65,13 @@ fun GoogleSignInButton(
         ) {
             Box(
                 modifier = Modifier
-                    .size(30.dp)
-                    .background(
-                        color = Color(0xFFF8FAFC),
-                        shape = RoundedCornerShape(10.dp)
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(Color(0xFFF8FAFC))
+                    .border(
+                        width = 1.dp,
+                        color = BorderGray.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(11.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -82,8 +87,8 @@ fun GoogleSignInButton(
             Text(
                 text = "Continuar con Google",
                 fontSize = 14.5.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.1.sp
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 0.05.sp
             )
         }
     }
