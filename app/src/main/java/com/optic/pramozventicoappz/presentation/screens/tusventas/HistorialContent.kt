@@ -163,7 +163,7 @@ fun HistorialContent(
             )
     ) {
         Image(
-            painter = painterResource(id = R.drawable.fondo_ventas),
+            painter = painterResource(id = R.drawable.fondo_claro),
             contentDescription = null,
             modifier = Modifier
                 .matchParentSize()
@@ -770,7 +770,7 @@ private fun EmptySalesState(onAddSale: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.fondo_ventas),
+            painter = painterResource(id = R.drawable.fondo_claro),
             contentDescription = null,
             modifier = Modifier
                 .matchParentSize()

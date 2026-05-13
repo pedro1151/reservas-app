@@ -69,7 +69,7 @@ fun SaleDetailContent(
             )
     ) {
         Image(
-            painter = painterResource(id = R.drawable.fondo_ventas),
+            painter = painterResource(id = R.drawable.fondo_claro),
             contentDescription = null,
             modifier = Modifier.matchParentSize().alpha(0.075f),
             contentScale = ContentScale.Crop

@@ -39,12 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.optic.pramozventicoappz.domain.model.sales.SaleResponse
 import com.optic.pramozventicoappz.presentation.navigation.screen.client.ClientScreen
-import com.optic.pramozventicoappz.presentation.screens.clients.components.getAvatarColor
 import com.optic.pramozventicoappz.presentation.ui.theme.AccentText
 import com.optic.pramozventicoappz.presentation.ui.theme.BadgeGrisBackground
 import com.optic.pramozventicoappz.presentation.ui.theme.BorderGrisSoftCard
 import com.optic.pramozventicoappz.presentation.ui.theme.TextPrimary
 import com.optic.pramozventicoappz.presentation.ui.theme.TextSecondary
+import com.optic.pramozventicoappz.presentation.util.getAvatarColor
 
 @Composable
 fun SaleCard(
