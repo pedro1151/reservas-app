@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.optic.pramozventicoappz.domain.model.product.ProductViewType
 import com.optic.pramozventicoappz.domain.model.response.DefaultResponse
 import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemResponse
 import com.optic.pramozventicoappz.domain.model.saleitem.SaleItemUpdateRequest
@@ -457,6 +458,11 @@ class HistorialViewModel @Inject constructor(
             }
         }
     }
+    private val _productViewType = MutableStateFlow(ProductViewType.GRID)
+    val productViewType: StateFlow<ProductViewType> = _productViewType
 
+    fun updateProductViewType(type: ProductViewType) {
+        _productViewType.value = type
+    }
 
 }
